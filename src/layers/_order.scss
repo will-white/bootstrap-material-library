@@ -1,0 +1,10 @@
+// ============================================================================
+// m3x cascade-layer order (the library's public contract, README section 1).
+// This must be the FIRST statement of the compiled CSS. `bootstrap` is
+// reserved for a consumer's real Bootstrap import; `overrides` is declared,
+// always left empty, and owned by downstream consumers.
+// ============================================================================
+
+@mixin statement {
+  @layer reset, bootstrap, tokens, bootstrap-compat, base, components, utilities, overrides;
+}

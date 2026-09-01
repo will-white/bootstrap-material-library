@@ -1,0 +1,368 @@
+// ============================================================================
+// m3x -- Material 3 on modern CSS primitives, with full Bootstrap interop.
+// Entry point: assembles every partial into the cascade-layer contract
+//
+//   @layer reset, bootstrap, tokens, bootstrap-compat, base, components,
+//          utilities, overrides;
+//
+// `bootstrap` is reserved for a consumer's real Bootstrap import;
+// `overrides` is declared, always empty, and owned by consumers.
+//
+// Configure via: @use "m3x/src" with ($seed: ..., $prefix: ..., ...);
+// ============================================================================
+
+// --- public Sass API (configuration, functions, mixins, component mixins) ---
+@forward "config";
+@forward "functions";
+@forward "mixins";
+@forward "components/button" as btn-*;
+@forward "components/icon-button" as icon-btn-*;
+@forward "components/fab" as fab-*;
+@forward "components/segmented-button" as segmented-*;
+@forward "components/badge" as badge-*;
+@forward "components/progress" as progress-*;
+@forward "components/snackbar" as snackbar-*;
+@forward "components/tooltip" as tooltip-*;
+@forward "components/card" as card-*;
+@forward "components/carousel" as carousel-*;
+@forward "components/dialog" as dialog-*;
+@forward "components/divider" as divider-*;
+@forward "components/list" as list-*;
+@forward "components/sheet" as sheet-*;
+@forward "components/navigation-bar" as nav-bar-*;
+@forward "components/navigation-drawer" as nav-drawer-*;
+@forward "components/navigation-rail" as nav-rail-*;
+@forward "components/tabs" as tabs-*;
+@forward "components/top-app-bar" as top-app-bar-*;
+@forward "components/bottom-app-bar" as bottom-app-bar-*;
+@forward "components/checkbox" as checkbox-*;
+@forward "components/radio" as radio-*;
+@forward "components/switch" as switch-*;
+@forward "components/chip" as chip-*;
+@forward "components/menu" as menu-*;
+@forward "components/slider" as slider-*;
+@forward "components/datetime" as datetime-*;
+@forward "components/text-field" as field-*;
+@forward "components/search" as search-*;
+@forward "components/select" as select-*;
+
+// --- internal wiring ---------------------------------------------------------
+@use "sass:list";
+@use "config" as c;
+@use "functions" as fn;
+@use "layers/order";
+@use "tokens/palette";
+@use "tokens/color-scheme";
+@use "tokens/typography";
+@use "tokens/shape";
+@use "tokens/spacing";
+@use "tokens/elevation";
+@use "tokens/motion";
+@use "tokens/state";
+@use "base/reset";
+@use "base/base";
+@use "utilities/utilities";
+@use "compat/bootstrap-vars";
+@use "compat/bootstrap-components";
+@use "compat/bootstrap-utilities";
+@use "components/button";
+@use "components/icon-button";
+@use "components/fab";
+@use "components/segmented-button";
+@use "components/badge";
+@use "components/progress";
+@use "components/snackbar";
+@use "components/tooltip";
+@use "components/card";
+@use "components/carousel";
+@use "components/dialog";
+@use "components/divider";
+@use "components/list" as list-component;
+@use "components/sheet";
+@use "components/navigation-bar";
+@use "components/navigation-drawer";
+@use "components/navigation-rail";
+@use "components/tabs";
+@use "components/top-app-bar";
+@use "components/bottom-app-bar";
+@use "components/checkbox";
+@use "components/radio";
+@use "components/switch";
+@use "components/chip";
+@use "components/menu";
+@use "components/slider";
+@use "components/datetime";
+@use "components/text-field";
+@use "components/search";
+@use "components/select";
+
+@function -on($name) {
+  @return list.index(c.$components, $name) != null;
+}
+
+// --- 1. layer order: the first statement of the compiled CSS ----------------
+@if c.$emit-layer-statement {
+  @include order.statement;
+}
+
+// --- 2. reset ----------------------------------------------------------------
+@layer reset {
+  @include reset.styles;
+}
+
+// --- 3. tokens ---------------------------------------------------------------
+@layer tokens {
+  // @property registrations (system tier + animatable numerics only).
+  @include color-scheme.properties;
+  @include shape.properties;
+  @include spacing.properties;
+  @include elevation.properties;
+  @include state.properties;
+
+  // Scheme control: color-scheme on :root, [data-theme] switches.
+  @include color-scheme.scheme-control;
+
+  // Tier 1 + 2 + 3 static tokens and every tier-3 component token.
+  :root {
+    @include palette.tones;
+    @include palette.static-fallback;
+    @include typography.tokens;
+    @include shape.tokens;
+    @include spacing.tokens;
+    @include elevation.tokens;
+    @include motion.tokens;
+    @include state.tokens;
+
+    @if -on("button") {
+      @include button.tokens;
+    }
+    @if -on("icon-button") {
+      @include icon-button.tokens;
+    }
+    @if -on("fab") {
+      @include fab.tokens;
+    }
+    @if -on("segmented-button") {
+      @include segmented-button.tokens;
+    }
+    @if -on("badge") {
+      @include badge.tokens;
+    }
+    @if -on("progress") {
+      @include progress.tokens;
+    }
+    @if -on("snackbar") {
+      @include snackbar.tokens;
+    }
+    @if -on("tooltip") {
+      @include tooltip.tokens;
+    }
+    @if -on("card") {
+      @include card.tokens;
+    }
+    @if -on("carousel") {
+      @include carousel.tokens;
+    }
+    @if -on("dialog") {
+      @include dialog.tokens;
+    }
+    @if -on("divider") {
+      @include divider.tokens;
+    }
+    @if -on("list") {
+      @include list-component.tokens;
+    }
+    @if -on("sheet") {
+      @include sheet.tokens;
+    }
+    @if -on("navigation-bar") {
+      @include navigation-bar.tokens;
+    }
+    @if -on("navigation-drawer") {
+      @include navigation-drawer.tokens;
+    }
+    @if -on("navigation-rail") {
+      @include navigation-rail.tokens;
+    }
+    @if -on("tabs") {
+      @include tabs.tokens;
+    }
+    @if -on("top-app-bar") {
+      @include top-app-bar.tokens;
+    }
+    @if -on("bottom-app-bar") {
+      @include bottom-app-bar.tokens;
+    }
+    @if -on("checkbox") {
+      @include checkbox.tokens;
+    }
+    @if -on("radio") {
+      @include radio.tokens;
+    }
+    @if -on("switch") {
+      @include switch.tokens;
+    }
+    @if -on("chip") {
+      @include chip.tokens;
+    }
+    @if -on("menu") {
+      @include menu.tokens;
+    }
+    @if -on("slider") {
+      @include slider.tokens;
+    }
+    @if -on("datetime") {
+      @include datetime.tokens;
+    }
+    @if -on("text-field") {
+      @include text-field.tokens;
+    }
+    @if -on("search") {
+      @include search.tokens;
+    }
+    @if -on("select") {
+      @include select.tokens;
+    }
+  }
+
+  // System color roles, tiered by capability (section 10):
+  //   tier 1: static var() chain + prefers-color-scheme fallback
+  //   tier 2: light-dark() pairs
+  //   tier 3: ref palettes upgraded to OKLCH literals
+  //   tier 4: ref palettes derived from --md-seed at runtime
+  @include color-scheme.tier1;
+  @include color-scheme.tier2;
+
+  @supports (color: #{fn.raw("oklch(0% 0 0)")}) and (color: light-dark(#000, #fff)) {
+    :root {
+      @include palette.tier3-oklch;
+    }
+  }
+
+  @supports (color: oklch(from red l c h)) {
+    :root {
+      @include palette.tier4-relative;
+    }
+  }
+}
+
+// --- 4. bootstrap-compat -----------------------------------------------------
+@if c.$enable-bootstrap-compat {
+  @layer bootstrap-compat {
+    @include bootstrap-vars.remap;
+
+    @if c.$enable-bootstrap-reskin {
+      @include bootstrap-components.reskin;
+    }
+
+    @if c.$enable-bootstrap-utilities {
+      @include bootstrap-utilities.emit;
+    }
+  }
+}
+
+// --- 5. base -----------------------------------------------------------------
+@layer base {
+  @include base.styles;
+}
+
+// --- 6. components -----------------------------------------------------------
+@layer components {
+  @if -on("button") {
+    @include button.classes;
+  }
+  @if -on("icon-button") {
+    @include icon-button.classes;
+  }
+  @if -on("fab") {
+    @include fab.classes;
+  }
+  @if -on("segmented-button") {
+    @include segmented-button.classes;
+  }
+  @if -on("badge") {
+    @include badge.classes;
+  }
+  @if -on("progress") {
+    @include progress.classes;
+  }
+  @if -on("snackbar") {
+    @include snackbar.classes;
+  }
+  @if -on("tooltip") {
+    @include tooltip.classes;
+  }
+  @if -on("card") {
+    @include card.classes;
+  }
+  @if -on("carousel") {
+    @include carousel.classes;
+  }
+  @if -on("dialog") {
+    @include dialog.classes;
+  }
+  @if -on("divider") {
+    @include divider.classes;
+  }
+  @if -on("list") {
+    @include list-component.classes;
+  }
+  @if -on("sheet") {
+    @include sheet.classes;
+  }
+  @if -on("navigation-bar") {
+    @include navigation-bar.classes;
+  }
+  @if -on("navigation-drawer") {
+    @include navigation-drawer.classes;
+  }
+  @if -on("navigation-rail") {
+    @include navigation-rail.classes;
+  }
+  @if -on("tabs") {
+    @include tabs.classes;
+  }
+  @if -on("top-app-bar") {
+    @include top-app-bar.classes;
+  }
+  @if -on("bottom-app-bar") {
+    @include bottom-app-bar.classes;
+  }
+  @if -on("checkbox") {
+    @include checkbox.classes;
+  }
+  @if -on("radio") {
+    @include radio.classes;
+  }
+  @if -on("switch") {
+    @include switch.classes;
+  }
+  @if -on("chip") {
+    @include chip.classes;
+  }
+  @if -on("menu") {
+    @include menu.classes;
+  }
+  @if -on("slider") {
+    @include slider.classes;
+  }
+  @if -on("datetime") {
+    @include datetime.classes;
+  }
+  @if -on("text-field") {
+    @include text-field.classes;
+  }
+  @if -on("search") {
+    @include search.classes;
+  }
+  @if -on("select") {
+    @include select.classes;
+  }
+}
+
+// --- 7. utilities ------------------------------------------------------------
+@layer utilities {
+  @include utilities.styles;
+}
+
+// --- 8. overrides: declared by the layer statement, never written to --------

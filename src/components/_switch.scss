@@ -1,0 +1,145 @@
+// ============================================================================
+// m3x switch -- M3 switch drawn on a real checkbox, zero JS.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-switch-width                       52px   track width
+//   --m3-switch-height                      32px   track height (fixed
+//                                                  geometry: the handle math
+//                                                  reads this token directly)
+//   --m3-switch-track-color                 surface-container-highest
+//   --m3-switch-outline-color               outline (track border)
+//   --m3-switch-handle-color                outline (unselected handle)
+//   --m3-switch-handle-size                 16px   unselected handle
+//   --m3-switch-hover-handle-color          on-surface-variant
+//   --m3-switch-selected-track-color        primary
+//   --m3-switch-selected-handle-color       on-primary
+//   --m3-switch-selected-handle-size        24px   selected handle
+//   --m3-switch-selected-hover-handle-color primary-container
+//
+// Markup (role="switch" for assistive tech; state is pure :checked):
+//   <label class="m3-label">
+//     <input type="checkbox" role="switch" class="m3-switch" checked>
+//     Wi-Fi
+//   </label>
+//
+// Reused by the Bootstrap compat layer for .form-switch .form-check-input.
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+@mixin tokens {
+  --#{c.$prefix}-switch-width: #{fn.rem(52)};
+  --#{c.$prefix}-switch-height: #{fn.rem(32)};
+  --#{c.$prefix}-switch-track-color: var(--md-sys-color-surface-container-highest);
+  --#{c.$prefix}-switch-outline-color: var(--md-sys-color-outline);
+  --#{c.$prefix}-switch-handle-color: var(--md-sys-color-outline);
+  --#{c.$prefix}-switch-handle-size: #{fn.rem(16)};
+  --#{c.$prefix}-switch-hover-handle-color: var(--md-sys-color-on-surface-variant);
+  --#{c.$prefix}-switch-selected-track-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-switch-selected-handle-color: var(--md-sys-color-on-primary);
+  --#{c.$prefix}-switch-selected-handle-size: #{fn.rem(24)};
+  --#{c.$prefix}-switch-selected-hover-handle-color: var(--md-sys-color-primary-container);
+}
+
+// The whole control: the checkbox itself is the track, ::before is the
+// handle, ::after is the touch target. Fixed geometry -- the handle offsets
+// are computed from the height token, so the track height deliberately does
+// NOT participate in density.
+@mixin control {
+  appearance: none;
+  inline-size: var(--#{c.$prefix}-switch-width);
+  block-size: var(--#{c.$prefix}-switch-height);
+  flex: none;
+  position: relative;
+  margin: var(--m3-space-none);
+  border: var(--m3-stroke-thick) solid var(--#{c.$prefix}-switch-outline-color);
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--#{c.$prefix}-switch-track-color);
+  cursor: pointer;
+  @include m.focus-ring;
+  @include m.transition((background-color, border-color));
+  @include m.touch-target;
+
+  // Handle. Resting offset centers it inside the track: (track height -
+  // handle size) / 2, pulled back by the border the track just consumed.
+  &::before {
+    content: "";
+    position: absolute;
+    inline-size: var(--#{c.$prefix}-switch-handle-size);
+    block-size: var(--#{c.$prefix}-switch-handle-size);
+    border-radius: var(--md-sys-shape-corner-full);
+    background-color: var(--#{c.$prefix}-switch-handle-color);
+    inset-block-start: 50%;
+    inset-inline-start: calc(
+      (
+          var(--#{c.$prefix}-switch-height) -
+            var(--#{c.$prefix}-switch-handle-size)
+        ) / 2 - var(--m3-stroke-thick)
+    );
+    translate: 0 -50%;
+    @include m.transition(
+      (inset-inline-start, inline-size, block-size, background-color)
+    );
+  }
+
+  &:hover:not(:disabled)::before {
+    background-color: var(--#{c.$prefix}-switch-hover-handle-color);
+  }
+
+  &:checked {
+    background-color: var(--#{c.$prefix}-switch-selected-track-color);
+    border-color: var(--#{c.$prefix}-switch-selected-track-color);
+
+    &::before {
+      inline-size: var(--#{c.$prefix}-switch-selected-handle-size);
+      block-size: var(--#{c.$prefix}-switch-selected-handle-size);
+      background-color: var(--#{c.$prefix}-switch-selected-handle-color);
+      inset-inline-start: calc(
+        100% - var(--#{c.$prefix}-switch-selected-handle-size) -
+          (
+            var(--#{c.$prefix}-switch-height) -
+              var(--#{c.$prefix}-switch-selected-handle-size)
+          ) / 2 + var(--m3-stroke-thick)
+      );
+    }
+
+    &:hover:not(:disabled)::before {
+      background-color: var(--#{c.$prefix}-switch-selected-hover-handle-color);
+    }
+  }
+
+  // Disabled: track/border at 12% on-surface, handle at 38% (the m3x
+  // disabled color-mix pattern). Last in source so it wins over :checked.
+  &:disabled {
+    cursor: not-allowed;
+    background-color: color-mix(
+      in srgb,
+      var(--md-sys-color-on-surface)
+        var(--md-sys-state-disabled-container-opacity),
+      transparent
+    );
+    border-color: color-mix(
+      in srgb,
+      var(--md-sys-color-on-surface)
+        var(--md-sys-state-disabled-container-opacity),
+      transparent
+    );
+
+    &::before {
+      background-color: color-mix(
+        in srgb,
+        var(--md-sys-color-on-surface)
+          var(--md-sys-state-disabled-content-opacity),
+        transparent
+      );
+    }
+  }
+}
+
+@mixin classes {
+  input[type="checkbox"].#{c.$prefix}-switch {
+    @include control;
+  }
+}

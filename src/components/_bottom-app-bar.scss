@@ -1,0 +1,66 @@
+// ============================================================================
+// m3x bottom app bar
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-bottom-app-bar-height           80px  bar height; participates in
+//                                              density: calc(h + density*4px)
+//   --m3-bottom-app-bar-container-color  surface-container
+//   --m3-bottom-app-bar-content-color    on-surface
+//
+// Markup:
+//   <footer class="m3-bottom-app-bar m3-bottom-app-bar--fixed">
+//     <button class="m3-icon-btn" aria-label="Search"></button>
+//     <button class="m3-icon-btn" aria-label="Delete"></button>
+//     <div class="m3-bottom-app-bar__trailing">
+//       <button class="m3-fab" aria-label="Add"></button>
+//     </div>
+//   </footer>
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+@mixin tokens {
+  --#{c.$prefix}-bottom-app-bar-height: #{fn.rem(80)};
+  --#{c.$prefix}-bottom-app-bar-container-color: var(--md-sys-color-surface-container);
+  --#{c.$prefix}-bottom-app-bar-content-color: var(--md-sys-color-on-surface);
+}
+
+// Structural bar container.
+@mixin bar {
+  display: flex;
+  align-items: center;
+  gap: var(--m3-space-2);
+  padding-inline: var(--m3-space-4);
+  @include m.control-height(--#{c.$prefix}-bottom-app-bar-height);
+  background-color: var(--#{c.$prefix}-bottom-app-bar-container-color);
+  color: var(--#{c.$prefix}-bottom-app-bar-content-color);
+}
+
+// Trailing slot, pushed to the far inline end (typically holds a .m3-fab).
+@mixin trailing {
+  margin-inline-start: auto;
+}
+
+// Pinned to the bottom of the viewport.
+@mixin fixed {
+  position: fixed;
+  inset-block-end: var(--m3-space-none);
+  inset-inline: var(--m3-space-none);
+  z-index: var(--m3-z-nav);
+}
+
+@mixin classes {
+  .#{c.$prefix}-bottom-app-bar {
+    @include bar;
+  }
+
+  .#{c.$prefix}-bottom-app-bar__trailing {
+    @include trailing;
+  }
+
+  .#{c.$prefix}-bottom-app-bar--fixed {
+    @include fixed;
+  }
+}

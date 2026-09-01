@@ -1,0 +1,180 @@
+// ============================================================================
+// m3x Bootstrap utilities interop (section 9c, opt-in via
+// $enable-bootstrap-utilities). Spacing steps 0-5 map onto the m3x spacing
+// scale (0, space-1, space-2, space-4, space-5, space-7 = Bootstrap's
+// 0/.25/.5/1/1.5/3rem), so utility spacing follows the token system.
+// Off by default: it costs roughly 8-10 KB of output.
+// ============================================================================
+
+@use "sass:map";
+
+// bootstrap step -> spacing token
+$-space: (
+  0: var(--m3-space-none),
+  1: var(--m3-space-1),
+  2: var(--m3-space-2),
+  3: var(--m3-space-4),
+  4: var(--m3-space-5),
+  5: var(--m3-space-7),
+);
+
+// suffix -> property list
+$-margin-dirs: (
+  "": (margin,),
+  "t": (margin-block-start,),
+  "b": (margin-block-end,),
+  "s": (margin-inline-start,),
+  "e": (margin-inline-end,),
+  "x": (margin-inline,),
+  "y": (margin-block,),
+);
+
+$-padding-dirs: (
+  "": (padding,),
+  "t": (padding-block-start,),
+  "b": (padding-block-end,),
+  "s": (padding-inline-start,),
+  "e": (padding-inline-end,),
+  "x": (padding-inline,),
+  "y": (padding-block,),
+);
+
+$-displays: (
+  "none": none,
+  "inline": inline,
+  "inline-block": inline-block,
+  "block": block,
+  "grid": grid,
+  "table": table,
+  "flex": flex,
+  "inline-flex": inline-flex,
+);
+
+@mixin emit {
+  // --- spacing ---------------------------------------------------------------
+  @each $suffix, $props in $-margin-dirs {
+    @each $step, $token in $-space {
+      .m#{$suffix}-#{$step} {
+        @each $prop in $props {
+          #{$prop}: #{$token};
+        }
+      }
+    }
+    .m#{$suffix}-auto {
+      @each $prop in $props {
+        #{$prop}: auto;
+      }
+    }
+  }
+
+  @each $suffix, $props in $-padding-dirs {
+    @each $step, $token in $-space {
+      .p#{$suffix}-#{$step} {
+        @each $prop in $props {
+          #{$prop}: #{$token};
+        }
+      }
+    }
+  }
+
+  // --- display ---------------------------------------------------------------
+  @each $name, $value in $-displays {
+    .d-#{$name} {
+      display: #{$value};
+    }
+  }
+
+  // --- flex ------------------------------------------------------------------
+  .flex-row {
+    flex-direction: row;
+  }
+  .flex-row-reverse {
+    flex-direction: row-reverse;
+  }
+  .flex-column {
+    flex-direction: column;
+  }
+  .flex-column-reverse {
+    flex-direction: column-reverse;
+  }
+  .flex-wrap {
+    flex-wrap: wrap;
+  }
+  .flex-nowrap {
+    flex-wrap: nowrap;
+  }
+  .flex-fill {
+    flex: 1 1 auto;
+  }
+  .flex-grow-0 {
+    flex-grow: 0;
+  }
+  .flex-grow-1 {
+    flex-grow: 1;
+  }
+  .flex-shrink-0 {
+    flex-shrink: 0;
+  }
+  .flex-shrink-1 {
+    flex-shrink: 1;
+  }
+
+  .justify-content-start {
+    justify-content: flex-start;
+  }
+  .justify-content-end {
+    justify-content: flex-end;
+  }
+  .justify-content-center {
+    justify-content: center;
+  }
+  .justify-content-between {
+    justify-content: space-between;
+  }
+  .justify-content-around {
+    justify-content: space-around;
+  }
+  .justify-content-evenly {
+    justify-content: space-evenly;
+  }
+
+  .align-items-start {
+    align-items: flex-start;
+  }
+  .align-items-end {
+    align-items: flex-end;
+  }
+  .align-items-center {
+    align-items: center;
+  }
+  .align-items-baseline {
+    align-items: baseline;
+  }
+  .align-items-stretch {
+    align-items: stretch;
+  }
+
+  // --- gap -------------------------------------------------------------------
+  @each $step, $token in $-space {
+    .gap-#{$step} {
+      gap: #{$token};
+    }
+    .row-gap-#{$step} {
+      row-gap: #{$token};
+    }
+    .column-gap-#{$step} {
+      column-gap: #{$token};
+    }
+  }
+
+  // --- text alignment --------------------------------------------------------
+  .text-start {
+    text-align: start;
+  }
+  .text-center {
+    text-align: center;
+  }
+  .text-end {
+    text-align: end;
+  }
+}

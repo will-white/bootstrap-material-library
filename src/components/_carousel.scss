@@ -1,0 +1,121 @@
+// ============================================================================
+// m3x carousel -- CSS scroll-snap, zero JS.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-carousel-item-width             75%      grid-auto-columns of the track
+//   --m3-carousel-gap                    space-2  gap between items
+//   --m3-carousel-shape                  corner-extra-large  item radius
+//   --m3-carousel-indicator-size         8px      indicator dot diameter
+//   --m3-carousel-indicator-color        on-surface-variant  resting dot tint
+//   --m3-carousel-indicator-active-color primary  active dot color
+//
+// Markup (the track is the scroll container; indicators sit outside it so
+// they never become a snap column; .active or aria-current="true" marks the
+// current dot):
+//   <div class="m3-carousel">
+//     <div class="m3-carousel__item"><img src="a.jpg" alt="..."></div>
+//     <div class="m3-carousel__item"><img src="b.jpg" alt="..."></div>
+//   </div>
+//   <div class="m3-carousel__indicators">
+//     <button class="m3-carousel__indicator active" aria-label="Slide 1"></button>
+//     <button class="m3-carousel__indicator" aria-label="Slide 2"></button>
+//   </div>
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+@mixin tokens {
+  --#{c.$prefix}-carousel-item-width: 75%;
+  --#{c.$prefix}-carousel-gap: var(--m3-space-2);
+  --#{c.$prefix}-carousel-shape: var(--md-sys-shape-corner-extra-large);
+  --#{c.$prefix}-carousel-indicator-size: #{fn.rem(8)};
+  --#{c.$prefix}-carousel-indicator-color: var(--md-sys-color-on-surface-variant);
+  --#{c.$prefix}-carousel-indicator-active-color: var(--md-sys-color-primary);
+}
+
+// The scroll-snap track: a one-row column grid that scrolls inline.
+@mixin track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: var(--#{c.$prefix}-carousel-item-width);
+  gap: var(--#{c.$prefix}-carousel-gap);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--m3-space-4);
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    scroll-behavior: smooth;
+  }
+}
+
+// One slide; media fills the rounded frame.
+@mixin item {
+  scroll-snap-align: center;
+  border-radius: var(--#{c.$prefix}-carousel-shape);
+  overflow: clip;
+
+  > img {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+}
+
+// Dot row (a sibling of the track, never inside it).
+@mixin indicators {
+  display: flex;
+  justify-content: center;
+  gap: var(--m3-space-2);
+  padding-block: var(--m3-space-3);
+}
+
+// One dot (a real <button>); resting tint is the indicator color at the M3
+// 38% mix, the active dot is solid.
+@mixin indicator {
+  inline-size: var(--#{c.$prefix}-carousel-indicator-size);
+  block-size: var(--#{c.$prefix}-carousel-indicator-size);
+  border-radius: var(--md-sys-shape-corner-full);
+  border: none;
+  padding: var(--m3-space-none);
+  background-color: color-mix(
+    in srgb,
+    var(--#{c.$prefix}-carousel-indicator-color)
+      var(--md-sys-state-disabled-content-opacity),
+    transparent
+  );
+  cursor: pointer;
+  @include m.touch-target-before;
+  @include m.focus-ring;
+  @include m.transition((background-color));
+
+  &.active,
+  &[aria-current="true"] {
+    background-color: var(--#{c.$prefix}-carousel-indicator-active-color);
+  }
+}
+
+@mixin classes {
+  .#{c.$prefix}-carousel {
+    @include track;
+  }
+
+  .#{c.$prefix}-carousel__item {
+    @include item;
+  }
+
+  .#{c.$prefix}-carousel__indicators {
+    @include indicators;
+  }
+
+  .#{c.$prefix}-carousel__indicator {
+    @include indicator;
+  }
+}

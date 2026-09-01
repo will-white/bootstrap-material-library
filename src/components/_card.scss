@@ -1,0 +1,149 @@
+// ============================================================================
+// m3x card (elevated | filled | outlined)
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-card-container-color           surface-container-low (elevated)
+//   --m3-card-filled-container-color    surface-container-highest
+//   --m3-card-outlined-container-color  surface
+//   --m3-card-content-color             on-surface
+//   --m3-card-shape                     corner-medium
+//   --m3-card-padding                   space-4
+//   --m3-card-outline-color             outline-variant
+//   --m3-card-outline-width             1px (hairline token)
+//
+// Slot protection: chrome typography lives in a donut scope
+// (@scope root -> .m3-card__slot) so it never reaches consumer content
+// placed in the slot. Structural rules stay outside @scope, so the card
+// still renders correctly where @scope is unsupported.
+// ============================================================================
+
+@use "../config" as c;
+@use "../mixins" as m;
+
+@mixin tokens {
+  --#{c.$prefix}-card-container-color: var(--md-sys-color-surface-container-low);
+  --#{c.$prefix}-card-filled-container-color: var(--md-sys-color-surface-container-highest);
+  --#{c.$prefix}-card-outlined-container-color: var(--md-sys-color-surface);
+  --#{c.$prefix}-card-content-color: var(--md-sys-color-on-surface);
+  --#{c.$prefix}-card-shape: var(--md-sys-shape-corner-medium);
+  --#{c.$prefix}-card-padding: var(--m3-space-4);
+  --#{c.$prefix}-card-outline-color: var(--md-sys-color-outline-variant);
+  --#{c.$prefix}-card-outline-width: var(--m3-stroke-hairline);
+}
+
+// Structural container, default = elevated look.
+@mixin container {
+  --_container: var(--#{c.$prefix}-card-container-color);
+  --_content: var(--#{c.$prefix}-card-content-color);
+
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: var(--_container);
+  color: var(--_content);
+  border-radius: var(--#{c.$prefix}-card-shape);
+  overflow: clip;
+  @include m.elevation(1);
+}
+
+@mixin elevated {
+  --_container: var(--#{c.$prefix}-card-container-color);
+  @include m.elevation(1);
+}
+
+@mixin filled {
+  --_container: var(--#{c.$prefix}-card-filled-container-color);
+  box-shadow: none;
+}
+
+@mixin outlined {
+  --_container: var(--#{c.$prefix}-card-outlined-container-color);
+  box-shadow: none;
+  border: var(--#{c.$prefix}-card-outline-width) solid
+    var(--#{c.$prefix}-card-outline-color);
+}
+
+// Interactive cards (<a class="m3-card m3-card--interactive">): full state
+// system on top of the container.
+@mixin interactive {
+  cursor: pointer;
+  text-decoration: none;
+  @include m.state-layer;
+  @include m.focus-ring;
+  @include m.transition((background-color, box-shadow));
+
+  &:hover {
+    @include m.elevation(2);
+  }
+}
+
+// Furniture parts (structural; safe without @scope).
+@mixin parts($root: ".#{c.$prefix}-card") {
+  #{$root}__media {
+    inline-size: 100%;
+    object-fit: cover;
+  }
+
+  #{$root}__slot {
+    padding: var(--#{c.$prefix}-card-padding);
+    flex: 1 1 auto;
+  }
+
+  #{$root}__actions {
+    display: flex;
+    gap: var(--m3-space-2);
+    justify-content: flex-end;
+    padding: var(--#{c.$prefix}-card-padding);
+    padding-block-start: var(--m3-space-none);
+  }
+}
+
+// Chrome typography donut: element-level rules between the card root and the
+// slot boundary, at (0,0,1) specificity so one consumer class overrides them.
+@mixin internals($root: ".#{c.$prefix}-card", $slot: ".#{c.$prefix}-card__slot") {
+  @scope (#{$root}) to (#{$slot}) {
+    h2,
+    h3,
+    h4 {
+      @include m.typescale("title-large");
+      color: var(--_content);
+      margin-block-end: var(--m3-space-1);
+    }
+
+    p {
+      @include m.typescale("body-medium");
+      color: var(--md-sys-color-on-surface-variant);
+      margin-block: var(--m3-space-1);
+    }
+
+    img {
+      border-start-start-radius: inherit;
+      border-start-end-radius: inherit;
+    }
+  }
+}
+
+@mixin classes {
+  .#{c.$prefix}-card {
+    @include container;
+  }
+
+  .#{c.$prefix}-card--elevated {
+    @include elevated;
+  }
+
+  .#{c.$prefix}-card--filled {
+    @include filled;
+  }
+
+  .#{c.$prefix}-card--outlined {
+    @include outlined;
+  }
+
+  .#{c.$prefix}-card--interactive {
+    @include interactive;
+  }
+
+  @include parts;
+  @include internals;
+}

@@ -1,0 +1,52 @@
+// ============================================================================
+// m3x reset (layer: reset)
+// Minimal and modern: box-sizing, margin zeroing, media defaults, form font
+// inheritance, :focus-visible groundwork. Nothing opinionated.
+// ============================================================================
+
+@mixin styles {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  * {
+    margin: var(--m3-space-none);
+  }
+
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+    letter-spacing: inherit;
+  }
+
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    overflow-wrap: break-word;
+  }
+
+  // :focus-visible groundwork: default UA outlines are suppressed only for
+  // non-keyboard focus, and only where :focus-visible is supported, so no
+  // browser ever loses focus indication. Components always draw their own
+  // :focus-visible ring on top of this.
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+}

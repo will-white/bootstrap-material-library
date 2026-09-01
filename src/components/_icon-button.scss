@@ -1,0 +1,200 @@
+// ============================================================================
+// m3x icon button (standard | filled | tonal | outlined)
+//
+// PUBLIC VARIABLE API (tier-3 tokens, defined in the tokens layer)
+// ----------------------------------------------------------------------------
+//   --m3-icon-btn-size                        40px   square control size;
+//                                                    participates in density
+//   --m3-icon-btn-size-small                  32px   .m3-icon-btn--small
+//   --m3-icon-btn-shape                       corner-full
+//   --m3-icon-btn-icon-size                   icon-size (24px) child svg/img
+//   --m3-icon-btn-color                       on-surface-variant (standard)
+//   --m3-icon-btn-selected-color              primary (standard, selected)
+//   --m3-icon-btn-filled-container-color      primary
+//   --m3-icon-btn-filled-color                on-primary
+//   --m3-icon-btn-tonal-container-color       secondary-container
+//   --m3-icon-btn-tonal-color                 on-secondary-container
+//   --m3-icon-btn-outlined-color              on-surface-variant
+//   --m3-icon-btn-outline-width               1px (hairline token)
+//   --m3-icon-btn-outline-color               outline
+//   --m3-icon-btn-outlined-selected-container-color  inverse-surface
+//   --m3-icon-btn-outlined-selected-color     inverse-on-surface
+//
+// Markup (toggle icon buttons carry aria-pressed; always aria-label):
+//   <button class="m3-icon-btn" aria-label="Favorite" aria-pressed="false">
+//     <svg viewBox="0 0 24 24">...</svg>
+//   </button>
+//   <button class="m3-icon-btn m3-icon-btn--tonal m3-icon-btn--small"
+//           aria-label="Edit">
+//     <svg viewBox="0 0 24 24">...</svg>
+//   </button>
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+@mixin tokens {
+  --#{c.$prefix}-icon-btn-size: #{fn.rem(40)};
+  --#{c.$prefix}-icon-btn-size-small: #{fn.rem(32)};
+  --#{c.$prefix}-icon-btn-shape: var(--md-sys-shape-corner-full);
+  --#{c.$prefix}-icon-btn-icon-size: var(--m3-icon-size);
+  --#{c.$prefix}-icon-btn-color: var(--md-sys-color-on-surface-variant);
+  --#{c.$prefix}-icon-btn-selected-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-icon-btn-filled-container-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-icon-btn-filled-color: var(--md-sys-color-on-primary);
+  --#{c.$prefix}-icon-btn-tonal-container-color: var(--md-sys-color-secondary-container);
+  --#{c.$prefix}-icon-btn-tonal-color: var(--md-sys-color-on-secondary-container);
+  --#{c.$prefix}-icon-btn-outlined-color: var(--md-sys-color-on-surface-variant);
+  --#{c.$prefix}-icon-btn-outline-width: var(--m3-stroke-hairline);
+  --#{c.$prefix}-icon-btn-outline-color: var(--md-sys-color-outline);
+  --#{c.$prefix}-icon-btn-outlined-selected-container-color: var(--md-sys-color-inverse-surface);
+  --#{c.$prefix}-icon-btn-outlined-selected-color: var(--md-sys-color-inverse-on-surface);
+}
+
+// Square structure + state machinery shared by every variant (and by the
+// Bootstrap re-skin of .btn-close / .navbar-toggler). The default look with
+// no variant class is the standard icon button, so base also carries the
+// standard selected + disabled treatments; variants re-point the tier-4
+// private variables and override the disabled treatment where needed.
+@mixin base {
+  --_container: transparent;
+  --_content: var(--#{c.$prefix}-icon-btn-color);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  @include m.control-height(--#{c.$prefix}-icon-btn-size);
+  // Width mirrors the density-adjusted height so the control stays square.
+  inline-size: calc(
+    var(--#{c.$prefix}-icon-btn-size) + var(--m3-density) * var(--m3-density-step)
+  );
+  padding: var(--m3-space-none);
+  border: none;
+  border-radius: var(--#{c.$prefix}-icon-btn-shape);
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  vertical-align: middle;
+  -webkit-tap-highlight-color: transparent;
+  @include m.state-layer;
+  @include m.focus-ring;
+  @include m.touch-target;
+  @include m.transition((background-color, color));
+  @include m.forced-colors-border;
+
+  > svg,
+  > img {
+    inline-size: var(--#{c.$prefix}-icon-btn-icon-size);
+    block-size: var(--#{c.$prefix}-icon-btn-icon-size);
+  }
+
+  &[aria-pressed="true"] {
+    --_content: var(--#{c.$prefix}-icon-btn-selected-color);
+  }
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled-bare;
+  }
+}
+
+// Standard (no container): also usable standalone by the compat layer.
+@mixin standard {
+  --_container: transparent;
+  --_content: var(--#{c.$prefix}-icon-btn-color);
+
+  &[aria-pressed="true"] {
+    --_content: var(--#{c.$prefix}-icon-btn-selected-color);
+  }
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled-bare;
+  }
+}
+
+@mixin filled {
+  --_container: var(--#{c.$prefix}-icon-btn-filled-container-color);
+  --_content: var(--#{c.$prefix}-icon-btn-filled-color);
+
+  // Re-assert content so base's standard selected color cannot win by
+  // specificity on toggle (aria-pressed) filled icon buttons.
+  &[aria-pressed="true"] {
+    --_content: var(--#{c.$prefix}-icon-btn-filled-color);
+  }
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled;
+  }
+}
+
+@mixin tonal {
+  --_container: var(--#{c.$prefix}-icon-btn-tonal-container-color);
+  --_content: var(--#{c.$prefix}-icon-btn-tonal-color);
+
+  &[aria-pressed="true"] {
+    --_content: var(--#{c.$prefix}-icon-btn-tonal-color);
+  }
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled;
+  }
+}
+
+@mixin outlined {
+  --_container: transparent;
+  --_content: var(--#{c.$prefix}-icon-btn-outlined-color);
+  border: var(--#{c.$prefix}-icon-btn-outline-width) solid
+    var(--#{c.$prefix}-icon-btn-outline-color);
+
+  &[aria-pressed="true"] {
+    --_container: var(--#{c.$prefix}-icon-btn-outlined-selected-container-color);
+    --_content: var(--#{c.$prefix}-icon-btn-outlined-selected-color);
+    border-color: transparent;
+  }
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled-bare;
+    border-color: color-mix(
+      in srgb,
+      var(--md-sys-color-on-surface)
+        var(--md-sys-state-disabled-container-opacity),
+      transparent
+    );
+  }
+}
+
+@mixin small {
+  --#{c.$prefix}-icon-btn-icon-size: var(--m3-icon-size-small);
+  @include m.control-height(--#{c.$prefix}-icon-btn-size-small);
+  inline-size: calc(
+    var(--#{c.$prefix}-icon-btn-size-small) + var(--m3-density) * var(--m3-density-step)
+  );
+}
+
+@mixin classes {
+  .#{c.$prefix}-icon-btn {
+    @include base;
+  }
+
+  .#{c.$prefix}-icon-btn--filled {
+    @include filled;
+  }
+
+  .#{c.$prefix}-icon-btn--tonal {
+    @include tonal;
+  }
+
+  .#{c.$prefix}-icon-btn--outlined {
+    @include outlined;
+  }
+
+  .#{c.$prefix}-icon-btn--small {
+    @include small;
+  }
+}

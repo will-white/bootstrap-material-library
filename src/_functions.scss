@@ -1,0 +1,129 @@
+// ============================================================================
+// m3x functions
+// Build-time color engine: HCT approximated with OKLCH.
+// HCT tone == CIELAB L*, so tone T's OKLCH lightness is the "l" channel of
+// the achromatic Lab color at that tone. Computed exactly by Dart Sass.
+// ============================================================================
+
+@use "sass:color";
+@use "sass:list";
+@use "sass:map";
+@use "sass:math";
+@use "sass:meta";
+@use "sass:string";
+@use "config";
+
+// --- plumbing ---------------------------------------------------------------
+
+// Unquote helper: lets us emit plain-CSS syntax Sass should not evaluate
+// (relative color syntax, CSS min()/calc() with channel keywords).
+@function raw($str) {
+  @return string.unquote($str);
+}
+
+// px number -> rem, using the configured root font size.
+@function rem($px) {
+  @return math.div($px, config.$root-font-size) * 1rem;
+}
+
+// --- tone engine ------------------------------------------------------------
+
+// The 13 standard M3 tones.
+$standard-tones: (0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99, 100);
+
+// Extra tones the scheme needs (surface roles) beyond the standard 13.
+$surface-tones: (4, 6, 12, 17, 22, 24, 87, 92, 94, 96, 98);
+
+// Union, sorted, used for the runtime --md-tone-*-l custom properties.
+$all-tones: (
+  0, 4, 6, 10, 12, 17, 20, 22, 24, 30, 40, 50, 60, 70, 80,
+  87, 90, 92, 94, 95, 96, 98, 99, 100
+);
+
+// okl(): tone -> OKLCH lightness (a Sass percentage).
+@function okl($t) {
+  $l: color.channel(color.to-space(lab($t 0 0), oklch), "lightness");
+  @if math.is-unitless($l) {
+    $l: $l * 100 * 1%;
+  }
+  @return $l;
+}
+
+// Largest chroma <= $c that keeps oklch(l c h) inside the sRGB gamut.
+@function cap-chroma($l, $c, $h) {
+  $cc: $c;
+  @while $cc > 0.001 and not color.is-in-gamut(oklch($l $cc $h), $space: srgb) {
+    $cc: $cc - 0.004;
+  }
+  @if not color.is-in-gamut(oklch($l $cc $h), $space: srgb) {
+    $cc: 0;
+  }
+  @return $cc;
+}
+
+// tone(): one palette step as a Sass OKLCH color, gamut-capped per tone.
+@function tone($hue, $chroma, $t) {
+  $l: okl($t);
+  $cc: cap-chroma($l, $chroma, $hue);
+  @return oklch($l $cc $hue);
+}
+
+// palette(): map of tone -> OKLCH color.
+@function palette($hue, $chroma, $tones: $standard-tones) {
+  $out: ();
+  @each $t in $tones {
+    $out: map.set($out, $t, tone($hue, $chroma, $t));
+  }
+  @return $out;
+}
+
+// --- serialization ----------------------------------------------------------
+
+@function -hex-digit($n) {
+  $digits: "0123456789abcdef";
+  @return string.slice($digits, $n + 1, $n + 1);
+}
+
+@function -hex-byte($n) {
+  $n: math.clamp(0, math.round($n), 255);
+  $hi: math.floor(math.div($n, 16));
+  $lo: $n - $hi * 16;
+  @return -hex-digit($hi) + -hex-digit($lo);
+}
+
+// Static sRGB hex fallback for any Sass color (gamut is pre-capped).
+@function hex($c) {
+  $rgb: color.to-space($c, rgb);
+  $r: math.div(color.channel($rgb, "red"), 1);
+  $g: math.div(color.channel($rgb, "green"), 1);
+  $b: math.div(color.channel($rgb, "blue"), 1);
+  @return raw("#" + -hex-byte($r) + -hex-byte($g) + -hex-byte($b));
+}
+
+// "R, G, B" triplet string for the --bs-*-rgb compatibility variables.
+@function rgb-triplet($c) {
+  $rgb: color.to-space($c, rgb);
+  $r: math.clamp(0, math.round(color.channel($rgb, "red")), 255);
+  $g: math.clamp(0, math.round(color.channel($rgb, "green")), 255);
+  $b: math.clamp(0, math.round(color.channel($rgb, "blue")), 255);
+  @return raw("#{$r}, #{$g}, #{$b}");
+}
+
+// OKLCH literal with tidy precision, e.g. "oklch(48.28% 0.13 293.71deg)".
+@function oklch-str($c) {
+  $ok: color.to-space($c, oklch);
+  $l: math.div(math.round(color.channel($ok, "lightness") * 100), 100);
+  $ch: math.div(math.round(color.channel($ok, "chroma") * 10000), 10000);
+  $h: color.channel($ok, "hue");
+  @if meta.type-of($h) != "number" or $ch == 0 {
+    $h: 0deg;
+  }
+  $h: math.div(math.round(math.div($h, 1deg) * 100), 100);
+  @return raw("oklch(#{$l} #{$ch} #{$h}deg)");
+}
+
+// Tidy percentage for the --md-tone-*-l custom properties.
+@function tone-l-str($t) {
+  $l: okl($t);
+  @return math.div(math.round(math.div($l, 1%) * 1000), 1000) * 1%;
+}

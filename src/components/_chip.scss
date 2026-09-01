@@ -1,0 +1,257 @@
+// ============================================================================
+// m3x chip (assist | filter | input | suggestion)
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-chip-height                    32px   control height; participates in
+//                                              density: calc(h + density*4px)
+//   --m3-chip-shape                     corner-small
+//   --m3-chip-outline-color             outline
+//   --m3-chip-label-color               on-surface
+//   --m3-chip-selected-container-color  secondary-container (checked filter/input)
+//   --m3-chip-selected-label-color      on-secondary-container
+//   --m3-chip-elevated-container-color  surface-container-low (--elevated)
+//   --m3-chip-icon-size                 18px (icon-size-small token)
+//
+// Markup:
+//   <button class="m3-chip m3-chip--assist">Assist</button>
+//   <button class="m3-chip m3-chip--suggestion">Suggestion</button>
+//
+//   Filter and input chips ride a real checkbox (zero JS):
+//   <label class="m3-chip m3-chip--filter">
+//     <input class="m3-chip__input" type="checkbox">
+//     <span class="m3-chip__label">Filter</span>
+//   </label>
+//
+//   <label class="m3-chip m3-chip--input">
+//     <input class="m3-chip__input" type="checkbox">
+//     <span class="m3-chip__label">Input</span>
+//     <button class="m3-chip__remove" type="button" aria-label="Remove"></button>
+//   </label>
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+@mixin tokens {
+  --#{c.$prefix}-chip-height: #{fn.rem(32)};
+  --#{c.$prefix}-chip-shape: var(--md-sys-shape-corner-small);
+  --#{c.$prefix}-chip-outline-color: var(--md-sys-color-outline);
+  --#{c.$prefix}-chip-label-color: var(--md-sys-color-on-surface);
+  --#{c.$prefix}-chip-selected-container-color: var(--md-sys-color-secondary-container);
+  --#{c.$prefix}-chip-selected-label-color: var(--md-sys-color-on-secondary-container);
+  --#{c.$prefix}-chip-elevated-container-color: var(--md-sys-color-surface-container-low);
+  --#{c.$prefix}-chip-icon-size: var(--m3-icon-size-small);
+}
+
+// Shared shell: outline, shape, height, typography. Variants add the state
+// machinery (on the root for button chips, on the label for checkbox chips).
+@mixin base {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--m3-space-2);
+  @include m.control-height(--#{c.$prefix}-chip-height);
+  border-radius: var(--#{c.$prefix}-chip-shape);
+  border: var(--m3-stroke-hairline) solid var(--#{c.$prefix}-chip-outline-color);
+  padding-inline: var(--m3-space-3);
+  background-color: transparent;
+  cursor: pointer;
+  @include m.typescale("label-large");
+}
+
+// Assist chip: a plain <button>; the root carries the state layer.
+@mixin assist {
+  --_container: transparent;
+  --_content: var(--#{c.$prefix}-chip-label-color);
+  @include m.state-layer;
+  @include m.focus-ring;
+  @include m.transition((background-color, color));
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled-bare;
+    border-color: color-mix(
+      in srgb,
+      var(--md-sys-color-on-surface)
+        var(--md-sys-state-disabled-container-opacity),
+      transparent
+    );
+  }
+}
+
+// Suggestion chip: visually identical machinery to assist.
+@mixin suggestion {
+  @include assist;
+}
+
+// Filter chip: the label root keeps only border + shape; a hidden real
+// checkbox drives every state through sibling selectors; the span fills the
+// chip and carries the state background.
+@mixin filter {
+  padding-inline: var(--m3-space-none);
+  @include m.focus-ring-within(".#{c.$prefix}-chip__input");
+
+  .#{c.$prefix}-chip__input {
+    @include m.hidden-control;
+  }
+
+  .#{c.$prefix}-chip__label {
+    --_container: transparent;
+    --_content: var(--#{c.$prefix}-chip-label-color);
+    --_state-color: var(--_content);
+    --_state-opacity: var(--md-sys-state-none);
+
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--m3-space-2);
+    padding-inline: var(--m3-space-3);
+    border-radius: inherit;
+    block-size: 100%;
+    color: var(--_content);
+    background-color: color-mix(
+      in srgb,
+      var(--_state-color) var(--_state-opacity),
+      var(--_container)
+    );
+    @include m.transition((background-color, color));
+
+    // CSS-drawn leading checkmark, revealed when checked.
+    &::before {
+      content: "";
+      display: none;
+      @include m.check-icon(
+        calc(var(--#{c.$prefix}-chip-icon-size) / 2),
+        calc(var(--#{c.$prefix}-chip-icon-size) / 4),
+        var(--m3-stroke-thick)
+      );
+    }
+  }
+
+  .#{c.$prefix}-chip__input:hover + .#{c.$prefix}-chip__label {
+    --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
+  }
+
+  .#{c.$prefix}-chip__input:focus-visible + .#{c.$prefix}-chip__label {
+    --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
+  }
+
+  .#{c.$prefix}-chip__input:active + .#{c.$prefix}-chip__label {
+    --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+  }
+
+  .#{c.$prefix}-chip__input:checked + .#{c.$prefix}-chip__label {
+    --_container: var(--#{c.$prefix}-chip-selected-container-color);
+    --_content: var(--#{c.$prefix}-chip-selected-label-color);
+
+    &::before {
+      display: inline-block;
+    }
+  }
+
+  .#{c.$prefix}-chip__input:disabled + .#{c.$prefix}-chip__label {
+    --_content: color-mix(
+      in srgb,
+      var(--md-sys-color-on-surface)
+        var(--md-sys-state-disabled-content-opacity),
+      transparent
+    );
+    --_state-opacity: var(--md-sys-state-none);
+  }
+
+  // Enhancement only: browsers without :has() keep the outline when checked.
+  &:has(.#{c.$prefix}-chip__input:checked) {
+    border-color: transparent;
+  }
+}
+
+// Input chip: filter machinery plus room for the trailing remove button
+// (which inherits the chip's label color from the root).
+@mixin input-chip {
+  @include filter;
+  color: var(--#{c.$prefix}-chip-label-color);
+  padding-inline-end: var(--m3-space-2);
+
+  .#{c.$prefix}-chip__label {
+    padding-inline-end: var(--m3-space-none);
+  }
+
+  // Enhancement only: tint the remove icon with the selected label color.
+  &:has(.#{c.$prefix}-chip__input:checked) {
+    color: var(--#{c.$prefix}-chip-selected-label-color);
+  }
+}
+
+// Remove affordance: a real <button> after the span. position: relative lifts
+// it above the absolutely positioned hidden checkbox so it stays clickable.
+@mixin remove {
+  position: relative;
+  inline-size: var(--#{c.$prefix}-chip-icon-size);
+  block-size: var(--#{c.$prefix}-chip-icon-size);
+  border: none;
+  border-radius: var(--md-sys-shape-corner-full);
+  padding: var(--m3-space-none);
+  background-color: transparent;
+  color: inherit;
+  cursor: pointer;
+  @include m.cross-icon(
+    calc(var(--#{c.$prefix}-chip-icon-size) - var(--m3-space-1)),
+    var(--m3-stroke-thick)
+  );
+  @include m.focus-ring;
+
+  &:hover {
+    background-color: color-mix(
+      in srgb,
+      currentColor var(--md-sys-state-hover-state-layer-opacity),
+      transparent
+    );
+  }
+}
+
+// Elevated modifier: drops the outline for a filled, raised container. Only
+// re-points --_container so every variant's state compositing keeps working;
+// emitted after the variants so it wins the custom-property cascade.
+@mixin elevated {
+  --_container: var(--#{c.$prefix}-chip-elevated-container-color);
+  border: none;
+  @include m.elevation(1);
+
+  .#{c.$prefix}-chip__label {
+    --_container: var(--#{c.$prefix}-chip-elevated-container-color);
+  }
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-chip {
+    @include base;
+  }
+
+  .#{$p}-chip--assist {
+    @include assist;
+  }
+
+  .#{$p}-chip--suggestion {
+    @include suggestion;
+  }
+
+  .#{$p}-chip--filter {
+    @include filter;
+  }
+
+  .#{$p}-chip--input {
+    @include input-chip;
+  }
+
+  .#{$p}-chip__remove {
+    @include remove;
+  }
+
+  .#{$p}-chip--elevated {
+    @include elevated;
+  }
+}

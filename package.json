@@ -1,0 +1,21 @@
+{
+  "name": "m3x",
+  "version": "1.0.0",
+  "description": "Material 3 (Material You) design system on modern CSS primitives, with a complete Bootstrap 5.3 interop surface. Zero runtime JavaScript.",
+  "license": "MIT",
+  "author": "claude@willwhite.dev",
+  "style": "dist/m3x.css",
+  "sass": "src/index.scss",
+  "files": [
+    "src",
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "sass src/index.scss dist/m3x.css --style=expanded --source-map && sass src/index.scss dist/m3x.min.css --style=compressed --source-map",
+    "watch": "sass --watch src/index.scss dist/m3x.css --style=expanded --source-map"
+  },
+  "devDependencies": {
+    "sass": "^1.79.0"
+  }
+}

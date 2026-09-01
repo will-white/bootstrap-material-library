@@ -1,0 +1,1705 @@
+// ============================================================================
+// m3x Bootstrap component re-skin (section 9b, layer: bootstrap-compat)
+// Every Bootstrap 5.3 component's markup renders in M3 visuals, emitted from
+// the SAME mixins as the .m3-* classes -- aliasing, never duplication. This
+// file consists of mixin includes, token re-points, and the structural CSS
+// Bootstrap's state-class contract requires (.show/.fade/.collapsing/...).
+// Where a Bootstrap component has no M3 equivalent (breadcrumb, pagination,
+// placeholders, accordion, tables), it is styled natively from system tokens.
+//
+// Honors $bootstrap-reskin-scope: when set, everything here is wrapped in
+// @scope (<selector>) so legacy pages migrate region by region.
+// ============================================================================
+
+@use "sass:list";
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+@use "../components/button";
+@use "../components/icon-button";
+@use "../components/badge";
+@use "../components/progress";
+@use "../components/snackbar";
+@use "../components/tooltip";
+@use "../components/card";
+@use "../components/carousel";
+@use "../components/dialog";
+@use "../components/list" as list-component;
+@use "../components/sheet";
+@use "../components/tabs";
+@use "../components/top-app-bar";
+@use "../components/checkbox";
+@use "../components/radio";
+@use "../components/switch";
+@use "../components/menu";
+@use "../components/slider";
+@use "../components/text-field" as field;
+@use "../components/select";
+
+// Theme-color loops: name -> (color, on-color, container, on-container).
+$-themes: (
+  "primary": (
+    --md-sys-color-primary,
+    --md-sys-color-on-primary,
+    --md-sys-color-primary-container,
+    --md-sys-color-on-primary-container,
+  ),
+  "secondary": (
+    --md-sys-color-secondary,
+    --md-sys-color-on-secondary,
+    --md-sys-color-secondary-container,
+    --md-sys-color-on-secondary-container,
+  ),
+  "success": (
+    --md-extended-color-success,
+    --md-extended-color-on-success,
+    --md-extended-color-success-container,
+    --md-extended-color-on-success-container,
+  ),
+  "danger": (
+    --md-sys-color-error,
+    --md-sys-color-on-error,
+    --md-sys-color-error-container,
+    --md-sys-color-on-error-container,
+  ),
+  "warning": (
+    --md-extended-color-warning,
+    --md-extended-color-on-warning,
+    --md-extended-color-warning-container,
+    --md-extended-color-on-warning-container,
+  ),
+  "info": (
+    --md-extended-color-info,
+    --md-extended-color-on-info,
+    --md-extended-color-info-container,
+    --md-extended-color-on-info-container,
+  ),
+  "light": (
+    --md-sys-color-surface-container-low,
+    --md-sys-color-on-surface,
+    --md-sys-color-surface-container-low,
+    --md-sys-color-on-surface,
+  ),
+  "dark": (
+    --md-sys-color-inverse-surface,
+    --md-sys-color-inverse-on-surface,
+    --md-sys-color-inverse-surface,
+    --md-sys-color-inverse-on-surface,
+  ),
+);
+
+// Bootstrap responsive-expand breakpoints (structural plumbing).
+$-breakpoints: (
+  "sm": 36rem,
+  "md": 48rem,
+  "lg": 62rem,
+  "xl": 75rem,
+  "xxl": 87.5rem,
+);
+
+@mixin reskin {
+  @if c.$bootstrap-reskin-scope {
+    @scope (#{c.$bootstrap-reskin-scope}) {
+      @include -rules;
+    }
+  } @else {
+    @include -rules;
+  }
+}
+
+// ----------------------------------------------------------------------------
+
+@mixin -navbar-expand {
+  flex-wrap: nowrap;
+
+  .navbar-nav {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .navbar-collapse {
+    display: flex;
+    flex-basis: auto;
+  }
+
+  .navbar-toggler {
+    display: none;
+  }
+}
+
+@mixin -rules {
+  // ==========================================================================
+  // Transition contract: .fade / .collapse / .collapsing (Bootstrap JS drives
+  // the class changes; timing re-mapped onto motion tokens).
+  // ==========================================================================
+  .fade {
+    @include m.transition((opacity), var(--md-sys-motion-duration-short3));
+
+    &:not(.show) {
+      opacity: var(--m3-opacity-hidden);
+    }
+  }
+
+  .collapse:not(.show) {
+    display: none;
+  }
+
+  .collapsing {
+    block-size: var(--m3-space-none);
+    overflow: hidden;
+    @include m.transition((height), var(--md-sys-motion-duration-medium2));
+
+    &.collapse-horizontal {
+      inline-size: var(--m3-space-none);
+      block-size: auto;
+      @include m.transition((width), var(--md-sys-motion-duration-medium2));
+    }
+  }
+
+  // ==========================================================================
+  // Buttons (.btn renders through the same mixins as .m3-btn)
+  // ==========================================================================
+  .btn {
+    @include button.base;
+  }
+
+  .btn-primary {
+    @include button.filled;
+  }
+
+  .btn-secondary {
+    @include button.tonal;
+  }
+
+  @each $name, $def in $-themes {
+    @if $name != "primary" and $name != "secondary" {
+      .btn-#{$name} {
+        @include button.filled;
+        --#{c.$prefix}-btn-container-color: var(#{list.nth($def, 1)});
+        --#{c.$prefix}-btn-label-color: var(#{list.nth($def, 2)});
+      }
+    }
+
+    .btn-outline-#{$name} {
+      @include button.outlined;
+      --#{c.$prefix}-btn-outlined-label-color: var(#{list.nth($def, 1)});
+      --#{c.$prefix}-btn-outlined-outline-color: var(#{list.nth($def, 1)});
+    }
+  }
+
+  .btn-link {
+    @include button.text-variant;
+  }
+
+  .btn-sm {
+    @include button.small;
+  }
+
+  .btn-lg {
+    @include button.large;
+  }
+
+  .btn.active,
+  .btn.show {
+    --_container: var(--#{c.$prefix}-btn-tonal-container-color);
+    --_content: var(--#{c.$prefix}-btn-tonal-label-color);
+  }
+
+  .btn-group,
+  .btn-group-vertical {
+    @include button.group(".btn");
+    position: relative;
+  }
+
+  .btn-group-vertical {
+    flex-direction: column;
+    align-items: stretch;
+
+    > .btn:not(:first-child) {
+      margin-inline-start: var(--m3-space-none);
+      margin-block-start: var(--m3-stroke-hairline);
+    }
+  }
+
+  .btn-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--m3-space-2);
+  }
+
+  // Hidden-input button contract (.btn-check + label.btn).
+  .btn-check {
+    position: absolute;
+    opacity: var(--m3-opacity-hidden);
+    pointer-events: none;
+  }
+
+  .btn-check:checked + .btn,
+  .btn-check:active + .btn {
+    --_container: var(--#{c.$prefix}-btn-tonal-container-color);
+    --_content: var(--#{c.$prefix}-btn-tonal-label-color);
+  }
+
+  .btn-check:focus-visible + .btn {
+    outline: var(--md-sys-state-focus-indicator-thickness) solid
+      var(--md-sys-color-secondary);
+    outline-offset: var(--md-sys-state-focus-indicator-offset);
+  }
+
+  .btn-check:disabled + .btn {
+    @include m.disabled;
+  }
+
+  // ==========================================================================
+  // Close button
+  // ==========================================================================
+  .btn-close {
+    @include icon-button.base;
+    @include icon-button.standard;
+    @include m.cross-icon(var(--m3-icon-size-small), var(--m3-stroke-thick));
+
+    &:disabled {
+      @include m.disabled-bare;
+    }
+  }
+
+  .btn-close-white {
+    --_content: var(--md-sys-color-inverse-on-surface);
+  }
+
+  // ==========================================================================
+  // Badges (+ the .text-bg-* pairing utilities badges rely on)
+  // ==========================================================================
+  .badge {
+    @include badge.numbered;
+  }
+
+  @each $name, $def in $-themes {
+    .text-bg-#{$name} {
+      --#{c.$prefix}-badge-container-color: var(#{list.nth($def, 1)});
+      --#{c.$prefix}-badge-label-color: var(#{list.nth($def, 2)});
+      background-color: var(#{list.nth($def, 1)});
+      color: var(#{list.nth($def, 2)});
+    }
+  }
+
+  // ==========================================================================
+  // Alerts (no M3 ancestor: styled natively from container roles)
+  // ==========================================================================
+  .alert {
+    position: relative;
+    padding: var(--m3-space-4);
+    margin-block-end: var(--m3-space-4);
+    border: var(--m3-stroke-hairline) solid transparent;
+    border-radius: var(--md-sys-shape-corner-medium);
+    @include m.typescale("body-medium");
+  }
+
+  @each $name, $def in $-themes {
+    .alert-#{$name} {
+      background-color: var(#{list.nth($def, 3)});
+      color: var(#{list.nth($def, 4)});
+      border-color: color-mix(
+        in srgb,
+        var(#{list.nth($def, 4)}) 25%,
+        var(#{list.nth($def, 3)})
+      );
+    }
+  }
+
+  .alert-heading {
+    color: inherit;
+    @include m.typescale("title-medium");
+  }
+
+  .alert-link {
+    color: inherit;
+    font-weight: var(--md-sys-typescale-label-large-weight);
+  }
+
+  .alert-dismissible {
+    padding-inline-end: var(--m3-space-8);
+
+    .btn-close {
+      position: absolute;
+      inset-block-start: var(--m3-space-2);
+      inset-inline-end: var(--m3-space-2);
+    }
+  }
+
+  // ==========================================================================
+  // Breadcrumb (no M3 ancestor)
+  // ==========================================================================
+  .breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--m3-space-2);
+    list-style: none;
+    padding: var(--m3-space-none);
+    margin-block: var(--m3-space-2);
+    @include m.typescale("label-large");
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .breadcrumb-item {
+    display: flex;
+    gap: var(--m3-space-2);
+
+    // Single-level var() fallback (not a nested pyramid): Bootstrap's public
+    // contract lets consumers change the divider via --bs-breadcrumb-divider.
+    + .breadcrumb-item::before {
+      content: var(--bs-breadcrumb-divider, "/");
+      color: var(--md-sys-color-outline);
+    }
+
+    &.active {
+      color: var(--md-sys-color-on-surface);
+    }
+  }
+
+  // ==========================================================================
+  // Cards
+  // ==========================================================================
+  .card {
+    @include card.container;
+    @include card.outlined;
+  }
+
+  .card-body {
+    padding: var(--#{c.$prefix}-card-padding);
+    flex: 1 1 auto;
+  }
+
+  .card-title {
+    @include m.typescale("title-large");
+    margin-block-end: var(--m3-space-1);
+  }
+
+  .card-subtitle {
+    @include m.typescale("title-small");
+    color: var(--md-sys-color-on-surface-variant);
+    margin-block-end: var(--m3-space-2);
+  }
+
+  .card-text {
+    @include m.typescale("body-medium");
+    color: var(--md-sys-color-on-surface-variant);
+
+    &:last-child {
+      margin-block-end: var(--m3-space-none);
+    }
+  }
+
+  .card-header {
+    padding: var(--m3-space-3) var(--#{c.$prefix}-card-padding);
+    background-color: var(--md-sys-color-surface-container-low);
+    border-block-end: var(--#{c.$prefix}-card-outline-width) solid
+      var(--#{c.$prefix}-card-outline-color);
+    @include m.typescale("title-medium");
+  }
+
+  .card-footer {
+    padding: var(--m3-space-3) var(--#{c.$prefix}-card-padding);
+    background-color: var(--md-sys-color-surface-container-low);
+    border-block-start: var(--#{c.$prefix}-card-outline-width) solid
+      var(--#{c.$prefix}-card-outline-color);
+  }
+
+  .card-img-top,
+  .card-img {
+    inline-size: 100%;
+    border-start-start-radius: inherit;
+    border-start-end-radius: inherit;
+  }
+
+  .card-img-bottom {
+    inline-size: 100%;
+    border-end-start-radius: inherit;
+    border-end-end-radius: inherit;
+  }
+
+  .card-link + .card-link {
+    margin-inline-start: var(--m3-space-3);
+  }
+
+  @include card.internals(".card", ".card-body");
+
+  // ==========================================================================
+  // Accordion (Bootstrap JS toggles .collapse/.collapsing; visuals here)
+  // ==========================================================================
+  .accordion {
+    border-radius: var(--md-sys-shape-corner-medium);
+  }
+
+  .accordion-item {
+    background-color: var(--md-sys-color-surface);
+    border: var(--m3-stroke-hairline) solid var(--md-sys-color-outline-variant);
+
+    &:not(:first-of-type) {
+      border-block-start: none;
+    }
+
+    &:first-of-type {
+      border-start-start-radius: var(--md-sys-shape-corner-medium);
+      border-start-end-radius: var(--md-sys-shape-corner-medium);
+      overflow: clip;
+    }
+
+    &:last-of-type {
+      border-end-start-radius: var(--md-sys-shape-corner-medium);
+      border-end-end-radius: var(--md-sys-shape-corner-medium);
+      overflow: clip;
+    }
+  }
+
+  .accordion-header {
+    margin: var(--m3-space-none);
+  }
+
+  .accordion-button {
+    --_container: transparent;
+    --_content: var(--md-sys-color-on-surface);
+
+    display: flex;
+    align-items: center;
+    gap: var(--m3-space-3);
+    inline-size: 100%;
+    padding: var(--m3-space-4);
+    border: none;
+    text-align: start;
+    cursor: pointer;
+    @include m.typescale("title-medium");
+    @include m.state-layer;
+    @include m.focus-ring;
+    @include m.transition((background-color, color));
+
+    &::after {
+      content: "";
+      flex: none;
+      margin-inline-start: auto;
+      @include m.chevron-icon;
+      @include m.transition((rotate), var(--md-sys-motion-duration-short4));
+    }
+
+    &:not(.collapsed) {
+      --_content: var(--md-sys-color-primary);
+
+      &::after {
+        rotate: 225deg;
+      }
+    }
+  }
+
+  .accordion-body {
+    padding: var(--m3-space-4);
+    padding-block-start: var(--m3-space-none);
+    @include m.typescale("body-medium");
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .accordion-flush {
+    border-radius: var(--md-sys-shape-corner-none);
+
+    .accordion-item {
+      border-inline: none;
+      border-radius: var(--md-sys-shape-corner-none);
+    }
+  }
+
+  // ==========================================================================
+  // List group (renders through the list component mixins)
+  // ==========================================================================
+  .list-group {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    margin-block: var(--m3-space-none);
+    padding-inline: var(--m3-space-none);
+    border-radius: var(--md-sys-shape-corner-medium);
+  }
+
+  .list-group-item {
+    @include list-component.item;
+    --_container: var(--#{c.$prefix}-list-container-color);
+    border: var(--m3-stroke-hairline) solid var(--md-sys-color-outline-variant);
+
+    + .list-group-item {
+      border-block-start: none;
+    }
+
+    &:first-child {
+      border-start-start-radius: inherit;
+      border-start-end-radius: inherit;
+    }
+
+    &:last-child {
+      border-end-start-radius: inherit;
+      border-end-end-radius: inherit;
+    }
+
+    &.disabled,
+    &:disabled {
+      @include m.disabled-bare;
+      --_container: var(--#{c.$prefix}-list-container-color);
+    }
+  }
+
+  .list-group-item-action {
+    @include list-component.item-interactive;
+    --_container: var(--#{c.$prefix}-list-container-color);
+  }
+
+  .list-group-item.active {
+    @include list-component.item-selected;
+    border-color: var(--md-sys-color-outline-variant);
+  }
+
+  .list-group-flush {
+    border-radius: var(--md-sys-shape-corner-none);
+
+    .list-group-item {
+      border-inline: none;
+      border-radius: var(--md-sys-shape-corner-none);
+    }
+  }
+
+  @each $name, $def in $-themes {
+    .list-group-item-#{$name} {
+      --_container: var(#{list.nth($def, 3)});
+      --_content: var(#{list.nth($def, 4)});
+      color: var(#{list.nth($def, 4)});
+    }
+  }
+
+  @include list-component.internals(".list-group-item", ".list-group-item__slot");
+
+  // ==========================================================================
+  // Dropdowns (Bootstrap JS positions the menu; visuals from menu mixins)
+  // ==========================================================================
+  .dropdown,
+  .dropdown-center,
+  .dropup,
+  .dropup-center,
+  .dropend,
+  .dropstart {
+    position: relative;
+  }
+
+  .dropdown-menu {
+    @include menu.surface;
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline-start: var(--m3-space-none);
+    z-index: var(--m3-z-overlay);
+    display: none;
+    margin-block-start: var(--m3-space-1);
+    list-style: none;
+
+    &.show {
+      display: block;
+    }
+  }
+
+  .dropdown-item {
+    @include menu.item;
+
+    &.active {
+      --_container: var(--md-sys-color-secondary-container);
+      --_content: var(--md-sys-color-on-secondary-container);
+    }
+  }
+
+  .dropdown-header {
+    @include menu.header;
+  }
+
+  .dropdown-item-text {
+    display: block;
+    padding-inline: var(--m3-space-3);
+    padding-block: var(--m3-space-2);
+    color: var(--md-sys-color-on-surface);
+    @include m.typescale("body-medium");
+  }
+
+  .dropdown-divider {
+    border: none;
+    border-block-start: var(--m3-stroke-hairline) solid
+      var(--md-sys-color-outline-variant);
+    margin-block: var(--m3-space-2);
+    overflow: hidden;
+  }
+
+  .dropdown-toggle::after {
+    content: "";
+    display: inline-block;
+    flex: none;
+    @include m.chevron-icon(calc(var(--m3-chevron-size) / 2 + var(--m3-stroke-thick)));
+    margin-inline-start: var(--m3-space-2);
+    translate: 0 -25%;
+  }
+
+  // ==========================================================================
+  // Navs / tabs / pills (render through the tabs mixins)
+  // ==========================================================================
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    margin-block: var(--m3-space-none);
+    padding-inline: var(--m3-space-none);
+  }
+
+  .nav-link {
+    display: block;
+    padding: var(--m3-space-2) var(--m3-space-4);
+    color: var(--#{c.$prefix}-tabs-label-color);
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    @include m.typescale("label-large");
+    @include m.focus-ring;
+    @include m.transition((color, background-color));
+
+    &:hover {
+      color: var(--md-sys-color-on-surface);
+    }
+
+    &.disabled,
+    &:disabled {
+      @include m.disabled-bare;
+    }
+  }
+
+  .nav-tabs {
+    @include tabs.bar;
+
+    .nav-link {
+      @include tabs.tab;
+    }
+
+    .nav-link.active,
+    .nav-item.show .nav-link {
+      @include tabs.tab-active;
+    }
+  }
+
+  .nav-pills {
+    gap: var(--m3-space-1);
+
+    .nav-link {
+      @include tabs.pill;
+    }
+
+    .nav-link.active,
+    .show > .nav-link {
+      @include tabs.pill-active;
+    }
+  }
+
+  .nav-fill > .nav-link,
+  .nav-fill .nav-item {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+
+  .nav-justified > .nav-link,
+  .nav-justified .nav-item {
+    flex: 1 1 0;
+    text-align: center;
+  }
+
+  .tab-content > .tab-pane {
+    display: none;
+  }
+
+  .tab-content > .active {
+    display: block;
+  }
+
+  // ==========================================================================
+  // Navbar (renders through the top app bar mixins)
+  // ==========================================================================
+  .navbar {
+    @include top-app-bar.bar;
+    block-size: auto;
+    @include m.control-min-height(--#{c.$prefix}-top-app-bar-height);
+    flex-wrap: wrap;
+    padding-inline: var(--m3-space-4);
+  }
+
+  .navbar-brand {
+    @include top-app-bar.title;
+    flex: none;
+    text-decoration: none;
+    color: var(--#{c.$prefix}-top-app-bar-content-color);
+  }
+
+  .navbar-nav {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    margin-block: var(--m3-space-none);
+    padding-inline: var(--m3-space-none);
+    gap: var(--m3-space-1);
+
+    .nav-link.active,
+    .nav-link.show {
+      color: var(--md-sys-color-on-surface);
+      font-weight: var(--md-sys-typescale-label-large-weight);
+    }
+  }
+
+  .navbar-text {
+    padding-block: var(--m3-space-2);
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .navbar-collapse {
+    flex-basis: 100%;
+    flex-grow: 1;
+    align-items: center;
+  }
+
+  .navbar-toggler {
+    @include icon-button.base;
+    @include icon-button.standard;
+  }
+
+  .navbar-toggler-icon {
+    display: block;
+    inline-size: var(--m3-icon-size);
+    block-size: var(--m3-icon-size);
+    background-image: repeating-linear-gradient(
+      to bottom,
+      currentColor,
+      currentColor var(--m3-stroke-thick),
+      transparent var(--m3-stroke-thick),
+      transparent calc(var(--m3-icon-size) / 3)
+    );
+    background-position: center;
+    background-size: calc(var(--m3-icon-size) - var(--m3-space-1))
+      calc(var(--m3-icon-size) - var(--m3-space-1) - var(--m3-stroke-thick));
+    background-repeat: no-repeat;
+  }
+
+  .navbar-expand {
+    @include -navbar-expand;
+  }
+
+  @each $bp, $width in $-breakpoints {
+    @media (min-width: #{$width}) {
+      .navbar-expand-#{$bp} {
+        @include -navbar-expand;
+      }
+    }
+  }
+
+  // ==========================================================================
+  // Modal (Bootstrap JS drives .show; surface from the dialog mixins)
+  // ==========================================================================
+  .modal {
+    position: fixed;
+    inset: var(--m3-space-none);
+    z-index: var(--m3-z-overlay);
+    display: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+    outline: none;
+
+    &.show {
+      display: block;
+    }
+  }
+
+  .modal-dialog {
+    position: relative;
+    margin: var(--m3-space-4) auto;
+    max-inline-size: var(--bs-modal-width);
+    inline-size: calc(100% - var(--m3-space-4) * 2);
+    pointer-events: none;
+  }
+
+  .modal.fade .modal-dialog {
+    translate: 0 calc(-1 * var(--m3-space-4));
+    @include m.transition((translate), var(--md-sys-motion-duration-medium2),
+      var(--md-sys-motion-easing-emphasized-decelerate));
+  }
+
+  .modal.show .modal-dialog {
+    translate: 0 0;
+  }
+
+  .modal-dialog-centered {
+    display: flex;
+    align-items: center;
+    min-block-size: calc(100% - var(--m3-space-4) * 2);
+  }
+
+  .modal-dialog-scrollable {
+    block-size: calc(100% - var(--m3-space-4) * 2);
+
+    .modal-content {
+      max-block-size: 100%;
+      overflow: hidden;
+    }
+
+    .modal-body {
+      overflow-y: auto;
+    }
+  }
+
+  .modal-content {
+    @include dialog.container;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    inline-size: 100%;
+    padding: var(--m3-space-none);
+    pointer-events: auto;
+    outline: none;
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--m3-space-2);
+    padding: var(--#{c.$prefix}-dialog-padding);
+    padding-block-end: var(--m3-space-2);
+  }
+
+  .modal-title {
+    @include dialog.title;
+    margin-block-end: var(--m3-space-none);
+  }
+
+  .modal-body {
+    @include dialog.content;
+    flex: 1 1 auto;
+    padding: var(--m3-space-2) var(--#{c.$prefix}-dialog-padding);
+  }
+
+  .modal-footer {
+    @include dialog.actions;
+    margin-block-start: var(--m3-space-none);
+    padding: var(--#{c.$prefix}-dialog-padding);
+    padding-block-start: var(--m3-space-2);
+    flex-wrap: wrap;
+  }
+
+  .modal-backdrop {
+    position: fixed;
+    inset: var(--m3-space-none);
+    z-index: calc(var(--m3-z-overlay) - 1);
+    @include dialog.backdrop-fill;
+
+    &.fade {
+      opacity: var(--m3-opacity-hidden);
+    }
+
+    &.show {
+      opacity: var(--m3-opacity-full);
+    }
+  }
+
+  .modal-sm {
+    max-inline-size: var(--bs-modal-width-sm);
+  }
+
+  .modal-lg {
+    max-inline-size: var(--bs-modal-width-lg);
+  }
+
+  .modal-xl {
+    max-inline-size: var(--bs-modal-width-xl);
+  }
+
+  .modal-fullscreen {
+    inline-size: 100%;
+    max-inline-size: none;
+    block-size: 100%;
+    margin: var(--m3-space-none);
+
+    .modal-content {
+      block-size: 100%;
+      border-radius: var(--md-sys-shape-corner-none);
+    }
+  }
+
+  // ==========================================================================
+  // Offcanvas (renders through the sheet mixins; Bootstrap JS drives classes)
+  // ==========================================================================
+  .offcanvas {
+    @include sheet.container;
+    position: fixed;
+    z-index: var(--m3-z-overlay);
+    display: flex;
+    flex-direction: column;
+    max-inline-size: 100%;
+    visibility: hidden;
+    @include m.transition((translate, visibility),
+      var(--md-sys-motion-duration-medium2),
+      var(--md-sys-motion-easing-emphasized-decelerate));
+
+    &.showing,
+    &.show:not(.hiding) {
+      translate: 0 0;
+      visibility: visible;
+    }
+
+    &.showing,
+    &.hiding,
+    &.show {
+      visibility: visible;
+    }
+  }
+
+  .offcanvas-start {
+    inset-block: var(--m3-space-none);
+    inset-inline-start: var(--m3-space-none);
+    inline-size: var(--#{c.$prefix}-sheet-side-width);
+    translate: -100% 0;
+    border-start-end-radius: var(--md-sys-shape-corner-large);
+    border-end-end-radius: var(--md-sys-shape-corner-large);
+  }
+
+  .offcanvas-end {
+    inset-block: var(--m3-space-none);
+    inset-inline-end: var(--m3-space-none);
+    inline-size: var(--#{c.$prefix}-sheet-side-width);
+    translate: 100% 0;
+    border-start-start-radius: var(--md-sys-shape-corner-large);
+    border-end-start-radius: var(--md-sys-shape-corner-large);
+  }
+
+  .offcanvas-top {
+    inset-inline: var(--m3-space-none);
+    inset-block-start: var(--m3-space-none);
+    block-size: var(--bs-offcanvas-height);
+    translate: 0 -100%;
+    border-end-start-radius: var(--#{c.$prefix}-sheet-shape);
+    border-end-end-radius: var(--#{c.$prefix}-sheet-shape);
+  }
+
+  .offcanvas-bottom {
+    inset-inline: var(--m3-space-none);
+    inset-block-end: var(--m3-space-none);
+    block-size: var(--bs-offcanvas-height);
+    translate: 0 100%;
+    border-start-start-radius: var(--#{c.$prefix}-sheet-shape);
+    border-start-end-radius: var(--#{c.$prefix}-sheet-shape);
+  }
+
+  .offcanvas-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--m3-space-2);
+    padding: var(--m3-space-4);
+    padding-block-end: var(--m3-space-2);
+  }
+
+  .offcanvas-title {
+    @include m.typescale("title-large");
+    margin-block: var(--m3-space-none);
+  }
+
+  .offcanvas-body {
+    flex: 1 1 auto;
+    padding: var(--m3-space-4);
+    padding-block-start: var(--m3-space-2);
+    overflow-y: auto;
+  }
+
+  .offcanvas-backdrop {
+    position: fixed;
+    inset: var(--m3-space-none);
+    z-index: calc(var(--m3-z-overlay) - 1);
+    @include dialog.backdrop-fill;
+
+    &.fade {
+      opacity: var(--m3-opacity-hidden);
+    }
+
+    &.show {
+      opacity: var(--m3-opacity-full);
+    }
+  }
+
+  // ==========================================================================
+  // Pagination (no M3 ancestor: state-layered circular page links)
+  // ==========================================================================
+  .pagination {
+    display: flex;
+    list-style: none;
+    gap: var(--m3-space-1);
+    padding-inline: var(--m3-space-none);
+    margin-block: var(--m3-space-2);
+  }
+
+  .page-link {
+    --_container: transparent;
+    --_content: var(--md-sys-color-on-surface-variant);
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: var(--bs-pagination-size);
+    block-size: var(--bs-pagination-size);
+    padding-inline: var(--m3-space-2);
+    border: none;
+    border-radius: var(--md-sys-shape-corner-full);
+    text-decoration: none;
+    cursor: pointer;
+    @include m.typescale("label-large");
+    @include m.state-layer;
+    @include m.focus-ring;
+    @include m.transition((background-color, color));
+  }
+
+  .page-item.active .page-link {
+    --_container: var(--md-sys-color-primary);
+    --_content: var(--md-sys-color-on-primary);
+  }
+
+  .page-item.disabled .page-link {
+    @include m.disabled-bare;
+  }
+
+  // ==========================================================================
+  // Placeholders (skeletons; no M3 ancestor)
+  // ==========================================================================
+  .placeholder {
+    display: inline-block;
+    min-block-size: var(--md-sys-typescale-body-medium-size);
+    vertical-align: middle;
+    background-color: currentColor;
+    opacity: var(--md-sys-state-disabled-content-opacity);
+    border-radius: var(--md-sys-shape-corner-extra-small);
+    cursor: wait;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .placeholder-glow .placeholder {
+      animation: m3-bs-placeholder-glow
+        calc(var(--md-sys-motion-duration-extra-long4) * 2)
+        var(--md-sys-motion-easing-standard) infinite;
+    }
+
+    .placeholder-wave {
+      mask-image: linear-gradient(
+        130deg,
+        currentColor 55%,
+        color-mix(in srgb, currentColor 80%, transparent) 75%,
+        currentColor 95%
+      );
+      mask-size: 200% 100%;
+      animation: m3-bs-placeholder-wave
+        calc(var(--md-sys-motion-duration-extra-long4) * 2)
+        var(--md-sys-motion-easing-linear) infinite;
+    }
+  }
+
+  @keyframes m3-bs-placeholder-glow {
+    50% {
+      opacity: var(--md-sys-state-pressed-state-layer-opacity);
+    }
+  }
+
+  @keyframes m3-bs-placeholder-wave {
+    to {
+      mask-position: -200% 0%;
+    }
+  }
+
+  // ==========================================================================
+  // Tooltips + popovers (styling the elements Bootstrap JS injects)
+  // ==========================================================================
+  .tooltip {
+    z-index: var(--m3-z-tooltip);
+    opacity: var(--m3-opacity-hidden);
+    @include m.typescale("body-small");
+
+    &.show {
+      opacity: var(--m3-opacity-full);
+    }
+
+    .tooltip-arrow {
+      display: none;
+    }
+  }
+
+  .tooltip-inner {
+    @include tooltip.plain;
+  }
+
+  .popover {
+    @include tooltip.rich;
+    z-index: var(--m3-z-tooltip);
+
+    .popover-arrow {
+      display: none;
+    }
+  }
+
+  .popover-header {
+    @include tooltip.rich-title;
+  }
+
+  .popover-body {
+    @include m.typescale("body-medium");
+  }
+
+  // ==========================================================================
+  // Progress + spinners (render through the progress mixins)
+  // ==========================================================================
+  .progress {
+    @include progress.linear-track;
+    display: flex;
+  }
+
+  .progress-stacked {
+    display: flex;
+    block-size: var(--#{c.$prefix}-progress-thickness);
+    border-radius: var(--md-sys-shape-corner-full);
+    overflow: clip;
+
+    .progress {
+      overflow: visible;
+    }
+  }
+
+  .progress-bar {
+    @include progress.linear-bar;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    white-space: nowrap;
+    color: var(--md-sys-color-on-primary);
+    @include m.typescale("label-small");
+  }
+
+  .progress-bar-striped {
+    background-image: linear-gradient(
+      45deg,
+      color-mix(in srgb, var(--md-sys-color-on-primary) 15%, transparent) 25%,
+      transparent 25%,
+      transparent 50%,
+      color-mix(in srgb, var(--md-sys-color-on-primary) 15%, transparent) 50%,
+      color-mix(in srgb, var(--md-sys-color-on-primary) 15%, transparent) 75%,
+      transparent 75%
+    );
+    background-size: var(--m3-space-4) var(--m3-space-4);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .progress-bar-animated {
+      animation: m3-bs-progress-stripes
+        var(--md-sys-motion-duration-extra-long4)
+        var(--md-sys-motion-easing-linear) infinite;
+    }
+  }
+
+  @keyframes m3-bs-progress-stripes {
+    from {
+      background-position-x: var(--m3-space-4);
+    }
+  }
+
+  .spinner-border {
+    @include progress.spinner;
+    display: inline-block;
+  }
+
+  .spinner-border-sm {
+    --#{c.$prefix}-progress-circle-size: var(--m3-space-4);
+    --#{c.$prefix}-progress-circle-thickness: var(--m3-stroke-thick);
+  }
+
+  .spinner-grow {
+    @include progress.pulse;
+    display: inline-block;
+  }
+
+  .spinner-grow-sm {
+    --#{c.$prefix}-progress-circle-size: var(--m3-space-4);
+  }
+
+  // ==========================================================================
+  // Toasts (render through the snackbar mixins)
+  // ==========================================================================
+  .toast {
+    @include snackbar.container;
+    display: block;
+    inline-size: var(--bs-toast-width);
+    max-inline-size: 100%;
+    padding-inline: var(--m3-space-none);
+    pointer-events: auto;
+
+    &:not(.show) {
+      display: none;
+    }
+  }
+
+  .toast-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--m3-space-3);
+    max-inline-size: 100%;
+    pointer-events: none;
+    position: absolute;
+    z-index: var(--m3-z-snackbar);
+  }
+
+  .toast-header {
+    display: flex;
+    align-items: center;
+    gap: var(--m3-space-2);
+    padding: var(--m3-space-2) var(--m3-space-4);
+    border-block-end: var(--m3-stroke-hairline) solid
+      color-mix(
+        in srgb,
+        var(--#{c.$prefix}-snackbar-content-color) 20%,
+        transparent
+      );
+    @include m.typescale("title-small");
+
+    .btn-close {
+      margin-inline-start: auto;
+      --_content: var(--#{c.$prefix}-snackbar-content-color);
+    }
+  }
+
+  .toast-body {
+    @include snackbar.text;
+    padding-inline: var(--m3-space-4);
+  }
+
+  // ==========================================================================
+  // Tables (no M3 ancestor: styled natively from system tokens; striped and
+  // hover rows use the state-layer opacities)
+  // ==========================================================================
+  .table {
+    inline-size: 100%;
+    margin-block-end: var(--m3-space-4);
+    border-collapse: collapse;
+    color: var(--md-sys-color-on-surface);
+    border-color: var(--md-sys-color-outline-variant);
+    caption-side: bottom;
+    @include m.typescale("body-medium");
+
+    > :not(caption) > * > * {
+      padding: var(--m3-space-3) var(--m3-space-3);
+      border-block-end: var(--m3-stroke-hairline) solid
+        var(--md-sys-color-outline-variant);
+    }
+
+    > thead th {
+      @include m.typescale("label-large");
+      color: var(--md-sys-color-on-surface-variant);
+      text-align: start;
+    }
+
+    caption {
+      padding-block: var(--m3-space-2);
+      color: var(--md-sys-color-on-surface-variant);
+      text-align: start;
+    }
+  }
+
+  .table-sm > :not(caption) > * > * {
+    padding: var(--m3-space-1) var(--m3-space-2);
+  }
+
+  .table-bordered > :not(caption) > * > * {
+    border: var(--m3-stroke-hairline) solid var(--md-sys-color-outline-variant);
+  }
+
+  .table-borderless > :not(caption) > * > * {
+    border-block-end: none;
+  }
+
+  .table-group-divider {
+    border-block-start: var(--m3-stroke-thick) solid
+      var(--md-sys-color-outline-variant);
+  }
+
+  .table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: color-mix(
+      in srgb,
+      var(--md-sys-color-on-surface)
+        var(--md-sys-state-hover-state-layer-opacity),
+      transparent
+    );
+  }
+
+  .table-hover > tbody > tr:hover > * {
+    background-color: color-mix(
+      in srgb,
+      var(--md-sys-color-on-surface)
+        var(--md-sys-state-pressed-state-layer-opacity),
+      transparent
+    );
+  }
+
+  @each $name, $def in $-themes {
+    .table-#{$name} {
+      color: var(#{list.nth($def, 4)});
+
+      > :not(caption) > * > * {
+        background-color: var(#{list.nth($def, 3)});
+      }
+    }
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  // ==========================================================================
+  // Forms suite (renders through the field/checkbox/radio/switch/slider/
+  // select mixins; validation maps onto the exact :user-invalid treatment)
+  // ==========================================================================
+  .form-label {
+    display: block;
+    margin-block-end: var(--m3-space-1);
+    color: var(--md-sys-color-on-surface-variant);
+    @include m.typescale("label-large");
+  }
+
+  .form-text {
+    @include field.supporting;
+    padding-inline: var(--m3-space-none);
+  }
+
+  .form-control {
+    @include field.input-base;
+    @include field.input-filled;
+  }
+
+  textarea.form-control {
+    block-size: auto;
+    min-block-size: calc(
+      var(--#{c.$prefix}-field-height) + var(--m3-density) * var(--m3-density-step)
+    );
+    resize: vertical;
+  }
+
+  .form-control-plaintext {
+    @include field.input-base;
+    background-color: transparent;
+    border: none;
+    padding-inline: var(--m3-space-none);
+  }
+
+  .form-control-sm {
+    min-block-size: calc(
+      var(--#{c.$prefix}-field-height) + var(--m3-density) *
+        var(--m3-density-step) - var(--m3-space-2)
+    );
+  }
+
+  .form-control-lg {
+    min-block-size: calc(
+      var(--#{c.$prefix}-field-height) + var(--m3-density) *
+        var(--m3-density-step) + var(--m3-space-2)
+    );
+  }
+
+  .form-select {
+    @include select.control;
+  }
+
+  .form-check {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--m3-space-2);
+    margin-block: var(--m3-space-1);
+    min-block-size: var(--m3-space-5);
+  }
+
+  .form-check-label {
+    color: var(--md-sys-color-on-surface);
+    @include m.typescale("body-medium");
+    cursor: pointer;
+  }
+
+  .form-check-input[type="checkbox"] {
+    @include checkbox.control;
+  }
+
+  .form-check-input[type="radio"] {
+    @include radio.control;
+  }
+
+  .form-check-inline {
+    display: inline-flex;
+    margin-inline-end: var(--m3-space-4);
+  }
+
+  // The switch fully replaces the checkbox pseudo-element chrome, so it
+  // comes later in source order and resets the mark/touch pseudos.
+  .form-switch .form-check-input {
+    @include switch.control;
+
+    &::after {
+      border: none;
+      rotate: none;
+      visibility: visible;
+    }
+  }
+
+  .form-range {
+    @include slider.control;
+  }
+
+  .input-group {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    inline-size: 100%;
+
+    > .form-control,
+    > .form-select {
+      flex: 1 1 auto;
+      min-inline-size: var(--m3-space-none);
+    }
+
+    > :not(:first-child) {
+      border-start-start-radius: var(--md-sys-shape-corner-none);
+    }
+
+    > :not(:last-child) {
+      border-start-end-radius: var(--md-sys-shape-corner-none);
+    }
+  }
+
+  .input-group-text {
+    display: flex;
+    align-items: center;
+    padding-inline: var(--m3-space-4);
+    background-color: var(--#{c.$prefix}-field-container-color);
+    border-block-end: var(--#{c.$prefix}-field-indicator-width) solid
+      var(--#{c.$prefix}-field-indicator-color);
+    color: var(--md-sys-color-on-surface-variant);
+    @include m.typescale("body-large");
+    white-space: nowrap;
+  }
+
+  // Floating labels: Bootstrap's markup (input then label) matches the m3x
+  // field anatomy exactly, so the same label mixins drive it.
+  .form-floating {
+    position: relative;
+
+    > .form-control,
+    > .form-select {
+      padding-block-start: var(--m3-space-5);
+    }
+
+    > label {
+      @include field.label-resting;
+      z-index: var(--m3-z-raised);
+    }
+
+    > .form-control:focus + label {
+      @include field.label-float-filled;
+      @include field.label-focused;
+    }
+
+    > .form-control:not(:placeholder-shown) + label {
+      @include field.label-float-filled;
+    }
+
+    > .form-select + label {
+      @include field.label-float-filled;
+    }
+  }
+
+  // Validation: .is-invalid / .is-valid / .was-validated are wired INSIDE the
+  // field mixins (identical rendering to :user-invalid). Here: feedback text
+  // and check/radio/select coloring only. Selector lists never mix
+  // :user-invalid with class selectors (older-browser safety).
+  .invalid-feedback {
+    display: none;
+    @include field.supporting;
+    @include field.supporting-invalid;
+    padding-inline: var(--m3-space-none);
+  }
+
+  .valid-feedback {
+    display: none;
+    @include field.supporting;
+    @include field.supporting-valid;
+    padding-inline: var(--m3-space-none);
+  }
+
+  .is-invalid ~ .invalid-feedback {
+    display: block;
+  }
+
+  :user-invalid ~ .invalid-feedback {
+    display: block;
+  }
+
+  .was-validated :invalid ~ .invalid-feedback {
+    display: block;
+  }
+
+  .is-valid ~ .valid-feedback {
+    display: block;
+  }
+
+  .was-validated :valid ~ .valid-feedback {
+    display: block;
+  }
+
+  .form-check-input.is-invalid {
+    border-color: var(--#{c.$prefix}-field-error-color);
+  }
+
+  .was-validated .form-check-input:invalid {
+    border-color: var(--#{c.$prefix}-field-error-color);
+  }
+
+  .form-check-input.is-invalid ~ .form-check-label {
+    color: var(--#{c.$prefix}-field-error-color);
+  }
+
+  // ==========================================================================
+  // Carousel (Bootstrap JS drives the sliding; item shape + indicators come
+  // from the carousel component tokens/mixins)
+  // ==========================================================================
+  .carousel {
+    position: relative;
+  }
+
+  .carousel.pointer-event {
+    touch-action: pan-y;
+  }
+
+  .carousel-inner {
+    position: relative;
+    inline-size: 100%;
+    overflow: hidden;
+    border-radius: var(--#{c.$prefix}-carousel-shape);
+  }
+
+  .carousel-item {
+    position: relative;
+    display: none;
+    float: inline-start;
+    inline-size: 100%;
+    margin-inline-end: -100%;
+    backface-visibility: hidden;
+    @include m.transition((transform), var(--md-sys-motion-duration-long2),
+      var(--md-sys-motion-easing-emphasized));
+
+    > img {
+      inline-size: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .carousel-item.active,
+  .carousel-item-next,
+  .carousel-item-prev {
+    display: block;
+  }
+
+  .carousel-item-next:not(.carousel-item-start),
+  .active.carousel-item-end {
+    transform: translateX(100%);
+  }
+
+  .carousel-item-prev:not(.carousel-item-end),
+  .active.carousel-item-start {
+    transform: translateX(-100%);
+  }
+
+  .carousel-fade {
+    .carousel-item {
+      opacity: var(--m3-opacity-hidden);
+      transform: none;
+      @include m.transition((opacity), var(--md-sys-motion-duration-long2));
+    }
+
+    .carousel-item.active,
+    .carousel-item-next.carousel-item-start,
+    .carousel-item-prev.carousel-item-end {
+      opacity: var(--m3-opacity-full);
+    }
+  }
+
+  .carousel-control-prev,
+  .carousel-control-next {
+    position: absolute;
+    inset-block: var(--m3-space-none);
+    z-index: var(--m3-z-raised);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 15%;
+    border: none;
+    background-color: transparent;
+    color: var(--md-sys-color-inverse-on-surface);
+    cursor: pointer;
+    @include m.focus-ring;
+  }
+
+  .carousel-control-prev {
+    inset-inline-start: var(--m3-space-none);
+  }
+
+  .carousel-control-next {
+    inset-inline-end: var(--m3-space-none);
+  }
+
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    display: inline-block;
+    @include m.chevron-icon(var(--m3-chevron-size), var(--m3-stroke-heavy));
+  }
+
+  .carousel-control-prev-icon {
+    rotate: 135deg;
+  }
+
+  .carousel-control-next-icon {
+    rotate: -45deg;
+  }
+
+  .carousel-indicators {
+    position: absolute;
+    inset-inline: var(--m3-space-none);
+    inset-block-end: var(--m3-space-none);
+    z-index: var(--m3-z-raised);
+    display: flex;
+    justify-content: center;
+    gap: var(--m3-space-2);
+    margin-block-end: var(--m3-space-3);
+    list-style: none;
+    padding: var(--m3-space-none);
+
+    [data-bs-target] {
+      @include carousel.indicator;
+
+      &.active {
+        background-color: var(--#{c.$prefix}-carousel-indicator-active-color);
+      }
+    }
+  }
+
+  .carousel-caption {
+    position: absolute;
+    inset-inline: 15%;
+    inset-block-end: var(--m3-space-6);
+    padding: var(--m3-space-3) var(--m3-space-4);
+    background-color: var(--md-sys-color-inverse-surface);
+    color: var(--md-sys-color-inverse-on-surface);
+    border-radius: var(--md-sys-shape-corner-medium);
+    text-align: center;
+  }
+}

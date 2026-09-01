@@ -1,0 +1,50 @@
+// ============================================================================
+// m3x typescale tokens (--md-sys-typescale-*)
+// The official M3 grid, sizes and line-heights converted to rem at build
+// time. The font stack is never bundled or fetched: Roboto if present,
+// system-ui otherwise.
+// ============================================================================
+
+@use "sass:list";
+@use "../config";
+@use "../functions" as fn;
+
+// role -> (size px, line-height px, weight, tracking px)
+$scale: (
+  "display-large": (57, 64, 400, -0.25),
+  "display-medium": (45, 52, 400, 0),
+  "display-small": (36, 44, 400, 0),
+  "headline-large": (32, 40, 400, 0),
+  "headline-medium": (28, 36, 400, 0),
+  "headline-small": (24, 32, 400, 0),
+  "title-large": (22, 28, 400, 0),
+  "title-medium": (16, 24, 500, 0.15),
+  "title-small": (14, 20, 500, 0.1),
+  "body-large": (16, 24, 400, 0.5),
+  "body-medium": (14, 20, 400, 0.25),
+  "body-small": (12, 16, 400, 0.4),
+  "label-large": (14, 20, 500, 0.1),
+  "label-medium": (12, 16, 500, 0.5),
+  "label-small": (11, 16, 500, 0.5),
+);
+
+@mixin tokens {
+  --md-ref-typeface-plain: #{config.$font-family-plain};
+  --md-ref-typeface-brand: #{config.$font-family-brand};
+
+  @each $role, $def in $scale {
+    $size: list.nth($def, 1);
+    $line: list.nth($def, 2);
+    $weight: list.nth($def, 3);
+    $tracking: list.nth($def, 4);
+    --md-sys-typescale-#{$role}-font: var(--md-ref-typeface-plain);
+    --md-sys-typescale-#{$role}-size: #{fn.rem($size)};
+    --md-sys-typescale-#{$role}-line-height: #{fn.rem($line)};
+    --md-sys-typescale-#{$role}-weight: #{$weight};
+    @if $tracking == 0 {
+      --md-sys-typescale-#{$role}-tracking: normal;
+    } @else {
+      --md-sys-typescale-#{$role}-tracking: #{$tracking * 1px};
+    }
+  }
+}

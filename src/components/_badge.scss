@@ -1,0 +1,91 @@
+// ============================================================================
+// m3x badge (numbered | dot)
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-badge-container-color  error        badge background
+//   --m3-badge-label-color      on-error     numbered badge text
+//   --m3-badge-size             16px         numbered badge min size / height
+//   --m3-badge-dot-size         6px          dot badge diameter
+//   --m3-badge-shape            corner-full  pill / circle radius
+//
+// Markup:
+//   <span class="m3-badge-anchor">
+//     <button class="m3-icon-btn" aria-label="Inbox">...</button>
+//     <span class="m3-badge">3</span>
+//   </span>
+//   <span class="m3-badge-anchor">
+//     <button class="m3-icon-btn" aria-label="Alerts">...</button>
+//     <span class="m3-badge m3-badge--dot"></span>
+//   </span>
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+@mixin tokens {
+  --#{c.$prefix}-badge-container-color: var(--md-sys-color-error);
+  --#{c.$prefix}-badge-label-color: var(--md-sys-color-on-error);
+  --#{c.$prefix}-badge-size: #{fn.rem(16)};
+  --#{c.$prefix}-badge-dot-size: #{fn.rem(6)};
+  --#{c.$prefix}-badge-shape: var(--md-sys-shape-corner-full);
+}
+
+// Full numbered-badge structure. Non-interactive: no state layer, no density.
+@mixin base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: var(--#{c.$prefix}-badge-size);
+  block-size: var(--#{c.$prefix}-badge-size);
+  padding-inline: var(--m3-space-1);
+  border-radius: var(--#{c.$prefix}-badge-shape);
+  background-color: var(--#{c.$prefix}-badge-container-color);
+  color: var(--#{c.$prefix}-badge-label-color);
+  @include m.typescale("label-small");
+  line-height: 1;
+  white-space: nowrap;
+  @include m.forced-colors-border;
+}
+
+// Numbered badge; also included under Bootstrap's .badge by the compat
+// layer, so it carries the complete standalone rule set.
+@mixin numbered {
+  @include base;
+}
+
+// Small status dot: no label, fixed square footprint.
+@mixin dot {
+  min-inline-size: var(--#{c.$prefix}-badge-dot-size);
+  inline-size: var(--#{c.$prefix}-badge-dot-size);
+  block-size: var(--#{c.$prefix}-badge-dot-size);
+  padding-inline: var(--m3-space-none);
+}
+
+// Wrapper that pins a direct-child badge to the top trailing corner of the
+// wrapped control.
+@mixin anchor {
+  position: relative;
+  display: inline-flex;
+
+  > .#{c.$prefix}-badge {
+    position: absolute;
+    inset-block-start: var(--m3-space-none);
+    inset-inline-end: var(--m3-space-none);
+    translate: 50% -50%;
+  }
+}
+
+@mixin classes {
+  .#{c.$prefix}-badge {
+    @include base;
+  }
+
+  .#{c.$prefix}-badge--dot {
+    @include dot;
+  }
+
+  .#{c.$prefix}-badge-anchor {
+    @include anchor;
+  }
+}

@@ -1,0 +1,115 @@
+// ============================================================================
+// m3x radio -- M3 radio button drawn entirely on a real input.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-radio-size            20px               outer diameter (border box)
+//   --m3-radio-outline-color   on-surface-variant unselected ring color
+//   --m3-radio-selected-color  primary            selected ring + dot color
+//   --m3-radio-dot-size        10px               inner dot diameter
+//
+// Markup:
+//   <label>
+//     <input type="radio" class="m3-radio" name="plan" checked>
+//     Option one
+//   </label>
+//
+// Reused by the Bootstrap compat layer for .form-check-input[type="radio"].
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+@mixin tokens {
+  --#{c.$prefix}-radio-size: #{fn.rem(20)};
+  --#{c.$prefix}-radio-outline-color: var(--md-sys-color-on-surface-variant);
+  --#{c.$prefix}-radio-selected-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-radio-dot-size: #{fn.rem(10)};
+}
+
+// The whole control: ring on the input's own border, dot on ::after,
+// touch target + circular hover state layer on ::before.
+@mixin control {
+  // State-layer tint: outline color unselected, selected color when checked.
+  --_layer-color: var(--#{c.$prefix}-radio-outline-color);
+
+  appearance: none;
+  inline-size: var(--#{c.$prefix}-radio-size);
+  block-size: var(--#{c.$prefix}-radio-size);
+  border: var(--m3-stroke-thick) solid var(--#{c.$prefix}-radio-outline-color);
+  border-radius: var(--md-sys-shape-corner-full);
+  display: inline-grid;
+  place-content: center;
+  cursor: pointer;
+  flex: none;
+  @include m.focus-ring;
+  @include m.transition(border-color);
+  @include m.touch-target-before;
+
+  // The >= 48px hit area doubles as the circular hover state layer.
+  &::before {
+    border-radius: var(--md-sys-shape-corner-full);
+  }
+
+  &:hover::before {
+    background-color: color-mix(
+      in srgb,
+      var(--_layer-color) var(--md-sys-state-hover-state-layer-opacity),
+      transparent
+    );
+  }
+
+  // Selection dot, scaled in from the center when checked.
+  &::after {
+    content: "";
+    grid-area: 1 / 1;
+    inline-size: var(--#{c.$prefix}-radio-dot-size);
+    block-size: var(--#{c.$prefix}-radio-dot-size);
+    border-radius: var(--md-sys-shape-corner-full);
+    background-color: var(--#{c.$prefix}-radio-selected-color);
+    scale: 0;
+    @include m.transition(
+      scale,
+      var(--md-sys-motion-duration-short3),
+      var(--md-sys-motion-easing-emphasized-decelerate)
+    );
+  }
+
+  &:checked {
+    --_layer-color: var(--#{c.$prefix}-radio-selected-color);
+    border-color: var(--#{c.$prefix}-radio-selected-color);
+
+    &::after {
+      scale: 1;
+    }
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    border-color: color-mix(
+      in srgb,
+      var(--md-sys-color-on-surface)
+        var(--md-sys-state-disabled-content-opacity),
+      transparent
+    );
+
+    &::before {
+      content: none;
+    }
+
+    &::after {
+      background-color: color-mix(
+        in srgb,
+        var(--md-sys-color-on-surface)
+          var(--md-sys-state-disabled-content-opacity),
+        transparent
+      );
+    }
+  }
+}
+
+@mixin classes {
+  input[type="radio"].#{c.$prefix}-radio {
+    @include control;
+  }
+}

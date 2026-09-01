@@ -1,0 +1,86 @@
+// ============================================================================
+// m3x select -- a styled NATIVE <select> built on the text-field variants.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-select-chevron-size   6px      half-size of the CSS-drawn dropdown
+//                                       chevron (two gradient triangles)
+//   --m3-select-padding-end    space-7  inline-end padding reserving room for
+//                                       the chevron
+//
+// The select also consumes the full text-field API (--m3-field-*): height,
+// container, outline, focus, error and valid colors all retheme here too.
+//
+// RTL caveat: the chevron is positioned with background-position, which is
+// physical (calc(100% - ...) measures from the right edge in every writing
+// mode), so in RTL pages the chevron stays on the right while the reserved
+// padding-inline-end flips to the left. Override the background-position
+// (or --m3-select-padding-end) in an RTL-specific rule if the mirrored
+// chevron placement is required.
+//
+// Markup:
+//   <select class="m3-select">
+//     <option>Alpha</option>
+//     <option>Beta</option>
+//   </select>
+//   <select class="m3-select m3-select--filled">...</select>
+//
+// Reused by the Bootstrap compat layer for .form-select.
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "text-field" as field;
+
+@mixin tokens {
+  --#{c.$prefix}-select-chevron-size: #{fn.rem(6)};
+  --#{c.$prefix}-select-padding-end: var(--m3-space-7);
+}
+
+// Single-line select: outlined field look plus a CSS-drawn chevron made of
+// two right-triangle gradients in currentColor (no images, no fonts).
+@mixin control {
+  @include field.input-base;
+  @include field.input-outlined;
+  appearance: none;
+  cursor: pointer;
+  padding-inline-end: var(--#{c.$prefix}-select-padding-end);
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - var(--m3-space-5)) 50%,
+    calc(
+        100% - var(--m3-space-5) + var(--#{c.$prefix}-select-chevron-size)
+      )
+      50%;
+  background-size: var(--#{c.$prefix}-select-chevron-size)
+    var(--#{c.$prefix}-select-chevron-size);
+  background-repeat: no-repeat;
+
+  // List boxes: no chevron, natural height, breathing room around options.
+  &[multiple],
+  &[size]:not([size="1"]) {
+    block-size: auto;
+    padding-block: var(--m3-space-2);
+    background-image: none;
+    padding-inline-end: var(--m3-space-4);
+
+    option {
+      padding-block: var(--m3-space-1);
+    }
+  }
+}
+
+// Filled variant. input-filled only touches background-color (never the
+// background shorthand), so the chevron gradients from control survive.
+@mixin filled {
+  @include field.input-filled;
+}
+
+@mixin classes {
+  select.#{c.$prefix}-select {
+    @include control;
+  }
+
+  select.#{c.$prefix}-select--filled {
+    @include filled;
+  }
+}
