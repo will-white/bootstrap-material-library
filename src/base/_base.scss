@@ -21,40 +21,44 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  h1 {
+  // Element defaults target UNCLASSED elements (zero-specificity :where
+  // guard): the base layer is declared after bootstrap-compat, so bare
+  // element rules here would otherwise override compat class rules
+  // (a.btn, h5.card-title, ...) purely by layer order.
+  h1:where(:not([class])) {
     @include m.typescale("headline-large");
   }
-  h2 {
+  h2:where(:not([class])) {
     @include m.typescale("headline-medium");
   }
-  h3 {
+  h3:where(:not([class])) {
     @include m.typescale("headline-small");
   }
-  h4 {
+  h4:where(:not([class])) {
     @include m.typescale("title-large");
   }
-  h5 {
+  h5:where(:not([class])) {
     @include m.typescale("title-medium");
   }
-  h6 {
+  h6:where(:not([class])) {
     @include m.typescale("title-small");
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
+  h1:where(:not([class])),
+  h2:where(:not([class])),
+  h3:where(:not([class])),
+  h4:where(:not([class])),
+  h5:where(:not([class])),
+  h6:where(:not([class])) {
     color: var(--md-sys-color-on-surface);
     text-wrap: balance;
   }
 
-  p {
+  p:where(:not([class])) {
     margin-block: var(--m3-space-2);
   }
 
-  a {
+  a:where(:not([class])) {
     color: var(--md-sys-color-primary);
     text-decoration: underline;
     text-underline-offset: var(--m3-stroke-thick);
@@ -81,7 +85,7 @@
     color: var(--md-sys-color-on-primary);
   }
 
-  hr {
+  hr:where(:not([class])) {
     border: none;
     border-block-start: var(--m3-stroke-hairline) solid
       var(--md-sys-color-outline-variant);
@@ -104,6 +108,15 @@
     [role="button"] {
       forced-color-adjust: auto;
       border: var(--m3-stroke-hairline) solid ButtonBorder;
+    }
+
+    // Forced-colors strips box-shadow, which is the field focus indicator;
+    // restore a real outline so focus never disappears in WHCM.
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+      outline: var(--md-sys-state-focus-indicator-thickness) solid Highlight;
+      outline-offset: var(--md-sys-state-focus-indicator-offset);
     }
   }
 }

@@ -34,6 +34,9 @@
 
 // The whole control, applied to the real input (reused by the Bootstrap
 // compat layer for .form-check-input[type="checkbox"]).
+// Selection-control glyphs are fixed-size per the M3 spec and deliberately
+// do NOT participate in density; the >=48px touch target overlay keeps the
+// hit area constant regardless.
 @mixin control {
   appearance: none;
   inline-size: var(--#{c.$prefix}-checkbox-size);

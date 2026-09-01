@@ -100,6 +100,14 @@
   @return list.index(c.$components, $name) != null;
 }
 
+// The Bootstrap re-skin consumes every component's tier-3 tokens, so while
+// it is enabled the tokens of pruned components must still be emitted
+// (tokens are cheap; the pruned components' CLASS rules stay pruned).
+@function -tokens-on($name) {
+  @return -on($name) or
+    (c.$enable-bootstrap-compat and c.$enable-bootstrap-reskin);
+}
+
 // --- 1. layer order: the first statement of the compiled CSS ----------------
 @if c.$emit-layer-statement {
   @include order.statement;
@@ -133,94 +141,94 @@
     @include motion.tokens;
     @include state.tokens;
 
-    @if -on("button") {
+    @if -tokens-on("button") {
       @include button.tokens;
     }
-    @if -on("icon-button") {
+    @if -tokens-on("icon-button") {
       @include icon-button.tokens;
     }
-    @if -on("fab") {
+    @if -tokens-on("fab") {
       @include fab.tokens;
     }
-    @if -on("segmented-button") {
+    @if -tokens-on("segmented-button") {
       @include segmented-button.tokens;
     }
-    @if -on("badge") {
+    @if -tokens-on("badge") {
       @include badge.tokens;
     }
-    @if -on("progress") {
+    @if -tokens-on("progress") {
       @include progress.tokens;
     }
-    @if -on("snackbar") {
+    @if -tokens-on("snackbar") {
       @include snackbar.tokens;
     }
-    @if -on("tooltip") {
+    @if -tokens-on("tooltip") {
       @include tooltip.tokens;
     }
-    @if -on("card") {
+    @if -tokens-on("card") {
       @include card.tokens;
     }
-    @if -on("carousel") {
+    @if -tokens-on("carousel") {
       @include carousel.tokens;
     }
-    @if -on("dialog") {
+    @if -tokens-on("dialog") {
       @include dialog.tokens;
     }
-    @if -on("divider") {
+    @if -tokens-on("divider") {
       @include divider.tokens;
     }
-    @if -on("list") {
+    @if -tokens-on("list") {
       @include list-component.tokens;
     }
-    @if -on("sheet") {
+    @if -tokens-on("sheet") {
       @include sheet.tokens;
     }
-    @if -on("navigation-bar") {
+    @if -tokens-on("navigation-bar") {
       @include navigation-bar.tokens;
     }
-    @if -on("navigation-drawer") {
+    @if -tokens-on("navigation-drawer") {
       @include navigation-drawer.tokens;
     }
-    @if -on("navigation-rail") {
+    @if -tokens-on("navigation-rail") {
       @include navigation-rail.tokens;
     }
-    @if -on("tabs") {
+    @if -tokens-on("tabs") {
       @include tabs.tokens;
     }
-    @if -on("top-app-bar") {
+    @if -tokens-on("top-app-bar") {
       @include top-app-bar.tokens;
     }
-    @if -on("bottom-app-bar") {
+    @if -tokens-on("bottom-app-bar") {
       @include bottom-app-bar.tokens;
     }
-    @if -on("checkbox") {
+    @if -tokens-on("checkbox") {
       @include checkbox.tokens;
     }
-    @if -on("radio") {
+    @if -tokens-on("radio") {
       @include radio.tokens;
     }
-    @if -on("switch") {
+    @if -tokens-on("switch") {
       @include switch.tokens;
     }
-    @if -on("chip") {
+    @if -tokens-on("chip") {
       @include chip.tokens;
     }
-    @if -on("menu") {
+    @if -tokens-on("menu") {
       @include menu.tokens;
     }
-    @if -on("slider") {
+    @if -tokens-on("slider") {
       @include slider.tokens;
     }
-    @if -on("datetime") {
+    @if -tokens-on("datetime") {
       @include datetime.tokens;
     }
-    @if -on("text-field") {
+    @if -tokens-on("text-field") {
       @include text-field.tokens;
     }
-    @if -on("search") {
+    @if -tokens-on("search") {
       @include search.tokens;
     }
-    @if -on("select") {
+    @if -tokens-on("select") {
       @include select.tokens;
     }
   }
