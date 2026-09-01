@@ -1082,7 +1082,7 @@ $-breakpoints: (
 
   @media (prefers-reduced-motion: no-preference) {
     .placeholder-glow .placeholder {
-      animation: m3-bs-placeholder-glow
+      animation: #{c.$prefix}-bs-placeholder-glow
         calc(var(--md-sys-motion-duration-extra-long4) * 2)
         var(--md-sys-motion-easing-standard) infinite;
     }
@@ -1095,19 +1095,19 @@ $-breakpoints: (
         currentColor 95%
       );
       mask-size: 200% 100%;
-      animation: m3-bs-placeholder-wave
+      animation: #{c.$prefix}-bs-placeholder-wave
         calc(var(--md-sys-motion-duration-extra-long4) * 2)
         var(--md-sys-motion-easing-linear) infinite;
     }
   }
 
-  @keyframes m3-bs-placeholder-glow {
+  @keyframes #{c.$prefix}-bs-placeholder-glow {
     50% {
       opacity: var(--md-sys-state-pressed-state-layer-opacity);
     }
   }
 
-  @keyframes m3-bs-placeholder-wave {
+  @keyframes #{c.$prefix}-bs-placeholder-wave {
     to {
       mask-position: -200% 0%;
     }
@@ -1196,13 +1196,13 @@ $-breakpoints: (
 
   @media (prefers-reduced-motion: no-preference) {
     .progress-bar-animated {
-      animation: m3-bs-progress-stripes
+      animation: #{c.$prefix}-bs-progress-stripes
         var(--md-sys-motion-duration-extra-long4)
         var(--md-sys-motion-easing-linear) infinite;
     }
   }
 
-  @keyframes m3-bs-progress-stripes {
+  @keyframes #{c.$prefix}-bs-progress-stripes {
     from {
       background-position-x: var(--m3-space-4);
     }
@@ -1470,10 +1470,12 @@ $-breakpoints: (
 
     > :not(:first-child) {
       border-start-start-radius: var(--md-sys-shape-corner-none);
+      border-end-start-radius: var(--md-sys-shape-corner-none);
     }
 
     > :not(:last-child) {
       border-start-end-radius: var(--md-sys-shape-corner-none);
+      border-end-end-radius: var(--md-sys-shape-corner-none);
     }
   }
 
@@ -1558,6 +1560,14 @@ $-breakpoints: (
 
   .form-check-input.is-invalid {
     border-color: var(--#{c.$prefix}-field-error-color);
+  }
+
+  .form-check-input:user-invalid {
+    border-color: var(--#{c.$prefix}-field-error-color);
+  }
+
+  .form-check-input:user-invalid ~ .form-check-label {
+    color: var(--#{c.$prefix}-field-error-color);
   }
 
   .was-validated .form-check-input:invalid {

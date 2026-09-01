@@ -73,7 +73,10 @@ The **first statement** of the compiled CSS is exactly:
    full Bootstrap component re-skin. Compiled only when enabled. Sits **after**
    `bootstrap` so its definitions win.
 5. `base` -- element defaults: body typography, headings on the M3 typescale,
-   links, `::selection`, scrollbar color, `accent-color`.
+   links, `::selection`, scrollbar color, `accent-color`. Element rules
+   target *unclassed* elements (`h2:where(:not([class]))`, ...) at zero added
+   specificity, so class-carrying markup in the earlier `bootstrap-compat`
+   layer keeps control of its own typography and link styling.
 6. `components` -- the full M3 catalog.
 7. `utilities` -- typescale classes, color/surface/shape/elevation utilities,
    token-island context classes.
@@ -182,9 +185,11 @@ the tier structure).
 
 recolors every button inside `.brand-cta` -- **including `.btn` Bootstrap
 buttons** -- with no selector wars. Works per instance via `style=""`, per
-region via any ancestor, or globally via `:root`. Interactive control heights
-participate in density everywhere:
+region via any ancestor, or globally via `:root`. Every height-based
+interactive control participates in density:
 `height: calc(var(--m3-btn-height) + var(--m3-density) * 4px)`.
+(Selection-control glyphs -- checkbox, radio, switch, slider thumb -- are
+fixed-size per the M3 spec; their >=48px touch targets stay constant.)
 
 ### Button variable API (the canonical example)
 
@@ -429,6 +434,16 @@ npm i
 npm run build    # dist/m3x.css + dist/m3x.min.css with source maps
 npm run watch
 ```
+
+---
+
+## Notes on the built artifacts
+
+- `dist/m3x.css` (expanded) contains zero `rgba()`/`hsla()` anywhere. In
+  `dist/m3x.min.css`, Dart Sass's compressed mode re-serializes the
+  `transparent` keyword as `rgba(0,0,0,0)` in a handful of structural
+  declarations (tap-highlight, transparent backgrounds/borders); these are
+  never state layers or disabled treatments and render identically.
 
 ---
 

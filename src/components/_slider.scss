@@ -89,6 +89,9 @@
 // --- control ----------------------------------------------------------------
 
 // The whole slider, vendor rules included (reused by compat for .form-range).
+// Selection-control glyphs are fixed-size per the M3 spec and deliberately
+// do NOT participate in density; the >=48px touch target overlay keeps the
+// hit area constant regardless.
 @mixin control {
   -webkit-appearance: none;
   appearance: none;

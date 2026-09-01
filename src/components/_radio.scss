@@ -29,6 +29,9 @@
 
 // The whole control: ring on the input's own border, dot on ::after,
 // touch target + circular hover state layer on ::before.
+// Selection-control glyphs are fixed-size per the M3 spec and deliberately
+// do NOT participate in density; the >=48px touch target overlay keeps the
+// hit area constant regardless.
 @mixin control {
   // State-layer tint: outline color unselected, selected color when checked.
   --_layer-color: var(--#{c.$prefix}-radio-outline-color);

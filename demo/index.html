@@ -20,7 +20,7 @@
 <body>
 
 <header class="m3-top-app-bar m3-top-app-bar--sticky">
-  <span class="m3-top-app-bar__title">Aurora Mail &mdash; Settings</span>
+  <h1 class="m3-top-app-bar__title m3-title-large">Aurora Mail &mdash; Settings</h1>
   <label class="m3-body-medium" for="seed" style="display: inline-flex; align-items: center; gap: var(--m3-space-2);">
     Seed
     <input type="color" id="seed" value="#6750a4" style="inline-size: var(--m3-space-6); block-size: var(--m3-space-6); border: none; padding: 0; background: none; cursor: pointer;">
@@ -68,7 +68,7 @@
         <div class="m3-card m3-card--elevated">
           <img class="m3-card__media" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 140'%3E%3Crect width='400' height='140' fill='%236750a4'/%3E%3Ccircle cx='330' cy='30' r='60' fill='%23d0bcff' opacity='.6'/%3E%3Ccircle cx='60' cy='120' r='45' fill='%23efb8c8' opacity='.5'/%3E%3C/svg%3E" style="block-size: 8rem; object-fit: cover;">
           <div class="m3-card__slot">
-            <h2>Riley Chen</h2>
+            <h3>Riley Chen</h3>
             <p>riley@auroramail.app &middot; Free plan &middot; 4.2 GB of 15 GB used</p>
             <div class="m3-progress" role="progressbar" aria-label="Storage used" aria-valuenow="28" aria-valuemin="0" aria-valuemax="100" style="--m3-progress-value: 28;">
               <div class="m3-progress__bar"></div>
@@ -82,7 +82,7 @@
 
         <form class="m3-card m3-card--outlined" novalidate>
           <div class="m3-card__slot" style="display: grid; gap: var(--m3-space-4);">
-            <h2>Profile</h2>
+            <h3>Profile</h3>
             <label class="m3-field m3-field--filled">
               <input class="m3-field__input" type="text" placeholder=" " value="Riley Chen">
               <span class="m3-field__label">Display name</span>
@@ -185,7 +185,7 @@
         <div class="demo-pair">
           <div class="m3-card m3-card--outlined" style="--m3-density: -2;">
             <div class="m3-card__slot">
-              <h2>Compact density island</h2>
+              <h3>Compact density island</h3>
               <p>This card sets <code>--m3-density: -2</code>. Every control inside shrinks through the density formula.</p>
               <div class="demo-row">
                 <button class="m3-btn m3-btn--filled">Dense button</button>
@@ -222,10 +222,10 @@
 
           <div class="demo-row">
             <span class="m3-spinner" role="status" aria-label="Syncing"></span>
-            <div class="m3-progress-circle" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" style="--m3-progress-value: 65;"></div>
+            <div class="m3-progress-circle" role="progressbar" aria-label="Import progress" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" style="--m3-progress-value: 65;"></div>
             <span class="m3-tooltip-anchor">
-              <button class="m3-btn m3-btn--outlined">Sync now</button>
-              <span class="m3-tooltip" role="tooltip">Last synced 2 minutes ago</span>
+              <button class="m3-btn m3-btn--outlined" aria-describedby="sync-tip">Sync now</button>
+              <span class="m3-tooltip" role="tooltip" id="sync-tip">Last synced 2 minutes ago</span>
             </span>
           </div>
 
@@ -254,7 +254,7 @@
           </div>
 
           <dialog class="m3-dialog" open aria-labelledby="dlg-h">
-            <h2 class="m3-dialog__title" id="dlg-h">Empty trash?</h2>
+            <h3 class="m3-dialog__title" id="dlg-h">Empty trash?</h3>
             <div class="m3-dialog__content">
               <p>142 conversations will be deleted forever. This is the native <code>&lt;dialog&gt;</code> element, shown non-modally for the demo.</p>
             </div>
@@ -267,7 +267,7 @@
 
       </div>
 
-      <div class="m3-carousel" aria-label="Theme previews" style="margin-block-start: var(--m3-space-4);">
+      <div class="m3-carousel" role="group" aria-label="Theme previews" style="margin-block-start: var(--m3-space-4);">
         <div class="m3-carousel__item m3-bg-primary-container" style="min-block-size: 8rem; display: grid; place-content: center;">
           <span class="m3-title-large">Primary container</span>
         </div>
@@ -294,7 +294,7 @@
         </div>
         <div class="m3-card m3-card--filled" style="max-inline-size: 32rem;">
           <div class="m3-card__slot">
-            <h2>A normal card</h2>
+            <h3>A normal card</h3>
             <p>It reads the island's surface-container tokens by inheritance.</p>
             <div class="m3-island--tertiary" style="padding: var(--m3-space-4); border-radius: var(--md-sys-shape-corner-large);">
               <p class="m3-body-medium" style="margin: 0;">And a tertiary island nested inside the card inside the inverse hero. Proximity wins.</p>
@@ -340,14 +340,14 @@
           <small class="m3-label-medium">.card / .m3-card--outlined</small>
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Storage almost full</h5>
+              <h3 class="card-title">Storage almost full</h3>
               <p class="card-text">Free up space or upgrade to keep receiving mail.</p>
               <button class="btn btn-primary">Upgrade</button>
             </div>
           </div>
           <div class="m3-card m3-card--outlined">
             <div class="m3-card__slot">
-              <h2 class="m3-title-large">Storage almost full</h2>
+              <h3 class="m3-title-large">Storage almost full</h3>
               <p>Free up space or upgrade to keep receiving mail.</p>
               <button class="m3-btn m3-btn--filled">Upgrade</button>
             </div>
@@ -405,10 +405,10 @@
           </ul>
           <nav aria-label="Message pages">
             <ul class="pagination">
-              <li class="page-item disabled"><a class="page-link" aria-disabled="true">&lt;</a></li>
+              <li class="page-item disabled"><a class="page-link" aria-disabled="true" aria-label="Previous page">&lt;</a></li>
               <li class="page-item active"><a class="page-link" href="#interop">1</a></li>
               <li class="page-item"><a class="page-link" href="#interop">2</a></li>
-              <li class="page-item"><a class="page-link" href="#interop">&gt;</a></li>
+              <li class="page-item"><a class="page-link" href="#interop" aria-label="Next page">&gt;</a></li>
             </ul>
           </nav>
           <div class="progress" role="progressbar" aria-label="Import progress" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100">
@@ -438,7 +438,7 @@
           </div>
           <div style="position: relative; min-block-size: 12rem;">
             <ul class="dropdown-menu show" style="position: static; display: block;">
-              <li><h6 class="dropdown-header">Move to</h6></li>
+              <li><div class="dropdown-header">Move to</div></li>
               <li><button class="dropdown-item">Archive</button></li>
               <li><button class="dropdown-item active">Inbox</button></li>
               <li><hr class="dropdown-divider"></li>

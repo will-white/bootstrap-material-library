@@ -160,9 +160,11 @@ $extended-roles: (
   }
 
   // :where() keeps specificity at (0,1,0) so the tier 2 :root block, which
-  // comes later in source order, wins the tie in capable browsers.
+  // comes later in source order, wins the tie in capable browsers. The
+  // [data-bs-theme] exclusion mirrors the compat rgb-triplet guard so
+  // tier-1 browsers stay internally consistent under Bootstrap togglers.
   @media (prefers-color-scheme: dark) {
-    :root:where(:not([data-theme="light"])) {
+    :root:where(:not([data-theme="light"]):not([data-bs-theme="light"])) {
       @each $role, $def in $sys-roles {
         --md-sys-color-#{$role}: var(
           --md-ref-palette-#{list.nth($def, 1)}#{list.nth($def, 3)}

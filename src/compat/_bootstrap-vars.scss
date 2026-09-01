@@ -75,6 +75,20 @@ $-extra-triplets: (
   }
 }
 
+// Compat dimension tokens (a sanctioned token-definition site, like the
+// component `tokens` mixins): Bootstrap's own var names, so existing
+// per-instance overrides keep working.
+@mixin tokens {
+  --bs-modal-width: #{fn.rem(500)};
+  --bs-modal-width-sm: #{fn.rem(300)};
+  --bs-modal-width-lg: #{fn.rem(800)};
+  --bs-modal-width-xl: #{fn.rem(1140)};
+  --bs-offcanvas-height: #{fn.rem(320)};
+  --bs-toast-width: #{fn.rem(350)};
+  --bs-pagination-size: #{fn.rem(40)};
+  --bs-breadcrumb-divider: "/";
+}
+
 @mixin remap {
   :root {
     // Theme colors.
@@ -149,16 +163,7 @@ $-extra-triplets: (
       transparent
     );
 
-    // Component dimensions the re-skin consumes (Bootstrap's own var names,
-    // so existing per-instance overrides keep working).
-    --bs-modal-width: #{fn.rem(500)};
-    --bs-modal-width-sm: #{fn.rem(300)};
-    --bs-modal-width-lg: #{fn.rem(800)};
-    --bs-modal-width-xl: #{fn.rem(1140)};
-    --bs-offcanvas-height: #{fn.rem(320)};
-    --bs-toast-width: #{fn.rem(350)};
-    --bs-pagination-size: #{fn.rem(40)};
-    --bs-breadcrumb-divider: "/";
+    @include tokens;
   }
 
   // Light-scheme triplets.
