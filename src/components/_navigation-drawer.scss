@@ -1,0 +1,153 @@
+// ============================================================================
+// m3x navigation drawer (standard + modal), modal on native <dialog>.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-drawer-width                   360px  drawer inline size
+//   --m3-drawer-container-color         surface-container-low
+//   --m3-drawer-content-color           on-surface
+//   --m3-drawer-item-height             56px; participates in density
+//   --m3-drawer-item-color              on-surface-variant
+//   --m3-drawer-active-container-color  secondary-container
+//   --m3-drawer-active-color            on-secondary-container
+//   --m3-drawer-shape                   corner-large (modal trailing corners)
+//
+// Markup (standard, in the page flow):
+//   <aside class="m3-drawer">
+//     <h2 class="m3-drawer__headline">Mail</h2>
+//     <a class="m3-drawer__item active" href="#inbox">
+//       Inbox <span class="m3-drawer__badge">24</span>
+//     </a>
+//     <a class="m3-drawer__item" href="#sent">Sent</a>
+//   </aside>
+//
+// Markup (modal, opened with dialog.showModal() from the consumer's code):
+//   <dialog class="m3-drawer--modal"> ...same content... </dialog>
+//
+// Active item: .active or [aria-current="page"].
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+@mixin tokens {
+  --#{c.$prefix}-drawer-width: #{fn.rem(360)};
+  --#{c.$prefix}-drawer-container-color: var(--md-sys-color-surface-container-low);
+  --#{c.$prefix}-drawer-content-color: var(--md-sys-color-on-surface);
+  --#{c.$prefix}-drawer-item-height: #{fn.rem(56)};
+  --#{c.$prefix}-drawer-item-color: var(--md-sys-color-on-surface-variant);
+  --#{c.$prefix}-drawer-active-container-color: var(--md-sys-color-secondary-container);
+  --#{c.$prefix}-drawer-active-color: var(--md-sys-color-on-secondary-container);
+  --#{c.$prefix}-drawer-shape: var(--md-sys-shape-corner-large);
+}
+
+// The drawer surface, shared by standard and modal.
+@mixin container {
+  inline-size: var(--#{c.$prefix}-drawer-width);
+  max-inline-size: 80%;
+  block-size: 100%;
+  padding: var(--m3-space-3);
+  background-color: var(--#{c.$prefix}-drawer-container-color);
+  color: var(--#{c.$prefix}-drawer-content-color);
+  overflow-y: auto;
+}
+
+// Modal variant on native <dialog>: pinned to the inline-start edge, rounded
+// trailing corners, scrim backdrop, discrete slide-in via @starting-style.
+@mixin modal {
+  @include container;
+  margin: var(--m3-space-none);
+  margin-inline-end: auto;
+  block-size: 100%;
+  max-block-size: 100%;
+  border: none;
+  border-start-end-radius: var(--#{c.$prefix}-drawer-shape);
+  border-end-end-radius: var(--#{c.$prefix}-drawer-shape);
+  @include m.elevation(1);
+
+  &::backdrop {
+    background-color: color-mix(
+      in srgb,
+      var(--md-sys-color-scrim) var(--m3-opacity-scrim),
+      transparent
+    );
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    &[open] {
+      transition-property: translate, display, overlay;
+      transition-duration: var(--md-sys-motion-duration-medium2);
+      transition-timing-function: var(--md-sys-motion-easing-emphasized-decelerate);
+      transition-behavior: allow-discrete;
+      translate: 0 0;
+
+      @starting-style {
+        translate: -100% 0;
+      }
+    }
+  }
+}
+
+// One destination row (<a>). Full state system; the active row re-points
+// only the private container/content variables.
+@mixin item {
+  --_container: transparent;
+  --_content: var(--#{c.$prefix}-drawer-item-color);
+
+  display: flex;
+  align-items: center;
+  gap: var(--m3-space-3);
+  @include m.control-height(--#{c.$prefix}-drawer-item-height);
+  padding-inline: var(--m3-space-4);
+  border-radius: var(--md-sys-shape-corner-full);
+  text-decoration: none;
+  @include m.typescale("label-large");
+  @include m.state-layer;
+  @include m.focus-ring;
+  @include m.transition((background-color, color));
+
+  &.active,
+  &[aria-current="page"] {
+    --_container: var(--#{c.$prefix}-drawer-active-container-color);
+    --_content: var(--#{c.$prefix}-drawer-active-color);
+  }
+}
+
+// Section headline above a group of items.
+@mixin headline {
+  @include m.typescale("title-small");
+  color: var(--#{c.$prefix}-drawer-item-color);
+  padding-inline: var(--m3-space-4);
+  padding-block: var(--m3-space-3) var(--m3-space-2);
+}
+
+// Trailing badge (label-large count) inside an item.
+@mixin badge {
+  margin-inline-start: auto;
+  @include m.typescale("label-large");
+  color: var(--#{c.$prefix}-drawer-item-color);
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-drawer {
+    @include container;
+  }
+
+  .#{$p}-drawer--modal {
+    @include modal;
+  }
+
+  .#{$p}-drawer__item {
+    @include item;
+  }
+
+  .#{$p}-drawer__headline {
+    @include headline;
+  }
+
+  .#{$p}-drawer__badge {
+    @include badge;
+  }
+}

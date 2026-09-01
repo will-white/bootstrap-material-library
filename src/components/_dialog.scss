@@ -1,0 +1,162 @@
+// ============================================================================
+// m3x dialog (basic + full-screen), on native <dialog>.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-dialog-container-color  surface-container-high
+//   --m3-dialog-content-color    on-surface
+//   --m3-dialog-shape            corner-extra-large
+//   --m3-dialog-padding          space-5 (24px)
+//   --m3-dialog-min-width        280px
+//   --m3-dialog-max-width        560px
+//
+// Markup:
+//   <dialog class="m3-dialog">
+//     <h2 class="m3-dialog__title">Title</h2>
+//     <div class="m3-dialog__content">...</div>
+//     <div class="m3-dialog__actions">
+//       <button class="m3-btn m3-btn--text">Cancel</button>
+//       <button class="m3-btn m3-btn--text">OK</button>
+//     </div>
+//   </dialog>
+//
+// Behavior is the platform's: dialog.showModal()/close() from the consumer's
+// own code or a form[method="dialog"] -- the library ships no JS.
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+@mixin tokens {
+  --#{c.$prefix}-dialog-container-color: var(--md-sys-color-surface-container-high);
+  --#{c.$prefix}-dialog-content-color: var(--md-sys-color-on-surface);
+  --#{c.$prefix}-dialog-shape: var(--md-sys-shape-corner-extra-large);
+  --#{c.$prefix}-dialog-padding: var(--m3-space-5);
+  --#{c.$prefix}-dialog-min-width: #{fn.rem(280)};
+  --#{c.$prefix}-dialog-max-width: #{fn.rem(560)};
+}
+
+// The dialog surface. Also aliased under Bootstrap's .modal-content.
+@mixin container {
+  background-color: var(--#{c.$prefix}-dialog-container-color);
+  color: var(--#{c.$prefix}-dialog-content-color);
+  border: none;
+  border-radius: var(--#{c.$prefix}-dialog-shape);
+  padding: var(--#{c.$prefix}-dialog-padding);
+  @include m.elevation(3);
+}
+
+// Native <dialog> element behavior on top of the surface.
+@mixin native {
+  @include container;
+  min-inline-size: var(--#{c.$prefix}-dialog-min-width);
+  max-inline-size: min(
+    var(--#{c.$prefix}-dialog-max-width),
+    calc(100% - var(--m3-space-6))
+  );
+  max-block-size: calc(100% - var(--m3-space-6));
+  margin: auto;
+
+  &::backdrop {
+    @include backdrop-fill;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition-property: opacity, translate, display, overlay;
+    transition-duration: var(--md-sys-motion-duration-medium2);
+    transition-timing-function: var(--md-sys-motion-easing-emphasized-decelerate);
+    transition-behavior: allow-discrete;
+
+    &[open] {
+      opacity: var(--m3-opacity-full);
+      translate: 0 0;
+
+      @starting-style {
+        opacity: var(--m3-opacity-hidden);
+        translate: 0 var(--m3-space-3);
+      }
+    }
+  }
+}
+
+// The M3 scrim, reused by Bootstrap's .modal-backdrop and .offcanvas-backdrop.
+@mixin backdrop-fill {
+  background-color: color-mix(
+    in srgb,
+    var(--md-sys-color-scrim) var(--m3-opacity-scrim),
+    transparent
+  );
+}
+
+@mixin title {
+  @include m.typescale("headline-small");
+  color: var(--#{c.$prefix}-dialog-content-color);
+  margin-block-end: var(--m3-space-4);
+}
+
+@mixin content {
+  @include m.typescale("body-medium");
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+@mixin actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--m3-space-2);
+  margin-block-start: var(--m3-space-5);
+}
+
+@mixin fullscreen {
+  inline-size: 100%;
+  block-size: 100%;
+  max-inline-size: 100%;
+  max-block-size: 100%;
+  border-radius: var(--md-sys-shape-corner-none);
+}
+
+// Chrome donut: bare-element defaults between root and the content slot,
+// at (0,0,1) so a single consumer class overrides them. Structural rules
+// stay outside @scope (section 7 contract).
+@mixin internals(
+  $root: ".#{c.$prefix}-dialog",
+  $slot: ".#{c.$prefix}-dialog__content"
+) {
+  @scope (#{$root}) to (#{$slot}) {
+    h2,
+    h3 {
+      @include m.typescale("headline-small");
+      color: var(--#{c.$prefix}-dialog-content-color);
+    }
+
+    p {
+      @include m.typescale("body-medium");
+      color: var(--md-sys-color-on-surface-variant);
+    }
+  }
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-dialog {
+    @include native;
+  }
+
+  .#{$p}-dialog__title {
+    @include title;
+  }
+
+  .#{$p}-dialog__content {
+    @include content;
+  }
+
+  .#{$p}-dialog__actions {
+    @include actions;
+  }
+
+  .#{$p}-dialog--fullscreen {
+    @include fullscreen;
+  }
+
+  @include internals;
+}

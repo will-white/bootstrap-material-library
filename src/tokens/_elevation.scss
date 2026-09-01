@@ -1,0 +1,48 @@
+// ============================================================================
+// m3x elevation tokens (--md-sys-elevation-0 .. 5)
+// Shadow pairs whose color derives from the shadow role via color-mix();
+// container FILLS come from the surface-container roles (current M3), never
+// from tonal overlay hacks. --m3-elevation-level is a registered <integer>
+// hook for typed animation of a component's own elevation state.
+// ============================================================================
+
+@use "sass:list";
+
+// level -> (key offset-y, key blur, ambient offset-y, ambient blur, spread)
+$levels: (
+  1: (1px, 2px, 1px, 3px, 1px),
+  2: (1px, 2px, 2px, 6px, 2px),
+  3: (1px, 3px, 4px, 8px, 3px),
+  4: (2px, 3px, 6px, 10px, 4px),
+  5: (4px, 4px, 8px, 12px, 6px),
+);
+
+@mixin properties {
+  @property --m3-elevation-level {
+    syntax: "<integer>";
+    inherits: false;
+    initial-value: 0;
+  }
+}
+
+@mixin tokens {
+  --md-sys-elevation-key-opacity: 30%;
+  --md-sys-elevation-ambient-opacity: 15%;
+  --md-sys-elevation-0: none;
+
+  @each $level, $def in $levels {
+    --md-sys-elevation-#{$level}:
+      0 #{list.nth($def, 1)} #{list.nth($def, 2)}
+        color-mix(
+          in srgb,
+          var(--md-sys-color-shadow) var(--md-sys-elevation-key-opacity),
+          transparent
+        ),
+      0 #{list.nth($def, 3)} #{list.nth($def, 4)} #{list.nth($def, 5)}
+        color-mix(
+          in srgb,
+          var(--md-sys-color-shadow) var(--md-sys-elevation-ambient-opacity),
+          transparent
+        );
+  }
+}

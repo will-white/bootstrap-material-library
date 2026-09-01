@@ -1,0 +1,71 @@
+// ============================================================================
+// m3x divider
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-divider-color       outline-variant       rule color
+//   --m3-divider-thickness   1px (hairline token)   rule thickness
+//
+// Markup:
+//   <hr class="m3-divider">
+//   <hr class="m3-divider m3-divider--inset">
+//   <hr class="m3-divider m3-divider--middle">
+//   <div class="m3-divider m3-divider--vertical" role="separator"
+//        aria-orientation="vertical"></div>
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+@mixin tokens {
+  --#{c.$prefix}-divider-color: var(--md-sys-color-outline-variant);
+  --#{c.$prefix}-divider-thickness: var(--m3-stroke-hairline);
+}
+
+// Horizontal rule (the default on <hr>).
+@mixin rule {
+  border: none;
+  border-block-start: var(--#{c.$prefix}-divider-thickness) solid
+    var(--#{c.$prefix}-divider-color);
+  margin-block: var(--m3-space-2);
+}
+
+// Inset from the leading edge (list content alignment).
+@mixin inset {
+  margin-inline-start: var(--m3-space-4);
+}
+
+// Inset from both inline edges.
+@mixin middle {
+  margin-inline: var(--m3-space-4);
+}
+
+// Vertical separator: stretches to its flex row's height.
+@mixin vertical {
+  display: inline-block;
+  border-block-start: none;
+  border-inline-start: var(--#{c.$prefix}-divider-thickness) solid
+    var(--#{c.$prefix}-divider-color);
+  block-size: auto;
+  align-self: stretch;
+  margin-inline: var(--m3-space-2);
+  margin-block: var(--m3-space-none);
+}
+
+@mixin classes {
+  .#{c.$prefix}-divider {
+    @include rule;
+  }
+
+  .#{c.$prefix}-divider--inset {
+    @include inset;
+  }
+
+  .#{c.$prefix}-divider--middle {
+    @include middle;
+  }
+
+  .#{c.$prefix}-divider--vertical {
+    @include vertical;
+  }
+}

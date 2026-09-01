@@ -1,0 +1,52 @@
+// ============================================================================
+// m3x spacing + density tokens (library extensions -- M3 defines no official
+// spacing token set; documented as extensions in the README).
+// ============================================================================
+
+@use "sass:list";
+@use "../functions" as fn;
+
+// --m3-space-1 .. --m3-space-8: 4, 8, 12, 16, 24, 32, 48, 64px (as rem).
+$steps: (4, 8, 12, 16, 24, 32, 48, 64);
+
+@mixin properties {
+  @property --m3-density {
+    syntax: "<number>";
+    inherits: true;
+    initial-value: 0;
+  }
+}
+
+@mixin tokens {
+  --m3-space-none: 0px;
+  @for $i from 1 through list.length($steps) {
+    --m3-space-#{$i}: #{fn.rem(list.nth($steps, $i))};
+  }
+
+  // Density: 0 (default) to -3 (densest). Interactive control heights are
+  // computed as calc(height-token + density * step).
+  --m3-density: 0;
+  --m3-density-step: 4px;
+
+  // Minimum hit-target for small controls (accessibility floor).
+  --m3-target-size: 48px;
+
+  // Default icon footprint used by CSS-drawn icons.
+  --m3-icon-size: #{fn.rem(24)};
+  --m3-icon-size-small: #{fn.rem(18)};
+  --m3-chevron-size: #{fn.rem(10)};
+
+  // Structural opacities (section 0: even opacities resolve through tokens).
+  --m3-opacity-hidden: 0;
+  --m3-opacity-full: 1;
+  --m3-opacity-scrim: 32%;
+
+  // z-index scale (library extension; native <dialog> and [popover] use the
+  // top layer and need none of these).
+  --m3-z-raised: 10;
+  --m3-z-sticky: 30;
+  --m3-z-nav: 40;
+  --m3-z-overlay: 50;
+  --m3-z-snackbar: 60;
+  --m3-z-tooltip: 70;
+}

@@ -1,0 +1,163 @@
+// ============================================================================
+// m3x menu, on the Popover API ([popover] + popovertarget; zero JS).
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-menu-container-color  surface-container   menu surface color
+//   --m3-menu-content-color    on-surface          item label + state tint
+//   --m3-menu-shape            corner-extra-small  surface radius
+//   --m3-menu-item-height      48px                item min height; density
+//   --m3-menu-min-width        112px               surface min-inline-size
+//   --m3-menu-max-width        280px               surface max-inline-size
+//   --m3-menu-header-color     on-surface-variant  section header color
+//
+// Markup:
+//   <button popovertarget="demo-menu" class="m3-btn m3-btn--text">Menu</button>
+//   <div class="m3-menu" id="demo-menu" popover>
+//     <span class="m3-menu__header">Account</span>
+//     <button class="m3-menu__item" type="button">Profile</button>
+//     <hr>
+//     <a class="m3-menu__item" href="#">Sign out</a>
+//   </div>
+//
+// A [popover] menu keeps the UA default margin: auto, so an un-anchored open
+// centers in the viewport; consumers position it with CSS anchor positioning
+// or their own inset rules. .m3-menu--static renders the menu in normal flow.
+// Surface/item/header are reused by the Bootstrap compat layer for
+// .dropdown-menu / .dropdown-item / .dropdown-header.
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+@mixin tokens {
+  --#{c.$prefix}-menu-container-color: var(--md-sys-color-surface-container);
+  --#{c.$prefix}-menu-content-color: var(--md-sys-color-on-surface);
+  --#{c.$prefix}-menu-shape: var(--md-sys-shape-corner-extra-small);
+  --#{c.$prefix}-menu-item-height: #{fn.rem(48)};
+  --#{c.$prefix}-menu-min-width: #{fn.rem(112)};
+  --#{c.$prefix}-menu-max-width: #{fn.rem(280)};
+  --#{c.$prefix}-menu-header-color: var(--md-sys-color-on-surface-variant);
+}
+
+// The menu surface (also Bootstrap's .dropdown-menu).
+@mixin surface {
+  background-color: var(--#{c.$prefix}-menu-container-color);
+  color: var(--#{c.$prefix}-menu-content-color);
+  border: none;
+  border-radius: var(--#{c.$prefix}-menu-shape);
+  padding-block: var(--m3-space-2);
+  min-inline-size: var(--#{c.$prefix}-menu-min-width);
+  max-inline-size: var(--#{c.$prefix}-menu-max-width);
+  @include m.elevation(2);
+
+  // Dividers between items: spacing only; the divider component owns the
+  // border color treatment.
+  hr {
+    margin-block: var(--m3-space-2);
+  }
+}
+
+// Always-visible variant: renders the menu in normal flow (author display
+// beats the UA [popover] display: none, so this also force-shows a popover).
+@mixin static-variant {
+  display: block;
+  position: static;
+}
+
+// One menu item (<button> or <a>), full-width, state-layered.
+@mixin item {
+  --_container: transparent;
+  --_content: var(--#{c.$prefix}-menu-content-color);
+
+  display: flex;
+  align-items: center;
+  gap: var(--m3-space-3);
+  inline-size: 100%;
+  @include m.control-min-height(--#{c.$prefix}-menu-item-height);
+  padding-inline: var(--m3-space-3);
+  border: none;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+  @include m.typescale("label-large");
+  @include m.state-layer;
+  @include m.focus-ring;
+  @include m.transition((background-color, color));
+
+  // Pull the focus ring inside the item so the surface does not clip it.
+  &:focus-visible {
+    outline-offset: calc(-1 * var(--md-sys-state-focus-indicator-offset));
+  }
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled-bare;
+  }
+}
+
+// Section header (also Bootstrap's .dropdown-header).
+@mixin header {
+  display: block;
+  padding-inline: var(--m3-space-3);
+  padding-block: var(--m3-space-2) var(--m3-space-1);
+  color: var(--#{c.$prefix}-menu-header-color);
+  @include m.typescale("label-small");
+}
+
+// Entry motion for the open popover. Include only on a selector that stands
+// alone: :popover-open must never share a selector list (contract rule 10).
+@mixin popover-entry {
+  @media (prefers-reduced-motion: no-preference) {
+    opacity: var(--m3-opacity-full);
+    translate: 0 0;
+    transition-property: opacity, translate;
+    transition-duration: var(--md-sys-motion-duration-short4);
+    transition-timing-function: var(--md-sys-motion-easing-emphasized-decelerate);
+    transition-behavior: allow-discrete;
+
+    @starting-style {
+      opacity: var(--m3-opacity-hidden);
+      translate: 0 calc(-1 * var(--m3-space-1));
+    }
+  }
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-menu {
+    @include surface;
+  }
+
+  // The UA default margin: auto is intended: an un-anchored open centers in
+  // the viewport; consumers reposition with anchor positioning or insets.
+  .#{$p}-menu[popover] {
+    margin: auto;
+  }
+
+  .#{$p}-menu--static {
+    @include static-variant;
+  }
+
+  .#{$p}-menu__item {
+    @include item;
+  }
+
+  .#{$p}-menu__header {
+    @include header;
+  }
+
+  // Browsers without the Popover API treat [popover] as an ordinary element
+  // and would render the menu inline; hide it there instead of inlining it.
+  // --static opts out for deliberately in-flow menus.
+  @supports not selector(:popover-open) {
+    .#{$p}-menu[popover]:not(.#{$p}-menu--static) {
+      display: none;
+    }
+  }
+
+  .#{$p}-menu[popover]:popover-open {
+    @include popover-entry;
+  }
+}

@@ -1,0 +1,190 @@
+// ============================================================================
+// m3x tabs (primary | secondary), CSS-only active indicator
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-tabs-height                48px   tab height; participates in density
+//   --m3-tabs-label-color           on-surface-variant (resting label)
+//   --m3-tabs-active-label-color    primary (on-surface for --secondary)
+//   --m3-tabs-indicator-color       primary
+//   --m3-tabs-indicator-thickness   3px (heavy stroke token)
+//   --m3-tabs-divider-color         outline-variant (bar bottom divider)
+//   --m3-tabs-pill-height           40px   .nav-pills reuse; density-aware
+//   --m3-tabs-pill-container-color  secondary-container (active pill)
+//   --m3-tabs-pill-label-color      on-secondary-container (active pill)
+//
+// Markup (buttons or links; .active / [aria-current="page"] /
+// [aria-selected="true"] all mark the active tab):
+//   <nav class="m3-tabs" role="tablist">
+//     <button class="m3-tabs__tab" role="tab" aria-selected="true">One</button>
+//     <button class="m3-tabs__tab" role="tab">Two</button>
+//   </nav>
+//
+// Real-input variant (zero-JS tab switching; input precedes its label):
+//   <div class="m3-tabs">
+//     <input type="radio" name="tg" class="m3-tabs__input" id="t1" checked>
+//     <label class="m3-tabs__tab" for="t1">One</label>
+//     <input type="radio" name="tg" class="m3-tabs__input" id="t2">
+//     <label class="m3-tabs__tab" for="t2">Two</label>
+//   </div>
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+@mixin tokens {
+  --#{c.$prefix}-tabs-height: #{fn.rem(48)};
+  --#{c.$prefix}-tabs-label-color: var(--md-sys-color-on-surface-variant);
+  --#{c.$prefix}-tabs-active-label-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-tabs-indicator-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-tabs-indicator-thickness: var(--m3-stroke-heavy);
+  --#{c.$prefix}-tabs-divider-color: var(--md-sys-color-outline-variant);
+  --#{c.$prefix}-tabs-pill-height: #{fn.rem(40)};
+  --#{c.$prefix}-tabs-pill-container-color: var(--md-sys-color-secondary-container);
+  --#{c.$prefix}-tabs-pill-label-color: var(--md-sys-color-on-secondary-container);
+}
+
+// The scrollable tab bar with its bottom divider.
+@mixin bar {
+  display: flex;
+  overflow-x: auto;
+  border-block-end: var(--m3-stroke-hairline) solid
+    var(--#{c.$prefix}-tabs-divider-color);
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// Inset focus ring: same state tokens as m.focus-ring, offset pulled inside
+// so the ring is not clipped by the bar's scroll container.
+@mixin focus-ring-inset {
+  outline: var(--md-sys-state-focus-indicator-thickness) solid
+    var(--md-sys-color-secondary);
+  outline-offset: calc(-1 * var(--md-sys-state-focus-indicator-offset));
+}
+
+// One tab (button, a, or label for the real-input variant).
+@mixin tab {
+  --_container: transparent;
+  --_content: var(--#{c.$prefix}-tabs-label-color);
+
+  position: relative;
+  @include m.control-height(--#{c.$prefix}-tabs-height);
+  padding-inline: var(--m3-space-4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--m3-space-2);
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+  @include m.typescale("label-large");
+  @include m.state-layer;
+  @include m.focus-ring;
+  @include m.transition((color, background-color));
+
+  &:focus-visible {
+    outline-offset: calc(-1 * var(--md-sys-state-focus-indicator-offset));
+  }
+}
+
+// Active treatment: label re-color + underline indicator drawn with ::after.
+@mixin tab-active {
+  --_content: var(--#{c.$prefix}-tabs-active-label-color);
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset-block-end: var(--m3-space-none);
+    inset-inline: var(--m3-space-4);
+    block-size: var(--#{c.$prefix}-tabs-indicator-thickness);
+    background-color: var(--#{c.$prefix}-tabs-indicator-color);
+    border-start-start-radius: var(--md-sys-shape-corner-full);
+    border-start-end-radius: var(--md-sys-shape-corner-full);
+  }
+}
+
+// Secondary bar root: variants re-point tier-3 tokens (sanctioned pattern).
+@mixin secondary {
+  --#{c.$prefix}-tabs-active-label-color: var(--md-sys-color-on-surface);
+}
+
+// Secondary active indicator: full-width, thinner.
+@mixin tab-active-secondary {
+  &::after {
+    inset-inline: var(--m3-space-none);
+    block-size: var(--m3-stroke-thick);
+  }
+}
+
+// Real input, visually hidden but focusable (preceding sibling of its label).
+@mixin input-hidden {
+  position: absolute;
+  opacity: var(--m3-opacity-hidden);
+  pointer-events: none;
+}
+
+// Standalone pill mixins for Bootstrap .nav-pills reuse.
+@mixin pill {
+  --_container: transparent;
+  --_content: var(--#{c.$prefix}-tabs-label-color);
+
+  border-radius: var(--md-sys-shape-corner-full);
+  @include m.control-height(--#{c.$prefix}-tabs-pill-height);
+  padding-inline: var(--m3-space-4);
+  @include m.typescale("label-large");
+  @include m.state-layer;
+}
+
+@mixin pill-active {
+  --_container: var(--#{c.$prefix}-tabs-pill-container-color);
+  --_content: var(--#{c.$prefix}-tabs-pill-label-color);
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-tabs {
+    @include bar;
+  }
+
+  .#{$p}-tabs--fixed .#{$p}-tabs__tab {
+    flex: 1;
+  }
+
+  .#{$p}-tabs__tab {
+    @include tab;
+  }
+
+  // All old-syntax selectors: one shared list is safe.
+  .#{$p}-tabs__tab.active,
+  .#{$p}-tabs__tab[aria-current="page"],
+  .#{$p}-tabs__tab[aria-selected="true"] {
+    @include tab-active;
+  }
+
+  .#{$p}-tabs__input {
+    @include input-hidden;
+  }
+
+  .#{$p}-tabs__input:checked + .#{$p}-tabs__tab {
+    @include tab-active;
+  }
+
+  .#{$p}-tabs__input:focus-visible + .#{$p}-tabs__tab {
+    @include focus-ring-inset;
+  }
+
+  .#{$p}-tabs--secondary {
+    @include secondary;
+  }
+
+  .#{$p}-tabs--secondary .#{$p}-tabs__tab.active,
+  .#{$p}-tabs--secondary .#{$p}-tabs__tab[aria-current="page"],
+  .#{$p}-tabs--secondary .#{$p}-tabs__tab[aria-selected="true"],
+  .#{$p}-tabs--secondary .#{$p}-tabs__input:checked + .#{$p}-tabs__tab {
+    @include tab-active-secondary;
+  }
+}

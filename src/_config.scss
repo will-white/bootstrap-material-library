@@ -1,0 +1,68 @@
+// ============================================================================
+// m3x configuration
+// Every setting is `!default` and reachable from the entry point:
+//   @use "m3x/src" with ($seed: #00695c, $prefix: "md");
+// ============================================================================
+
+// Class + custom-property prefix for tier-3 tokens and component classes.
+// ".m3-btn" and "--m3-btn-height" become ".md-btn" / "--md-btn-height" etc.
+$prefix: "m3" !default;
+
+// Source color for the whole scheme. Any CSS color Sass can parse.
+$seed: #6750a4 !default;
+
+// Bootstrap interop switches (see README section "Bootstrap interop").
+$enable-bootstrap-compat: true !default; // --bs-* variable remap (9a)
+$enable-bootstrap-reskin: true !default; // full component re-skin (9b)
+$enable-bootstrap-utilities: false !default; // spacing/display/flex utils (9c)
+
+// When set to a selector string (e.g. "[data-m3]") the Bootstrap component
+// re-skin is wrapped in @scope on that selector, so a legacy page can be
+// migrated region by region.
+$bootstrap-reskin-scope: null !default;
+
+// Advanced consumers who own their layer order can suppress the library's
+// leading `@layer reset, bootstrap, ...;` statement.
+$emit-layer-statement: true !default;
+
+// Font stacks (library never bundles or fetches a webfont).
+$font-family-plain: (Roboto, system-ui, sans-serif) !default;
+$font-family-brand: (Roboto, system-ui, sans-serif) !default;
+
+// Root font size used by the rem() helper to convert M3's px spec values.
+$root-font-size: 16 !default;
+
+// The full catalog. Remove names to shrink the build:
+//   @use "m3x/src" with ($components: ("button", "card", "text-field"));
+$components: (
+  "button",
+  "icon-button",
+  "fab",
+  "segmented-button",
+  "badge",
+  "progress",
+  "snackbar",
+  "tooltip",
+  "card",
+  "carousel",
+  "dialog",
+  "divider",
+  "list",
+  "sheet",
+  "navigation-bar",
+  "navigation-drawer",
+  "navigation-rail",
+  "tabs",
+  "top-app-bar",
+  "bottom-app-bar",
+  "checkbox",
+  "radio",
+  "switch",
+  "chip",
+  "menu",
+  "slider",
+  "datetime",
+  "text-field",
+  "search",
+  "select"
+) !default;

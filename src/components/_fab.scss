@@ -1,0 +1,152 @@
+// ============================================================================
+// m3x fab (floating action button)
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-fab-size               56px   container size; participates in
+//                                      density: calc(size + density*4px)
+//   --m3-fab-size-small         40px   .m3-fab--small
+//   --m3-fab-size-large         96px   .m3-fab--large
+//   --m3-fab-shape              corner-large
+//   --m3-fab-shape-small        corner-medium (.m3-fab--small)
+//   --m3-fab-shape-large        corner-extra-large (.m3-fab--large)
+//   --m3-fab-container-color    primary-container
+//   --m3-fab-content-color      on-primary-container
+//   --m3-fab-icon-size          24px (--m3-icon-size)
+//   --m3-fab-icon-size-large    36px (.m3-fab--large)
+//   --m3-fab-padding-inline     space-4 (16px; .m3-fab--extended)
+//   --m3-fab-icon-gap           space-2 (8px; .m3-fab--extended)
+//
+// Markup:
+//   <button class="m3-fab" aria-label="Compose"><svg ...></svg></button>
+//   <button class="m3-fab m3-fab--extended m3-fab--fixed">
+//     <svg ...></svg>
+//     <span class="m3-fab__label">Compose</span>
+//   </button>
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+@mixin tokens {
+  --#{c.$prefix}-fab-size: #{fn.rem(56)};
+  --#{c.$prefix}-fab-size-small: #{fn.rem(40)};
+  --#{c.$prefix}-fab-size-large: #{fn.rem(96)};
+  --#{c.$prefix}-fab-shape: var(--md-sys-shape-corner-large);
+  --#{c.$prefix}-fab-shape-small: var(--md-sys-shape-corner-medium);
+  --#{c.$prefix}-fab-shape-large: var(--md-sys-shape-corner-extra-large);
+  --#{c.$prefix}-fab-container-color: var(--md-sys-color-primary-container);
+  --#{c.$prefix}-fab-content-color: var(--md-sys-color-on-primary-container);
+  --#{c.$prefix}-fab-icon-size: var(--m3-icon-size);
+  --#{c.$prefix}-fab-icon-size-large: #{fn.rem(36)};
+  --#{c.$prefix}-fab-padding-inline: var(--m3-space-4);
+  --#{c.$prefix}-fab-icon-gap: var(--m3-space-2);
+}
+
+// Structure + state machinery. Size modifiers re-include control-height with
+// their own size token and mirror it on width with the same density calc.
+@mixin base {
+  --_container: var(--#{c.$prefix}-fab-container-color);
+  --_content: var(--#{c.$prefix}-fab-content-color);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  @include m.control-height(--#{c.$prefix}-fab-size);
+  width: calc(
+    var(--#{c.$prefix}-fab-size) + var(--m3-density) * var(--m3-density-step)
+  );
+  border: none;
+  border-radius: var(--#{c.$prefix}-fab-shape);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  text-decoration: none;
+  vertical-align: middle;
+  -webkit-tap-highlight-color: transparent;
+  @include m.elevation(3);
+  @include m.state-layer;
+  @include m.focus-ring;
+  @include m.transition((background-color, box-shadow));
+  @include m.forced-colors-border;
+
+  &:hover {
+    @include m.elevation(4);
+  }
+
+  > svg,
+  > img {
+    inline-size: var(--#{c.$prefix}-fab-icon-size);
+    block-size: var(--#{c.$prefix}-fab-icon-size);
+  }
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled;
+  }
+}
+
+@mixin small {
+  @include m.control-height(--#{c.$prefix}-fab-size-small);
+  width: calc(
+    var(--#{c.$prefix}-fab-size-small) + var(--m3-density) * var(--m3-density-step)
+  );
+  border-radius: var(--#{c.$prefix}-fab-shape-small);
+  // 40px container: expand the hit area to the accessibility floor.
+  @include m.touch-target;
+}
+
+@mixin large {
+  @include m.control-height(--#{c.$prefix}-fab-size-large);
+  width: calc(
+    var(--#{c.$prefix}-fab-size-large) + var(--m3-density) * var(--m3-density-step)
+  );
+  border-radius: var(--#{c.$prefix}-fab-shape-large);
+
+  > svg,
+  > img {
+    inline-size: var(--#{c.$prefix}-fab-icon-size-large);
+    block-size: var(--#{c.$prefix}-fab-icon-size-large);
+  }
+}
+
+@mixin extended {
+  width: auto;
+  padding-inline: var(--#{c.$prefix}-fab-padding-inline);
+  gap: var(--#{c.$prefix}-fab-icon-gap);
+
+  .#{c.$prefix}-fab__label {
+    @include m.typescale("label-large");
+  }
+}
+
+// Viewport-anchored placement (the classic bottom-end corner FAB).
+@mixin fixed {
+  position: fixed;
+  inset-block-end: var(--m3-space-4);
+  inset-inline-end: var(--m3-space-4);
+  z-index: var(--m3-z-raised);
+}
+
+@mixin classes {
+  .#{c.$prefix}-fab {
+    @include base;
+  }
+
+  .#{c.$prefix}-fab--small {
+    @include small;
+  }
+
+  .#{c.$prefix}-fab--large {
+    @include large;
+  }
+
+  .#{c.$prefix}-fab--extended {
+    @include extended;
+  }
+
+  .#{c.$prefix}-fab--fixed {
+    @include fixed;
+  }
+}

@@ -1,0 +1,222 @@
+// ============================================================================
+// m3x button -- the canonical component (its variable API table is reproduced
+// in the README; the same pattern holds for every component).
+//
+// PUBLIC VARIABLE API (tier-3 tokens, defined in the tokens layer)
+// ----------------------------------------------------------------------------
+//   --m3-btn-height                   40px   control height; participates in
+//                                            density: calc(h + density*4px)
+//   --m3-btn-height-small             32px   .m3-btn--small / .btn-sm
+//   --m3-btn-height-large             48px   .m3-btn--large / .btn-lg
+//   --m3-btn-padding-inline           space-5 (24px)
+//   --m3-btn-padding-inline-small     space-4 (16px)
+//   --m3-btn-padding-inline-large     space-6 (32px)
+//   --m3-btn-icon-gap                 space-2 (8px)
+//   --m3-btn-icon-size                18px
+//   --m3-btn-shape                    corner-full
+//   --m3-btn-outline-width            1px (hairline token)
+//   --m3-btn-container-color          primary        (filled container)
+//   --m3-btn-label-color              on-primary     (filled label)
+//   --m3-btn-tonal-container-color    secondary-container
+//   --m3-btn-tonal-label-color        on-secondary-container
+//   --m3-btn-elevated-container-color surface-container-low
+//   --m3-btn-elevated-label-color     primary
+//   --m3-btn-outlined-label-color     primary
+//   --m3-btn-outlined-outline-color   outline
+//   --m3-btn-text-label-color         primary
+//
+// Retheme every button below any ancestor (including Bootstrap .btn-*):
+//   .brand-cta { --m3-btn-container-color: var(--md-sys-color-tertiary); }
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+@mixin tokens {
+  --#{c.$prefix}-btn-height: #{fn.rem(40)};
+  --#{c.$prefix}-btn-height-small: #{fn.rem(32)};
+  --#{c.$prefix}-btn-height-large: #{fn.rem(48)};
+  --#{c.$prefix}-btn-padding-inline: var(--m3-space-5);
+  --#{c.$prefix}-btn-padding-inline-small: var(--m3-space-4);
+  --#{c.$prefix}-btn-padding-inline-large: var(--m3-space-6);
+  --#{c.$prefix}-btn-icon-gap: var(--m3-space-2);
+  --#{c.$prefix}-btn-icon-size: var(--m3-icon-size-small);
+  --#{c.$prefix}-btn-shape: var(--md-sys-shape-corner-full);
+  --#{c.$prefix}-btn-outline-width: var(--m3-stroke-hairline);
+  --#{c.$prefix}-btn-container-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-btn-label-color: var(--md-sys-color-on-primary);
+  --#{c.$prefix}-btn-tonal-container-color: var(--md-sys-color-secondary-container);
+  --#{c.$prefix}-btn-tonal-label-color: var(--md-sys-color-on-secondary-container);
+  --#{c.$prefix}-btn-elevated-container-color: var(--md-sys-color-surface-container-low);
+  --#{c.$prefix}-btn-elevated-label-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-btn-outlined-label-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-btn-outlined-outline-color: var(--md-sys-color-outline);
+  --#{c.$prefix}-btn-text-label-color: var(--md-sys-color-primary);
+}
+
+// Structure + state machinery shared by every variant (and by Bootstrap's
+// .btn). Variants only re-point the tier-4 private variables.
+@mixin base {
+  // Default look when no variant class is present: filled.
+  --_container: var(--#{c.$prefix}-btn-container-color);
+  --_content: var(--#{c.$prefix}-btn-label-color);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--#{c.$prefix}-btn-icon-gap);
+  @include m.control-height(--#{c.$prefix}-btn-height);
+  padding-inline: var(--#{c.$prefix}-btn-padding-inline);
+  border: none;
+  border-radius: var(--#{c.$prefix}-btn-shape);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  text-decoration: none;
+  vertical-align: middle;
+  -webkit-tap-highlight-color: transparent;
+  @include m.typescale("label-large");
+  @include m.state-layer;
+  @include m.focus-ring;
+  @include m.transition((background-color, color, box-shadow, border-color));
+  @include m.forced-colors-border;
+
+  > svg,
+  > img {
+    inline-size: var(--#{c.$prefix}-btn-icon-size);
+    block-size: var(--#{c.$prefix}-btn-icon-size);
+  }
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled;
+  }
+}
+
+@mixin filled {
+  --_container: var(--#{c.$prefix}-btn-container-color);
+  --_content: var(--#{c.$prefix}-btn-label-color);
+}
+
+@mixin tonal {
+  --_container: var(--#{c.$prefix}-btn-tonal-container-color);
+  --_content: var(--#{c.$prefix}-btn-tonal-label-color);
+}
+
+@mixin elevated {
+  --_container: var(--#{c.$prefix}-btn-elevated-container-color);
+  --_content: var(--#{c.$prefix}-btn-elevated-label-color);
+  @include m.elevation(1);
+
+  &:hover {
+    @include m.elevation(2);
+  }
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled;
+  }
+}
+
+@mixin outlined {
+  --_container: transparent;
+  --_content: var(--#{c.$prefix}-btn-outlined-label-color);
+  border: var(--#{c.$prefix}-btn-outline-width) solid
+    var(--#{c.$prefix}-btn-outlined-outline-color);
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled-bare;
+    border-color: color-mix(
+      in srgb,
+      var(--md-sys-color-on-surface)
+        var(--md-sys-state-disabled-container-opacity),
+      transparent
+    );
+  }
+}
+
+@mixin text-variant {
+  --_container: transparent;
+  --_content: var(--#{c.$prefix}-btn-text-label-color);
+  padding-inline: var(--m3-space-3);
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled-bare;
+  }
+}
+
+@mixin small {
+  @include m.control-height(--#{c.$prefix}-btn-height-small);
+  padding-inline: var(--#{c.$prefix}-btn-padding-inline-small);
+  @include m.typescale("label-medium");
+}
+
+@mixin large {
+  @include m.control-height(--#{c.$prefix}-btn-height-large);
+  padding-inline: var(--#{c.$prefix}-btn-padding-inline-large);
+}
+
+// Connected group (also emitted for Bootstrap's .btn-group): outer corners
+// keep the button shape, inner corners flatten to extra-small.
+@mixin group($item: ".#{c.$prefix}-btn") {
+  display: inline-flex;
+  vertical-align: middle;
+
+  > #{$item} {
+    @include m.focus-ring;
+
+    &:not(:first-child) {
+      border-start-start-radius: var(--md-sys-shape-corner-extra-small);
+      border-end-start-radius: var(--md-sys-shape-corner-extra-small);
+      margin-inline-start: var(--m3-stroke-hairline);
+    }
+
+    &:not(:last-child) {
+      border-start-end-radius: var(--md-sys-shape-corner-extra-small);
+      border-end-end-radius: var(--md-sys-shape-corner-extra-small);
+    }
+  }
+}
+
+@mixin classes {
+  .#{c.$prefix}-btn {
+    @include base;
+  }
+
+  .#{c.$prefix}-btn--filled {
+    @include filled;
+  }
+
+  .#{c.$prefix}-btn--tonal,
+  .#{c.$prefix}-btn--filled-tonal {
+    @include tonal;
+  }
+
+  .#{c.$prefix}-btn--elevated {
+    @include elevated;
+  }
+
+  .#{c.$prefix}-btn--outlined {
+    @include outlined;
+  }
+
+  .#{c.$prefix}-btn--text {
+    @include text-variant;
+  }
+
+  .#{c.$prefix}-btn--small {
+    @include small;
+  }
+
+  .#{c.$prefix}-btn--large {
+    @include large;
+  }
+
+  .#{c.$prefix}-btn-group {
+    @include group;
+  }
+}

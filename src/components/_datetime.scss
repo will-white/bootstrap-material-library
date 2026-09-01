@@ -1,0 +1,73 @@
+// ============================================================================
+// m3x datetime -- M3-styled NATIVE date + time inputs
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-datetime-min-width   160px   minimum inline size of the control
+//
+// Scope note: M3's full modal date picker and time picker (calendar grid,
+// clock dial) require JavaScript and are intentionally OUT OF SCOPE for this
+// zero-JS library. Instead the native pickers are themed: the base layer sets
+// accent-color to the primary role on :root and the tokens layer manages
+// color-scheme (light/dark and [data-theme] switches), which together restyle
+// the browser's built-in calendar/clock popups; the input chrome itself is
+// drawn with the shared text-field mixins (outlined by default, --filled for
+// the filled variant). Field heights, states, and validation all come from
+// text-field, so the two components stay visually identical in forms.
+//
+// Markup:
+//   <input type="date" class="m3-datetime" aria-label="Date">
+//   <input type="time" class="m3-datetime m3-datetime--filled" aria-label="Time">
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+@use "text-field" as field;
+
+@mixin tokens {
+  --#{c.$prefix}-datetime-min-width: #{fn.rem(160)};
+}
+
+// The whole control: shared field structure + outlined look by default.
+// Native popup chrome (calendar grid, clock) is themed by accent-color and
+// color-scheme at :root, not by rules here.
+@mixin control {
+  @include field.input-base;
+  @include field.input-outlined;
+  min-inline-size: var(--#{c.$prefix}-datetime-min-width);
+
+  // Separate rule: WebKit-only pseudo-element (the whole rule is simply
+  // dropped by engines that do not recognize it).
+  &::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+  }
+}
+
+// Filled variant: overrides the outline look when the --filled class is
+// present (emitted after, at matching specificity, in `classes`).
+@mixin filled {
+  @include field.input-filled;
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  // Attribute selectors are universally supported, so one list is safe.
+  input[type="date"].#{$p}-datetime,
+  input[type="time"].#{$p}-datetime,
+  input[type="datetime-local"].#{$p}-datetime,
+  input[type="month"].#{$p}-datetime,
+  input[type="week"].#{$p}-datetime {
+    @include control;
+  }
+
+  // Same input[type]-qualified shape so specificity ties the control rules
+  // above and later source order lets the filled look win over the outline.
+  input[type="date"].#{$p}-datetime--filled,
+  input[type="time"].#{$p}-datetime--filled,
+  input[type="datetime-local"].#{$p}-datetime--filled,
+  input[type="month"].#{$p}-datetime--filled,
+  input[type="week"].#{$p}-datetime--filled {
+    @include filled;
+  }
+}

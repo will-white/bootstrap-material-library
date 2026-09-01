@@ -1,0 +1,272 @@
+// ============================================================================
+// m3x shared mixins
+// The patterns every component is built from. These are the only place the
+// structural keywords (transparent, none, currentColor) for the state system
+// live; components re-point custom properties and include these.
+// ============================================================================
+
+@use "config";
+
+// --- typography -------------------------------------------------------------
+
+// Apply one role of the M3 typescale, e.g. @include typescale("label-large");
+@mixin typescale($scale) {
+  font-family: var(--md-sys-typescale-#{$scale}-font);
+  font-size: var(--md-sys-typescale-#{$scale}-size);
+  line-height: var(--md-sys-typescale-#{$scale}-line-height);
+  font-weight: var(--md-sys-typescale-#{$scale}-weight);
+  letter-spacing: var(--md-sys-typescale-#{$scale}-tracking);
+}
+
+// --- state system (section 6: color-mix only) -------------------------------
+
+// State-layer machinery. A component sets the tier-4 private variables
+//   --_container : resting container color (may be `transparent`)
+//   --_content   : content/label color (also the default state-layer tint)
+// and this mixin composites hover/focus/pressed layers with color-mix(),
+// exactly matching M3's srgb alpha compositing.
+@mixin state-layer {
+  --_state-color: var(--_content);
+  --_state-opacity: var(--md-sys-state-none);
+  color: var(--_content);
+  background-color: color-mix(
+    in srgb,
+    var(--_state-color) var(--_state-opacity),
+    var(--_container)
+  );
+
+  &:hover {
+    --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
+  }
+  &:focus-visible {
+    --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
+  }
+  &:active {
+    --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+  }
+}
+
+// Same states, but driven from a parent (for hidden-input controls:
+// checked chips, segmented buttons, switches).
+@mixin state-layer-for($child) {
+  #{$child} {
+    --_state-color: var(--_content);
+    --_state-opacity: var(--md-sys-state-none);
+    color: var(--_content);
+    background-color: color-mix(
+      in srgb,
+      var(--_state-color) var(--_state-opacity),
+      var(--_container)
+    );
+  }
+  &:hover #{$child} {
+    --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
+  }
+  &:focus-within #{$child} {
+    --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
+  }
+  &:active #{$child} {
+    --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+  }
+}
+
+// M3 disabled treatment: content at 38%, container at 12% of on-surface.
+@mixin disabled {
+  --_container: color-mix(
+    in srgb,
+    var(--md-sys-color-on-surface) var(--md-sys-state-disabled-container-opacity),
+    transparent
+  );
+  --_content: color-mix(
+    in srgb,
+    var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity),
+    transparent
+  );
+  --_state-opacity: var(--md-sys-state-none);
+  box-shadow: none;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+// Disabled with a fully transparent container (text/outlined variants).
+@mixin disabled-bare {
+  --_container: transparent;
+  --_content: color-mix(
+    in srgb,
+    var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity),
+    transparent
+  );
+  --_state-opacity: var(--md-sys-state-none);
+  box-shadow: none;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+// --- focus ------------------------------------------------------------------
+
+// M3 focus indicator: tokenized thickness + offset, secondary role color.
+@mixin focus-ring {
+  &:focus-visible {
+    outline: var(--md-sys-state-focus-indicator-thickness) solid
+      var(--md-sys-color-secondary);
+    outline-offset: var(--md-sys-state-focus-indicator-offset);
+  }
+}
+
+// Focus ring driven by a hidden input inside the component. Emitted as two
+// separate rules so browsers without :has() keep the second one.
+@mixin focus-ring-within($input: "input") {
+  &:has(#{$input}:focus-visible) {
+    outline: var(--md-sys-state-focus-indicator-thickness) solid
+      var(--md-sys-color-secondary);
+    outline-offset: var(--md-sys-state-focus-indicator-offset);
+  }
+  &:focus-within {
+    outline: var(--md-sys-state-focus-indicator-thickness) solid
+      var(--md-sys-color-secondary);
+    outline-offset: var(--md-sys-state-focus-indicator-offset);
+  }
+}
+
+// --- elevation --------------------------------------------------------------
+
+@mixin elevation($level) {
+  box-shadow: var(--md-sys-elevation-#{$level});
+}
+
+// --- density ----------------------------------------------------------------
+
+// Interactive control heights participate in density (-3..0):
+// height = token + density * 4px.
+@mixin control-height($height-token) {
+  height: calc(var(#{$height-token}) + var(--m3-density) * var(--m3-density-step));
+}
+
+@mixin control-min-height($height-token) {
+  min-height: calc(var(#{$height-token}) + var(--m3-density) * var(--m3-density-step));
+}
+
+// --- accessibility ----------------------------------------------------------
+
+// Expand small controls to a >= 48x48px hit target with a pseudo-element.
+// Uses ::after; controls that need ::after for chrome use touch-target-before.
+@mixin touch-target {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    width: max(100%, var(--m3-target-size));
+    height: max(100%, var(--m3-target-size));
+  }
+}
+
+@mixin touch-target-before {
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    width: max(100%, var(--m3-target-size));
+    height: max(100%, var(--m3-target-size));
+  }
+}
+
+// Invisible-but-real input covering its wrapping label (segmented buttons,
+// filter chips, switch-like patterns built on real inputs). The input stays
+// focusable and clickable; the label draws every visual.
+@mixin hidden-control {
+  position: absolute;
+  inset-block-start: var(--m3-space-none);
+  inset-inline-start: var(--m3-space-none);
+  inline-size: 100%;
+  block-size: 100%;
+  margin: var(--m3-space-none);
+  opacity: var(--m3-opacity-hidden);
+  cursor: pointer;
+  appearance: none;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+// --- motion -----------------------------------------------------------------
+
+// Transition helper, always behind prefers-reduced-motion.
+// $properties is a comma-separated list: transition((background-color, color)).
+@mixin transition(
+  $properties,
+  $duration: var(--md-sys-motion-duration-short4),
+  $easing: var(--md-sys-motion-easing-standard)
+) {
+  @media (prefers-reduced-motion: no-preference) {
+    transition-property: $properties;
+    transition-duration: $duration;
+    transition-timing-function: $easing;
+  }
+}
+
+@mixin reduced-motion-off {
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+    animation: none;
+  }
+}
+
+// --- iconography ------------------------------------------------------------
+
+// CSS-drawn cross (close buttons) using currentColor; no images, no fonts.
+@mixin cross-icon($size: var(--m3-icon-size), $stroke: var(--m3-stroke-thick)) {
+  background-image: linear-gradient(
+      45deg,
+      transparent calc(50% - #{$stroke} / 2),
+      currentColor calc(50% - #{$stroke} / 2),
+      currentColor calc(50% + #{$stroke} / 2),
+      transparent calc(50% + #{$stroke} / 2)
+    ),
+    linear-gradient(
+      135deg,
+      transparent calc(50% - #{$stroke} / 2),
+      currentColor calc(50% - #{$stroke} / 2),
+      currentColor calc(50% + #{$stroke} / 2),
+      transparent calc(50% + #{$stroke} / 2)
+    );
+  background-size: #{$size} #{$size};
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+// CSS-drawn chevron (selects, accordions, dropdowns): a rotated square made
+// of two borders, drawn on the element this is included on (usually ::after).
+@mixin chevron-icon($size: var(--m3-chevron-size), $stroke: var(--m3-stroke-thick)) {
+  width: $size;
+  height: $size;
+  border-right: $stroke solid currentColor;
+  border-bottom: $stroke solid currentColor;
+  rotate: 45deg;
+}
+
+// CSS-drawn checkmark: rotated half-square of borders.
+@mixin check-icon($width, $height, $stroke: var(--m3-stroke-thick)) {
+  width: $width;
+  height: $height;
+  border-right: $stroke solid currentColor;
+  border-bottom: $stroke solid currentColor;
+  rotate: 45deg;
+}
+
+// --- forced colors ----------------------------------------------------------
+
+// In forced-colors mode, hand controls back to the system palette.
+@mixin forced-colors-border {
+  @media (forced-colors: active) {
+    border: var(--m3-stroke-hairline) solid ButtonBorder;
+  }
+}

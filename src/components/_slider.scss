@@ -1,0 +1,174 @@
+// ============================================================================
+// m3x slider -- M3 slider on a styled input[type="range"]
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-slider-track-height   4px (0.25rem)  inactive track thickness
+//   --m3-slider-thumb-size     20px (1.25rem) thumb (handle) diameter
+//   --m3-slider-track-color    surface-container-highest  inactive track
+//   --m3-slider-active-color   primary   thumb + active track (Firefox)
+//
+// Markup:
+//   <input type="range" class="m3-slider" min="0" max="100" value="40">
+//
+// Notes:
+//   - Active-track fill: Firefox colors the traveled portion of the track
+//     via ::-moz-range-progress. WebKit has no equivalent pseudo-element, so
+//     the active portion cannot be colored by pure CSS (it would need a
+//     JS-updated gradient stop); WebKit shows a uniform track color with the
+//     active-colored thumb. Documented limitation, zero-JS by design.
+//   - Dual-thumb (start + end) range sliders need two overlapping inputs and
+//     are out of scope for the CSS layer.
+//   - Every vendor pseudo-element gets its OWN rule: a selector list mixing
+//     -webkit- and -moz- pseudos is invalid in both engines and would drop
+//     the whole list. Declarations are shared through local mixins instead.
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+@mixin tokens {
+  --#{c.$prefix}-slider-track-height: #{fn.rem(4)};
+  --#{c.$prefix}-slider-thumb-size: #{fn.rem(20)};
+  --#{c.$prefix}-slider-track-color: var(--md-sys-color-surface-container-highest);
+  --#{c.$prefix}-slider-active-color: var(--md-sys-color-primary);
+}
+
+// --- private vendor fragments (shared by the per-vendor rules) --------------
+
+@mixin -track {
+  block-size: var(--#{c.$prefix}-slider-track-height);
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--#{c.$prefix}-slider-track-color);
+}
+
+@mixin -thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  inline-size: var(--#{c.$prefix}-slider-thumb-size);
+  block-size: var(--#{c.$prefix}-slider-thumb-size);
+  border: none;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--#{c.$prefix}-slider-active-color);
+}
+
+// Hover halo: a state-layer ring around the thumb, hover opacity of the
+// active color over transparent (color-mix state pattern from _mixins.scss).
+@mixin -thumb-halo {
+  box-shadow: 0 0 0 var(--m3-space-2)
+    color-mix(
+      in srgb,
+      var(--#{c.$prefix}-slider-active-color)
+        var(--md-sys-state-hover-state-layer-opacity),
+      transparent
+    );
+}
+
+// Disabled treatment (m.disabled color-mix pattern): track is on-surface at
+// the disabled-container opacity; thumb is on-surface at the
+// disabled-content opacity composited over the track color.
+@mixin -track-disabled {
+  background-color: color-mix(
+    in srgb,
+    var(--md-sys-color-on-surface)
+      var(--md-sys-state-disabled-container-opacity),
+    transparent
+  );
+}
+
+@mixin -thumb-disabled {
+  background-color: color-mix(
+    in srgb,
+    var(--md-sys-color-on-surface)
+      var(--md-sys-state-disabled-content-opacity),
+    var(--#{c.$prefix}-slider-track-color)
+  );
+  box-shadow: none;
+}
+
+// --- control ----------------------------------------------------------------
+
+// The whole slider, vendor rules included (reused by compat for .form-range).
+@mixin control {
+  -webkit-appearance: none;
+  appearance: none;
+  inline-size: 100%;
+  block-size: var(--m3-target-size);
+  background-color: transparent;
+  cursor: pointer;
+  margin: var(--m3-space-none);
+  @include m.focus-ring;
+
+  // Track: one rule per vendor (never a combined selector list).
+  &::-webkit-slider-runnable-track {
+    @include -track;
+  }
+
+  &::-moz-range-track {
+    @include -track;
+  }
+
+  // Thumb: WebKit needs the appearance reset and a margin to center the
+  // thumb on the runnable track; Firefox centers it natively.
+  &::-webkit-slider-thumb {
+    @include -thumb;
+    margin-block-start: calc(
+      (
+          var(--#{c.$prefix}-slider-track-height) -
+            var(--#{c.$prefix}-slider-thumb-size)
+        ) / 2
+    );
+  }
+
+  &::-moz-range-thumb {
+    @include -thumb;
+  }
+
+  // Firefox-only active (traveled) track fill.
+  &::-moz-range-progress {
+    block-size: var(--#{c.$prefix}-slider-track-height);
+    border-radius: var(--md-sys-shape-corner-full);
+    background-color: var(--#{c.$prefix}-slider-active-color);
+  }
+
+  // Hover state layer halo around the thumb, per vendor.
+  &:hover::-webkit-slider-thumb {
+    @include -thumb-halo;
+  }
+
+  &:hover::-moz-range-thumb {
+    @include -thumb-halo;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  &:disabled::-webkit-slider-runnable-track {
+    @include -track-disabled;
+  }
+
+  &:disabled::-moz-range-track {
+    @include -track-disabled;
+  }
+
+  &:disabled::-webkit-slider-thumb {
+    @include -thumb-disabled;
+  }
+
+  &:disabled::-moz-range-thumb {
+    @include -thumb-disabled;
+  }
+
+  &:disabled::-moz-range-progress {
+    @include -thumb-disabled;
+  }
+}
+
+// --- class emission ---------------------------------------------------------
+
+@mixin classes {
+  input[type="range"].#{c.$prefix}-slider {
+    @include control;
+  }
+}

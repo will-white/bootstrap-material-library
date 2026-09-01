@@ -1,0 +1,218 @@
+// ============================================================================
+// m3x utilities (layer: utilities)
+// Typescale classes, color/surface utilities, shape + elevation utilities,
+// the @scope token islands (section 7.3), and the opt-in theme-transition
+// helper (section 5's typed-token interpolation payoff).
+// ============================================================================
+
+@use "sass:map";
+@use "../config" as c;
+@use "../mixins" as m;
+@use "../tokens/typography";
+
+// bg role -> paired on-color
+$-bg-pairs: (
+  "primary": "on-primary",
+  "on-primary": "primary",
+  "primary-container": "on-primary-container",
+  "secondary": "on-secondary",
+  "secondary-container": "on-secondary-container",
+  "tertiary": "on-tertiary",
+  "tertiary-container": "on-tertiary-container",
+  "error": "on-error",
+  "error-container": "on-error-container",
+  "surface": "on-surface",
+  "surface-dim": "on-surface",
+  "surface-bright": "on-surface",
+  "surface-container-lowest": "on-surface",
+  "surface-container-low": "on-surface",
+  "surface-container": "on-surface",
+  "surface-container-high": "on-surface",
+  "surface-container-highest": "on-surface",
+  "inverse-surface": "inverse-on-surface",
+);
+
+$-text-roles: (
+  "primary",
+  "secondary",
+  "tertiary",
+  "error",
+  "on-surface",
+  "on-surface-variant",
+  "outline",
+  "inverse-primary"
+);
+
+@mixin styles {
+  $p: c.$prefix;
+
+  // --- typescale: .m3-display-large ... .m3-label-small ---------------------
+  @each $role, $def in typography.$scale {
+    .#{$p}-#{$role} {
+      @include m.typescale($role);
+    }
+  }
+
+  // --- color/surface utilities ----------------------------------------------
+  @each $role, $on in $-bg-pairs {
+    .#{$p}-bg-#{$role} {
+      background-color: var(--md-sys-color-#{$role});
+      color: var(--md-sys-color-#{$on});
+    }
+  }
+
+  @each $role in $-text-roles {
+    .#{$p}-text-#{$role} {
+      color: var(--md-sys-color-#{$role});
+    }
+  }
+
+  // --- shape utilities --------------------------------------------------------
+  @each $name in ("none", "extra-small", "small", "medium", "large",
+    "extra-large", "full")
+  {
+    .#{$p}-shape-#{$name} {
+      border-radius: var(--md-sys-shape-corner-#{$name});
+    }
+  }
+
+  // --- elevation utilities ----------------------------------------------------
+  @for $level from 0 through 5 {
+    .#{$p}-elevation-#{$level} {
+      --m3-elevation-level: #{$level};
+      box-shadow: var(--md-sys-elevation-#{$level});
+    }
+  }
+
+  // --- token islands (section 7.3) -------------------------------------------
+  // Context regions that re-point system tokens on the scope root; nested
+  // islands resolve by inheritance from the NEAREST island root. Implemented
+  // in @scope so the rules stay at :scope specificity (0,1,0); where @scope
+  // is unsupported the island simply does not tint (refinement, not
+  // load-bearing structure).
+  @scope (.#{$p}-island--inverse) {
+    :scope {
+      --md-sys-color-surface: var(--md-sys-color-inverse-surface);
+      --md-sys-color-on-surface: var(--md-sys-color-inverse-on-surface);
+      --md-sys-color-on-surface-variant: var(--md-sys-color-inverse-on-surface);
+      --md-sys-color-primary: var(--md-sys-color-inverse-primary);
+      --md-sys-color-surface-container-lowest: var(--md-sys-color-inverse-surface);
+      --md-sys-color-surface-container-low: color-mix(
+        in srgb,
+        var(--md-sys-color-inverse-on-surface) 4%,
+        var(--md-sys-color-inverse-surface)
+      );
+      --md-sys-color-surface-container: color-mix(
+        in srgb,
+        var(--md-sys-color-inverse-on-surface) 6%,
+        var(--md-sys-color-inverse-surface)
+      );
+      --md-sys-color-surface-container-high: color-mix(
+        in srgb,
+        var(--md-sys-color-inverse-on-surface) 8%,
+        var(--md-sys-color-inverse-surface)
+      );
+      --md-sys-color-surface-container-highest: color-mix(
+        in srgb,
+        var(--md-sys-color-inverse-on-surface) 11%,
+        var(--md-sys-color-inverse-surface)
+      );
+      --md-sys-color-outline-variant: color-mix(
+        in srgb,
+        var(--md-sys-color-inverse-on-surface) 30%,
+        var(--md-sys-color-inverse-surface)
+      );
+      background-color: var(--md-sys-color-surface);
+      color: var(--md-sys-color-on-surface);
+    }
+  }
+
+  @scope (.#{$p}-island--primary) {
+    :scope {
+      --md-sys-color-surface: var(--md-sys-color-primary-container);
+      --md-sys-color-on-surface: var(--md-sys-color-on-primary-container);
+      --md-sys-color-on-surface-variant: var(--md-sys-color-on-primary-container);
+      --md-sys-color-surface-container-lowest: var(--md-sys-color-primary-container);
+      --md-sys-color-surface-container-low: color-mix(
+        in srgb,
+        var(--md-sys-color-on-primary-container) 4%,
+        var(--md-sys-color-primary-container)
+      );
+      --md-sys-color-surface-container: color-mix(
+        in srgb,
+        var(--md-sys-color-on-primary-container) 6%,
+        var(--md-sys-color-primary-container)
+      );
+      --md-sys-color-surface-container-high: color-mix(
+        in srgb,
+        var(--md-sys-color-on-primary-container) 8%,
+        var(--md-sys-color-primary-container)
+      );
+      --md-sys-color-surface-container-highest: color-mix(
+        in srgb,
+        var(--md-sys-color-on-primary-container) 11%,
+        var(--md-sys-color-primary-container)
+      );
+      --md-sys-color-outline-variant: color-mix(
+        in srgb,
+        var(--md-sys-color-on-primary-container) 30%,
+        var(--md-sys-color-primary-container)
+      );
+      background-color: var(--md-sys-color-surface);
+      color: var(--md-sys-color-on-surface);
+    }
+  }
+
+  @scope (.#{$p}-island--tertiary) {
+    :scope {
+      --md-sys-color-surface: var(--md-sys-color-tertiary-container);
+      --md-sys-color-on-surface: var(--md-sys-color-on-tertiary-container);
+      --md-sys-color-on-surface-variant: var(--md-sys-color-on-tertiary-container);
+      --md-sys-color-primary: var(--md-sys-color-tertiary);
+      --md-sys-color-surface-container-lowest: var(--md-sys-color-tertiary-container);
+      --md-sys-color-surface-container-low: color-mix(
+        in srgb,
+        var(--md-sys-color-on-tertiary-container) 4%,
+        var(--md-sys-color-tertiary-container)
+      );
+      --md-sys-color-surface-container: color-mix(
+        in srgb,
+        var(--md-sys-color-on-tertiary-container) 6%,
+        var(--md-sys-color-tertiary-container)
+      );
+      --md-sys-color-surface-container-high: color-mix(
+        in srgb,
+        var(--md-sys-color-on-tertiary-container) 8%,
+        var(--md-sys-color-tertiary-container)
+      );
+      --md-sys-color-surface-container-highest: color-mix(
+        in srgb,
+        var(--md-sys-color-on-tertiary-container) 11%,
+        var(--md-sys-color-tertiary-container)
+      );
+      --md-sys-color-outline-variant: color-mix(
+        in srgb,
+        var(--md-sys-color-on-tertiary-container) 30%,
+        var(--md-sys-color-tertiary-container)
+      );
+      background-color: var(--md-sys-color-surface);
+      color: var(--md-sys-color-on-surface);
+    }
+  }
+
+  // --- theme transitions (opt-in) --------------------------------------------
+  // Because color tokens are registered as <color>, retheming via --md-seed
+  // or [data-theme] interpolates smoothly on elements that transition their
+  // color-consuming properties. Opt in by putting this class on <html>.
+  @media (prefers-reduced-motion: no-preference) {
+    .#{$p}-theme-transition,
+    .#{$p}-theme-transition *,
+    .#{$p}-theme-transition *::before,
+    .#{$p}-theme-transition *::after {
+      transition-property: background-color, color, border-color, box-shadow,
+        outline-color, fill, stroke;
+      transition-duration: var(--md-sys-motion-duration-medium2);
+      transition-timing-function: var(--md-sys-motion-easing-standard);
+    }
+  }
+}

@@ -1,0 +1,50 @@
+// ============================================================================
+// m3x shape tokens (--md-sys-shape-corner-*) plus library stroke extensions.
+// Corner radii are registered as <length> so they animate with type safety.
+// ============================================================================
+
+@use "sass:list";
+@use "sass:map";
+@use "../functions" as fn;
+
+// name -> px radius
+$corners: (
+  "none": 0,
+  "extra-small": 4,
+  "small": 8,
+  "medium": 12,
+  "large": 16,
+  "extra-large": 28,
+);
+
+@mixin properties {
+  @each $name, $px in $corners {
+    @property --md-sys-shape-corner-#{$name} {
+      syntax: "<length>";
+      inherits: true;
+      initial-value: #{$px * 1px};
+    }
+  }
+  @property --md-sys-shape-corner-full {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 9999px;
+  }
+}
+
+@mixin tokens {
+  @each $name, $px in $corners {
+    $value: fn.rem($px);
+    @if $px == 0 {
+      $value: 0px;
+    }
+    --md-sys-shape-corner-#{$name}: #{$value};
+  }
+  --md-sys-shape-corner-full: 9999px;
+
+  // Library extensions (documented as such in the README): stroke widths so
+  // components never hardcode a border, even hairlines.
+  --m3-stroke-hairline: 1px;
+  --m3-stroke-thick: 2px;
+  --m3-stroke-heavy: 3px;
+}

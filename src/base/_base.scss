@@ -1,0 +1,109 @@
+// ============================================================================
+// m3x element defaults (layer: base)
+// Typography on body, headings on the M3 typescale, links, selection,
+// scrollbars, accent-color for unstyled native controls, forced-colors
+// pass-through.
+// ============================================================================
+
+@use "../mixins" as m;
+
+@mixin styles {
+  :root {
+    accent-color: var(--md-sys-color-primary);
+    scrollbar-color: var(--md-sys-color-outline)
+      var(--md-sys-color-surface-container);
+  }
+
+  body {
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    @include m.typescale("body-medium");
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1 {
+    @include m.typescale("headline-large");
+  }
+  h2 {
+    @include m.typescale("headline-medium");
+  }
+  h3 {
+    @include m.typescale("headline-small");
+  }
+  h4 {
+    @include m.typescale("title-large");
+  }
+  h5 {
+    @include m.typescale("title-medium");
+  }
+  h6 {
+    @include m.typescale("title-small");
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--md-sys-color-on-surface);
+    text-wrap: balance;
+  }
+
+  p {
+    margin-block: var(--m3-space-2);
+  }
+
+  a {
+    color: var(--md-sys-color-primary);
+    text-decoration: underline;
+    text-underline-offset: var(--m3-stroke-thick);
+
+    &:hover {
+      color: color-mix(
+        in srgb,
+        var(--md-sys-color-on-surface)
+          var(--md-sys-state-hover-state-layer-opacity),
+        var(--md-sys-color-primary)
+      );
+    }
+
+    &:focus-visible {
+      outline: var(--md-sys-state-focus-indicator-thickness) solid
+        var(--md-sys-color-secondary);
+      outline-offset: var(--md-sys-state-focus-indicator-offset);
+      border-radius: var(--md-sys-shape-corner-extra-small);
+    }
+  }
+
+  ::selection {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+  }
+
+  hr {
+    border: none;
+    border-block-start: var(--m3-stroke-hairline) solid
+      var(--md-sys-color-outline-variant);
+  }
+
+  code,
+  pre {
+    font-family: ui-monospace, monospace;
+    color: var(--md-sys-color-tertiary);
+  }
+
+  // Forced colors (Windows High Contrast): let system colors through on
+  // controls; forced-colors mode already replaces our colors, this only
+  // restores visible boundaries that background-color removal would hide.
+  @media (forced-colors: active) {
+    button,
+    input,
+    select,
+    textarea,
+    [role="button"] {
+      forced-color-adjust: auto;
+      border: var(--m3-stroke-hairline) solid ButtonBorder;
+    }
+  }
+}

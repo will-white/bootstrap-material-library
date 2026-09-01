@@ -1,0 +1,189 @@
+// ============================================================================
+// m3x Bootstrap variable remap (section 9a, layer: bootstrap-compat)
+// Legacy code reading var(--bs-*) silently resolves to M3 system tokens.
+// Sits after the reserved `bootstrap` layer, so these definitions win over a
+// real bootstrap.min.css imported there.
+// ============================================================================
+
+@use "sass:list";
+@use "sass:map";
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../tokens/color-scheme";
+
+// Bootstrap theme-color name -> m3x color role custom property.
+$-theme-map: (
+  "primary": ("--md-sys-color-primary", "primary"),
+  "secondary": ("--md-sys-color-secondary", "secondary"),
+  "success": ("--md-extended-color-success", "success"),
+  "danger": ("--md-sys-color-error", "error"),
+  "warning": ("--md-extended-color-warning", "warning"),
+  "info": ("--md-extended-color-info", "info"),
+  "light": ("--md-sys-color-surface-container-low", "surface-container-low"),
+  "dark": ("--md-sys-color-inverse-surface", "inverse-surface"),
+);
+
+// Subtle background / border / text-emphasis roles per theme color.
+$-subtle-map: (
+  "primary": (
+    "--md-sys-color-primary-container",
+    "--md-sys-color-on-primary-container",
+  ),
+  "secondary": (
+    "--md-sys-color-secondary-container",
+    "--md-sys-color-on-secondary-container",
+  ),
+  "success": (
+    "--md-extended-color-success-container",
+    "--md-extended-color-on-success-container",
+  ),
+  "danger": (
+    "--md-sys-color-error-container",
+    "--md-sys-color-on-error-container",
+  ),
+  "warning": (
+    "--md-extended-color-warning-container",
+    "--md-extended-color-on-warning-container",
+  ),
+  "info": (
+    "--md-extended-color-info-container",
+    "--md-extended-color-on-info-container",
+  ),
+);
+
+// Extra RGB triplets beyond the 8 theme colors: bs-name -> role.
+$-extra-triplets: (
+  "body-color": "on-surface",
+  "body-bg": "surface",
+  "emphasis-color": "on-surface",
+  "secondary-bg": "surface-container",
+  "tertiary-bg": "surface-container-high",
+);
+
+// --bs-*-rgb triplets cannot be expressed with light-dark(): it returns a
+// <color>, never a raw channel list. This is the ONE place scheme values are
+// duplicated -- build-time R,G,B for both schemes, dark under [data-theme]/
+// [data-bs-theme] and the prefers-color-scheme media block.
+@mixin -triplets($scheme) {
+  @each $name, $def in $-theme-map {
+    --bs-#{$name}-rgb: #{fn.rgb-triplet(
+        color-scheme.role-color(list.nth($def, 2), $scheme)
+      )};
+  }
+  @each $name, $role in $-extra-triplets {
+    --bs-#{$name}-rgb: #{fn.rgb-triplet(color-scheme.role-color($role, $scheme))};
+  }
+}
+
+@mixin remap {
+  :root {
+    // Theme colors.
+    @each $name, $def in $-theme-map {
+      --bs-#{$name}: var(#{list.nth($def, 1)});
+    }
+
+    // Subtle backgrounds, borders, and text emphasis (alerts, list groups,
+    // tables lean on these).
+    @each $name, $def in $-subtle-map {
+      --bs-#{$name}-bg-subtle: var(#{list.nth($def, 1)});
+      --bs-#{$name}-text-emphasis: var(#{list.nth($def, 2)});
+      --bs-#{$name}-border-subtle: color-mix(
+        in srgb,
+        var(#{list.nth($def, 2)}) 25%,
+        var(#{list.nth($def, 1)})
+      );
+    }
+
+    // Body + emphasis.
+    --bs-body-bg: var(--md-sys-color-surface);
+    --bs-body-color: var(--md-sys-color-on-surface);
+    --bs-emphasis-color: var(--md-sys-color-on-surface);
+    --bs-secondary-color: var(--md-sys-color-on-surface-variant);
+    --bs-tertiary-color: var(--md-sys-color-outline);
+    --bs-secondary-bg: var(--md-sys-color-surface-container);
+    --bs-tertiary-bg: var(--md-sys-color-surface-container-high);
+
+    // Borders.
+    --bs-border-color: var(--md-sys-color-outline-variant);
+    --bs-border-color-translucent: var(--md-sys-color-outline-variant);
+    --bs-border-width: var(--m3-stroke-hairline);
+    --bs-border-style: solid;
+
+    // Links, headings, code.
+    --bs-link-color: var(--md-sys-color-primary);
+    --bs-link-hover-color: color-mix(
+      in srgb,
+      var(--md-sys-color-on-surface)
+        var(--md-sys-state-hover-state-layer-opacity),
+      var(--md-sys-color-primary)
+    );
+    --bs-heading-color: var(--md-sys-color-on-surface);
+    --bs-code-color: var(--md-sys-color-tertiary);
+
+    // Typography.
+    --bs-body-font-family: var(--md-ref-typeface-plain);
+    --bs-font-sans-serif: var(--md-ref-typeface-plain);
+    --bs-body-font-size: var(--md-sys-typescale-body-medium-size);
+    --bs-body-font-weight: var(--md-sys-typescale-body-medium-weight);
+    --bs-body-line-height: 1.5;
+
+    // Radius scale -> M3 shape scale.
+    --bs-border-radius-sm: var(--md-sys-shape-corner-extra-small);
+    --bs-border-radius: var(--md-sys-shape-corner-small);
+    --bs-border-radius-lg: var(--md-sys-shape-corner-medium);
+    --bs-border-radius-xl: var(--md-sys-shape-corner-large);
+    --bs-border-radius-xxl: var(--md-sys-shape-corner-extra-large);
+    --bs-border-radius-pill: var(--md-sys-shape-corner-full);
+
+    // Shadows -> elevation tokens.
+    --bs-box-shadow-sm: var(--md-sys-elevation-1);
+    --bs-box-shadow: var(--md-sys-elevation-2);
+    --bs-box-shadow-lg: var(--md-sys-elevation-4);
+    --bs-box-shadow-inset: var(--md-sys-elevation-0);
+
+    // Focus ring (Bootstrap 5.3 forms/buttons).
+    --bs-focus-ring-width: var(--md-sys-state-focus-indicator-thickness);
+    --bs-focus-ring-color: color-mix(
+      in srgb,
+      var(--md-sys-color-primary) 25%,
+      transparent
+    );
+
+    // Component dimensions the re-skin consumes (Bootstrap's own var names,
+    // so existing per-instance overrides keep working).
+    --bs-modal-width: #{fn.rem(500)};
+    --bs-modal-width-sm: #{fn.rem(300)};
+    --bs-modal-width-lg: #{fn.rem(800)};
+    --bs-modal-width-xl: #{fn.rem(1140)};
+    --bs-offcanvas-height: #{fn.rem(320)};
+    --bs-toast-width: #{fn.rem(350)};
+    --bs-pagination-size: #{fn.rem(40)};
+    --bs-breadcrumb-divider: "/";
+  }
+
+  // Light-scheme triplets.
+  :root {
+    @include -triplets(light);
+  }
+
+  // Dark-scheme triplets (see the header comment for why these duplicate).
+  [data-theme="dark"],
+  [data-bs-theme="dark"] {
+    @include -triplets(dark);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]):not([data-bs-theme="light"]) {
+      @include -triplets(dark);
+    }
+  }
+
+  // Bootstrap 5.3's own theme switch keeps working: it simply drives
+  // color-scheme, exactly like [data-theme].
+  [data-bs-theme="light"] {
+    color-scheme: light;
+  }
+  [data-bs-theme="dark"] {
+    color-scheme: dark;
+  }
+}

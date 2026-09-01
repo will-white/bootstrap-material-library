@@ -1,0 +1,131 @@
+// ============================================================================
+// m3x top app bar (small | center-aligned | medium | large)
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-top-app-bar-height           64px   small/center bar height;
+//                                            participates in density
+//   --m3-top-app-bar-height-medium    112px  .m3-top-app-bar--medium
+//   --m3-top-app-bar-height-large     152px  .m3-top-app-bar--large
+//   --m3-top-app-bar-container-color  surface
+//   --m3-top-app-bar-content-color    on-surface
+//
+// Markup (leading/trailing slots are plain icon buttons):
+//   <header class="m3-top-app-bar m3-top-app-bar--sticky">
+//     <button class="m3-icon-btn" aria-label="Open menu">...</button>
+//     <h1 class="m3-top-app-bar__title">Page title</h1>
+//     <button class="m3-icon-btn" aria-label="Search">...</button>
+//   </header>
+//
+// Medium/large drop the title onto its own bottom row (flex-wrap + order);
+// the bar/title mixins are reused by the Bootstrap compat layer for
+// .navbar / .navbar-brand.
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+@mixin tokens {
+  --#{c.$prefix}-top-app-bar-height: #{fn.rem(64)};
+  --#{c.$prefix}-top-app-bar-height-medium: #{fn.rem(112)};
+  --#{c.$prefix}-top-app-bar-height-large: #{fn.rem(152)};
+  --#{c.$prefix}-top-app-bar-container-color: var(--md-sys-color-surface);
+  --#{c.$prefix}-top-app-bar-content-color: var(--md-sys-color-on-surface);
+}
+
+// Bar container (also emitted for Bootstrap's .navbar).
+@mixin bar {
+  display: flex;
+  align-items: center;
+  gap: var(--m3-space-2);
+  padding-inline: var(--m3-space-2);
+  background-color: var(--#{c.$prefix}-top-app-bar-container-color);
+  color: var(--#{c.$prefix}-top-app-bar-content-color);
+  @include m.control-height(--#{c.$prefix}-top-app-bar-height);
+}
+
+// Headline slot (also emitted for Bootstrap's .navbar-brand).
+@mixin title {
+  @include m.typescale("title-large");
+  flex: 1 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-inline: var(--m3-space-2);
+}
+
+// Small is the default bar: nothing extra.
+@mixin small {
+}
+
+// Center-aligned variant: the title centers between the icon slots.
+@mixin center($title: ".#{c.$prefix}-top-app-bar__title") {
+  #{$title} {
+    text-align: center;
+  }
+}
+
+// Medium variant: taller bar, title wraps onto its own bottom row.
+@mixin medium($title: ".#{c.$prefix}-top-app-bar__title") {
+  @include m.control-height(--#{c.$prefix}-top-app-bar-height-medium);
+  flex-wrap: wrap;
+  align-content: space-between;
+  padding-block-end: var(--m3-space-4);
+
+  #{$title} {
+    @include m.typescale("headline-small");
+    flex-basis: 100%;
+    order: 1;
+    white-space: normal;
+  }
+}
+
+// Large variant: same wrap layout as medium, taller with a bigger headline.
+@mixin large($title: ".#{c.$prefix}-top-app-bar__title") {
+  @include m.control-height(--#{c.$prefix}-top-app-bar-height-large);
+  flex-wrap: wrap;
+  align-content: space-between;
+  padding-block-end: var(--m3-space-4);
+
+  #{$title} {
+    @include m.typescale("headline-medium");
+    flex-basis: 100%;
+    order: 1;
+    white-space: normal;
+  }
+}
+
+// Pin the bar to the top of its scroll container.
+@mixin sticky {
+  position: sticky;
+  inset-block-start: var(--m3-space-none);
+  z-index: var(--m3-z-nav);
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-top-app-bar {
+    @include bar;
+  }
+
+  .#{$p}-top-app-bar__title {
+    @include title;
+  }
+
+  .#{$p}-top-app-bar--center {
+    @include center;
+  }
+
+  .#{$p}-top-app-bar--medium {
+    @include medium;
+  }
+
+  .#{$p}-top-app-bar--large {
+    @include large;
+  }
+
+  .#{$p}-top-app-bar--sticky {
+    @include sticky;
+  }
+}

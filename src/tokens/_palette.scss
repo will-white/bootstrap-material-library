@@ -1,0 +1,158 @@
+// ============================================================================
+// m3x reference palettes (tier 1 tokens: --md-ref-palette-*)
+// Five tonal palettes derived from one seed, plus fixed error and extended
+// semantic palettes (success / warning / info) for Bootstrap parity.
+//
+// HCT is approximated with OKLCH: tone T's lightness is the OKLCH "l" of
+// lab(T 0 0); chroma follows M3's per-palette rules, gamut-capped per tone
+// at build time. Emitted three times, in ascending capability tiers
+// (static hex -> OKLCH literals -> runtime relative-color from --md-seed);
+// see tokens/_color-scheme.scss for how the tiers are sequenced.
+// ============================================================================
+
+@use "sass:color";
+@use "sass:list";
+@use "sass:map";
+@use "sass:math";
+@use "sass:meta";
+@use "../config";
+@use "../functions" as fn;
+
+// --- seed decomposition -----------------------------------------------------
+
+$-seed-ok: color.to-space(config.$seed, oklch);
+$-seed-h: color.channel($-seed-ok, "hue");
+$-seed-c: color.channel($-seed-ok, "chroma");
+
+@if meta.type-of($-seed-h) != "number" {
+  $-seed-h: 0deg;
+}
+
+$-primary-chroma: math.min($-seed-c, 0.17);
+$-secondary-chroma: 0.05;
+$-tertiary-chroma: 0.08;
+$-neutral-chroma: 0.012;
+$-neutral-variant-chroma: 0.025;
+$-tertiary-h: $-seed-h + 60deg;
+
+// Fixed palettes (seed-independent, like M3's error palette).
+$-error-h: 29deg;
+$-error-chroma: 0.19;
+$-success-h: 145deg;
+$-success-chroma: 0.14;
+$-warning-h: 85deg;
+$-warning-chroma: 0.12;
+$-info-h: 230deg;
+$-info-chroma: 0.13;
+
+// --- palette definitions ----------------------------------------------------
+
+// name -> (hue, chroma, tone list, runtime chroma expression or null)
+// The runtime expression is the OKLCH relative-color chroma/hue used when
+// `@supports (color: oklch(from red l c h))`; null means the palette is
+// fixed and keeps its static values at runtime.
+$-defs: (
+  "primary": (
+    $-seed-h,
+    $-primary-chroma,
+    fn.$standard-tones,
+    "min(c, 0.17)",
+    "h",
+  ),
+  "secondary": (
+    $-seed-h,
+    $-secondary-chroma,
+    fn.$standard-tones,
+    "min(c, 0.05)",
+    "h",
+  ),
+  "tertiary": (
+    $-tertiary-h,
+    $-tertiary-chroma,
+    fn.$standard-tones,
+    "min(c, 0.08)",
+    "calc(h + 60)",
+  ),
+  "neutral": ($-seed-h, $-neutral-chroma, fn.$all-tones, "min(c, 0.012)", "h"),
+  "neutral-variant": (
+    $-seed-h,
+    $-neutral-variant-chroma,
+    fn.$standard-tones,
+    "min(c, 0.025)",
+    "h",
+  ),
+  "error": ($-error-h, $-error-chroma, fn.$standard-tones, null, null),
+  "success": ($-success-h, $-success-chroma, fn.$standard-tones, null, null),
+  "warning": ($-warning-h, $-warning-chroma, fn.$standard-tones, null, null),
+  "info": ($-info-h, $-info-chroma, fn.$standard-tones, null, null),
+);
+
+// Resolved palettes: name -> (tone -> Sass OKLCH color).
+$palettes: ();
+@each $name, $def in $-defs {
+  $hue: list.nth($def, 1);
+  $chroma: list.nth($def, 2);
+  $tones: list.nth($def, 3);
+  $palettes: map.set($palettes, $name, fn.palette($hue, $chroma, $tones));
+}
+
+// get(): one palette step as a Sass color (build-time consumers: the scheme
+// map, @property initial values, Bootstrap RGB triplets).
+@function get($palette, $tone) {
+  $p: map.get($palettes, $palette);
+  @if $p == null {
+    @error "Unknown palette #{$palette}";
+  }
+  $c: map.get($p, $tone);
+  @if $c == null {
+    @error "Palette #{$palette} has no tone #{$tone}";
+  }
+  @return $c;
+}
+
+// --- emission ---------------------------------------------------------------
+
+// Tone lightness scale for runtime use: --md-tone-0-l ... --md-tone-100-l.
+@mixin tones {
+  @each $t in fn.$all-tones {
+    --md-tone-#{$t}-l: #{fn.tone-l-str($t)};
+  }
+}
+
+// Tier 1: static sRGB hex for every palette step, plus the seed itself.
+@mixin static-fallback {
+  --md-seed: #{fn.hex(config.$seed)};
+  @each $name, $steps in $palettes {
+    @each $t, $c in $steps {
+      --md-ref-palette-#{$name}#{$t}: #{fn.hex($c)};
+    }
+  }
+}
+
+// Tier 3: same steps as OKLCH literals (behind oklch + light-dark support).
+@mixin tier3-oklch {
+  --md-seed: #{fn.oklch-str(config.$seed)};
+  @each $name, $steps in $palettes {
+    @each $t, $c in $steps {
+      --md-ref-palette-#{$name}#{$t}: #{fn.oklch-str($c)};
+    }
+  }
+}
+
+// Tier 4: runtime seed derivation with relative color syntax. One line in a
+// consumer's CSS (`:root { --md-seed: oklch(0.55 0.15 250); }`) rethemes
+// the whole app. Fixed palettes (error + extended) keep their static values.
+@mixin tier4-relative {
+  @each $name, $def in $-defs {
+    $chroma-expr: list.nth($def, 4);
+    $hue-expr: list.nth($def, 5);
+    @if $chroma-expr != null {
+      $tones: list.nth($def, 3);
+      @each $t in $tones {
+        --md-ref-palette-#{$name}#{$t}: #{fn.raw(
+            "oklch(from var(--md-seed) var(--md-tone-#{$t}-l) #{$chroma-expr} #{$hue-expr})"
+          )};
+      }
+    }
+  }
+}
