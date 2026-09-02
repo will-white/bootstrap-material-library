@@ -13,6 +13,8 @@
     .demo-row { display: flex; flex-wrap: wrap; gap: var(--m3-space-3); align-items: center; }
     .demo-pair { display: grid; gap: var(--m3-space-2); }
     .demo-pair > small { color: var(--md-sys-color-on-surface-variant); }
+    /* Popover menu anchored below its trigger (CSS anchor positioning; elsewhere it opens at its static position). */
+    .demo-popover { position-anchor: --demo-menu; position-area: block-end span-inline-end; inset: auto; margin: var(--m3-space-1) 0 0; }
     section > h2 { margin-block-end: var(--m3-space-3); }
     @media (max-width: 48rem) { .demo-shell { grid-template-columns: 1fr; } .demo-shell > .m3-rail { display: none; } }
   </style>
@@ -253,10 +255,33 @@
             </label>
           </div>
 
+          <div class="demo-row">
+            <button class="m3-btn m3-btn--tonal" type="button" popovertarget="demo-menu" style="anchor-name: --demo-menu;">Move to</button>
+            <div class="m3-menu demo-popover" id="demo-menu" popover>
+              <span class="m3-menu__header">Move to</span>
+              <button class="m3-menu__item" type="button" popovertarget="demo-menu" popovertargetaction="hide">Archive</button>
+              <button class="m3-menu__item" type="button" popovertarget="demo-menu" popovertargetaction="hide">Spam</button>
+              <hr>
+              <button class="m3-menu__item" type="button" popovertarget="demo-menu" popovertargetaction="hide">Trash</button>
+            </div>
+            <button class="m3-btn m3-btn--filled" type="button" commandfor="demo-modal" command="show-modal">Open modal dialog</button>
+          </div>
+
+          <dialog class="m3-dialog" id="demo-modal" aria-labelledby="modal-h">
+            <h3 class="m3-dialog__title" id="modal-h">Empty trash?</h3>
+            <div class="m3-dialog__content">
+              <p>142 conversations will be deleted forever. Opened with <code>showModal()</code> through the <code>command</code> attribute and closed by a <code>method="dialog"</code> form: no script.</p>
+            </div>
+            <form method="dialog" class="m3-dialog__actions">
+              <button class="m3-btn m3-btn--text" value="cancel">Cancel</button>
+              <button class="m3-btn m3-btn--text" value="empty">Empty trash</button>
+            </form>
+          </dialog>
+
           <dialog class="m3-dialog m3-dialog--static" open aria-labelledby="dlg-h">
             <h3 class="m3-dialog__title" id="dlg-h">Empty trash?</h3>
             <div class="m3-dialog__content">
-              <p>142 conversations will be deleted forever. This is the native <code>&lt;dialog&gt;</code> element, shown non-modally for the demo.</p>
+              <p>142 conversations will be deleted forever. The same native <code>&lt;dialog&gt;</code> surface, rendered in flow with <code>.m3-dialog--static</code>.</p>
             </div>
             <div class="m3-dialog__actions">
               <button class="m3-btn m3-btn--text">Cancel</button>
@@ -355,7 +380,7 @@
         </div>
 
         <div class="demo-pair">
-          <small class="m3-label-medium">.form-control.is-invalid / m3 field with :user-invalid</small>
+          <small class="m3-label-medium">Bootstrap .form-label + .form-control (label above, as Bootstrap lays it out) / m3 field (label inside) / .form-floating (Bootstrap markup, label inside)</small>
           <div>
             <label class="form-label" for="bs-mail">Forwarding address</label>
             <input id="bs-mail" type="email" class="form-control is-invalid" value="not-an-email">
@@ -557,6 +582,12 @@
   document.getElementById("seed").addEventListener("input", function (e) {
     root.style.setProperty("--md-seed", e.target.value);
   });
+  // Browsers without Invoker Commands (command="show-modal"): open the modal from a click.
+  if (!("commandForElement" in HTMLButtonElement.prototype)) {
+    document.querySelectorAll("[commandfor]").forEach(function (b) {
+      b.addEventListener("click", function () { document.getElementById(b.getAttribute("commandfor")).showModal(); });
+    });
+  }
 </script>
 
 </body>
