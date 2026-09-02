@@ -128,10 +128,12 @@
       content: "";
       display: none;
       @include m.check-icon(
-        calc(var(--#{c.$prefix}-chip-icon-size) / 2),
         calc(var(--#{c.$prefix}-chip-icon-size) / 4),
+        calc(var(--#{c.$prefix}-chip-icon-size) / 2),
         var(--m3-stroke-thick)
       );
+      // Optical centering of the rotated mark inside the label's line box.
+      translate: 0 calc(-1 * var(--m3-stroke-hairline));
     }
   }
 

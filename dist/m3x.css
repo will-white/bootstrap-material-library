@@ -963,8 +963,8 @@
     --m3-checkbox-outline-color: var(--md-sys-color-on-surface-variant);
     --m3-checkbox-selected-container-color: var(--md-sys-color-primary);
     --m3-checkbox-mark-color: var(--md-sys-color-on-primary);
-    --m3-checkbox-mark-width: 0.625rem;
-    --m3-checkbox-mark-height: 0.3125rem;
+    --m3-checkbox-mark-width: 0.3125rem;
+    --m3-checkbox-mark-height: 0.625rem;
     --m3-radio-size: 1.25rem;
     --m3-radio-outline-color: var(--md-sys-color-on-surface-variant);
     --m3-radio-selected-color: var(--md-sys-color-primary);
@@ -5063,7 +5063,7 @@
       border-bottom: var(--m3-stroke-thick) solid currentColor;
       rotate: 45deg;
       color: var(--m3-checkbox-mark-color);
-      translate: 0 calc(-1 * var(--m3-stroke-hairline));
+      translate: 0 calc(-1 * var(--m3-stroke-thick));
     }
     .form-check-input[type=checkbox]:indeterminate {
       background-color: var(--m3-checkbox-selected-container-color);
@@ -8856,6 +8856,12 @@
         }
       }
     }
+    .m3-dialog--static {
+      position: static;
+      inline-size: auto;
+      block-size: auto;
+      margin: var(--m3-space-none);
+    }
     .m3-dialog__title {
       display: block;
       font-family: var(--md-sys-typescale-headline-small-font);
@@ -9766,7 +9772,7 @@
       border-bottom: var(--m3-stroke-thick) solid currentColor;
       rotate: 45deg;
       color: var(--m3-checkbox-mark-color);
-      translate: 0 calc(-1 * var(--m3-stroke-hairline));
+      translate: 0 calc(-1 * var(--m3-stroke-thick));
     }
     input[type=checkbox].m3-checkbox:indeterminate {
       background-color: var(--m3-checkbox-selected-container-color);
@@ -10116,11 +10122,12 @@
     .m3-chip--filter .m3-chip__label::before {
       content: "";
       display: none;
-      width: calc(var(--m3-chip-icon-size) / 2);
-      height: calc(var(--m3-chip-icon-size) / 4);
+      width: calc(var(--m3-chip-icon-size) / 4);
+      height: calc(var(--m3-chip-icon-size) / 2);
       border-right: var(--m3-stroke-thick) solid currentColor;
       border-bottom: var(--m3-stroke-thick) solid currentColor;
       rotate: 45deg;
+      translate: 0 calc(-1 * var(--m3-stroke-hairline));
     }
     .m3-chip--filter .m3-chip__input:hover + .m3-chip__label {
       --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
@@ -10207,11 +10214,12 @@
     .m3-chip--input .m3-chip__label::before {
       content: "";
       display: none;
-      width: calc(var(--m3-chip-icon-size) / 2);
-      height: calc(var(--m3-chip-icon-size) / 4);
+      width: calc(var(--m3-chip-icon-size) / 4);
+      height: calc(var(--m3-chip-icon-size) / 2);
       border-right: var(--m3-stroke-thick) solid currentColor;
       border-bottom: var(--m3-stroke-thick) solid currentColor;
       rotate: 45deg;
+      translate: 0 calc(-1 * var(--m3-stroke-hairline));
     }
     .m3-chip--input .m3-chip__input:hover + .m3-chip__label {
       --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);

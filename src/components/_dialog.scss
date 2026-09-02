@@ -160,11 +160,24 @@
   }
 }
 
+// In-flow variant: renders the dialog surface where it sits in the markup
+// (demos, docs, embedded confirmations). Still needs the open attribute.
+@mixin static-variant {
+  position: static;
+  inline-size: auto;
+  block-size: auto;
+  margin: var(--m3-space-none);
+}
+
 @mixin classes {
   $p: c.$prefix;
 
   .#{$p}-dialog {
     @include native;
+  }
+
+  .#{$p}-dialog--static {
+    @include static-variant;
   }
 
   .#{$p}-dialog__title {

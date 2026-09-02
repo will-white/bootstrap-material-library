@@ -8,8 +8,8 @@
 //   --m3-checkbox-outline-color             on-surface-variant (unselected)
 //   --m3-checkbox-selected-container-color  primary (checked/indeterminate)
 //   --m3-checkbox-mark-color                on-primary (check mark / dash)
-//   --m3-checkbox-mark-width                10px   drawn mark width
-//   --m3-checkbox-mark-height               5px    drawn mark height
+//   --m3-checkbox-mark-width                5px    drawn mark width (short stroke)
+//   --m3-checkbox-mark-height               10px   drawn mark height (long stroke)
 //
 // Markup:
 //   <label>
@@ -28,8 +28,8 @@
   --#{c.$prefix}-checkbox-outline-color: var(--md-sys-color-on-surface-variant);
   --#{c.$prefix}-checkbox-selected-container-color: var(--md-sys-color-primary);
   --#{c.$prefix}-checkbox-mark-color: var(--md-sys-color-on-primary);
-  --#{c.$prefix}-checkbox-mark-width: #{fn.rem(10)};
-  --#{c.$prefix}-checkbox-mark-height: #{fn.rem(5)};
+  --#{c.$prefix}-checkbox-mark-width: #{fn.rem(5)};
+  --#{c.$prefix}-checkbox-mark-height: #{fn.rem(10)};
 }
 
 // The whole control, applied to the real input (reused by the Bootstrap
@@ -102,8 +102,9 @@
       var(--m3-stroke-thick)
     );
     color: var(--#{c.$prefix}-checkbox-mark-color);
-    // Optical centering: the rotated mark sits a hair high.
-    translate: 0 calc(-1 * var(--m3-stroke-hairline));
+    // Optical centering: the rotated L's visual center sits below the box
+    // center by about a stroke width.
+    translate: 0 calc(-1 * var(--m3-stroke-thick));
   }
 
   // Indeterminate wins over checked (emitted after; same specificity).

@@ -533,7 +533,7 @@ pure-CSS equivalent -- divergences are listed.
 | Tooltips | `.m3-tooltip`, `--rich`, `.m3-tooltip-anchor` | anchor positioning behind `@supports`, hidden gracefully otherwise |
 | Cards | `.m3-card` + variants, donut-scoped chrome | -- |
 | Carousel | `.m3-carousel` | CSS scroll-snap, no autoplay |
-| Dialogs | `.m3-dialog` on native `<dialog>` (+ `--fullscreen`) | consumer calls `showModal()` |
+| Dialogs | `.m3-dialog` on native `<dialog>` (+ `--fullscreen`, `--static` for an in-flow surface) | consumer calls `showModal()` |
 | Divider | `.m3-divider` on `<hr>` | -- |
 | Lists | `.m3-list`, `.m3-list-item` (donut) | -- |
 | Bottom/side sheets | `.m3-sheet--bottom/--side` on `<dialog>`, `--side-standard` on `<aside>` | modal variants via `showModal()` |
