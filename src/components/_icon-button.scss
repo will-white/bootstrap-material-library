@@ -27,6 +27,8 @@
 //   --m3-icon-btn-icon-size-xs                20px   .m3-icon-btn--xs
 //   --m3-icon-btn-icon-size-large             32px   .m3-icon-btn--large
 //   --m3-icon-btn-icon-size-xl                40px   .m3-icon-btn--xl
+//   --m3-icon-btn-icon-optical-size(-xs/-large/-xl)  24 / 20 / 32 / 40  opsz axis of a
+//                                                    child .m3-icon
 //   --m3-icon-btn-color                       on-surface-variant (standard)
 //   --m3-icon-btn-selected-color              primary (standard, selected)
 //   --m3-icon-btn-selected-container-color    transparent (standard, selected;
@@ -76,6 +78,11 @@
   --#{c.$prefix}-icon-btn-icon-size-xs: #{fn.rem(20)};
   --#{c.$prefix}-icon-btn-icon-size-large: #{fn.rem(32)};
   --#{c.$prefix}-icon-btn-icon-size-xl: #{fn.rem(40)};
+  // opsz axis of a child .m3-icon: the icon size in px (axis minimum 20).
+  --#{c.$prefix}-icon-btn-icon-optical-size: 24;
+  --#{c.$prefix}-icon-btn-icon-optical-size-xs: 20;
+  --#{c.$prefix}-icon-btn-icon-optical-size-large: 32;
+  --#{c.$prefix}-icon-btn-icon-optical-size-xl: 40;
   --#{c.$prefix}-icon-btn-color: var(--md-sys-color-on-surface-variant);
   --#{c.$prefix}-icon-btn-selected-color: var(--md-sys-color-primary);
   --#{c.$prefix}-icon-btn-selected-container-color: transparent;
@@ -135,6 +142,7 @@
     inline-size: var(--#{c.$prefix}-icon-btn-icon-size);
     font-size: var(--#{c.$prefix}-icon-btn-icon-size);
     block-size: var(--#{c.$prefix}-icon-btn-icon-size);
+    --#{c.$prefix}-icon-optical-size: var(--#{c.$prefix}-icon-btn-icon-optical-size);
   }
 
   // M3 Expressive shape morphs (see button.scss).
@@ -234,6 +242,7 @@
 
 @mixin small {
   --#{c.$prefix}-icon-btn-icon-size: var(--m3-icon-size-small);
+  --#{c.$prefix}-icon-btn-icon-optical-size: var(--#{c.$prefix}-icon-btn-icon-optical-size-xs);
   @include m.control-height(--#{c.$prefix}-icon-btn-size-small);
   inline-size: calc(
     var(--#{c.$prefix}-icon-btn-size-small) + var(--m3-density) * var(--m3-density-step)
@@ -247,6 +256,7 @@
 @mixin xs {
   --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-icon-btn-size-xs);
   --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-icon-btn-icon-size-xs);
+  --#{c.$prefix}-icon-btn-icon-optical-size: var(--#{c.$prefix}-icon-btn-icon-optical-size-xs);
 }
 
 @mixin medium {
@@ -259,6 +269,7 @@
 @mixin large {
   --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-icon-btn-size-large);
   --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-icon-btn-icon-size-large);
+  --#{c.$prefix}-icon-btn-icon-optical-size: var(--#{c.$prefix}-icon-btn-icon-optical-size-large);
   --#{c.$prefix}-icon-btn-shape-square: var(--#{c.$prefix}-icon-btn-shape-square-large);
   --#{c.$prefix}-icon-btn-shape-pressed: var(--#{c.$prefix}-icon-btn-shape-pressed-large);
   --#{c.$prefix}-icon-btn-shape-selected: var(--#{c.$prefix}-icon-btn-shape-selected-large);
@@ -267,6 +278,7 @@
 @mixin xl {
   --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-icon-btn-size-xl);
   --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-icon-btn-icon-size-xl);
+  --#{c.$prefix}-icon-btn-icon-optical-size: var(--#{c.$prefix}-icon-btn-icon-optical-size-xl);
   --#{c.$prefix}-icon-btn-shape-square: var(--#{c.$prefix}-icon-btn-shape-square-large);
   --#{c.$prefix}-icon-btn-shape-pressed: var(--#{c.$prefix}-icon-btn-shape-pressed-large);
   --#{c.$prefix}-icon-btn-shape-selected: var(--#{c.$prefix}-icon-btn-shape-selected-large);

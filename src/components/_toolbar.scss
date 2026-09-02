@@ -321,6 +321,7 @@
   // Every button vocabulary compacts through the tokens it reads.
   --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-toolbar-dense-control-size);
   --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-toolbar-dense-icon-size);
+  --#{c.$prefix}-icon-btn-icon-optical-size: 20;
   --#{c.$prefix}-icon-btn-shape: var(--#{c.$prefix}-toolbar-dense-control-shape);
   --#{c.$prefix}-icon-btn-shape-pressed: var(--#{c.$prefix}-toolbar-dense-control-shape);
   --#{c.$prefix}-icon-btn-shape-selected: var(--#{c.$prefix}-toolbar-dense-control-shape);
@@ -332,6 +333,7 @@
   --#{c.$prefix}-btn-padding-inline: var(--m3-space-2);
   --#{c.$prefix}-btn-icon-gap: var(--m3-space-1);
   --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-toolbar-dense-icon-size);
+  --#{c.$prefix}-btn-icon-optical-size: 20;
   --#{c.$prefix}-btn-shape: var(--#{c.$prefix}-toolbar-dense-control-shape);
   --#{c.$prefix}-btn-shape-pressed: var(--#{c.$prefix}-toolbar-dense-control-shape);
   --#{c.$prefix}-btn-shape-selected: var(--#{c.$prefix}-toolbar-dense-control-shape);

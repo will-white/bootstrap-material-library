@@ -1,24 +1,36 @@
 // ============================================================================
 // m3x icon contract (.m3-icon) for Material Symbols variable fonts.
-// The library never bundles a font: load one (Material Symbols Outlined,
+// The library bundles no icon font: load one (Material Symbols Outlined,
 // Rounded or Sharp) from fonts.googleapis.com with the FILL / wght / GRAD /
-// opsz axes, then <span class="m3-icon">favorite</span>. Components size
-// .m3-icon exactly like an inline <svg>, and their selected states set
-// --m3-icon-fill: 1, so an outlined symbol fills when its control is
-// selected (the M3 "fill on select" behaviour), animated through the
-// variable font axis.
+// opsz axes, subset with icon_names and display=block, then
+// <span class="m3-icon">favorite</span>. Components size .m3-icon exactly
+// like an inline <svg> and set its opsz axis to the rendered size; their
+// selected states set --m3-icon-fill: 1, so an outlined symbol fills when
+// its control is selected (the M3 "fill on select" behaviour), animated
+// through the variable font axis.
+//
+// Missing font: the ligature text would otherwise render as words clipped
+// to the icon box. .m3-icon lists an embedded blank face after the icon
+// font (see $icon-blank-fallback): a-z, 0-9, underscore and space map to
+// empty zero-advance glyphs, so until the font arrives (font-display: block
+// keeps text invisible for the block period, the blank face takes over
+// after it) or when it never does, an icon is an empty box.
 //
 // PUBLIC VARIABLE API (tier-3 tokens)
 //   --m3-icon-font           "Material Symbols Outlined"
 //   --m3-icon-weight         400        wght axis (100-700)
 //   --m3-icon-grade          0          GRAD axis (-25 .. 200)
-//   --m3-icon-optical-size   24         opsz axis (20-48)
+//   --m3-icon-optical-size   24         opsz axis (20-48); containers set it
+//                                       to their icon size (buttons 20, XL
+//                                       icon buttons 40, large FAB 36)
 //   --m3-icon-fill           0          FILL axis, registered <number>;
 //                                       1 on selected controls
 // ============================================================================
 
 @use "../config" as c;
 @use "../mixins" as m;
+
+$blank-face: "m3x-icon-blank";
 
 @mixin tokens {
   --#{c.$prefix}-icon-font: "Material Symbols Outlined";
@@ -33,6 +45,15 @@
     inherits: true;
     initial-value: 0;
   }
+
+  @if c.$icon-blank-fallback {
+    // 332-byte woff2: .notdef plus one empty zero-advance glyph mapped from
+    // a-z, 0-9, "_" and space (built with fontTools; see README, Icons).
+    @font-face {
+      font-family: $blank-face;
+      src: url("data:font/woff2;base64,d09GMgABAAAAAAFMAAoAAAAAAuwAAAEFAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAABmAAgRQKHDYBNgIkAwgLBgAEIAV1BywbTAIALgps1zQhbophXOP4LI/ioo6GQwTlfu/eJe9zq4gia1mRVBW+WpSVAxpPMsNOex4l2KdEAzk75wHQegAMD1J90bcEDqKop8cBN28BQZRhVsYZ5FnCLaAT+vVk6d+jQTNELyrxExtUogBcfRcAzVdaFyjNDwBoABIFK7DACuIGMxMpNU7w9Y5GCVLv/YU+AhNsAAL3IEFFoGIAVBDU+bBUj26/BQLBPw/Q898J5Rs+783vHQHxnLcoEgQ9GsSPIyaeBQAgqwjYkaoACQCA6gwEYRkB0tiyIupU2MFin5YdXtv4oCnfcvlNVYKR9eBaudlEzgxS7Hml2plLbBBjksjhhAA=") format("woff2");
+    }
+  }
 }
 
 @mixin base {
@@ -44,7 +65,11 @@
   overflow: hidden;
   vertical-align: middle;
   text-align: center;
-  font-family: var(--#{c.$prefix}-icon-font);
+  @if c.$icon-blank-fallback {
+    font-family: var(--#{c.$prefix}-icon-font), $blank-face;
+  } @else {
+    font-family: var(--#{c.$prefix}-icon-font);
+  }
   font-size: var(--m3-icon-size);
   font-weight: normal;
   font-style: normal;

@@ -121,9 +121,16 @@ $bootstrap-reskin-scope: null !default;
 // leading `@layer reset, bootstrap, ...;` statement.
 $emit-layer-statement: true !default;
 
-// Font stacks (library never bundles or fetches a webfont).
+// Font stacks (library never bundles or fetches a text webfont).
 $font-family-plain: (Roboto, system-ui, sans-serif) !default;
 $font-family-brand: (Roboto, system-ui, sans-serif) !default;
+
+// Icon contract. Without an icon font, .m3-icon falls back to an embedded
+// 332-byte blank face (every character a Material Symbols ligature name can
+// contain maps to an empty, zero-advance glyph), so a missing or still
+// loading font shows an empty box rather than the ligature words. Set
+// false to drop the face when the icon font is guaranteed.
+$icon-blank-fallback: true !default;
 
 // Root font size used by the rem() helper to convert M3's px spec values.
 $root-font-size: 16 !default;

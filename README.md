@@ -392,6 +392,50 @@ stuck in its hover look. Bootstrap's explicit hover utilities
 
 ---
 
+## Icons (Material Symbols)
+
+`.m3-icon` is the contract for Google's Material Symbols variable fonts:
+`<span class="m3-icon" aria-hidden="true">favorite</span>`, the glyph named
+by its ligature. The library bundles no icon font. Load one yourself, subset
+to the names you use and with `display=block`, so nothing paints until the
+glyphs are there:
+
+```html
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=favorite,home,send&display=block">
+```
+
+`icon_names` is alphabetical and comma-separated; the unsubsetted font is
+about 4 MB, a handful of icons under 10 KB, which is the difference between
+icons that are simply there and icons that pop in seconds after the page.
+Rounded and Sharp work the same way with `--m3-icon-font: "Material Symbols
+Rounded"`.
+
+- **Sizing.** An icon is a `1em` square at its `font-size`. Every component
+  that sizes an `svg` child (`.m3-btn`, `.m3-icon-btn`, `.m3-fab`, the
+  navigation items, the FAB menu) sizes `> .m3-icon` identically and sets
+  the `opsz` axis to the rendered pixel size: button icons at the axis
+  minimum of 20, XL icon buttons at 40, a large FAB at 36.
+- **Fill on select.** `--m3-icon-fill` is a registered `<number>` that
+  selected controls set to 1 (`aria-pressed`, a checked `.m3-btn-check`,
+  `aria-current` navigation, active tabs, selected chips and segments); the
+  FILL axis interpolates over the short standard transition, so an outlined
+  symbol fills in place. `.m3-icon--filled` sets it directly.
+- **Weight, grade, optical size.** `--m3-icon-weight` (100 to 700),
+  `--m3-icon-grade` (-25 to 200) and `--m3-icon-optical-size` (20 to 48) are
+  the other axes, all inherited, all settable per island or per icon.
+- **Missing font.** A symbol is text, so without its font it would render
+  as a word clipped to the icon box. `.m3-icon` therefore lists an embedded
+  blank face after `--m3-icon-font`: 332 bytes of woff2 in which a-z, 0-9,
+  underscore and space map to an empty, zero-advance glyph. While the font
+  loads `font-display: block` keeps the text invisible, after the block
+  period the blank face takes over, and a font that never arrives leaves an
+  empty box rather than "notif". `$icon-blank-fallback: false` drops the
+  face when the font is guaranteed.
+- **Color.** An icon has no color of its own; it is the `currentColor` of
+  the control around it.
+
+---
+
 ## State system
 
 No hardcoded rgba state colors exist anywhere. M3 state layers and disabled
@@ -646,7 +690,7 @@ pure-CSS equivalent -- divergences are listed.
 | Bottom/side sheets | `.m3-sheet--bottom/--side` on `<dialog>`, `--side-standard` on `<aside>` | modal variants via `showModal()` |
 | Navigation bar/rail/drawer | `.m3-nav-bar`, `.m3-rail`, `.m3-drawer` (+ `--modal`) | active via `aria-current`; active icons fill (`--m3-icon-fill: 1`) |
 | Adaptive layout | `.m3-adaptive-layout` + `.m3-adaptive-nav` (`__item`, `__icon`, `__label`: navigation bar / rail / drawer by window size class), `.m3-pane-layout` + `--list-detail/--supporting-pane/--feed`, `.m3-pane`, `.m3-only-*` / `.m3-hide-*` | viewport media queries at M3's window size classes (`$window-size-classes`); which pane a compact window shows is yours |
-| Icon | `.m3-icon` (+ `--filled`) for Material Symbols variable fonts | you load the font; selected controls set `--m3-icon-fill: 1` and the FILL axis animates |
+| Icon | `.m3-icon` (+ `--filled`) for Material Symbols variable fonts | you load the font (subset it with `icon_names`); `opsz` follows the icon size, selected controls set `--m3-icon-fill: 1` and the FILL axis animates; a missing font is an empty box, not a clipped word |
 | Disclosure | `details.m3-disclosure` (+ `name` for exclusive groups) | animated `::details-content` where supported |
 | Tabs | `.m3-tabs` (aria/`.active` or real radio inputs) | pane switching is yours |
 | Top/bottom app bars | `.m3-top-app-bar` + size variants + `--sticky` (+ `--scrolled` class), `.m3-bottom-app-bar` | a sticky bar tints on scroll and a sticky medium/large bar collapses to the small height through scroll-driven animations; elsewhere toggle `--scrolled` yourself |
@@ -765,6 +809,7 @@ no `@import`).
   $custom-colors: (),              // ("brand": #ff6f00) -> harmonized --md-extended-color-brand roles + utilities
   $motion-scheme: "expressive",    // spring physics set: expressive | standard
   $window-size-classes: (...),     // compact 0 / medium 600px / expanded 840px / large 1200px / extra-large 1600px
+  $icon-blank-fallback: true,      // embedded 332-byte blank face behind --m3-icon-font (missing icon font renders nothing)
   $prefix: "m3",                   // class + tier-3 token prefix
   $enable-bootstrap-compat: true,  // --bs-* remap (9a)
   $enable-bootstrap-reskin: true,  // component re-skin (9b)
@@ -814,7 +859,7 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
 
 ### Tests
 
-`npm test` runs three suites against the built CSS:
+`npm test` runs four suites against the built CSS:
 
 - **contrast** (`test/contrast.js`, no browser): reads the static sRGB tier
   and asserts M3's minimum ratios for every accent / on-accent, container /
@@ -830,6 +875,9 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
   fixture is `test/fixtures/sink.html` (one of everything).
 - **hit areas** (`test/hit-areas.js`): 48dp touch targets stay 48dp, and never
   cross the seam of a connected button group or the dense toolbar.
+- **icon** (`test/icon.js`): without an icon font a `.m3-icon` paints no text
+  and keeps its box (the blank fallback face), containers set `opsz` to the
+  icon size, and a selected control sets `FILL 1`.
 
 Chromium comes from `CHROME_PATH`, `npx playwright-core install chromium`, or
 a `PLAYWRIGHT_BROWSERS_PATH` directory, in that order. Stock `bootstrap.css`

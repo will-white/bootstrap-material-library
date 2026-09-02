@@ -1,5 +1,5 @@
-// npm test: contrast (static), then the Chromium audits and hit-area checks.
-const suites = [['contrast', require('./contrast')], ['audit', require('./audit')], ['hit-areas', require('./hit-areas')]];
+// npm test: contrast (static), then the Chromium audits, hit-area and icon checks.
+const suites = [['contrast', require('./contrast')], ['audit', require('./audit')], ['hit-areas', require('./hit-areas')], ['icon', require('./icon')]];
 (async () => {
   const failures = [];
   for (const [name, suite] of suites) {

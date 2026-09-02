@@ -437,6 +437,10 @@
     inherits: true;
     initial-value: 0;
   }
+  @font-face {
+    font-family: "m3x-icon-blank";
+    src: url("data:font/woff2;base64,d09GMgABAAAAAAFMAAoAAAAAAuwAAAEFAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAABmAAgRQKHDYBNgIkAwgLBgAEIAV1BywbTAIALgps1zQhbophXOP4LI/ioo6GQwTlfu/eJe9zq4gia1mRVBW+WpSVAxpPMsNOex4l2KdEAzk75wHQegAMD1J90bcEDqKop8cBN28BQZRhVsYZ5FnCLaAT+vVk6d+jQTNELyrxExtUogBcfRcAzVdaFyjNDwBoABIFK7DACuIGMxMpNU7w9Y5GCVLv/YU+AhNsAAL3IEFFoGIAVBDU+bBUj26/BQLBPw/Q898J5Rs+783vHQHxnLcoEgQ9GsSPIyaeBQAgqwjYkaoACQCA6gwEYRkB0tiyIupU2MFin5YdXtv4oCnfcvlNVYKR9eBaudlEzgxS7Hml2plLbBBjksjhhAA=") format("woff2");
+  }
   :root {
     color-scheme: light dark;
   }
@@ -903,6 +907,9 @@
     --m3-btn-icon-size-xs: 1.25rem;
     --m3-btn-icon-size-medium: var(--m3-icon-size);
     --m3-btn-icon-size-xl: 2rem;
+    --m3-btn-icon-optical-size: 20;
+    --m3-btn-icon-optical-size-medium: 24;
+    --m3-btn-icon-optical-size-xl: 32;
     --m3-btn-shape: var(--md-sys-shape-corner-full);
     --m3-btn-shape-square: var(--md-sys-shape-corner-medium);
     --m3-btn-shape-square-medium: var(--md-sys-shape-corner-large);
@@ -943,6 +950,10 @@
     --m3-icon-btn-icon-size-xs: 1.25rem;
     --m3-icon-btn-icon-size-large: 2rem;
     --m3-icon-btn-icon-size-xl: 2.5rem;
+    --m3-icon-btn-icon-optical-size: 24;
+    --m3-icon-btn-icon-optical-size-xs: 20;
+    --m3-icon-btn-icon-optical-size-large: 32;
+    --m3-icon-btn-icon-optical-size-xl: 40;
     --m3-icon-btn-color: var(--md-sys-color-on-surface-variant);
     --m3-icon-btn-selected-color: var(--md-sys-color-primary);
     --m3-icon-btn-selected-container-color: transparent;
@@ -2827,6 +2838,7 @@
       inline-size: var(--m3-btn-icon-size);
       font-size: var(--m3-btn-icon-size);
       block-size: var(--m3-btn-icon-size);
+      --m3-icon-optical-size: var(--m3-btn-icon-optical-size);
     }
     .btn:active {
       border-radius: var(--m3-btn-shape-pressed);
@@ -3633,6 +3645,7 @@
       inline-size: var(--m3-icon-btn-icon-size);
       font-size: var(--m3-icon-btn-icon-size);
       block-size: var(--m3-icon-btn-icon-size);
+      --m3-icon-optical-size: var(--m3-icon-btn-icon-optical-size);
     }
     .btn-close:active {
       border-radius: var(--m3-icon-btn-shape-pressed);
@@ -4756,6 +4769,7 @@
       inline-size: var(--m3-icon-btn-icon-size);
       font-size: var(--m3-icon-btn-icon-size);
       block-size: var(--m3-icon-btn-icon-size);
+      --m3-icon-optical-size: var(--m3-icon-btn-icon-optical-size);
     }
     .navbar-toggler:active {
       border-radius: var(--m3-icon-btn-shape-pressed);
@@ -9082,6 +9096,7 @@
       inline-size: var(--m3-btn-icon-size);
       font-size: var(--m3-btn-icon-size);
       block-size: var(--m3-btn-icon-size);
+      --m3-icon-optical-size: var(--m3-btn-icon-optical-size);
     }
     .m3-btn:active {
       border-radius: var(--m3-btn-shape-pressed);
@@ -9219,6 +9234,7 @@
       --m3-btn-height: var(--m3-btn-height-medium);
       --m3-btn-padding-inline: var(--m3-btn-padding-inline-medium);
       --m3-btn-icon-size: var(--m3-btn-icon-size-medium);
+      --m3-btn-icon-optical-size: var(--m3-btn-icon-optical-size-medium);
       --m3-btn-shape-square: var(--m3-btn-shape-square-medium);
       --m3-btn-shape-pressed: var(--m3-btn-shape-pressed-medium);
       --m3-btn-shape-selected: var(--m3-btn-shape-selected-medium);
@@ -9232,6 +9248,7 @@
       --m3-btn-height: var(--m3-btn-height-xl);
       --m3-btn-padding-inline: var(--m3-btn-padding-inline-xl);
       --m3-btn-icon-size: var(--m3-btn-icon-size-xl);
+      --m3-btn-icon-optical-size: var(--m3-btn-icon-optical-size-xl);
       --m3-btn-shape-square: var(--m3-btn-shape-square-large);
       --m3-btn-shape-pressed: var(--m3-btn-shape-pressed-large);
       --m3-btn-shape-selected: var(--m3-btn-shape-selected-large);
@@ -9337,6 +9354,7 @@
       inline-size: var(--m3-icon-btn-icon-size);
       font-size: var(--m3-icon-btn-icon-size);
       block-size: var(--m3-icon-btn-icon-size);
+      --m3-icon-optical-size: var(--m3-icon-btn-icon-optical-size);
     }
     .m3-icon-btn:active {
       border-radius: var(--m3-icon-btn-shape-pressed);
@@ -9435,12 +9453,14 @@
     }
     .m3-icon-btn--small {
       --m3-icon-btn-icon-size: var(--m3-icon-size-small);
+      --m3-icon-btn-icon-optical-size: var(--m3-icon-btn-icon-optical-size-xs);
       height: calc(var(--m3-icon-btn-size-small) + var(--m3-density) * var(--m3-density-step));
       inline-size: calc(var(--m3-icon-btn-size-small) + var(--m3-density) * var(--m3-density-step));
     }
     .m3-icon-btn--xs {
       --m3-icon-btn-size: var(--m3-icon-btn-size-xs);
       --m3-icon-btn-icon-size: var(--m3-icon-btn-icon-size-xs);
+      --m3-icon-btn-icon-optical-size: var(--m3-icon-btn-icon-optical-size-xs);
     }
     .m3-icon-btn--medium {
       --m3-icon-btn-size: var(--m3-icon-btn-size-medium);
@@ -9451,6 +9471,7 @@
     .m3-icon-btn--large {
       --m3-icon-btn-size: var(--m3-icon-btn-size-large);
       --m3-icon-btn-icon-size: var(--m3-icon-btn-icon-size-large);
+      --m3-icon-btn-icon-optical-size: var(--m3-icon-btn-icon-optical-size-large);
       --m3-icon-btn-shape-square: var(--m3-icon-btn-shape-square-large);
       --m3-icon-btn-shape-pressed: var(--m3-icon-btn-shape-pressed-large);
       --m3-icon-btn-shape-selected: var(--m3-icon-btn-shape-selected-large);
@@ -9458,6 +9479,7 @@
     .m3-icon-btn--xl {
       --m3-icon-btn-size: var(--m3-icon-btn-size-xl);
       --m3-icon-btn-icon-size: var(--m3-icon-btn-icon-size-xl);
+      --m3-icon-btn-icon-optical-size: var(--m3-icon-btn-icon-optical-size-xl);
       --m3-icon-btn-shape-square: var(--m3-icon-btn-shape-square-large);
       --m3-icon-btn-shape-pressed: var(--m3-icon-btn-shape-pressed-large);
       --m3-icon-btn-shape-selected: var(--m3-icon-btn-shape-selected-large);
@@ -9535,6 +9557,7 @@
       inline-size: var(--m3-fab-icon-size);
       font-size: var(--m3-fab-icon-size);
       block-size: var(--m3-fab-icon-size);
+      --m3-icon-optical-size: 24;
     }
     .m3-fab:disabled, .m3-fab.disabled {
       --_container: color-mix(
@@ -9578,6 +9601,7 @@
       inline-size: var(--m3-fab-icon-size-medium);
       font-size: var(--m3-fab-icon-size-medium);
       block-size: var(--m3-fab-icon-size-medium);
+      --m3-icon-optical-size: 28;
     }
     .m3-fab--large {
       height: calc(var(--m3-fab-size-large) + var(--m3-density) * var(--m3-density-step));
@@ -9590,6 +9614,7 @@
       inline-size: var(--m3-fab-icon-size-large);
       font-size: var(--m3-fab-icon-size-large);
       block-size: var(--m3-fab-icon-size-large);
+      --m3-icon-optical-size: 36;
     }
     .m3-fab--primary {
       --_container: var(--m3-fab-container-color);
@@ -13332,6 +13357,7 @@
       --m3-target-size: 100%;
       --m3-icon-btn-size: var(--m3-toolbar-dense-control-size);
       --m3-icon-btn-icon-size: var(--m3-toolbar-dense-icon-size);
+      --m3-icon-btn-icon-optical-size: 20;
       --m3-icon-btn-shape: var(--m3-toolbar-dense-control-shape);
       --m3-icon-btn-shape-pressed: var(--m3-toolbar-dense-control-shape);
       --m3-icon-btn-shape-selected: var(--m3-toolbar-dense-control-shape);
@@ -13343,6 +13369,7 @@
       --m3-btn-padding-inline: var(--m3-space-2);
       --m3-btn-icon-gap: var(--m3-space-1);
       --m3-btn-icon-size: var(--m3-toolbar-dense-icon-size);
+      --m3-btn-icon-optical-size: 20;
       --m3-btn-shape: var(--m3-toolbar-dense-control-shape);
       --m3-btn-shape-pressed: var(--m3-toolbar-dense-control-shape);
       --m3-btn-shape-selected: var(--m3-toolbar-dense-control-shape);
@@ -13488,6 +13515,7 @@
       inline-size: var(--m3-btn-icon-size);
       font-size: var(--m3-btn-icon-size);
       block-size: var(--m3-btn-icon-size);
+      --m3-icon-optical-size: var(--m3-btn-icon-optical-size);
     }
     .m3-toolbar__dropdown:active {
       border-radius: var(--m3-btn-shape-pressed);
@@ -14951,6 +14979,7 @@
       inline-size: var(--m3-btn-icon-size);
       font-size: var(--m3-btn-icon-size);
       block-size: var(--m3-btn-icon-size);
+      --m3-icon-optical-size: var(--m3-btn-icon-optical-size);
     }
     .m3-date-picker__menu:active {
       border-radius: var(--m3-btn-shape-pressed);
@@ -16337,7 +16366,7 @@
       overflow: hidden;
       vertical-align: middle;
       text-align: center;
-      font-family: var(--m3-icon-font);
+      font-family: var(--m3-icon-font), "m3x-icon-blank";
       font-size: var(--m3-icon-size);
       font-weight: normal;
       font-style: normal;

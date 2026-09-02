@@ -2482,6 +2482,18 @@
       "$type": "dimension",
       "$value": "2rem"
     },
+    "btn-icon-optical-size": {
+      "$type": "number",
+      "$value": 20
+    },
+    "btn-icon-optical-size-medium": {
+      "$type": "number",
+      "$value": 24
+    },
+    "btn-icon-optical-size-xl": {
+      "$type": "number",
+      "$value": 32
+    },
     "btn-shape": {
       "$value": "{md.sys.shape.corner-full}",
       "$type": "dimension",
@@ -2796,6 +2808,22 @@
     "icon-btn-icon-size-xl": {
       "$type": "dimension",
       "$value": "2.5rem"
+    },
+    "icon-btn-icon-optical-size": {
+      "$type": "number",
+      "$value": 24
+    },
+    "icon-btn-icon-optical-size-xs": {
+      "$type": "number",
+      "$value": 20
+    },
+    "icon-btn-icon-optical-size-large": {
+      "$type": "number",
+      "$value": 32
+    },
+    "icon-btn-icon-optical-size-xl": {
+      "$type": "number",
+      "$value": 40
     },
     "icon-btn-color": {
       "$value": "{md.sys.color.on-surface-variant}",

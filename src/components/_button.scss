@@ -22,6 +22,7 @@
 //   --m3-btn-icon-size-xs             20px            .m3-btn--xs
 //   --m3-btn-icon-size-medium         24px (--m3-icon-size) .m3-btn--medium
 //   --m3-btn-icon-size-xl             32px            .m3-btn--xl
+//   --m3-btn-icon-optical-size(-medium/-xl)  20 / 24 / 32  opsz axis of a child .m3-icon
 //   --m3-btn-shape                    corner-full
 //   --m3-btn-shape-square             corner-medium   .m3-btn--square (default,
 //                                                    --xs and --small sizes)
@@ -75,6 +76,10 @@
   --#{c.$prefix}-btn-icon-size-xs: #{fn.rem(20)};
   --#{c.$prefix}-btn-icon-size-medium: var(--m3-icon-size);
   --#{c.$prefix}-btn-icon-size-xl: #{fn.rem(32)};
+  // opsz axis of a child .m3-icon: the icon size in px (axis minimum 20).
+  --#{c.$prefix}-btn-icon-optical-size: 20;
+  --#{c.$prefix}-btn-icon-optical-size-medium: 24;
+  --#{c.$prefix}-btn-icon-optical-size-xl: 32;
   --#{c.$prefix}-btn-shape: var(--md-sys-shape-corner-full);
   --#{c.$prefix}-btn-shape-square: var(--md-sys-shape-corner-medium);
   --#{c.$prefix}-btn-shape-square-medium: var(--md-sys-shape-corner-large);
@@ -137,6 +142,7 @@
     inline-size: var(--#{c.$prefix}-btn-icon-size);
     font-size: var(--#{c.$prefix}-btn-icon-size);
     block-size: var(--#{c.$prefix}-btn-icon-size);
+    --#{c.$prefix}-icon-optical-size: var(--#{c.$prefix}-btn-icon-optical-size);
   }
 
   // M3 Expressive shape morphs: squarer while pressed, squarer still while
@@ -254,6 +260,7 @@
   --#{c.$prefix}-btn-height: var(--#{c.$prefix}-btn-height-medium);
   --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-btn-padding-inline-medium);
   --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-medium);
+  --#{c.$prefix}-btn-icon-optical-size: var(--#{c.$prefix}-btn-icon-optical-size-medium);
   --#{c.$prefix}-btn-shape-square: var(--#{c.$prefix}-btn-shape-square-medium);
   --#{c.$prefix}-btn-shape-pressed: var(--#{c.$prefix}-btn-shape-pressed-medium);
   --#{c.$prefix}-btn-shape-selected: var(--#{c.$prefix}-btn-shape-selected-medium);
@@ -264,6 +271,7 @@
   --#{c.$prefix}-btn-height: var(--#{c.$prefix}-btn-height-xl);
   --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-btn-padding-inline-xl);
   --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-xl);
+  --#{c.$prefix}-btn-icon-optical-size: var(--#{c.$prefix}-btn-icon-optical-size-xl);
   --#{c.$prefix}-btn-shape-square: var(--#{c.$prefix}-btn-shape-square-large);
   --#{c.$prefix}-btn-shape-pressed: var(--#{c.$prefix}-btn-shape-pressed-large);
   --#{c.$prefix}-btn-shape-selected: var(--#{c.$prefix}-btn-shape-selected-large);
