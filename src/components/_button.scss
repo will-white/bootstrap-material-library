@@ -8,12 +8,26 @@
 //                                            density: calc(h + density*4px)
 //   --m3-btn-height-small             32px   .m3-btn--small / .btn-sm
 //   --m3-btn-height-large             48px   .m3-btn--large / .btn-lg
+//   --m3-btn-height-xs                32px   .m3-btn--xs      (M3 Expressive)
+//   --m3-btn-height-medium            56px   .m3-btn--medium  (M3 Expressive)
+//   --m3-btn-height-xl                96px   .m3-btn--xl      (M3 Expressive)
 //   --m3-btn-padding-inline           space-5 (24px)
 //   --m3-btn-padding-inline-small     space-4 (16px)
 //   --m3-btn-padding-inline-large     space-6 (32px)
+//   --m3-btn-padding-inline-xs        space-3 (12px)  .m3-btn--xs
+//   --m3-btn-padding-inline-medium    space-5 (24px)  .m3-btn--medium
+//   --m3-btn-padding-inline-xl        space-7 (48px)  .m3-btn--xl
 //   --m3-btn-icon-gap                 space-2 (8px)
 //   --m3-btn-icon-size                18px
+//   --m3-btn-icon-size-xs             20px            .m3-btn--xs
+//   --m3-btn-icon-size-medium         24px (--m3-icon-size) .m3-btn--medium
+//   --m3-btn-icon-size-xl             32px            .m3-btn--xl
 //   --m3-btn-shape                    corner-full
+//   --m3-btn-shape-square             corner-medium   .m3-btn--square (default,
+//                                                    --xs and --small sizes)
+//   --m3-btn-shape-square-medium      corner-large    .m3-btn--square + --medium
+//   --m3-btn-shape-square-large       corner-extra-large  .m3-btn--square +
+//                                                    --large / --xl
 //   --m3-btn-outline-width            1px (hairline token)
 //   --m3-btn-container-color          primary        (filled container)
 //   --m3-btn-label-color              on-primary     (filled label)
@@ -37,12 +51,24 @@
   --#{c.$prefix}-btn-height: #{fn.rem(40)};
   --#{c.$prefix}-btn-height-small: #{fn.rem(32)};
   --#{c.$prefix}-btn-height-large: #{fn.rem(48)};
+  --#{c.$prefix}-btn-height-xs: #{fn.rem(32)};
+  --#{c.$prefix}-btn-height-medium: #{fn.rem(56)};
+  --#{c.$prefix}-btn-height-xl: #{fn.rem(96)};
   --#{c.$prefix}-btn-padding-inline: var(--m3-space-5);
   --#{c.$prefix}-btn-padding-inline-small: var(--m3-space-4);
   --#{c.$prefix}-btn-padding-inline-large: var(--m3-space-6);
+  --#{c.$prefix}-btn-padding-inline-xs: var(--m3-space-3);
+  --#{c.$prefix}-btn-padding-inline-medium: var(--m3-space-5);
+  --#{c.$prefix}-btn-padding-inline-xl: var(--m3-space-7);
   --#{c.$prefix}-btn-icon-gap: var(--m3-space-2);
   --#{c.$prefix}-btn-icon-size: var(--m3-icon-size-small);
+  --#{c.$prefix}-btn-icon-size-xs: #{fn.rem(20)};
+  --#{c.$prefix}-btn-icon-size-medium: var(--m3-icon-size);
+  --#{c.$prefix}-btn-icon-size-xl: #{fn.rem(32)};
   --#{c.$prefix}-btn-shape: var(--md-sys-shape-corner-full);
+  --#{c.$prefix}-btn-shape-square: var(--md-sys-shape-corner-medium);
+  --#{c.$prefix}-btn-shape-square-medium: var(--md-sys-shape-corner-large);
+  --#{c.$prefix}-btn-shape-square-large: var(--md-sys-shape-corner-extra-large);
   --#{c.$prefix}-btn-outline-width: var(--m3-stroke-hairline);
   --#{c.$prefix}-btn-container-color: var(--md-sys-color-primary);
   --#{c.$prefix}-btn-label-color: var(--md-sys-color-on-primary);
@@ -158,8 +184,42 @@
 }
 
 @mixin large {
+  --#{c.$prefix}-btn-shape-square: var(--#{c.$prefix}-btn-shape-square-large);
   @include m.control-height(--#{c.$prefix}-btn-height-large);
   padding-inline: var(--#{c.$prefix}-btn-padding-inline-large);
+}
+
+// M3 Expressive sizes. These re-point the tokens base already reads (height,
+// padding, icon size) plus the square-shape token --square reads, so a size
+// and --square compose on one element. small/large above predate the
+// Expressive scale and keep their control-height form for the Bootstrap
+// .btn-sm / .btn-lg re-skin.
+@mixin xs {
+  --#{c.$prefix}-btn-height: var(--#{c.$prefix}-btn-height-xs);
+  --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-btn-padding-inline-xs);
+  --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-xs);
+}
+
+@mixin medium {
+  --#{c.$prefix}-btn-height: var(--#{c.$prefix}-btn-height-medium);
+  --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-btn-padding-inline-medium);
+  --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-medium);
+  --#{c.$prefix}-btn-shape-square: var(--#{c.$prefix}-btn-shape-square-medium);
+  @include m.typescale("title-medium");
+}
+
+@mixin xl {
+  --#{c.$prefix}-btn-height: var(--#{c.$prefix}-btn-height-xl);
+  --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-btn-padding-inline-xl);
+  --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-xl);
+  --#{c.$prefix}-btn-shape-square: var(--#{c.$prefix}-btn-shape-square-large);
+  @include m.typescale("headline-small");
+}
+
+// Square shape (M3 Expressive "square" buttons): the radius follows the
+// size via the --m3-btn-shape-square token the size modifiers re-point.
+@mixin square {
+  border-radius: var(--#{c.$prefix}-btn-shape-square);
 }
 
 // Connected group (also emitted for Bootstrap's .btn-group): outer corners
@@ -217,6 +277,22 @@
 
   .#{c.$prefix}-btn--large {
     @include large;
+  }
+
+  .#{c.$prefix}-btn--xs {
+    @include xs;
+  }
+
+  .#{c.$prefix}-btn--medium {
+    @include medium;
+  }
+
+  .#{c.$prefix}-btn--xl {
+    @include xl;
+  }
+
+  .#{c.$prefix}-btn--square {
+    @include square;
   }
 
   .#{c.$prefix}-btn-group {

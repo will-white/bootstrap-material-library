@@ -1,0 +1,195 @@
+// ============================================================================
+// m3x split button (M3 Expressive): a leading action button plus a trailing
+// menu toggle, drawn as one pill split by a 2px seam. The toggle is the
+// popovertarget invoker of a .m3-menu[popover] placed right after it; the
+// open state (chevron flip) is read from the popover with :has(). Zero JS.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-split-button-gap                    2px            seam between halves
+//   --m3-split-button-inner-shape            corner-small   the touching corners
+//   --m3-split-button-toggle-padding-inline  space-3 (12px) around the chevron
+//   --m3-split-button-chevron-size           --m3-chevron-size (10px)
+//   --m3-split-button-menu-offset            space-1 (4px)  gap under the toggle
+//                                                           (anchor-positioned
+//                                                           menu, see below)
+//
+// Both halves are .m3-btn elements: every button token, size and variant
+// applies as usual, and the root's --tonal / --outlined / --elevated
+// re-point the button tokens both halves read, so a variant is written once.
+// (Any .m3-btn--* variant class may equally be put on both halves directly.)
+//
+// Markup:
+//   <div class="m3-split-button">
+//     <button class="m3-btn m3-split-button__action" type="button">Save</button>
+//     <button class="m3-btn m3-split-button__toggle" type="button"
+//             popovertarget="save-menu" aria-label="More save options"></button>
+//     <div class="m3-menu" id="save-menu" popover>
+//       <button class="m3-menu__item" type="button">Save as draft</button>
+//       <button class="m3-menu__item" type="button">Save and close</button>
+//     </div>
+//   </div>
+//
+// Menu placement: a popover's implicit anchor is its invoker, so where CSS
+// anchor positioning is supported the menu opens under the toggle,
+// end-aligned, flipping above when there is no room (a refinement that is
+// safe to lose). Elsewhere the menu keeps the menu partial's un-anchored
+// placement; position it with your own insets.
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+@mixin tokens {
+  --#{c.$prefix}-split-button-gap: #{fn.rem(2)};
+  --#{c.$prefix}-split-button-inner-shape: var(--md-sys-shape-corner-small);
+  --#{c.$prefix}-split-button-toggle-padding-inline: var(--m3-space-3);
+  --#{c.$prefix}-split-button-chevron-size: var(--m3-chevron-size);
+  --#{c.$prefix}-split-button-menu-offset: var(--m3-space-1);
+}
+
+// The wrapper: lays the two halves across the seam. The popover menu after
+// them is out of flow (top layer) whenever it is open.
+@mixin base {
+  @include m.own-box;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--#{c.$prefix}-split-button-gap);
+  vertical-align: middle;
+}
+
+// Leading half (on a .m3-btn): flattens the corners that face the seam.
+// Emitted after the button partial, so these longhands beat the button's
+// border-radius shorthand at equal specificity.
+@mixin action {
+  @include m.own-box;
+  display: inline-flex;
+  border-start-end-radius: var(--#{c.$prefix}-split-button-inner-shape);
+  border-end-end-radius: var(--#{c.$prefix}-split-button-inner-shape);
+}
+
+// Trailing half (on a .m3-btn with popovertarget): at least as wide as it is
+// tall, seam-facing corners flattened, a CSS-drawn chevron that flips while
+// the menu right after it is open.
+@mixin toggle {
+  @include m.own-box;
+  display: inline-flex;
+  min-inline-size: calc(
+    var(--#{c.$prefix}-btn-height) + var(--m3-density) * var(--m3-density-step)
+  );
+  padding-inline: var(--#{c.$prefix}-split-button-toggle-padding-inline);
+  border-start-start-radius: var(--#{c.$prefix}-split-button-inner-shape);
+  border-end-start-radius: var(--#{c.$prefix}-split-button-inner-shape);
+
+  &::after {
+    @include m.own-pseudo;
+    content: "";
+    display: block;
+    flex: none;
+    @include m.chevron-icon(var(--#{c.$prefix}-split-button-chevron-size));
+    // Optical centering: the rotated L's visual center sits below the box
+    // center.
+    translate: 0 -25%;
+    @include m.transition((rotate));
+  }
+
+  // Open: the popover right after the toggle is showing. Stands alone
+  // (contract rule: :popover-open never shares a selector list).
+  &:has(+ .#{c.$prefix}-menu:popover-open)::after {
+    rotate: 225deg;
+  }
+}
+
+// Variants re-point the filled button tokens both halves read by default.
+@mixin tonal {
+  --#{c.$prefix}-btn-container-color: var(--#{c.$prefix}-btn-tonal-container-color);
+  --#{c.$prefix}-btn-label-color: var(--#{c.$prefix}-btn-tonal-label-color);
+}
+
+@mixin outlined {
+  --#{c.$prefix}-btn-container-color: transparent;
+  --#{c.$prefix}-btn-label-color: var(--#{c.$prefix}-btn-outlined-label-color);
+
+  > .#{c.$prefix}-split-button__action,
+  > .#{c.$prefix}-split-button__toggle {
+    border: var(--#{c.$prefix}-btn-outline-width) solid
+      var(--#{c.$prefix}-btn-outlined-outline-color);
+
+    &:disabled,
+    &.disabled {
+      @include m.disabled-bare;
+      border-color: color-mix(
+        in srgb,
+        var(--md-sys-color-on-surface)
+          var(--md-sys-state-disabled-container-opacity),
+        transparent
+      );
+    }
+  }
+}
+
+@mixin elevated {
+  --#{c.$prefix}-btn-container-color: var(--#{c.$prefix}-btn-elevated-container-color);
+  --#{c.$prefix}-btn-label-color: var(--#{c.$prefix}-btn-elevated-label-color);
+
+  > .#{c.$prefix}-split-button__action,
+  > .#{c.$prefix}-split-button__toggle {
+    @include m.elevation(1);
+
+    &:hover {
+      @include m.elevation(2);
+    }
+
+    &:disabled,
+    &.disabled {
+      @include m.disabled;
+    }
+  }
+}
+
+// Anchor-positioning refinement for the menu (see header). The invoker is
+// the popover's implicit anchor, so no anchor-name is needed. Dropped
+// wholesale where unsupported.
+@mixin menu-placement {
+  @supports (position-area: block-end) {
+    inset: auto;
+    margin: var(--m3-space-none);
+    margin-block-start: var(--#{c.$prefix}-split-button-menu-offset);
+    position-area: block-end span-inline-start;
+    position-try-fallbacks: flip-block;
+  }
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-split-button {
+    @include base;
+  }
+
+  .#{$p}-split-button__action {
+    @include action;
+  }
+
+  .#{$p}-split-button__toggle {
+    @include toggle;
+  }
+
+  .#{$p}-split-button--tonal {
+    @include tonal;
+  }
+
+  .#{$p}-split-button--outlined {
+    @include outlined;
+  }
+
+  .#{$p}-split-button--elevated {
+    @include elevated;
+  }
+
+  // (0,4,0): beats the menu partial's own [popover] layout rule regardless
+  // of the order the entry point wires the two partials in.
+  .#{$p}-split-button > .#{$p}-split-button__toggle + .#{$p}-menu[popover] {
+    @include menu-placement;
+  }
+}

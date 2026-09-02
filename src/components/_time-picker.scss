@@ -1,0 +1,424 @@
+// ============================================================================
+// m3x time picker -- M3 time input (keyboard) mode, zero JS.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-time-picker-container-color                 surface-container-high
+//   --m3-time-picker-content-color                   on-surface
+//   --m3-time-picker-shape                           corner-extra-large
+//   --m3-time-picker-padding                         space-6 (32px)
+//   --m3-time-picker-label-color                     on-surface-variant
+//   --m3-time-picker-field-width                     96px   hour/minute box
+//   --m3-time-picker-field-height                    72px   also the period
+//                                                           selector height
+//   --m3-time-picker-field-shape                     corner-small
+//   --m3-time-picker-field-container-color           surface-container-highest
+//   --m3-time-picker-field-color                     on-surface
+//   --m3-time-picker-field-selected-container-color  primary-container
+//   --m3-time-picker-field-selected-color            on-primary-container
+//   --m3-time-picker-hint-color                      on-surface-variant
+//   --m3-time-picker-separator-color                 on-surface
+//   --m3-time-picker-period-width                    52px
+//   --m3-time-picker-period-shape                    corner-small
+//   --m3-time-picker-period-outline-color            outline
+//   --m3-time-picker-period-outline-width            1px (hairline token)
+//   --m3-time-picker-period-label-color              on-surface-variant
+//   --m3-time-picker-period-selected-container-color tertiary-container
+//   --m3-time-picker-period-selected-label-color     on-tertiary-container
+//
+// Scope: the input mode only. The dial (clock face) mode needs JavaScript
+// and stays out of this zero-JS library.
+//
+// Markup (real inputs; the hour/minute fields are text inputs with a numeric
+// keyboard, the period toggle is two radios, so a plain <form> submits the
+// time with no script):
+//   <div class="m3-time-picker" role="group" aria-label="Select time">
+//     <span class="m3-time-picker__label">Select time</span>
+//     <div class="m3-time-picker__fields">
+//       <label class="m3-time-picker__field">
+//         <input class="m3-time-picker__input" inputmode="numeric"
+//                maxlength="2" value="07" aria-label="Hour">
+//         <span class="m3-time-picker__hint">Hour</span>
+//       </label>
+//       <span class="m3-time-picker__separator" aria-hidden="true">:</span>
+//       <label class="m3-time-picker__field">
+//         <input class="m3-time-picker__input" inputmode="numeric"
+//                maxlength="2" value="30" aria-label="Minute">
+//         <span class="m3-time-picker__hint">Minute</span>
+//       </label>
+//       <fieldset class="m3-time-picker__period" aria-label="Period">
+//         <label class="m3-time-picker__period-option">
+//           <input class="m3-time-picker__period-input" type="radio"
+//                  name="period" value="am" checked>
+//           <span class="m3-time-picker__period-label">AM</span>
+//         </label>
+//         <label class="m3-time-picker__period-option">
+//           <input class="m3-time-picker__period-input" type="radio"
+//                  name="period" value="pm">
+//           <span class="m3-time-picker__period-label">PM</span>
+//         </label>
+//       </fieldset>
+//     </div>
+//     <div class="m3-time-picker__actions">
+//       <button class="m3-btn m3-btn--text" type="button">Cancel</button>
+//       <button class="m3-btn m3-btn--text" type="button">OK</button>
+//     </div>
+//   </div>
+//
+// Field states: :focus paints the selected look (primary-container box,
+// on-primary-container digits) with the shared focus ring; add
+// .m3-time-picker__field--selected on the <label> to hold that look without
+// focus (it re-points the field tokens only). :disabled and :user-invalid
+// use the library's disabled and error treatments. The hidden period radio
+// covers its option, so hover/focus/pressed land on the input and drive the
+// visible label through the parent-driven state layer.
+//
+// Modal: inside .m3-dialog the dialog owns container, shape, elevation and
+// padding, so --modal strips those from the picker:
+//   <dialog class="m3-dialog">
+//     <div class="m3-time-picker m3-time-picker--modal" ...>...</div>
+//   </dialog>
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+@mixin tokens {
+  --#{c.$prefix}-time-picker-container-color: var(--md-sys-color-surface-container-high);
+  --#{c.$prefix}-time-picker-content-color: var(--md-sys-color-on-surface);
+  --#{c.$prefix}-time-picker-shape: var(--md-sys-shape-corner-extra-large);
+  --#{c.$prefix}-time-picker-padding: var(--m3-space-6);
+  --#{c.$prefix}-time-picker-label-color: var(--md-sys-color-on-surface-variant);
+  --#{c.$prefix}-time-picker-field-width: #{fn.rem(96)};
+  --#{c.$prefix}-time-picker-field-height: #{fn.rem(72)};
+  --#{c.$prefix}-time-picker-field-shape: var(--md-sys-shape-corner-small);
+  --#{c.$prefix}-time-picker-field-container-color: var(--md-sys-color-surface-container-highest);
+  --#{c.$prefix}-time-picker-field-color: var(--md-sys-color-on-surface);
+  --#{c.$prefix}-time-picker-field-selected-container-color: var(--md-sys-color-primary-container);
+  --#{c.$prefix}-time-picker-field-selected-color: var(--md-sys-color-on-primary-container);
+  --#{c.$prefix}-time-picker-hint-color: var(--md-sys-color-on-surface-variant);
+  --#{c.$prefix}-time-picker-separator-color: var(--md-sys-color-on-surface);
+  --#{c.$prefix}-time-picker-period-width: #{fn.rem(52)};
+  --#{c.$prefix}-time-picker-period-shape: var(--md-sys-shape-corner-small);
+  --#{c.$prefix}-time-picker-period-outline-color: var(--md-sys-color-outline);
+  --#{c.$prefix}-time-picker-period-outline-width: var(--m3-stroke-hairline);
+  --#{c.$prefix}-time-picker-period-label-color: var(--md-sys-color-on-surface-variant);
+  --#{c.$prefix}-time-picker-period-selected-container-color: var(--md-sys-color-tertiary-container);
+  --#{c.$prefix}-time-picker-period-selected-label-color: var(--md-sys-color-on-tertiary-container);
+}
+
+// --- surface ----------------------------------------------------------------
+
+@mixin surface {
+  @include m.own-box;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  max-inline-size: 100%;
+  padding: var(--#{c.$prefix}-time-picker-padding);
+  background-color: var(--#{c.$prefix}-time-picker-container-color);
+  color: var(--#{c.$prefix}-time-picker-content-color);
+  border-radius: var(--#{c.$prefix}-time-picker-shape);
+  @include m.elevation(3);
+}
+
+// Nested in .m3-dialog: the dialog owns the chrome.
+@mixin modal {
+  padding: var(--m3-space-none);
+  background-color: transparent;
+  border-radius: var(--md-sys-shape-corner-none);
+  box-shadow: none;
+}
+
+@mixin label {
+  @include m.own-box;
+  display: block;
+  margin-block-end: var(--m3-space-5);
+  color: var(--#{c.$prefix}-time-picker-label-color);
+  @include m.typescale("label-medium");
+}
+
+// --- time selector -----------------------------------------------------------
+
+// Hour, separator, minute, period in one row, top-aligned so the hints hang
+// below the boxes without moving them.
+@mixin fields {
+  @include m.own-box;
+  display: flex;
+  align-items: flex-start;
+}
+
+// One field: the <label> wrapping the input and its hint.
+@mixin field {
+  @include m.own-box;
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  gap: var(--m3-space-2);
+  inline-size: var(--#{c.$prefix}-time-picker-field-width);
+  cursor: text;
+}
+
+// Held selection without focus: re-points the field tokens the input reads.
+@mixin field-selected {
+  --#{c.$prefix}-time-picker-field-container-color: var(
+    --#{c.$prefix}-time-picker-field-selected-container-color
+  );
+  --#{c.$prefix}-time-picker-field-color: var(
+    --#{c.$prefix}-time-picker-field-selected-color
+  );
+}
+
+// The digits box: a real text input, display-large, centered.
+@mixin input {
+  @include m.own-box;
+  --_container: var(--#{c.$prefix}-time-picker-field-container-color);
+  --_content: var(--#{c.$prefix}-time-picker-field-color);
+
+  display: block;
+  inline-size: 100%;
+  block-size: var(--#{c.$prefix}-time-picker-field-height);
+  padding: var(--m3-space-none);
+  border: none;
+  border-radius: var(--#{c.$prefix}-time-picker-field-shape);
+  text-align: center;
+  caret-color: var(--#{c.$prefix}-time-picker-field-selected-color);
+  cursor: text;
+  appearance: none;
+  @include m.typescale("display-large");
+  @include m.state-layer;
+  @include m.focus-ring;
+  @include m.transition((background-color, color));
+
+  // The UA's text-control internals, restated because the box is owned.
+  &:where(input) {
+    overflow: clip;
+  }
+
+  &::placeholder {
+    color: var(--#{c.$prefix}-time-picker-hint-color);
+    opacity: var(--m3-opacity-full);
+  }
+
+  // Number inputs: no spinners. Vendor pseudo-elements each in their own
+  // rule (an engine drops the whole rule it cannot parse).
+  &::-webkit-inner-spin-button {
+    appearance: none;
+    margin: var(--m3-space-none);
+  }
+
+  &::-webkit-outer-spin-button {
+    appearance: none;
+    margin: var(--m3-space-none);
+  }
+
+  &:where([type="number"]) {
+    appearance: textfield;
+  }
+
+  // Selected = focused by any means (typing, tab, tap).
+  &:focus {
+    --_container: var(--#{c.$prefix}-time-picker-field-selected-container-color);
+    --_content: var(--#{c.$prefix}-time-picker-field-selected-color);
+  }
+
+  &:user-invalid {
+    --_content: var(--md-sys-color-error);
+    caret-color: var(--md-sys-color-error);
+  }
+
+  &:disabled {
+    @include m.disabled;
+    cursor: not-allowed;
+  }
+}
+
+@mixin hint {
+  @include m.own-box;
+  display: block;
+  color: var(--#{c.$prefix}-time-picker-hint-color);
+  @include m.typescale("body-small");
+}
+
+@mixin hint-invalid {
+  color: var(--md-sys-color-error);
+}
+
+// The colon between hour and minute: centered in a 24px column as tall as
+// the field boxes.
+@mixin separator {
+  @include m.own-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  inline-size: var(--m3-space-5);
+  block-size: var(--#{c.$prefix}-time-picker-field-height);
+  color: var(--#{c.$prefix}-time-picker-separator-color);
+  user-select: none;
+  @include m.typescale("display-large");
+}
+
+// --- period selector ---------------------------------------------------------
+
+// The fieldset: native chrome reset, group outline, two stacked options.
+// Overflow stays visible so focus rings are never clipped; the options round
+// their own outer corners.
+@mixin period {
+  @include m.own-box;
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  inline-size: var(--#{c.$prefix}-time-picker-period-width);
+  block-size: var(--#{c.$prefix}-time-picker-field-height);
+  margin-inline-start: var(--m3-space-3);
+  border: var(--#{c.$prefix}-time-picker-period-outline-width) solid
+    var(--#{c.$prefix}-time-picker-period-outline-color);
+  border-radius: var(--#{c.$prefix}-time-picker-period-shape);
+}
+
+// One option: a <label> wrapping a hidden radio and the visible label span.
+// The state layer is driven from the option (the hidden input covers it) and
+// painted on the span; checked and disabled come from the input by sibling.
+@mixin period-option(
+  $input: ".#{c.$prefix}-time-picker__period-input",
+  $label: ".#{c.$prefix}-time-picker__period-label"
+) {
+  @include m.own-box;
+  --_container: transparent;
+  --_content: var(--#{c.$prefix}-time-picker-period-label-color);
+
+  position: relative;
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
+  min-block-size: var(--m3-space-none);
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  @include m.typescale("title-medium");
+  @include m.focus-ring-within($input);
+
+  // Hairline divider between the two options.
+  & + & {
+    border-block-start: var(--#{c.$prefix}-time-picker-period-outline-width)
+      solid var(--#{c.$prefix}-time-picker-period-outline-color);
+  }
+
+  // Outer corners follow the group shape (the fieldset does not clip); the
+  // span inherits them.
+  &:first-of-type {
+    border-start-start-radius: var(--#{c.$prefix}-time-picker-period-shape);
+    border-start-end-radius: var(--#{c.$prefix}-time-picker-period-shape);
+  }
+
+  &:last-of-type {
+    border-end-start-radius: var(--#{c.$prefix}-time-picker-period-shape);
+    border-end-end-radius: var(--#{c.$prefix}-time-picker-period-shape);
+  }
+
+  // The real radio: invisible but full-size, so pointer and keyboard state
+  // land on the input itself.
+  #{$input} {
+    @include m.hidden-control;
+  }
+
+  // The visible span fills the option and carries the state background.
+  #{$label} {
+    @include m.own-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 auto;
+    align-self: stretch;
+    border-radius: inherit;
+    text-align: center;
+    white-space: nowrap;
+    pointer-events: none;
+    @include m.typescale("title-medium");
+    @include m.transition((background-color, color));
+  }
+
+  // After the span's own-box rule so the state-layer paint wins in inline
+  // ownership mode too (in collect mode the reset sits in the `own` layer).
+  @include m.state-layer-for($label);
+
+  #{$input}:checked + #{$label} {
+    --_container: var(--#{c.$prefix}-time-picker-period-selected-container-color);
+    --_content: var(--#{c.$prefix}-time-picker-period-selected-label-color);
+  }
+
+  // Last so it wins over hover/checked at equal specificity.
+  #{$input}:disabled + #{$label} {
+    @include m.disabled-bare;
+  }
+}
+
+// --- actions -----------------------------------------------------------------
+
+@mixin actions {
+  @include m.own-box;
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--m3-space-2);
+  margin-block-start: var(--m3-space-5);
+}
+
+// --- class emission ---------------------------------------------------------
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-time-picker {
+    @include surface;
+  }
+
+  .#{$p}-time-picker--modal {
+    @include modal;
+  }
+
+  .#{$p}-time-picker__label {
+    @include label;
+  }
+
+  .#{$p}-time-picker__fields {
+    @include fields;
+  }
+
+  .#{$p}-time-picker__field {
+    @include field;
+  }
+
+  .#{$p}-time-picker__field--selected {
+    @include field-selected;
+  }
+
+  .#{$p}-time-picker__input {
+    @include input;
+  }
+
+  .#{$p}-time-picker__hint {
+    @include hint;
+  }
+
+  .#{$p}-time-picker__input:user-invalid + .#{$p}-time-picker__hint {
+    @include hint-invalid;
+  }
+
+  .#{$p}-time-picker__separator {
+    @include separator;
+  }
+
+  .#{$p}-time-picker__period {
+    @include period;
+  }
+
+  .#{$p}-time-picker__period-option {
+    @include period-option;
+  }
+
+  .#{$p}-time-picker__actions {
+    @include actions;
+  }
+}

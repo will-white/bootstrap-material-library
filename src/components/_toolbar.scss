@@ -1,0 +1,175 @@
+// ============================================================================
+// m3x toolbar (M3 Expressive: floating | docked; standard | vibrant)
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-toolbar-container-color          surface-container     standard
+//   --m3-toolbar-content-color            on-surface            standard
+//   --m3-toolbar-vibrant-container-color  primary-container     --vibrant
+//   --m3-toolbar-vibrant-content-color    on-primary-container  --vibrant
+//   --m3-toolbar-shape                    corner-full           floating pill
+//   --m3-toolbar-docked-shape             corner-large          --docked, top
+//                                                               corners only
+//   --m3-toolbar-height                   64px   participates in density:
+//                                                calc(h + density*4px); it is
+//                                                the --vertical pill's width
+//   --m3-toolbar-gap                      space-1 (4px)
+//   --m3-toolbar-padding                  space-2 (8px)   floating: inline;
+//                                                         docked + vertical:
+//                                                         block
+//   --m3-toolbar-docked-padding-inline    space-4 (16px)  --docked
+//   --m3-toolbar-fixed-offset             space-4 (16px)  --fixed: distance
+//                                                         from the viewport
+//                                                         edge (docked: 0)
+//
+// Markup (floating pill, bottom-center of the viewport):
+//   <div class="m3-toolbar m3-toolbar--fixed" role="toolbar" aria-label="Format">
+//     <button class="m3-icon-btn" aria-label="Bold"><svg ...></svg></button>
+//     <button class="m3-icon-btn" aria-label="Italic"><svg ...></svg></button>
+//     <button class="m3-btn m3-btn--text">Share</button>
+//     <button class="m3-fab m3-fab--small" aria-label="Add"><svg ...></svg></button>
+//   </div>
+//   <div class="m3-toolbar m3-toolbar--docked m3-toolbar--vibrant" role="toolbar">
+//     ...
+//   </div>
+//   <div class="m3-toolbar m3-toolbar--vertical" role="toolbar"
+//        aria-orientation="vertical">...</div>
+//
+// Controls inside follow the toolbar's content color: the toolbar re-points
+// the standard / outlined icon-button and text-button color tokens to
+// currentColor within itself, so those controls (and their state layers)
+// read the toolbar's --_content. Contained variants (filled, tonal, the FAB)
+// keep their own container colors.
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+@mixin tokens {
+  --#{c.$prefix}-toolbar-container-color: var(--md-sys-color-surface-container);
+  --#{c.$prefix}-toolbar-content-color: var(--md-sys-color-on-surface);
+  --#{c.$prefix}-toolbar-vibrant-container-color: var(--md-sys-color-primary-container);
+  --#{c.$prefix}-toolbar-vibrant-content-color: var(--md-sys-color-on-primary-container);
+  --#{c.$prefix}-toolbar-shape: var(--md-sys-shape-corner-full);
+  --#{c.$prefix}-toolbar-docked-shape: var(--md-sys-shape-corner-large);
+  --#{c.$prefix}-toolbar-height: #{fn.rem(64)};
+  --#{c.$prefix}-toolbar-gap: var(--m3-space-1);
+  --#{c.$prefix}-toolbar-padding: var(--m3-space-2);
+  --#{c.$prefix}-toolbar-docked-padding-inline: var(--m3-space-4);
+  --#{c.$prefix}-toolbar-fixed-offset: var(--m3-space-4);
+}
+
+// Structure + color machinery. The look with no modifier is the floating
+// pill in standard colors; modifiers re-point the privates and the layout.
+@mixin base {
+  @include m.own-box;
+  --_container: var(--#{c.$prefix}-toolbar-container-color);
+  --_content: var(--#{c.$prefix}-toolbar-content-color);
+  --_offset: var(--#{c.$prefix}-toolbar-fixed-offset);
+  // Uncontained controls inside follow the toolbar: their color tokens
+  // resolve to currentColor here, i.e. this element's var(--_content).
+  --#{c.$prefix}-icon-btn-color: currentColor;
+  --#{c.$prefix}-icon-btn-outlined-color: currentColor;
+  --#{c.$prefix}-btn-text-label-color: currentColor;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--#{c.$prefix}-toolbar-gap);
+  @include m.control-height(--#{c.$prefix}-toolbar-height);
+  padding-inline: var(--#{c.$prefix}-toolbar-padding);
+  border-radius: var(--#{c.$prefix}-toolbar-shape);
+  color: var(--_content);
+  background-color: var(--_container);
+  vertical-align: middle;
+  @include m.elevation(3);
+  @include m.transition((background-color, color, box-shadow));
+}
+
+// Floating: the default look, re-asserted (pill + elevation 3).
+@mixin floating {
+  border-radius: var(--#{c.$prefix}-toolbar-shape);
+  @include m.elevation(3);
+}
+
+// Docked: a full-width bar with rounded top corners, no shadow, that grows
+// with its content (min-height from the height token, block padding).
+@mixin docked {
+  --_offset: var(--m3-space-none);
+  display: flex;
+  inline-size: 100%;
+  height: auto;
+  @include m.control-min-height(--#{c.$prefix}-toolbar-height);
+  padding-inline: var(--#{c.$prefix}-toolbar-docked-padding-inline);
+  padding-block: var(--#{c.$prefix}-toolbar-padding);
+  border-start-start-radius: var(--#{c.$prefix}-toolbar-docked-shape);
+  border-start-end-radius: var(--#{c.$prefix}-toolbar-docked-shape);
+  border-end-start-radius: var(--md-sys-shape-corner-none);
+  border-end-end-radius: var(--md-sys-shape-corner-none);
+  @include m.elevation(0);
+}
+
+@mixin standard {
+  --_container: var(--#{c.$prefix}-toolbar-container-color);
+  --_content: var(--#{c.$prefix}-toolbar-content-color);
+}
+
+@mixin vibrant {
+  --_container: var(--#{c.$prefix}-toolbar-vibrant-container-color);
+  --_content: var(--#{c.$prefix}-toolbar-vibrant-content-color);
+}
+
+// Vertical pill: the height token becomes the width, padding moves to the
+// block axis.
+@mixin vertical {
+  flex-direction: column;
+  height: auto;
+  width: calc(
+    var(--#{c.$prefix}-toolbar-height) + var(--m3-density) * var(--m3-density-step)
+  );
+  padding-inline: var(--m3-space-none);
+  padding-block: var(--#{c.$prefix}-toolbar-padding);
+}
+
+// Viewport-anchored placement: bottom center. A floating pill keeps
+// --m3-toolbar-fixed-offset from the edge; --docked sits flush and, being
+// 100% wide, spans the viewport.
+@mixin fixed {
+  position: fixed;
+  inset-block-end: var(--_offset);
+  inset-inline-start: 50%;
+  translate: -50% 0;
+  z-index: var(--m3-z-raised);
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-toolbar {
+    @include base;
+  }
+
+  .#{$p}-toolbar--floating {
+    @include floating;
+  }
+
+  .#{$p}-toolbar--docked {
+    @include docked;
+  }
+
+  .#{$p}-toolbar--standard {
+    @include standard;
+  }
+
+  .#{$p}-toolbar--vibrant {
+    @include vibrant;
+  }
+
+  .#{$p}-toolbar--vertical {
+    @include vertical;
+  }
+
+  .#{$p}-toolbar--fixed {
+    @include fixed;
+  }
+}

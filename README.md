@@ -460,7 +460,7 @@ have an M3 counterpart that needs no JS at all.
 | `.badge` | `.m3-badge` | No | `.text-bg-*` re-points the badge tokens |
 | `.breadcrumb` | -- (styled natively) | No | `--bs-breadcrumb-divider` still respected |
 | `.btn`, `.btn-*`, `.btn-outline-*` | `.m3-btn` + variants | No | `primary`->filled, `secondary`->tonal, others re-point filled |
-| `.btn-group`, `.btn-check` | `.m3-btn-group`, `.m3-segmented` | No | segmented buttons are the M3 pattern for checked groups |
+| `.btn-group`, `.btn-check` | `.m3-button-group--connected`, `.m3-btn-check` | No | horizontal groups render as connected button groups (checked member = primary); `.btn-group-vertical` stacks |
 | `.btn-close` | `.m3-icon-btn` (CSS-drawn cross) | No | |
 | `.card` + parts | `.m3-card--outlined` + parts | No | `.card-body` acts as the donut slot |
 | `.carousel` | `.m3-carousel` (scroll-snap) | Yes (autoplay/controls) | M3 counterpart needs no JS at all |
@@ -523,8 +523,11 @@ pure-CSS equivalent -- divergences are listed.
 
 | Component | Classes | Divergence from JS-driven M3 |
 |---|---|---|
-| Buttons | `.m3-btn` + `--filled/--tonal/--elevated/--outlined/--text/--small/--large` | -- |
-| Icon buttons | `.m3-icon-btn` + variants | toggle state via `aria-pressed` |
+| Buttons | `.m3-btn` + `--filled/--tonal/--elevated/--outlined/--text`, sizes `--xs/--small/--medium/--large/--xl`, `--square` | -- |
+| Icon buttons | `.m3-icon-btn` + variants, sizes `--xs/--small/--medium/--large/--xl`, `--square` | toggle state via `aria-pressed` |
+| Button groups | `.m3-button-group` + `--connected`, sizes `--xs..--xl`, `.m3-btn-check` hidden inputs | selected via `aria-pressed`, `.active`, or a checked `.m3-btn-check` |
+| Split button | `.m3-split-button` (`__action` + `__toggle` on `.m3-btn`) + `--tonal/--outlined/--elevated` | the toggle is the `popovertarget` of a `.m3-menu[popover]`; the chevron flips through `:has()` |
+| Toolbar | `.m3-toolbar` + `--floating/--docked/--standard/--vibrant/--vertical/--fixed` | -- |
 | FAB / extended FAB | `.m3-fab` + `--small/--large/--extended/--fixed` | -- |
 | Segmented buttons | `.m3-segmented` on real radios/checkboxes | -- |
 | Badges | `.m3-badge`, `--dot`, `.m3-badge-anchor` | -- |
@@ -544,7 +547,9 @@ pure-CSS equivalent -- divergences are listed.
 | Chips | `.m3-chip` + assist/filter/input/suggestion | filter/input ride real checkboxes; remove button styling only |
 | Menus | `.m3-menu` on `[popover]` | positioning via Popover API; hidden gracefully without it |
 | Slider | `.m3-slider` on `<input type=range>` | dual-thumb needs two inputs; WebKit active-track tint needs JS (Firefox gets it free) |
-| Date/time pickers | `.m3-datetime` on native date/time inputs | **M3's modal pickers require JS -- intentionally out of scope** |
+| Date/time inputs | `.m3-datetime` on native date/time inputs | the native popup calendar/clock is the browser's |
+| Date picker | `.m3-date-picker` (docked; `--modal` inside `.m3-dialog`; `--range`) with `__nav`, `__grid`, `__day` states (`--today`, `[aria-selected]`, `--outside`, `:disabled`, range start/end) | the calendar surface only: month navigation and selection are your script's or a form's |
+| Time picker | `.m3-time-picker` (input mode; `--modal`) with hour/minute fields and the AM/PM selector | the dial mode needs script and is not shipped |
 | Text fields | `.m3-field` filled/outlined, floating label, supporting text | -- |
 | Search | `.m3-search` (+ `[popover]`/focus panel) | -- |
 | Select | `.m3-select` on native `<select>` | native option list, CSS chevron |

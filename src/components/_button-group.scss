@@ -1,0 +1,218 @@
+// ============================================================================
+// m3x button group (M3 Expressive: standard | connected)
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-button-group-gap                       space-2 (8px)  standard gap
+//   --m3-button-group-connected-gap             2px            --connected seam
+//   --m3-button-group-shape                     corner-full    --connected
+//                                                              outer corners
+//   --m3-button-group-inner-shape               corner-small   --connected
+//                                                              inner corners
+//   --m3-button-group-selected-shape            corner-full    --connected
+//                                                              selected member
+//   --m3-button-group-selected-container-color  primary        selected member
+//   --m3-button-group-selected-label-color      on-primary     selected member
+//
+// Members are .m3-btn (any variant) and/or .m3-icon-btn (any variant). A
+// member is selected when it carries aria-pressed="true" or .active, or when
+// it is the label of a checked .m3-btn-check hidden input placed right
+// before it (radios = single select, checkboxes = multi select; zero JS).
+//
+// Markup:
+//   <div class="m3-button-group m3-button-group--connected" role="group"
+//        aria-label="Text style">
+//     <button class="m3-btn m3-btn--tonal" type="button" aria-pressed="true">
+//       Bold
+//     </button>
+//     <button class="m3-btn m3-btn--tonal" type="button" aria-pressed="false">
+//       Italic
+//     </button>
+//     <button class="m3-icon-btn m3-icon-btn--tonal" type="button"
+//             aria-label="Underline" aria-pressed="false"><svg ...></svg></button>
+//   </div>
+//
+//   <fieldset class="m3-button-group m3-button-group--connected m3-button-group--small">
+//     <input class="m3-btn-check" type="radio" name="align" id="al" checked>
+//     <label class="m3-btn m3-btn--outlined" for="al">Left</label>
+//     <input class="m3-btn-check" type="radio" name="align" id="ac">
+//     <label class="m3-btn m3-btn--outlined" for="ac">Center</label>
+//   </fieldset>
+//
+// Sizes --xs --small --medium --large --xl re-point the height / padding /
+// icon tokens the members read. Icon buttons take the button height of that
+// size (not the icon-button size scale) so a mixed row stays one height.
+// The connected geometry is written so the hidden inputs never count as
+// members: start corners flatten on "a member after a member", end corners
+// on "a member that is not the last child" (inputs precede their labels).
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Selector list of everything that counts as a member.
+$members: ".#{c.$prefix}-btn, .#{c.$prefix}-icon-btn";
+
+@mixin tokens {
+  --#{c.$prefix}-button-group-gap: var(--m3-space-2);
+  --#{c.$prefix}-button-group-connected-gap: #{fn.rem(2)};
+  --#{c.$prefix}-button-group-shape: var(--md-sys-shape-corner-full);
+  --#{c.$prefix}-button-group-inner-shape: var(--md-sys-shape-corner-small);
+  --#{c.$prefix}-button-group-selected-shape: var(--md-sys-shape-corner-full);
+  --#{c.$prefix}-button-group-selected-container-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-button-group-selected-label-color: var(--md-sys-color-on-primary);
+}
+
+// Standard group: a row of members that keep their own shapes.
+@mixin base($members: $members, $check: ".#{c.$prefix}-btn-check") {
+  @include m.own-box;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--#{c.$prefix}-button-group-gap);
+  vertical-align: middle;
+
+  // Selected member (either kind of group): primary container. Outlined
+  // members drop their outline color so the fill reads as one shape.
+  > :is(#{$members}):is([aria-pressed="true"], .active),
+  > #{$check}:checked + :is(#{$members}) {
+    --_container: var(--#{c.$prefix}-button-group-selected-container-color);
+    --_content: var(--#{c.$prefix}-button-group-selected-label-color);
+    border-color: transparent;
+  }
+}
+
+// Connected group: members touch across a 2px seam; outer corners take the
+// group shape, inner corners the small shape, a selected member the full
+// shape. Every rule here is (0,3,0) or higher, so the group geometry beats a
+// member's own shape modifier; the selected rules are emitted last so they
+// win the equal-specificity ties against the inner-corner rules.
+@mixin connected($members: $members, $check: ".#{c.$prefix}-btn-check") {
+  gap: var(--#{c.$prefix}-button-group-connected-gap);
+
+  > :is(#{$members}) {
+    border-radius: var(--#{c.$prefix}-button-group-shape);
+  }
+
+  > :is(#{$members}) ~ :is(#{$members}) {
+    border-start-start-radius: var(--#{c.$prefix}-button-group-inner-shape);
+    border-end-start-radius: var(--#{c.$prefix}-button-group-inner-shape);
+  }
+
+  > :is(#{$members}):not(:last-child) {
+    border-start-end-radius: var(--#{c.$prefix}-button-group-inner-shape);
+    border-end-end-radius: var(--#{c.$prefix}-button-group-inner-shape);
+  }
+
+  > :is(#{$members}):is([aria-pressed="true"], .active),
+  > #{$check}:checked + :is(#{$members}) {
+    border-radius: var(--#{c.$prefix}-button-group-selected-shape);
+  }
+}
+
+// The hidden input of the .m3-btn-check + label pattern: invisible, out of
+// flow, non-interactive to the pointer (the label is the target) but still
+// focusable, so keyboard state drives the label through sibling selectors.
+@mixin check($members: $members) {
+  @include m.own-box;
+  display: block;
+  position: absolute;
+  opacity: var(--m3-opacity-hidden);
+  pointer-events: none;
+
+  // Same indicator as m.focus-ring, drawn on the sibling label.
+  &:focus-visible + :is(#{$members}) {
+    outline: var(--md-sys-state-focus-indicator-thickness) solid
+      var(--md-sys-color-secondary);
+    outline-offset: var(--md-sys-state-focus-indicator-offset);
+  }
+
+  &:disabled + :is(#{$members}) {
+    @include m.disabled;
+  }
+}
+
+// Sizes: re-point the tokens the members read. Icon buttons follow the
+// button height of the size so both kinds of member share one height.
+@mixin size-xs {
+  --#{c.$prefix}-btn-height: var(--#{c.$prefix}-btn-height-xs);
+  --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-btn-padding-inline-xs);
+  --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-xs);
+  --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-btn-height-xs);
+  --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-icon-btn-icon-size-xs);
+}
+
+@mixin size-small {
+  --#{c.$prefix}-btn-height: var(--#{c.$prefix}-btn-height-small);
+  --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-btn-padding-inline-small);
+  --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-btn-height-small);
+  --#{c.$prefix}-icon-btn-icon-size: var(--m3-icon-size-small);
+
+  > .#{c.$prefix}-btn {
+    @include m.typescale("label-medium");
+  }
+}
+
+@mixin size-medium {
+  --#{c.$prefix}-btn-height: var(--#{c.$prefix}-btn-height-medium);
+  --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-btn-padding-inline-medium);
+  --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-medium);
+  --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-btn-height-medium);
+
+  > .#{c.$prefix}-btn {
+    @include m.typescale("title-medium");
+  }
+}
+
+@mixin size-large {
+  --#{c.$prefix}-btn-height: var(--#{c.$prefix}-btn-height-large);
+  --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-btn-padding-inline-large);
+  --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-btn-height-large);
+}
+
+@mixin size-xl {
+  --#{c.$prefix}-btn-height: var(--#{c.$prefix}-btn-height-xl);
+  --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-btn-padding-inline-xl);
+  --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-xl);
+  --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-btn-height-xl);
+  --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-icon-btn-icon-size-large);
+
+  > .#{c.$prefix}-btn {
+    @include m.typescale("headline-small");
+  }
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-button-group {
+    @include base;
+  }
+
+  .#{$p}-button-group--connected {
+    @include connected;
+  }
+
+  .#{$p}-button-group--xs {
+    @include size-xs;
+  }
+
+  .#{$p}-button-group--small {
+    @include size-small;
+  }
+
+  .#{$p}-button-group--medium {
+    @include size-medium;
+  }
+
+  .#{$p}-button-group--large {
+    @include size-large;
+  }
+
+  .#{$p}-button-group--xl {
+    @include size-xl;
+  }
+
+  .#{$p}-btn-check {
+    @include check;
+  }
+}

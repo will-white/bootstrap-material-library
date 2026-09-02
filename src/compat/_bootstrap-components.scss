@@ -16,6 +16,7 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 @use "../components/button";
+@use "../components/button-group";
 @use "../components/icon-button";
 @use "../components/badge";
 @use "../components/progress";
@@ -311,7 +312,15 @@ $-themes: (
     --_content: var(--#{c.$prefix}-btn-tonal-label-color);
   }
 
-  .btn-group,
+  // Horizontal groups render as M3 Expressive connected button groups (2px
+  // seam, small inner corners, selected member primary); vertical groups
+  // keep the stacked layout.
+  .btn-group {
+    @include button-group.base(".btn", ".btn-check");
+    @include button-group.connected(".btn", ".btn-check");
+    position: relative;
+  }
+
   .btn-group-vertical {
     @include button.group(".btn");
     position: relative;
@@ -342,28 +351,18 @@ $-themes: (
     gap: var(--m3-space-2);
   }
 
-  // Hidden-input button contract (.btn-check + label.btn).
+  // Hidden-input button contract (.btn-check + label.btn): the group's
+  // check mixin (invisible, focus ring and disabled state on the label).
   .btn-check {
-    @include m.own-box;
-    position: absolute;
-    opacity: var(--m3-opacity-hidden);
-    pointer-events: none;
+    @include button-group.check(".btn");
   }
 
+  // A standalone toggle (outside a group) reads as tonal when checked; inside
+  // a .btn-group the group's selected rule (primary) wins on specificity.
   .btn-check:checked + .btn,
   .btn-check:active + .btn {
     --_container: var(--#{c.$prefix}-btn-tonal-container-color);
     --_content: var(--#{c.$prefix}-btn-tonal-label-color);
-  }
-
-  .btn-check:focus-visible + .btn {
-    outline: var(--md-sys-state-focus-indicator-thickness) solid
-      var(--md-sys-color-secondary);
-    outline-offset: var(--md-sys-state-focus-indicator-offset);
-  }
-
-  .btn-check:disabled + .btn {
-    @include m.disabled;
   }
 
   // ==========================================================================
