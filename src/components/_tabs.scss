@@ -95,6 +95,7 @@
 
 // Active treatment: label re-color + underline indicator drawn with ::after.
 @mixin tab-active {
+  --m3-icon-fill: 1;
   --_content: var(--#{c.$prefix}-tabs-active-label-color);
 
   &::after {

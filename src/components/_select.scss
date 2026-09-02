@@ -25,6 +25,11 @@
 //   <select class="m3-select m3-select--filled">...</select>
 //
 // Reused by the Bootstrap compat layer for .form-select.
+//
+// Customizable select: where appearance: base-select is supported the
+// picker itself is styled as an M3 menu (::picker(select), option) with the
+// menu entry animation; elsewhere the native picker is untouched, so the
+// control degrades to the styled-native select above.
 // ============================================================================
 
 @use "../config" as c;
@@ -66,6 +71,8 @@
       linear-gradient(45deg, currentColor 50%, transparent 50%);
   }
 
+  @include base-select;
+
   // List boxes: no chevron, natural height, breathing room around options.
   &[multiple],
   &[size]:not([size="1"]) {
@@ -76,6 +83,111 @@
 
     option {
       padding-block: var(--m3-space-1);
+    }
+  }
+}
+
+// Customizable select (appearance: base-select): the picker becomes an M3
+// menu surface and every option an M3 menu item. The ::picker(select) and
+// option rules restate their boxes directly: the pseudo-element must never
+// join the shared ownership selector list, where one unsupported selector
+// would drop the whole rule.
+@mixin base-select {
+  @supports (appearance: base-select) {
+    &,
+    &::picker(select) {
+      appearance: base-select;
+    }
+
+    &::picker(select) {
+      box-sizing: border-box;
+      margin: var(--m3-space-none);
+      margin-block-start: var(--m3-space-1);
+      padding: var(--m3-space-2) var(--m3-space-none);
+      border: none;
+      border-radius: var(--#{c.$prefix}-menu-shape);
+      background-color: var(--#{c.$prefix}-menu-container-color);
+      color: var(--#{c.$prefix}-menu-content-color);
+      max-inline-size: var(--#{c.$prefix}-menu-max-width);
+      @include m.elevation(2);
+
+      @media (prefers-reduced-motion: no-preference) {
+        opacity: var(--m3-opacity-full);
+        translate: 0 0;
+        transition-property: opacity, translate, display, overlay;
+        transition-duration: var(--md-sys-motion-spring-fast-effects-duration),
+          var(--md-sys-motion-spring-default-spatial-duration),
+          var(--md-sys-motion-spring-default-spatial-duration),
+          var(--md-sys-motion-spring-default-spatial-duration);
+        transition-timing-function: var(--md-sys-motion-spring-fast-effects),
+          var(--md-sys-motion-spring-default-spatial),
+          var(--md-sys-motion-spring-default-spatial),
+          var(--md-sys-motion-spring-default-spatial);
+        transition-behavior: allow-discrete;
+
+        @starting-style {
+          opacity: var(--m3-opacity-hidden);
+          translate: 0 calc(-1 * var(--m3-space-1));
+        }
+      }
+    }
+
+    // The CSS-drawn chevron on the control stays; the UA glyph goes.
+    &::picker-icon {
+      display: none;
+    }
+
+    option {
+      display: flex;
+      align-items: center;
+      gap: var(--m3-space-3);
+      @include m.control-min-height(--#{c.$prefix}-menu-item-height);
+      padding-inline: var(--m3-space-3);
+      background-color: transparent;
+      color: var(--#{c.$prefix}-menu-content-color);
+      cursor: pointer;
+      @include m.typescale("label-large");
+      @include m.transition((background-color, color));
+
+      @include m.hover {
+        background-color: color-mix(
+          in srgb,
+          var(--#{c.$prefix}-menu-content-color)
+            var(--md-sys-state-hover-state-layer-opacity),
+          transparent
+        );
+      }
+
+      &:focus-visible {
+        outline: var(--md-sys-state-focus-indicator-thickness) solid
+          var(--md-sys-color-secondary);
+        outline-offset: calc(-1 * var(--md-sys-state-focus-indicator-offset));
+      }
+
+      &:checked {
+        background-color: var(--md-sys-color-secondary-container);
+        color: var(--md-sys-color-on-secondary-container);
+      }
+
+      &::checkmark {
+        display: none;
+      }
+
+      &:disabled {
+        @include m.disabled-bare;
+      }
+    }
+
+    optgroup {
+      padding: var(--m3-space-none);
+
+      &::label {
+        display: block;
+        padding-inline: var(--m3-space-3);
+        padding-block: var(--m3-space-2);
+        @include m.typescale("title-small");
+        color: var(--md-sys-color-on-surface-variant);
+      }
     }
   }
 }

@@ -53,6 +53,9 @@
 @forward "components/date-picker" as date-picker-*;
 @forward "components/time-picker" as time-picker-*;
 @forward "components/color-palette" as color-palette-*;
+@forward "components/layout" as layout-*;
+@forward "components/icon" as icon-*;
+@forward "components/disclosure" as disclosure-*;
 
 // --- internal wiring ---------------------------------------------------------
 @use "sass:list";
@@ -115,6 +118,9 @@
 @use "components/date-picker";
 @use "components/time-picker";
 @use "components/color-palette";
+@use "components/layout";
+@use "components/icon";
+@use "components/disclosure";
 
 @function -on($name) {
   @return list.index(c.$components, $name) != null;
@@ -150,6 +156,9 @@
   @include spacing.properties;
   @include elevation.properties;
   @include state.properties;
+  @if -tokens-on("icon") {
+    @include icon.properties;
+  }
 
   // Scheme control: color-scheme on :root, [data-theme] switches.
   @include color-scheme.scheme-control;
@@ -278,6 +287,15 @@
     }
     @if -tokens-on("color-palette") {
       @include color-palette.tokens;
+    }
+    @if -tokens-on("layout") {
+      @include layout.tokens;
+    }
+    @if -tokens-on("icon") {
+      @include icon.tokens;
+    }
+    @if -tokens-on("disclosure") {
+      @include disclosure.tokens;
     }
   }
 
@@ -458,6 +476,15 @@ m.$ownership: "collect";
   }
   @if -on("color-palette") {
     @include color-palette.classes;
+  }
+  @if -on("layout") {
+    @include layout.classes;
+  }
+  @if -on("icon") {
+    @include icon.classes;
+  }
+  @if -on("disclosure") {
+    @include disclosure.classes;
   }
   }
 

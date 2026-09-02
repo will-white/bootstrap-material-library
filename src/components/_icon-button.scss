@@ -130,8 +130,10 @@
   @include m.forced-colors-border;
 
   > svg,
-  > img {
+  > img,
+  > .#{c.$prefix}-icon {
     inline-size: var(--#{c.$prefix}-icon-btn-icon-size);
+    font-size: var(--#{c.$prefix}-icon-btn-icon-size);
     block-size: var(--#{c.$prefix}-icon-btn-icon-size);
   }
 
@@ -141,10 +143,12 @@
   }
   &[aria-pressed="true"],
   #{$check}:checked + & {
+    --m3-icon-fill: 1;
     border-radius: var(--#{c.$prefix}-icon-btn-shape-selected);
   }
 
   &[aria-pressed="true"] {
+    --m3-icon-fill: 1;
     --_container: var(--#{c.$prefix}-icon-btn-selected-container-color);
     --_content: var(--#{c.$prefix}-icon-btn-selected-color);
   }
@@ -161,6 +165,7 @@
   --_content: var(--#{c.$prefix}-icon-btn-color);
 
   &[aria-pressed="true"] {
+    --m3-icon-fill: 1;
     --_container: var(--#{c.$prefix}-icon-btn-selected-container-color);
     --_content: var(--#{c.$prefix}-icon-btn-selected-color);
   }

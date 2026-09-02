@@ -132,8 +132,10 @@
   @include m.forced-colors-border;
 
   > svg,
-  > img {
+  > img,
+  > .#{c.$prefix}-icon {
     inline-size: var(--#{c.$prefix}-btn-icon-size);
+    font-size: var(--#{c.$prefix}-btn-icon-size);
     block-size: var(--#{c.$prefix}-btn-icon-size);
   }
 
@@ -144,6 +146,7 @@
   }
   &[aria-pressed="true"],
   #{$check}:checked + & {
+    --m3-icon-fill: 1;
     border-radius: var(--#{c.$prefix}-btn-shape-selected);
   }
 

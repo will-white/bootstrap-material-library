@@ -144,6 +144,7 @@
   }
 
   .#{c.$prefix}-chip__input:checked + .#{c.$prefix}-chip__label {
+    --m3-icon-fill: 1;
     --_container: var(--#{c.$prefix}-chip-selected-container-color);
     --_content: var(--#{c.$prefix}-chip-selected-label-color);
 

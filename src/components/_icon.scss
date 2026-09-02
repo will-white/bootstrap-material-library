@@ -1,0 +1,80 @@
+// ============================================================================
+// m3x icon contract (.m3-icon) for Material Symbols variable fonts.
+// The library never bundles a font: load one (Material Symbols Outlined,
+// Rounded or Sharp) from fonts.googleapis.com with the FILL / wght / GRAD /
+// opsz axes, then <span class="m3-icon">favorite</span>. Components size
+// .m3-icon exactly like an inline <svg>, and their selected states set
+// --m3-icon-fill: 1, so an outlined symbol fills when its control is
+// selected (the M3 "fill on select" behaviour), animated through the
+// variable font axis.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-icon-font           "Material Symbols Outlined"
+//   --m3-icon-weight         400        wght axis (100-700)
+//   --m3-icon-grade          0          GRAD axis (-25 .. 200)
+//   --m3-icon-optical-size   24         opsz axis (20-48)
+//   --m3-icon-fill           0          FILL axis, registered <number>;
+//                                       1 on selected controls
+// ============================================================================
+
+@use "../config" as c;
+@use "../mixins" as m;
+
+@mixin tokens {
+  --#{c.$prefix}-icon-font: "Material Symbols Outlined";
+  --#{c.$prefix}-icon-weight: 400;
+  --#{c.$prefix}-icon-grade: 0;
+  --#{c.$prefix}-icon-optical-size: 24;
+}
+
+@mixin properties {
+  @property --#{c.$prefix}-icon-fill {
+    syntax: "<number>";
+    inherits: true;
+    initial-value: 0;
+  }
+}
+
+@mixin base {
+  @include m.own-box;
+  display: inline-block;
+  flex: none;
+  inline-size: var(--m3-icon-size);
+  block-size: var(--m3-icon-size);
+  overflow: hidden;
+  vertical-align: middle;
+  text-align: center;
+  font-family: var(--#{c.$prefix}-icon-font);
+  font-size: var(--m3-icon-size);
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  user-select: none;
+  font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings:
+    "FILL" var(--#{c.$prefix}-icon-fill, 0),
+    "wght" var(--#{c.$prefix}-icon-weight),
+    "GRAD" var(--#{c.$prefix}-icon-grade),
+    "opsz" var(--#{c.$prefix}-icon-optical-size);
+  @include m.transition((font-variation-settings));
+}
+
+@mixin filled {
+  --#{c.$prefix}-icon-fill: 1;
+}
+
+@mixin classes {
+  .#{c.$prefix}-icon {
+    @include base;
+  }
+
+  .#{c.$prefix}-icon--filled {
+    @include filled;
+  }
+}

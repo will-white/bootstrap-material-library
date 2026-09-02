@@ -67,7 +67,7 @@
 
 // One destination (an <a>). The state layer lives on the child pill and is
 // driven from here, so hovering anywhere on the destination tints the pill.
-@mixin item {
+@mixin item($icon: ".#{c.$prefix}-nav-bar__icon") {
   @include m.own-box;
   text-align: center;
   flex: 1 1 0;
@@ -86,12 +86,12 @@
   @include m.transition((color));
 
   @media (hover: hover) {
-    &:hover .#{c.$prefix}-nav-bar__icon {
+    &:hover #{$icon} {
       --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
     }
   }
 
-  &:active .#{c.$prefix}-nav-bar__icon {
+  &:active #{$icon} {
     --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
   }
 
@@ -100,7 +100,8 @@
   &[aria-current="page"] {
     color: var(--#{c.$prefix}-nav-bar-active-label-color);
 
-    .#{c.$prefix}-nav-bar__icon {
+    #{$icon} {
+      --m3-icon-fill: 1;
       --_container: var(--#{c.$prefix}-nav-bar-active-icon-container-color);
       color: var(--#{c.$prefix}-nav-bar-active-icon-color);
     }
@@ -132,8 +133,10 @@
   @include m.transition((background-color, color));
 
   > svg,
-  > img {
+  > img,
+  > .#{c.$prefix}-icon {
     inline-size: var(--m3-icon-size);
+    font-size: var(--m3-icon-size);
     block-size: var(--m3-icon-size);
   }
 }

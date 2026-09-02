@@ -32,6 +32,15 @@ $contrast: "standard" !default;
 $custom-colors: () !default;
 $motion-scheme: "expressive" !default; // expressive | standard: the spring physics set behind --md-sys-motion-spring-*
 
+// M3 window size classes (min widths): the adaptive layout media queries.
+$window-size-classes: (
+  "compact": 0,
+  "medium": 600px,
+  "expanded": 840px,
+  "large": 1200px,
+  "extra-large": 1600px,
+) !default;
+
 // Bootstrap interop switches (see README section "Bootstrap interop").
 // With all of these on (the default) a Bootstrap 5.3 codebase needs nothing
 // from bootstrap.css: components, grid, utilities, helpers, and reboot-level
@@ -159,5 +168,8 @@ $components: (
   "loading-indicator",
   "date-picker",
   "time-picker",
-  "color-palette"
+  "color-palette",
+  "layout",
+  "icon",
+  "disclosure"
 ) !default;

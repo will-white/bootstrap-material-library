@@ -188,6 +188,8 @@
 @use "../config" as c;
 @use "../functions" as fn;
 @use "../mixins" as m;
+@use "select";
+@use "menu";
 @use "button";
 
 @mixin tokens {
@@ -531,6 +533,8 @@
       linear-gradient(45deg, currentColor 50%, transparent 50%);
   }
 
+  @include select.base-select;
+
   // The focus indicator is the outline; no field-style inset ring.
   &:focus {
     box-shadow: none;
@@ -659,6 +663,11 @@
     inset-block-start: calc(100% + var(--#{c.$prefix}-toolbar-dense-menu-offset));
     inset-inline-start: var(--m3-space-none);
     z-index: var(--m3-z-overlay);
+  }
+
+  // Same entry motion as a popover menu when the details opens.
+  &[open] > .#{c.$prefix}-menu:not([popover]) {
+    @include menu.popover-entry;
   }
 }
 

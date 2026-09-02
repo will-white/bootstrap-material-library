@@ -101,8 +101,10 @@
   }
 
   > svg,
-  > img {
+  > img,
+  > .#{c.$prefix}-icon {
     inline-size: var(--#{c.$prefix}-fab-icon-size);
+    font-size: var(--#{c.$prefix}-fab-icon-size);
     block-size: var(--#{c.$prefix}-fab-icon-size);
   }
 
@@ -130,8 +132,10 @@
   border-radius: var(--#{c.$prefix}-fab-shape-medium);
 
   > svg,
-  > img {
+  > img,
+  > .#{c.$prefix}-icon {
     inline-size: var(--#{c.$prefix}-fab-icon-size-medium);
+    font-size: var(--#{c.$prefix}-fab-icon-size-medium);
     block-size: var(--#{c.$prefix}-fab-icon-size-medium);
   }
 }
@@ -144,8 +148,10 @@
   border-radius: var(--#{c.$prefix}-fab-shape-large);
 
   > svg,
-  > img {
+  > img,
+  > .#{c.$prefix}-icon {
     inline-size: var(--#{c.$prefix}-fab-icon-size-large);
+    font-size: var(--#{c.$prefix}-fab-icon-size-large);
     block-size: var(--#{c.$prefix}-fab-icon-size-large);
   }
 }

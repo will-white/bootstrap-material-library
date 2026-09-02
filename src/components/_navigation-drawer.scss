@@ -125,6 +125,7 @@
 
   &.active,
   &[aria-current="page"] {
+    --m3-icon-fill: 1;
     --_container: var(--#{c.$prefix}-drawer-active-container-color);
     --_content: var(--#{c.$prefix}-drawer-active-color);
   }

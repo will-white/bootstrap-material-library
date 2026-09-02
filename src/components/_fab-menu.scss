@@ -185,8 +185,10 @@
   }
 
   > svg,
-  > img {
+  > img,
+  > .#{c.$prefix}-icon {
     inline-size: var(--#{c.$prefix}-fab-menu-item-icon-size);
+    font-size: var(--#{c.$prefix}-fab-menu-item-icon-size);
     block-size: var(--#{c.$prefix}-fab-menu-item-icon-size);
   }
 

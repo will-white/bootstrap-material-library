@@ -8,6 +8,10 @@
 //   --m3-top-app-bar-height-large     152px  .m3-top-app-bar--large
 //   --m3-top-app-bar-container-color  surface
 //   --m3-top-app-bar-content-color    on-surface
+//   --m3-top-app-bar-scrolled-container-color  surface-container  on-scroll
+//                                            container color
+//   --m3-top-app-bar-scroll-range     64px   scroll distance over which the
+//                                            on-scroll state settles
 //
 // Markup (leading/trailing slots are plain icon buttons):
 //   <header class="m3-top-app-bar m3-top-app-bar--sticky">
@@ -19,6 +23,13 @@
 // Medium/large drop the title onto its own bottom row (flex-wrap + order);
 // the bar/title mixins are reused by the Bootstrap compat layer for
 // .navbar / .navbar-brand.
+//
+// On-scroll state: a sticky bar tints to the scrolled container color as the
+// page scrolls, and a sticky medium/large bar collapses to the small height
+// while its headline fades. Both are scroll-driven animations (no script)
+// where animation-timeline is supported; elsewhere the bar keeps its resting
+// look and .m3-top-app-bar--scrolled applies the tint from a class the
+// consumer toggles (an IntersectionObserver sentinel is the usual way).
 // ============================================================================
 
 @use "../config" as c;
@@ -31,6 +42,8 @@
   --#{c.$prefix}-top-app-bar-height-large: #{fn.rem(152)};
   --#{c.$prefix}-top-app-bar-container-color: var(--md-sys-color-surface);
   --#{c.$prefix}-top-app-bar-content-color: var(--md-sys-color-on-surface);
+  --#{c.$prefix}-top-app-bar-scrolled-container-color: var(--md-sys-color-surface-container);
+  --#{c.$prefix}-top-app-bar-scroll-range: #{fn.rem(64)};
 }
 
 // Bar container (also emitted for Bootstrap's .navbar).
@@ -106,6 +119,68 @@
   z-index: var(--m3-z-nav);
 }
 
+// On-scroll container color, as a class (fallback / script-driven).
+@mixin scrolled {
+  background-color: var(--#{c.$prefix}-top-app-bar-scrolled-container-color);
+}
+
+// On-scroll container color driven by the nearest scroll container.
+@mixin scroll-driven {
+  @supports (animation-timeline: scroll()) {
+    animation-name: #{c.$prefix}-top-app-bar-scroll;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: scroll(nearest block);
+    animation-range: 0 var(--#{c.$prefix}-top-app-bar-scroll-range);
+  }
+}
+
+// Medium/large bars collapse to the small height over their extra height,
+// the headline fading out over the first half of that distance.
+@mixin collapse($height-token, $title: ".#{c.$prefix}-top-app-bar__title") {
+  @supports (animation-timeline: scroll()) {
+    overflow: clip;
+    animation-name: #{c.$prefix}-top-app-bar-scroll, #{c.$prefix}-top-app-bar-collapse;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: scroll(nearest block);
+    animation-range: 0 var(--#{c.$prefix}-top-app-bar-scroll-range),
+      0 calc(var(#{$height-token}) - var(--#{c.$prefix}-top-app-bar-height));
+
+    #{$title} {
+      animation-name: #{c.$prefix}-top-app-bar-title-fade;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(nearest block);
+      animation-range: 0
+        calc((var(#{$height-token}) - var(--#{c.$prefix}-top-app-bar-height)) / 2);
+    }
+  }
+}
+
+@mixin keyframes {
+  @keyframes #{c.$prefix}-top-app-bar-scroll {
+    to {
+      background-color: var(--#{c.$prefix}-top-app-bar-scrolled-container-color);
+    }
+  }
+
+  @keyframes #{c.$prefix}-top-app-bar-collapse {
+    to {
+      block-size: calc(
+        var(--#{c.$prefix}-top-app-bar-height) + var(--m3-density) * var(--m3-density-step)
+      );
+      padding-block-end: var(--m3-space-none);
+    }
+  }
+
+  @keyframes #{c.$prefix}-top-app-bar-title-fade {
+    to {
+      opacity: var(--m3-opacity-hidden);
+    }
+  }
+}
+
 @mixin classes {
   $p: c.$prefix;
 
@@ -131,5 +206,20 @@
 
   .#{$p}-top-app-bar--sticky {
     @include sticky;
+    @include scroll-driven;
   }
+
+  .#{$p}-top-app-bar--scrolled {
+    @include scrolled;
+  }
+
+  .#{$p}-top-app-bar--sticky.#{$p}-top-app-bar--medium {
+    @include collapse(--#{$p}-top-app-bar-height-medium);
+  }
+
+  .#{$p}-top-app-bar--sticky.#{$p}-top-app-bar--large {
+    @include collapse(--#{$p}-top-app-bar-height-large);
+  }
+
+  @include keyframes;
 }
