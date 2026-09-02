@@ -405,7 +405,7 @@
   @property --md-sys-state-pressed-state-layer-opacity {
     syntax: "<percentage>";
     inherits: true;
-    initial-value: 12%;
+    initial-value: 10%;
   }
   @property --md-sys-state-dragged-state-layer-opacity {
     syntax: "<percentage>";
@@ -683,6 +683,7 @@
     --m3-space-8: 4rem;
     --m3-density: 0;
     --m3-density-step: 4px;
+    --m3-selection-layer-size: 2.5rem;
     --m3-target-size: 48px;
     --m3-icon-size: 1.5rem;
     --m3-icon-size-small: 1.125rem;
@@ -790,7 +791,7 @@
     --md-sys-state-none: 0%;
     --md-sys-state-hover-state-layer-opacity: 8%;
     --md-sys-state-focus-state-layer-opacity: 10%;
-    --md-sys-state-pressed-state-layer-opacity: 12%;
+    --md-sys-state-pressed-state-layer-opacity: 10%;
     --md-sys-state-dragged-state-layer-opacity: 16%;
     --md-sys-state-disabled-content-opacity: 38%;
     --md-sys-state-disabled-container-opacity: 12%;
@@ -1010,12 +1011,16 @@
     --m3-checkbox-outline-color: var(--md-sys-color-on-surface-variant);
     --m3-checkbox-selected-container-color: var(--md-sys-color-primary);
     --m3-checkbox-mark-color: var(--md-sys-color-on-primary);
-    --m3-checkbox-mark-width: 0.3125rem;
-    --m3-checkbox-mark-height: 0.625rem;
+    --m3-checkbox-icon-size: 1.125rem;
+    --m3-checkbox-dash-length: 0.75rem;
+    --m3-checkbox-state-layer-color: var(--md-sys-color-on-surface);
+    --m3-checkbox-selected-state-layer-color: var(--md-sys-color-primary);
     --m3-radio-size: 1.25rem;
     --m3-radio-outline-color: var(--md-sys-color-on-surface-variant);
     --m3-radio-selected-color: var(--md-sys-color-primary);
     --m3-radio-dot-size: 0.625rem;
+    --m3-radio-state-layer-color: var(--md-sys-color-on-surface);
+    --m3-radio-selected-state-layer-color: var(--md-sys-color-primary);
     --m3-switch-width: 3.25rem;
     --m3-switch-height: 2rem;
     --m3-switch-track-color: var(--md-sys-color-surface-container-highest);
@@ -1027,6 +1032,9 @@
     --m3-switch-selected-handle-color: var(--md-sys-color-on-primary);
     --m3-switch-selected-handle-size: 1.5rem;
     --m3-switch-selected-hover-handle-color: var(--md-sys-color-primary-container);
+    --m3-switch-pressed-handle-size: 1.75rem;
+    --m3-switch-state-layer-color: var(--md-sys-color-on-surface);
+    --m3-switch-selected-state-layer-color: var(--md-sys-color-primary);
     --m3-chip-height: 2rem;
     --m3-chip-shape: var(--md-sys-shape-corner-small);
     --m3-chip-outline-color: var(--md-sys-color-outline);
@@ -2391,9 +2399,21 @@
       --_container: var(--m3-btn-container-color);
       --_content: var(--m3-btn-label-color);
     }
+    .btn-primary:hover {
+      box-shadow: var(--md-sys-elevation-1);
+    }
+    .btn-primary:active {
+      box-shadow: var(--md-sys-elevation-0);
+    }
     .btn-secondary {
       --_container: var(--m3-btn-tonal-container-color);
       --_content: var(--m3-btn-tonal-label-color);
+    }
+    .btn-secondary:hover {
+      box-shadow: var(--md-sys-elevation-1);
+    }
+    .btn-secondary:active {
+      box-shadow: var(--md-sys-elevation-0);
     }
     .btn-outline-primary {
       --_container: transparent;
@@ -2442,6 +2462,14 @@
     .btn-success {
       --_container: var(--m3-btn-container-color);
       --_content: var(--m3-btn-label-color);
+    }
+    .btn-success:hover {
+      box-shadow: var(--md-sys-elevation-1);
+    }
+    .btn-success:active {
+      box-shadow: var(--md-sys-elevation-0);
+    }
+    .btn-success {
       --m3-btn-container-color: var(--md-extended-color-success);
       --m3-btn-label-color: var(--md-extended-color-on-success);
     }
@@ -2470,6 +2498,14 @@
     .btn-danger {
       --_container: var(--m3-btn-container-color);
       --_content: var(--m3-btn-label-color);
+    }
+    .btn-danger:hover {
+      box-shadow: var(--md-sys-elevation-1);
+    }
+    .btn-danger:active {
+      box-shadow: var(--md-sys-elevation-0);
+    }
+    .btn-danger {
       --m3-btn-container-color: var(--md-sys-color-error);
       --m3-btn-label-color: var(--md-sys-color-on-error);
     }
@@ -2498,6 +2534,14 @@
     .btn-warning {
       --_container: var(--m3-btn-container-color);
       --_content: var(--m3-btn-label-color);
+    }
+    .btn-warning:hover {
+      box-shadow: var(--md-sys-elevation-1);
+    }
+    .btn-warning:active {
+      box-shadow: var(--md-sys-elevation-0);
+    }
+    .btn-warning {
       --m3-btn-container-color: var(--md-extended-color-warning);
       --m3-btn-label-color: var(--md-extended-color-on-warning);
     }
@@ -2526,6 +2570,14 @@
     .btn-info {
       --_container: var(--m3-btn-container-color);
       --_content: var(--m3-btn-label-color);
+    }
+    .btn-info:hover {
+      box-shadow: var(--md-sys-elevation-1);
+    }
+    .btn-info:active {
+      box-shadow: var(--md-sys-elevation-0);
+    }
+    .btn-info {
       --m3-btn-container-color: var(--md-extended-color-info);
       --m3-btn-label-color: var(--md-extended-color-on-info);
     }
@@ -2554,6 +2606,14 @@
     .btn-light {
       --_container: var(--m3-btn-container-color);
       --_content: var(--m3-btn-label-color);
+    }
+    .btn-light:hover {
+      box-shadow: var(--md-sys-elevation-1);
+    }
+    .btn-light:active {
+      box-shadow: var(--md-sys-elevation-0);
+    }
+    .btn-light {
       --m3-btn-container-color: var(--md-sys-color-surface-container-low);
       --m3-btn-label-color: var(--md-sys-color-on-surface);
     }
@@ -2582,6 +2642,14 @@
     .btn-dark {
       --_container: var(--m3-btn-container-color);
       --_content: var(--m3-btn-label-color);
+    }
+    .btn-dark:hover {
+      box-shadow: var(--md-sys-elevation-1);
+    }
+    .btn-dark:active {
+      box-shadow: var(--md-sys-elevation-0);
+    }
+    .btn-dark {
       --m3-btn-container-color: var(--md-sys-color-inverse-surface);
       --m3-btn-label-color: var(--md-sys-color-inverse-on-surface);
     }
@@ -5192,10 +5260,6 @@
       cursor: pointer;
       flex: none;
     }
-    .form-check-input[type=checkbox]:focus-visible {
-      outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
-      outline-offset: var(--md-sys-state-focus-indicator-offset);
-    }
     @media (prefers-reduced-motion: no-preference) {
       .form-check-input[type=checkbox] {
         transition-property: background-color, border-color;
@@ -5204,6 +5268,7 @@
       }
     }
     .form-check-input[type=checkbox] {
+      --_layer-color: var(--m3-checkbox-state-layer-color);
       position: relative;
     }
     .form-check-input[type=checkbox]::before {
@@ -5215,14 +5280,40 @@
       width: max(100%, var(--m3-target-size));
       height: max(100%, var(--m3-target-size));
     }
+    .form-check-input[type=checkbox] {
+      --_layer-opacity: var(--md-sys-state-none);
+      --_ring: transparent;
+    }
     .form-check-input[type=checkbox]::before {
+      inline-size: calc(var(--m3-selection-layer-size) + 2 * (var(--md-sys-state-focus-indicator-offset) + var(--md-sys-state-focus-indicator-thickness)));
+      block-size: calc(var(--m3-selection-layer-size) + 2 * (var(--md-sys-state-focus-indicator-offset) + var(--md-sys-state-focus-indicator-thickness)));
       border-radius: var(--md-sys-shape-corner-full);
+      background: radial-gradient(circle, color-mix(in srgb, var(--_layer-color) var(--_layer-opacity), transparent) calc(var(--m3-selection-layer-size) / 2), transparent calc(var(--m3-selection-layer-size) / 2 + var(--m3-stroke-hairline) / 2), transparent calc(var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset)), var(--_ring) calc(var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset)), var(--_ring) calc(var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset) + var(--md-sys-state-focus-indicator-thickness)), transparent calc(var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset) + var(--md-sys-state-focus-indicator-thickness) + var(--m3-stroke-hairline) / 2));
     }
-    .form-check-input[type=checkbox]:hover::before {
-      background-color: color-mix(in srgb, var(--m3-checkbox-outline-color) var(--md-sys-state-hover-state-layer-opacity), transparent);
+    .form-check-input[type=checkbox]:hover {
+      --_layer-opacity: var(--md-sys-state-hover-state-layer-opacity);
     }
-    .form-check-input[type=checkbox]:checked:hover::before {
-      background-color: color-mix(in srgb, var(--m3-checkbox-selected-container-color) var(--md-sys-state-hover-state-layer-opacity), transparent);
+    .form-check-input[type=checkbox]:focus-visible {
+      --_layer-opacity: var(--md-sys-state-focus-state-layer-opacity);
+      --_ring: var(--md-sys-color-secondary);
+    }
+    .form-check-input[type=checkbox]:active {
+      --_layer-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+    }
+    @media (forced-colors: active) {
+      .form-check-input[type=checkbox]:focus-visible {
+        outline: var(--md-sys-state-focus-indicator-thickness) solid Highlight;
+        outline-offset: var(--md-sys-state-focus-indicator-offset);
+      }
+    }
+    .form-check-input[type=checkbox]:active {
+      --_layer-color: var(--m3-checkbox-selected-state-layer-color);
+    }
+    .form-check-input[type=checkbox]:checked {
+      --_layer-color: var(--m3-checkbox-selected-state-layer-color);
+    }
+    .form-check-input[type=checkbox]:checked:active {
+      --_layer-color: var(--m3-checkbox-state-layer-color);
     }
     .form-check-input[type=checkbox]::after {
       content: "";
@@ -5236,13 +5327,13 @@
     }
     .form-check-input[type=checkbox]:checked::after {
       visibility: visible;
-      width: var(--m3-checkbox-mark-width);
-      height: var(--m3-checkbox-mark-height);
+      width: calc(var(--m3-checkbox-icon-size) * 0.289);
+      height: calc(var(--m3-checkbox-icon-size) * 0.667);
       border-right: var(--m3-stroke-thick) solid currentColor;
       border-bottom: var(--m3-stroke-thick) solid currentColor;
       rotate: 45deg;
+      translate: 0 calc(var(--m3-checkbox-icon-size) * -0.102);
       color: var(--m3-checkbox-mark-color);
-      translate: 0 calc(-1 * var(--m3-stroke-thick));
     }
     .form-check-input[type=checkbox]:indeterminate {
       background-color: var(--m3-checkbox-selected-container-color);
@@ -5251,7 +5342,7 @@
     }
     .form-check-input[type=checkbox]:indeterminate::after {
       visibility: visible;
-      inline-size: var(--m3-checkbox-mark-width);
+      inline-size: var(--m3-checkbox-dash-length);
       block-size: var(--m3-space-none);
       border-block-end: var(--m3-stroke-thick) solid currentColor;
       border-inline-end: none;
@@ -5272,7 +5363,7 @@
       background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity), transparent);
     }
     .form-check-input[type=radio] {
-      --_layer-color: var(--m3-radio-outline-color);
+      --_layer-color: var(--m3-radio-state-layer-color);
       appearance: none;
       inline-size: var(--m3-radio-size);
       block-size: var(--m3-radio-size);
@@ -5288,10 +5379,6 @@
       place-content: center;
       cursor: pointer;
       flex: none;
-    }
-    .form-check-input[type=radio]:focus-visible {
-      outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
-      outline-offset: var(--md-sys-state-focus-indicator-offset);
     }
     @media (prefers-reduced-motion: no-preference) {
       .form-check-input[type=radio] {
@@ -5312,11 +5399,34 @@
       width: max(100%, var(--m3-target-size));
       height: max(100%, var(--m3-target-size));
     }
-    .form-check-input[type=radio]::before {
-      border-radius: var(--md-sys-shape-corner-full);
+    .form-check-input[type=radio] {
+      --_layer-opacity: var(--md-sys-state-none);
+      --_ring: transparent;
     }
-    .form-check-input[type=radio]:hover::before {
-      background-color: color-mix(in srgb, var(--_layer-color) var(--md-sys-state-hover-state-layer-opacity), transparent);
+    .form-check-input[type=radio]::before {
+      inline-size: calc(var(--m3-selection-layer-size) + 2 * (var(--md-sys-state-focus-indicator-offset) + var(--md-sys-state-focus-indicator-thickness)));
+      block-size: calc(var(--m3-selection-layer-size) + 2 * (var(--md-sys-state-focus-indicator-offset) + var(--md-sys-state-focus-indicator-thickness)));
+      border-radius: var(--md-sys-shape-corner-full);
+      background: radial-gradient(circle, color-mix(in srgb, var(--_layer-color) var(--_layer-opacity), transparent) calc(var(--m3-selection-layer-size) / 2), transparent calc(var(--m3-selection-layer-size) / 2 + var(--m3-stroke-hairline) / 2), transparent calc(var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset)), var(--_ring) calc(var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset)), var(--_ring) calc(var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset) + var(--md-sys-state-focus-indicator-thickness)), transparent calc(var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset) + var(--md-sys-state-focus-indicator-thickness) + var(--m3-stroke-hairline) / 2));
+    }
+    .form-check-input[type=radio]:hover {
+      --_layer-opacity: var(--md-sys-state-hover-state-layer-opacity);
+    }
+    .form-check-input[type=radio]:focus-visible {
+      --_layer-opacity: var(--md-sys-state-focus-state-layer-opacity);
+      --_ring: var(--md-sys-color-secondary);
+    }
+    .form-check-input[type=radio]:active {
+      --_layer-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+    }
+    @media (forced-colors: active) {
+      .form-check-input[type=radio]:focus-visible {
+        outline: var(--md-sys-state-focus-indicator-thickness) solid Highlight;
+        outline-offset: var(--md-sys-state-focus-indicator-offset);
+      }
+    }
+    .form-check-input[type=radio]:active {
+      --_layer-color: var(--m3-radio-selected-state-layer-color);
     }
     .form-check-input[type=radio]::after {
       content: "";
@@ -5335,8 +5445,11 @@
       }
     }
     .form-check-input[type=radio]:checked {
-      --_layer-color: var(--m3-radio-selected-color);
+      --_layer-color: var(--m3-radio-selected-state-layer-color);
       border-color: var(--m3-radio-selected-color);
+    }
+    .form-check-input[type=radio]:checked:active {
+      --_layer-color: var(--m3-radio-state-layer-color);
     }
     .form-check-input[type=radio]:checked::after {
       scale: 1;
@@ -5402,15 +5515,22 @@
       width: max(100%, var(--m3-target-size));
       height: max(100%, var(--m3-target-size));
     }
+    .form-switch .form-check-input {
+      --_handle: var(--m3-switch-handle-size);
+      --_overhang: var(--m3-space-1);
+      --_handle-x: calc(var(--m3-switch-height) / 2 + var(--_overhang));
+      --_layer-color: var(--m3-switch-state-layer-color);
+      --_layer-opacity: var(--md-sys-state-none);
+    }
     .form-switch .form-check-input::before {
       content: "";
       position: absolute;
-      inline-size: var(--m3-switch-handle-size);
-      block-size: var(--m3-switch-handle-size);
+      inline-size: var(--_handle);
+      block-size: var(--_handle);
       border-radius: var(--md-sys-shape-corner-full);
       background-color: var(--m3-switch-handle-color);
       inset-block-start: 50%;
-      inset-inline-start: calc((var(--m3-switch-height) - var(--m3-switch-handle-size)) / 2 - var(--m3-stroke-thick));
+      inset-inline-start: calc((var(--m3-switch-height) - var(--_handle)) / 2 - var(--m3-stroke-thick));
       translate: 0 -50%;
     }
     @media (prefers-reduced-motion: no-preference) {
@@ -5420,24 +5540,43 @@
         transition-timing-function: var(--md-sys-motion-easing-standard);
       }
     }
+    .form-switch .form-check-input::after {
+      inline-size: max(100% + 2 * var(--_overhang), var(--m3-target-size));
+      background: radial-gradient(circle at var(--_handle-x) 50%, color-mix(in srgb, var(--_layer-color) var(--_layer-opacity), transparent) calc(var(--m3-selection-layer-size) / 2), transparent calc(var(--m3-selection-layer-size) / 2 + var(--m3-stroke-hairline) / 2));
+    }
+    .form-switch .form-check-input:hover {
+      --_layer-opacity: var(--md-sys-state-hover-state-layer-opacity);
+    }
+    .form-switch .form-check-input:focus-visible {
+      --_layer-opacity: var(--md-sys-state-focus-state-layer-opacity);
+    }
+    .form-switch .form-check-input:active {
+      --_layer-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_handle: var(--m3-switch-pressed-handle-size);
+    }
     .form-switch .form-check-input:hover:not(:disabled)::before {
       background-color: var(--m3-switch-hover-handle-color);
     }
     .form-switch .form-check-input:checked {
+      --_handle: var(--m3-switch-selected-handle-size);
+      --_handle-x: calc(100% - var(--m3-switch-height) / 2 - var(--_overhang));
+      --_layer-color: var(--m3-switch-selected-state-layer-color);
       background-color: var(--m3-switch-selected-track-color);
       border-color: var(--m3-switch-selected-track-color);
     }
+    .form-switch .form-check-input:checked:active {
+      --_handle: var(--m3-switch-pressed-handle-size);
+    }
     .form-switch .form-check-input:checked::before {
-      inline-size: var(--m3-switch-selected-handle-size);
-      block-size: var(--m3-switch-selected-handle-size);
       background-color: var(--m3-switch-selected-handle-color);
-      inset-inline-start: calc(100% - var(--m3-switch-selected-handle-size) - (var(--m3-switch-height) - var(--m3-switch-selected-handle-size)) / 2 + var(--m3-stroke-thick));
+      inset-inline-start: calc(100% - var(--_handle) - (var(--m3-switch-height) - var(--_handle)) / 2 + var(--m3-stroke-thick));
     }
     .form-switch .form-check-input:checked:hover:not(:disabled)::before {
       background-color: var(--m3-switch-selected-hover-handle-color);
     }
     .form-switch .form-check-input:disabled {
       cursor: not-allowed;
+      --_layer-opacity: var(--md-sys-state-none);
       background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--md-sys-state-disabled-container-opacity), transparent);
       border-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--md-sys-state-disabled-container-opacity), transparent);
     }
@@ -8036,10 +8175,24 @@
       --_container: var(--m3-btn-container-color);
       --_content: var(--m3-btn-label-color);
     }
+    .m3-btn--filled:hover {
+      box-shadow: var(--md-sys-elevation-1);
+    }
+    .m3-btn--filled:active {
+      box-shadow: var(--md-sys-elevation-0);
+    }
     .m3-btn--tonal,
     .m3-btn--filled-tonal {
       --_container: var(--m3-btn-tonal-container-color);
       --_content: var(--m3-btn-tonal-label-color);
+    }
+    .m3-btn--tonal:hover,
+    .m3-btn--filled-tonal:hover {
+      box-shadow: var(--md-sys-elevation-1);
+    }
+    .m3-btn--tonal:active,
+    .m3-btn--filled-tonal:active {
+      box-shadow: var(--md-sys-elevation-0);
     }
     .m3-btn--elevated {
       --_container: var(--m3-btn-elevated-container-color);
@@ -8586,6 +8739,20 @@
         transition-duration: var(--md-sys-motion-duration-short4);
         transition-timing-function: var(--md-sys-motion-easing-standard);
       }
+    }
+    .m3-segmented__segment .m3-segmented__label::before {
+      content: "";
+      display: none;
+      flex: none;
+      width: calc(var(--m3-icon-size-small) * 0.289);
+      height: calc(var(--m3-icon-size-small) * 0.667);
+      border-right: var(--m3-stroke-thick) solid currentColor;
+      border-bottom: var(--m3-stroke-thick) solid currentColor;
+      rotate: 45deg;
+      translate: 0 calc(var(--m3-icon-size-small) * -0.102);
+    }
+    .m3-segmented__segment .m3-segmented__input:checked + .m3-segmented__label::before {
+      display: inline-block;
     }
     .m3-segmented__segment .m3-segmented__input:hover + .m3-segmented__label {
       --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
@@ -10241,10 +10408,6 @@
       cursor: pointer;
       flex: none;
     }
-    input[type=checkbox].m3-checkbox:focus-visible {
-      outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
-      outline-offset: var(--md-sys-state-focus-indicator-offset);
-    }
     @media (prefers-reduced-motion: no-preference) {
       input[type=checkbox].m3-checkbox {
         transition-property: background-color, border-color;
@@ -10253,6 +10416,7 @@
       }
     }
     input[type=checkbox].m3-checkbox {
+      --_layer-color: var(--m3-checkbox-state-layer-color);
       position: relative;
     }
     input[type=checkbox].m3-checkbox::before {
@@ -10264,14 +10428,40 @@
       width: max(100%, var(--m3-target-size));
       height: max(100%, var(--m3-target-size));
     }
+    input[type=checkbox].m3-checkbox {
+      --_layer-opacity: var(--md-sys-state-none);
+      --_ring: transparent;
+    }
     input[type=checkbox].m3-checkbox::before {
+      inline-size: calc(var(--m3-selection-layer-size) + 2 * (var(--md-sys-state-focus-indicator-offset) + var(--md-sys-state-focus-indicator-thickness)));
+      block-size: calc(var(--m3-selection-layer-size) + 2 * (var(--md-sys-state-focus-indicator-offset) + var(--md-sys-state-focus-indicator-thickness)));
       border-radius: var(--md-sys-shape-corner-full);
+      background: radial-gradient(circle, color-mix(in srgb, var(--_layer-color) var(--_layer-opacity), transparent) calc(var(--m3-selection-layer-size) / 2), transparent calc(var(--m3-selection-layer-size) / 2 + var(--m3-stroke-hairline) / 2), transparent calc(var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset)), var(--_ring) calc(var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset)), var(--_ring) calc(var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset) + var(--md-sys-state-focus-indicator-thickness)), transparent calc(var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset) + var(--md-sys-state-focus-indicator-thickness) + var(--m3-stroke-hairline) / 2));
     }
-    input[type=checkbox].m3-checkbox:hover::before {
-      background-color: color-mix(in srgb, var(--m3-checkbox-outline-color) var(--md-sys-state-hover-state-layer-opacity), transparent);
+    input[type=checkbox].m3-checkbox:hover {
+      --_layer-opacity: var(--md-sys-state-hover-state-layer-opacity);
     }
-    input[type=checkbox].m3-checkbox:checked:hover::before {
-      background-color: color-mix(in srgb, var(--m3-checkbox-selected-container-color) var(--md-sys-state-hover-state-layer-opacity), transparent);
+    input[type=checkbox].m3-checkbox:focus-visible {
+      --_layer-opacity: var(--md-sys-state-focus-state-layer-opacity);
+      --_ring: var(--md-sys-color-secondary);
+    }
+    input[type=checkbox].m3-checkbox:active {
+      --_layer-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+    }
+    @media (forced-colors: active) {
+      input[type=checkbox].m3-checkbox:focus-visible {
+        outline: var(--md-sys-state-focus-indicator-thickness) solid Highlight;
+        outline-offset: var(--md-sys-state-focus-indicator-offset);
+      }
+    }
+    input[type=checkbox].m3-checkbox:active {
+      --_layer-color: var(--m3-checkbox-selected-state-layer-color);
+    }
+    input[type=checkbox].m3-checkbox:checked {
+      --_layer-color: var(--m3-checkbox-selected-state-layer-color);
+    }
+    input[type=checkbox].m3-checkbox:checked:active {
+      --_layer-color: var(--m3-checkbox-state-layer-color);
     }
     input[type=checkbox].m3-checkbox::after {
       content: "";
@@ -10285,13 +10475,13 @@
     }
     input[type=checkbox].m3-checkbox:checked::after {
       visibility: visible;
-      width: var(--m3-checkbox-mark-width);
-      height: var(--m3-checkbox-mark-height);
+      width: calc(var(--m3-checkbox-icon-size) * 0.289);
+      height: calc(var(--m3-checkbox-icon-size) * 0.667);
       border-right: var(--m3-stroke-thick) solid currentColor;
       border-bottom: var(--m3-stroke-thick) solid currentColor;
       rotate: 45deg;
+      translate: 0 calc(var(--m3-checkbox-icon-size) * -0.102);
       color: var(--m3-checkbox-mark-color);
-      translate: 0 calc(-1 * var(--m3-stroke-thick));
     }
     input[type=checkbox].m3-checkbox:indeterminate {
       background-color: var(--m3-checkbox-selected-container-color);
@@ -10300,7 +10490,7 @@
     }
     input[type=checkbox].m3-checkbox:indeterminate::after {
       visibility: visible;
-      inline-size: var(--m3-checkbox-mark-width);
+      inline-size: var(--m3-checkbox-dash-length);
       block-size: var(--m3-space-none);
       border-block-end: var(--m3-stroke-thick) solid currentColor;
       border-inline-end: none;
@@ -10321,7 +10511,7 @@
       background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity), transparent);
     }
     input[type=radio].m3-radio {
-      --_layer-color: var(--m3-radio-outline-color);
+      --_layer-color: var(--m3-radio-state-layer-color);
       appearance: none;
       inline-size: var(--m3-radio-size);
       block-size: var(--m3-radio-size);
@@ -10337,10 +10527,6 @@
       place-content: center;
       cursor: pointer;
       flex: none;
-    }
-    input[type=radio].m3-radio:focus-visible {
-      outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
-      outline-offset: var(--md-sys-state-focus-indicator-offset);
     }
     @media (prefers-reduced-motion: no-preference) {
       input[type=radio].m3-radio {
@@ -10361,11 +10547,34 @@
       width: max(100%, var(--m3-target-size));
       height: max(100%, var(--m3-target-size));
     }
-    input[type=radio].m3-radio::before {
-      border-radius: var(--md-sys-shape-corner-full);
+    input[type=radio].m3-radio {
+      --_layer-opacity: var(--md-sys-state-none);
+      --_ring: transparent;
     }
-    input[type=radio].m3-radio:hover::before {
-      background-color: color-mix(in srgb, var(--_layer-color) var(--md-sys-state-hover-state-layer-opacity), transparent);
+    input[type=radio].m3-radio::before {
+      inline-size: calc(var(--m3-selection-layer-size) + 2 * (var(--md-sys-state-focus-indicator-offset) + var(--md-sys-state-focus-indicator-thickness)));
+      block-size: calc(var(--m3-selection-layer-size) + 2 * (var(--md-sys-state-focus-indicator-offset) + var(--md-sys-state-focus-indicator-thickness)));
+      border-radius: var(--md-sys-shape-corner-full);
+      background: radial-gradient(circle, color-mix(in srgb, var(--_layer-color) var(--_layer-opacity), transparent) calc(var(--m3-selection-layer-size) / 2), transparent calc(var(--m3-selection-layer-size) / 2 + var(--m3-stroke-hairline) / 2), transparent calc(var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset)), var(--_ring) calc(var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset)), var(--_ring) calc(var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset) + var(--md-sys-state-focus-indicator-thickness)), transparent calc(var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset) + var(--md-sys-state-focus-indicator-thickness) + var(--m3-stroke-hairline) / 2));
+    }
+    input[type=radio].m3-radio:hover {
+      --_layer-opacity: var(--md-sys-state-hover-state-layer-opacity);
+    }
+    input[type=radio].m3-radio:focus-visible {
+      --_layer-opacity: var(--md-sys-state-focus-state-layer-opacity);
+      --_ring: var(--md-sys-color-secondary);
+    }
+    input[type=radio].m3-radio:active {
+      --_layer-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+    }
+    @media (forced-colors: active) {
+      input[type=radio].m3-radio:focus-visible {
+        outline: var(--md-sys-state-focus-indicator-thickness) solid Highlight;
+        outline-offset: var(--md-sys-state-focus-indicator-offset);
+      }
+    }
+    input[type=radio].m3-radio:active {
+      --_layer-color: var(--m3-radio-selected-state-layer-color);
     }
     input[type=radio].m3-radio::after {
       content: "";
@@ -10384,8 +10593,11 @@
       }
     }
     input[type=radio].m3-radio:checked {
-      --_layer-color: var(--m3-radio-selected-color);
+      --_layer-color: var(--m3-radio-selected-state-layer-color);
       border-color: var(--m3-radio-selected-color);
+    }
+    input[type=radio].m3-radio:checked:active {
+      --_layer-color: var(--m3-radio-state-layer-color);
     }
     input[type=radio].m3-radio:checked::after {
       scale: 1;
@@ -10442,15 +10654,22 @@
       width: max(100%, var(--m3-target-size));
       height: max(100%, var(--m3-target-size));
     }
+    input[type=checkbox].m3-switch {
+      --_handle: var(--m3-switch-handle-size);
+      --_overhang: var(--m3-space-1);
+      --_handle-x: calc(var(--m3-switch-height) / 2 + var(--_overhang));
+      --_layer-color: var(--m3-switch-state-layer-color);
+      --_layer-opacity: var(--md-sys-state-none);
+    }
     input[type=checkbox].m3-switch::before {
       content: "";
       position: absolute;
-      inline-size: var(--m3-switch-handle-size);
-      block-size: var(--m3-switch-handle-size);
+      inline-size: var(--_handle);
+      block-size: var(--_handle);
       border-radius: var(--md-sys-shape-corner-full);
       background-color: var(--m3-switch-handle-color);
       inset-block-start: 50%;
-      inset-inline-start: calc((var(--m3-switch-height) - var(--m3-switch-handle-size)) / 2 - var(--m3-stroke-thick));
+      inset-inline-start: calc((var(--m3-switch-height) - var(--_handle)) / 2 - var(--m3-stroke-thick));
       translate: 0 -50%;
     }
     @media (prefers-reduced-motion: no-preference) {
@@ -10460,24 +10679,43 @@
         transition-timing-function: var(--md-sys-motion-easing-standard);
       }
     }
+    input[type=checkbox].m3-switch::after {
+      inline-size: max(100% + 2 * var(--_overhang), var(--m3-target-size));
+      background: radial-gradient(circle at var(--_handle-x) 50%, color-mix(in srgb, var(--_layer-color) var(--_layer-opacity), transparent) calc(var(--m3-selection-layer-size) / 2), transparent calc(var(--m3-selection-layer-size) / 2 + var(--m3-stroke-hairline) / 2));
+    }
+    input[type=checkbox].m3-switch:hover {
+      --_layer-opacity: var(--md-sys-state-hover-state-layer-opacity);
+    }
+    input[type=checkbox].m3-switch:focus-visible {
+      --_layer-opacity: var(--md-sys-state-focus-state-layer-opacity);
+    }
+    input[type=checkbox].m3-switch:active {
+      --_layer-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_handle: var(--m3-switch-pressed-handle-size);
+    }
     input[type=checkbox].m3-switch:hover:not(:disabled)::before {
       background-color: var(--m3-switch-hover-handle-color);
     }
     input[type=checkbox].m3-switch:checked {
+      --_handle: var(--m3-switch-selected-handle-size);
+      --_handle-x: calc(100% - var(--m3-switch-height) / 2 - var(--_overhang));
+      --_layer-color: var(--m3-switch-selected-state-layer-color);
       background-color: var(--m3-switch-selected-track-color);
       border-color: var(--m3-switch-selected-track-color);
     }
+    input[type=checkbox].m3-switch:checked:active {
+      --_handle: var(--m3-switch-pressed-handle-size);
+    }
     input[type=checkbox].m3-switch:checked::before {
-      inline-size: var(--m3-switch-selected-handle-size);
-      block-size: var(--m3-switch-selected-handle-size);
       background-color: var(--m3-switch-selected-handle-color);
-      inset-inline-start: calc(100% - var(--m3-switch-selected-handle-size) - (var(--m3-switch-height) - var(--m3-switch-selected-handle-size)) / 2 + var(--m3-stroke-thick));
+      inset-inline-start: calc(100% - var(--_handle) - (var(--m3-switch-height) - var(--_handle)) / 2 + var(--m3-stroke-thick));
     }
     input[type=checkbox].m3-switch:checked:hover:not(:disabled)::before {
       background-color: var(--m3-switch-selected-hover-handle-color);
     }
     input[type=checkbox].m3-switch:disabled {
       cursor: not-allowed;
+      --_layer-opacity: var(--md-sys-state-none);
       background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--md-sys-state-disabled-container-opacity), transparent);
       border-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--md-sys-state-disabled-container-opacity), transparent);
     }
@@ -10641,12 +10879,12 @@
     .m3-chip--filter .m3-chip__label::before {
       content: "";
       display: none;
-      width: calc(var(--m3-chip-icon-size) / 4);
-      height: calc(var(--m3-chip-icon-size) / 2);
+      width: calc(var(--m3-chip-icon-size) * 0.289);
+      height: calc(var(--m3-chip-icon-size) * 0.667);
       border-right: var(--m3-stroke-thick) solid currentColor;
       border-bottom: var(--m3-stroke-thick) solid currentColor;
       rotate: 45deg;
-      translate: 0 calc(-1 * var(--m3-stroke-hairline));
+      translate: 0 calc(var(--m3-chip-icon-size) * -0.102);
     }
     .m3-chip--filter .m3-chip__input:hover + .m3-chip__label {
       --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
@@ -10733,12 +10971,12 @@
     .m3-chip--input .m3-chip__label::before {
       content: "";
       display: none;
-      width: calc(var(--m3-chip-icon-size) / 4);
-      height: calc(var(--m3-chip-icon-size) / 2);
+      width: calc(var(--m3-chip-icon-size) * 0.289);
+      height: calc(var(--m3-chip-icon-size) * 0.667);
       border-right: var(--m3-stroke-thick) solid currentColor;
       border-bottom: var(--m3-stroke-thick) solid currentColor;
       rotate: 45deg;
-      translate: 0 calc(-1 * var(--m3-stroke-hairline));
+      translate: 0 calc(var(--m3-chip-icon-size) * -0.102);
     }
     .m3-chip--input .m3-chip__input:hover + .m3-chip__label {
       --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
@@ -13087,7 +13325,7 @@
       color-scheme: inherit;
       image-rendering: inherit;
     }
-    .m3-icon-btn::after, .m3-fab--small::after, .m3-snackbar__action::after, .m3-snackbar__close::after, .m3-carousel__indicator::before, .m3-list--dividers > .m3-list-item:not(:last-child)::after, .m3-tabs__tab.active::after, .m3-tabs__tab[aria-current=page]::after, .m3-tabs__tab[aria-selected=true]::after, .m3-tabs__input:checked + .m3-tabs__tab::after, input[type=checkbox].m3-checkbox::before, input[type=checkbox].m3-checkbox::after, input[type=radio].m3-radio::before, input[type=radio].m3-radio::after, input[type=checkbox].m3-switch::after, input[type=checkbox].m3-switch::before, .m3-chip--filter .m3-chip__label::before, .m3-chip--input .m3-chip__label::before, .m3-split-button__toggle::after, .m3-loading-indicator::before, .m3-date-picker__menu::after, .m3-date-picker__day::after, .m3-date-picker__day::before, .m3-btn::before, .m3-btn::after, .m3-btn-group::before, .m3-btn-group::after, .m3-icon-btn::before, .m3-fab::before, .m3-fab::after, .m3-fab--extended .m3-fab__label::before, .m3-fab--extended .m3-fab__label::after, .m3-segmented::before, .m3-segmented::after, .m3-segmented__segment::before, .m3-segmented__segment::after, .m3-segmented__segment .m3-segmented__input::before, .m3-segmented__segment .m3-segmented__input::after, .m3-segmented__segment .m3-segmented__label::before, .m3-segmented__segment .m3-segmented__label::after, .m3-badge::before, .m3-badge::after, .m3-progress::before, .m3-progress::after, .m3-progress__bar::before, .m3-progress__bar::after, .m3-progress-circle::before, .m3-progress-circle::after, .m3-spinner::before, .m3-spinner::after, .m3-snackbar::before, .m3-snackbar::after, .m3-snackbar__text::before, .m3-snackbar__text::after, .m3-snackbar__action::before, .m3-snackbar__close::before, .m3-tooltip::before, .m3-tooltip::after, .m3-tooltip__title::before, .m3-tooltip__title::after, .m3-card::before, .m3-card::after, .m3-carousel::before, .m3-carousel::after, .m3-carousel__item::before, .m3-carousel__item::after, .m3-carousel__indicators::before, .m3-carousel__indicators::after, .m3-carousel__indicator::after, .m3-dialog::before, .m3-dialog::after, .m3-dialog__title::before, .m3-dialog__title::after, .m3-dialog__content::before, .m3-dialog__content::after, .m3-dialog__actions::before, .m3-dialog__actions::after, .m3-divider::before, .m3-divider::after, .m3-list::before, .m3-list::after, .m3-list__subheader::before, .m3-list__subheader::after, .m3-list-item::before, .m3-list-item::after, .m3-list-item__body::before, .m3-list-item__body::after, .m3-list-item__overline::before, .m3-list-item__overline::after, .m3-list-item__headline::before, .m3-list-item__headline::after, .m3-list-item__supporting::before, .m3-list-item__supporting::after, .m3-list-item__leading::before, .m3-list-item__leading::after, .m3-list-item__trailing::before, .m3-list-item__trailing::after, .m3-sheet--bottom::before, .m3-sheet--bottom::after, .m3-sheet--side::before, .m3-sheet--side::after, .m3-sheet--side-standard::before, .m3-sheet--side-standard::after, .m3-sheet__handle::before, .m3-sheet__handle::after, .m3-nav-bar::before, .m3-nav-bar::after, .m3-nav-bar__item::before, .m3-nav-bar__item::after, .m3-nav-bar__icon::before, .m3-nav-bar__icon::after, .m3-drawer::before, .m3-drawer::after, .m3-drawer--modal::before, .m3-drawer--modal::after, .m3-drawer__item::before, .m3-drawer__item::after, .m3-drawer__headline::before, .m3-drawer__headline::after, .m3-drawer__badge::before, .m3-drawer__badge::after, .m3-rail::before, .m3-rail::after, .m3-rail__item::before, .m3-rail__item::after, .m3-rail__icon::before, .m3-rail__icon::after, .m3-tabs::before, .m3-tabs::after, .m3-tabs__tab::before, .m3-tabs__tab::after, .m3-tabs__input::before, .m3-tabs__input::after, .m3-top-app-bar::before, .m3-top-app-bar::after, .m3-top-app-bar__title::before, .m3-top-app-bar__title::after, .m3-bottom-app-bar::before, .m3-bottom-app-bar::after, .m3-bottom-app-bar__trailing::before, .m3-bottom-app-bar__trailing::after, .m3-chip::before, .m3-chip::after, .m3-chip--filter .m3-chip__input::before, .m3-chip--filter .m3-chip__input::after, .m3-chip--filter .m3-chip__label::after, .m3-chip--input .m3-chip__input::before, .m3-chip--input .m3-chip__input::after, .m3-chip--input .m3-chip__label::after, .m3-chip__remove::before, .m3-chip__remove::after, .m3-menu::before, .m3-menu::after, .m3-menu__item::before, .m3-menu__item::after, .m3-menu__header::before, .m3-menu__header::after, input[type=range].m3-slider::before, input[type=range].m3-slider::after, input[type=date].m3-datetime::before, input[type=date].m3-datetime::after, input[type=time].m3-datetime::before, input[type=time].m3-datetime::after, input[type=datetime-local].m3-datetime::before, input[type=datetime-local].m3-datetime::after, input[type=month].m3-datetime::before, input[type=month].m3-datetime::after, input[type=week].m3-datetime::before, input[type=week].m3-datetime::after, .m3-field::before, .m3-field::after, .m3-field__input::before, .m3-field__input::after, .m3-field__label::before, .m3-field__label::after, .m3-field__supporting::before, .m3-field__supporting::after, .m3-search::before, .m3-search::after, .m3-search__input::before, .m3-search__input::after, .m3-search__panel::before, .m3-search__panel::after, select.m3-select::before, select.m3-select::after, .m3-toolbar::before, .m3-toolbar::after, .m3-button-group::before, .m3-button-group::after, .m3-btn-check::before, .m3-btn-check::after, .m3-split-button::before, .m3-split-button::after, .m3-split-button__action::before, .m3-split-button__action::after, .m3-split-button__toggle::before, .m3-fab-menu::before, .m3-fab-menu::after, .m3-fab-menu__items::before, .m3-fab-menu__items::after, .m3-fab-menu__item::before, .m3-fab-menu__item::after, .m3-fab-menu__label::before, .m3-fab-menu__label::after, .m3-loading-indicator::after, .m3-date-picker::before, .m3-date-picker::after, .m3-date-picker__header::before, .m3-date-picker__header::after, .m3-date-picker__supporting::before, .m3-date-picker__supporting::after, .m3-date-picker__headline::before, .m3-date-picker__headline::after, .m3-date-picker__nav::before, .m3-date-picker__nav::after, .m3-date-picker__menu::before, .m3-date-picker__arrows::before, .m3-date-picker__arrows::after, .m3-date-picker__grid::before, .m3-date-picker__grid::after, .m3-date-picker__weekday::before, .m3-date-picker__weekday::after, .m3-date-picker__actions::before, .m3-date-picker__actions::after, .m3-time-picker::before, .m3-time-picker::after, .m3-time-picker__label::before, .m3-time-picker__label::after, .m3-time-picker__fields::before, .m3-time-picker__fields::after, .m3-time-picker__field::before, .m3-time-picker__field::after, .m3-time-picker__input::before, .m3-time-picker__input::after, .m3-time-picker__hint::before, .m3-time-picker__hint::after, .m3-time-picker__separator::before, .m3-time-picker__separator::after, .m3-time-picker__period::before, .m3-time-picker__period::after, .m3-time-picker__period-option::before, .m3-time-picker__period-option::after, .m3-time-picker__period-option .m3-time-picker__period-input::before, .m3-time-picker__period-option .m3-time-picker__period-input::after, .m3-time-picker__period-option .m3-time-picker__period-label::before, .m3-time-picker__period-option .m3-time-picker__period-label::after, .m3-time-picker__actions::before, .m3-time-picker__actions::after, .m3-snackbar__slot::before, .m3-snackbar__slot::after, .m3-card__media::before, .m3-card__media::after, .m3-card__slot::before, .m3-card__slot::after, .m3-card__actions::before, .m3-card__actions::after, .m3-list-item__slot::before, .m3-list-item__slot::after, .m3-sheet__slot::before, .m3-sheet__slot::after, .m3-date-picker__input::before, .m3-date-picker__input::after {
+    .m3-icon-btn::after, .m3-fab--small::after, .m3-segmented__segment .m3-segmented__label::before, .m3-snackbar__action::after, .m3-snackbar__close::after, .m3-carousel__indicator::before, .m3-list--dividers > .m3-list-item:not(:last-child)::after, .m3-tabs__tab.active::after, .m3-tabs__tab[aria-current=page]::after, .m3-tabs__tab[aria-selected=true]::after, .m3-tabs__input:checked + .m3-tabs__tab::after, input[type=checkbox].m3-checkbox::before, input[type=checkbox].m3-checkbox::after, input[type=radio].m3-radio::before, input[type=radio].m3-radio::after, input[type=checkbox].m3-switch::after, input[type=checkbox].m3-switch::before, .m3-chip--filter .m3-chip__label::before, .m3-chip--input .m3-chip__label::before, .m3-split-button__toggle::after, .m3-loading-indicator::before, .m3-date-picker__menu::after, .m3-date-picker__day::after, .m3-date-picker__day::before, .m3-btn::before, .m3-btn::after, .m3-btn-group::before, .m3-btn-group::after, .m3-icon-btn::before, .m3-fab::before, .m3-fab::after, .m3-fab--extended .m3-fab__label::before, .m3-fab--extended .m3-fab__label::after, .m3-segmented::before, .m3-segmented::after, .m3-segmented__segment::before, .m3-segmented__segment::after, .m3-segmented__segment .m3-segmented__input::before, .m3-segmented__segment .m3-segmented__input::after, .m3-segmented__segment .m3-segmented__label::after, .m3-badge::before, .m3-badge::after, .m3-progress::before, .m3-progress::after, .m3-progress__bar::before, .m3-progress__bar::after, .m3-progress-circle::before, .m3-progress-circle::after, .m3-spinner::before, .m3-spinner::after, .m3-snackbar::before, .m3-snackbar::after, .m3-snackbar__text::before, .m3-snackbar__text::after, .m3-snackbar__action::before, .m3-snackbar__close::before, .m3-tooltip::before, .m3-tooltip::after, .m3-tooltip__title::before, .m3-tooltip__title::after, .m3-card::before, .m3-card::after, .m3-carousel::before, .m3-carousel::after, .m3-carousel__item::before, .m3-carousel__item::after, .m3-carousel__indicators::before, .m3-carousel__indicators::after, .m3-carousel__indicator::after, .m3-dialog::before, .m3-dialog::after, .m3-dialog__title::before, .m3-dialog__title::after, .m3-dialog__content::before, .m3-dialog__content::after, .m3-dialog__actions::before, .m3-dialog__actions::after, .m3-divider::before, .m3-divider::after, .m3-list::before, .m3-list::after, .m3-list__subheader::before, .m3-list__subheader::after, .m3-list-item::before, .m3-list-item::after, .m3-list-item__body::before, .m3-list-item__body::after, .m3-list-item__overline::before, .m3-list-item__overline::after, .m3-list-item__headline::before, .m3-list-item__headline::after, .m3-list-item__supporting::before, .m3-list-item__supporting::after, .m3-list-item__leading::before, .m3-list-item__leading::after, .m3-list-item__trailing::before, .m3-list-item__trailing::after, .m3-sheet--bottom::before, .m3-sheet--bottom::after, .m3-sheet--side::before, .m3-sheet--side::after, .m3-sheet--side-standard::before, .m3-sheet--side-standard::after, .m3-sheet__handle::before, .m3-sheet__handle::after, .m3-nav-bar::before, .m3-nav-bar::after, .m3-nav-bar__item::before, .m3-nav-bar__item::after, .m3-nav-bar__icon::before, .m3-nav-bar__icon::after, .m3-drawer::before, .m3-drawer::after, .m3-drawer--modal::before, .m3-drawer--modal::after, .m3-drawer__item::before, .m3-drawer__item::after, .m3-drawer__headline::before, .m3-drawer__headline::after, .m3-drawer__badge::before, .m3-drawer__badge::after, .m3-rail::before, .m3-rail::after, .m3-rail__item::before, .m3-rail__item::after, .m3-rail__icon::before, .m3-rail__icon::after, .m3-tabs::before, .m3-tabs::after, .m3-tabs__tab::before, .m3-tabs__tab::after, .m3-tabs__input::before, .m3-tabs__input::after, .m3-top-app-bar::before, .m3-top-app-bar::after, .m3-top-app-bar__title::before, .m3-top-app-bar__title::after, .m3-bottom-app-bar::before, .m3-bottom-app-bar::after, .m3-bottom-app-bar__trailing::before, .m3-bottom-app-bar__trailing::after, .m3-chip::before, .m3-chip::after, .m3-chip--filter .m3-chip__input::before, .m3-chip--filter .m3-chip__input::after, .m3-chip--filter .m3-chip__label::after, .m3-chip--input .m3-chip__input::before, .m3-chip--input .m3-chip__input::after, .m3-chip--input .m3-chip__label::after, .m3-chip__remove::before, .m3-chip__remove::after, .m3-menu::before, .m3-menu::after, .m3-menu__item::before, .m3-menu__item::after, .m3-menu__header::before, .m3-menu__header::after, input[type=range].m3-slider::before, input[type=range].m3-slider::after, input[type=date].m3-datetime::before, input[type=date].m3-datetime::after, input[type=time].m3-datetime::before, input[type=time].m3-datetime::after, input[type=datetime-local].m3-datetime::before, input[type=datetime-local].m3-datetime::after, input[type=month].m3-datetime::before, input[type=month].m3-datetime::after, input[type=week].m3-datetime::before, input[type=week].m3-datetime::after, .m3-field::before, .m3-field::after, .m3-field__input::before, .m3-field__input::after, .m3-field__label::before, .m3-field__label::after, .m3-field__supporting::before, .m3-field__supporting::after, .m3-search::before, .m3-search::after, .m3-search__input::before, .m3-search__input::after, .m3-search__panel::before, .m3-search__panel::after, select.m3-select::before, select.m3-select::after, .m3-toolbar::before, .m3-toolbar::after, .m3-button-group::before, .m3-button-group::after, .m3-btn-check::before, .m3-btn-check::after, .m3-split-button::before, .m3-split-button::after, .m3-split-button__action::before, .m3-split-button__action::after, .m3-split-button__toggle::before, .m3-fab-menu::before, .m3-fab-menu::after, .m3-fab-menu__items::before, .m3-fab-menu__items::after, .m3-fab-menu__item::before, .m3-fab-menu__item::after, .m3-fab-menu__label::before, .m3-fab-menu__label::after, .m3-loading-indicator::after, .m3-date-picker::before, .m3-date-picker::after, .m3-date-picker__header::before, .m3-date-picker__header::after, .m3-date-picker__supporting::before, .m3-date-picker__supporting::after, .m3-date-picker__headline::before, .m3-date-picker__headline::after, .m3-date-picker__nav::before, .m3-date-picker__nav::after, .m3-date-picker__menu::before, .m3-date-picker__arrows::before, .m3-date-picker__arrows::after, .m3-date-picker__grid::before, .m3-date-picker__grid::after, .m3-date-picker__weekday::before, .m3-date-picker__weekday::after, .m3-date-picker__actions::before, .m3-date-picker__actions::after, .m3-time-picker::before, .m3-time-picker::after, .m3-time-picker__label::before, .m3-time-picker__label::after, .m3-time-picker__fields::before, .m3-time-picker__fields::after, .m3-time-picker__field::before, .m3-time-picker__field::after, .m3-time-picker__input::before, .m3-time-picker__input::after, .m3-time-picker__hint::before, .m3-time-picker__hint::after, .m3-time-picker__separator::before, .m3-time-picker__separator::after, .m3-time-picker__period::before, .m3-time-picker__period::after, .m3-time-picker__period-option::before, .m3-time-picker__period-option::after, .m3-time-picker__period-option .m3-time-picker__period-input::before, .m3-time-picker__period-option .m3-time-picker__period-input::after, .m3-time-picker__period-option .m3-time-picker__period-label::before, .m3-time-picker__period-option .m3-time-picker__period-label::after, .m3-time-picker__actions::before, .m3-time-picker__actions::after, .m3-snackbar__slot::before, .m3-snackbar__slot::after, .m3-card__media::before, .m3-card__media::after, .m3-card__slot::before, .m3-card__slot::after, .m3-card__actions::before, .m3-card__actions::after, .m3-list-item__slot::before, .m3-list-item__slot::after, .m3-sheet__slot::before, .m3-sheet__slot::after, .m3-date-picker__input::before, .m3-date-picker__input::after {
       box-sizing: border-box;
       position: static;
       inset: auto;

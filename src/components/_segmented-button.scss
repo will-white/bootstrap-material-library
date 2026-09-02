@@ -140,6 +140,19 @@
       var(--_container)
     );
     @include m.transition((background-color, color));
+
+    // M3: a selected segment shows a leading check icon (18dp).
+    &::before {
+      @include m.own-pseudo;
+      content: "";
+      display: none;
+      flex: none;
+      @include m.check-glyph(var(--m3-icon-size-small), var(--m3-stroke-thick));
+    }
+  }
+
+  #{$input}:checked + #{$label}::before {
+    display: inline-block;
   }
 
   #{$input}:hover + #{$label} {

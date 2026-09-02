@@ -41,6 +41,9 @@
   --#{c.$prefix}-switch-selected-handle-color: var(--md-sys-color-on-primary);
   --#{c.$prefix}-switch-selected-handle-size: #{fn.rem(24)};
   --#{c.$prefix}-switch-selected-hover-handle-color: var(--md-sys-color-primary-container);
+  --#{c.$prefix}-switch-pressed-handle-size: #{fn.rem(28)};
+  --#{c.$prefix}-switch-state-layer-color: var(--md-sys-color-on-surface);
+  --#{c.$prefix}-switch-selected-state-layer-color: var(--md-sys-color-primary);
 }
 
 // The whole control: the checkbox itself is the track, ::before is the
@@ -66,22 +69,29 @@
   @include m.transition((background-color, border-color));
   @include m.touch-target;
 
-  // Handle. Resting offset centers it inside the track: (track height -
-  // handle size) / 2, pulled back by the border the track just consumed.
+  // Handle geometry is driven by privates so the pressed size (28dp) and
+  // the selected size (24dp) reuse one offset formula: (track height -
+  // handle) / 2, pulled back by the border the track just consumed.
+  --_handle: var(--#{c.$prefix}-switch-handle-size);
+  // The state layer (r = 20dp) overhangs the 32dp track by 4dp on each side,
+  // so the touch pseudo is widened by that much and the handle centers are
+  // measured inside it.
+  --_overhang: var(--m3-space-1);
+  --_handle-x: calc(var(--#{c.$prefix}-switch-height) / 2 + var(--_overhang));
+  --_layer-color: var(--#{c.$prefix}-switch-state-layer-color);
+  --_layer-opacity: var(--md-sys-state-none);
+
   &::before {
     @include m.own-pseudo;
     content: "";
     position: absolute;
-    inline-size: var(--#{c.$prefix}-switch-handle-size);
-    block-size: var(--#{c.$prefix}-switch-handle-size);
+    inline-size: var(--_handle);
+    block-size: var(--_handle);
     border-radius: var(--md-sys-shape-corner-full);
     background-color: var(--#{c.$prefix}-switch-handle-color);
     inset-block-start: 50%;
     inset-inline-start: calc(
-      (
-          var(--#{c.$prefix}-switch-height) -
-            var(--#{c.$prefix}-switch-handle-size)
-        ) / 2 - var(--m3-stroke-thick)
+      (var(--#{c.$prefix}-switch-height) - var(--_handle)) / 2 - var(--m3-stroke-thick)
     );
     translate: 0 -50%;
     @include m.transition(
@@ -89,24 +99,49 @@
     );
   }
 
+  // The touch target also paints the 40dp state layer centered on the handle
+  // (hover / focus / pressed), following the handle to either end.
+  &::after {
+    inline-size: max(calc(100% + 2 * var(--_overhang)), var(--m3-target-size));
+    background: radial-gradient(
+      circle at var(--_handle-x) 50%,
+      color-mix(in srgb, var(--_layer-color) var(--_layer-opacity), transparent)
+        calc(var(--m3-selection-layer-size) / 2),
+      transparent calc(var(--m3-selection-layer-size) / 2 + var(--m3-stroke-hairline) / 2)
+    );
+  }
+
+  &:hover {
+    --_layer-opacity: var(--md-sys-state-hover-state-layer-opacity);
+  }
+  &:focus-visible {
+    --_layer-opacity: var(--md-sys-state-focus-state-layer-opacity);
+  }
+  &:active {
+    --_layer-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+    --_handle: var(--#{c.$prefix}-switch-pressed-handle-size);
+  }
+
   &:hover:not(:disabled)::before {
     background-color: var(--#{c.$prefix}-switch-hover-handle-color);
   }
 
   &:checked {
+    --_handle: var(--#{c.$prefix}-switch-selected-handle-size);
+    --_handle-x: calc(100% - var(--#{c.$prefix}-switch-height) / 2 - var(--_overhang));
+    --_layer-color: var(--#{c.$prefix}-switch-selected-state-layer-color);
     background-color: var(--#{c.$prefix}-switch-selected-track-color);
     border-color: var(--#{c.$prefix}-switch-selected-track-color);
 
+    &:active {
+      --_handle: var(--#{c.$prefix}-switch-pressed-handle-size);
+    }
+
     &::before {
-      inline-size: var(--#{c.$prefix}-switch-selected-handle-size);
-      block-size: var(--#{c.$prefix}-switch-selected-handle-size);
       background-color: var(--#{c.$prefix}-switch-selected-handle-color);
       inset-inline-start: calc(
-        100% - var(--#{c.$prefix}-switch-selected-handle-size) -
-          (
-            var(--#{c.$prefix}-switch-height) -
-              var(--#{c.$prefix}-switch-selected-handle-size)
-          ) / 2 + var(--m3-stroke-thick)
+        100% - var(--_handle) - (var(--#{c.$prefix}-switch-height) - var(--_handle)) / 2 +
+          var(--m3-stroke-thick)
       );
     }
 
@@ -119,6 +154,7 @@
   // disabled color-mix pattern). Last in source so it wins over :checked.
   &:disabled {
     cursor: not-allowed;
+    --_layer-opacity: var(--md-sys-state-none);
     background-color: color-mix(
       in srgb,
       var(--md-sys-color-on-surface)

@@ -126,11 +126,26 @@
 @mixin filled {
   --_container: var(--#{c.$prefix}-btn-container-color);
   --_content: var(--#{c.$prefix}-btn-label-color);
+
+  // M3: filled buttons lift to level 1 on hover, back to 0 when pressed.
+  &:hover {
+    @include m.elevation(1);
+  }
+  &:active {
+    @include m.elevation(0);
+  }
 }
 
 @mixin tonal {
   --_container: var(--#{c.$prefix}-btn-tonal-container-color);
   --_content: var(--#{c.$prefix}-btn-tonal-label-color);
+
+  &:hover {
+    @include m.elevation(1);
+  }
+  &:active {
+    @include m.elevation(0);
+  }
 }
 
 @mixin elevated {

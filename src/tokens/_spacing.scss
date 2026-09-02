@@ -29,6 +29,7 @@ $steps: (4, 8, 12, 16, 24, 32, 48, 64);
   --m3-density-step: 4px;
 
   // Minimum hit-target for small controls (accessibility floor).
+  --m3-selection-layer-size: #{fn.rem(40)};
   --m3-target-size: 48px;
 
   // Default icon footprint used by CSS-drawn icons.

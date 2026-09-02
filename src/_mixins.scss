@@ -403,6 +403,68 @@ $-own-pseudo-selectors: ();
   color: inherit;
 }
 
+// --- selection controls -----------------------------------------------------
+
+// M3 checkbox/radio interaction: a 40dp circular state layer centered on the
+// control, inside the 48dp touch target, and a circular focus indicator 2dp
+// outside the state layer (3dp thick). Both are painted into the touch-target
+// pseudo with radial gradients, so the target stays one element. Set
+// --_layer-color / --_layer-opacity per state on the control.
+@mixin selection-layer($pseudo: "::before") {
+  --_layer-opacity: var(--md-sys-state-none);
+  --_ring: transparent;
+
+  &#{$pseudo} {
+    // 40dp layer + 2dp offset + 3dp ring on each side.
+    inline-size: calc(
+      var(--m3-selection-layer-size) + 2 *
+        (var(--md-sys-state-focus-indicator-offset) + var(--md-sys-state-focus-indicator-thickness))
+    );
+    block-size: calc(
+      var(--m3-selection-layer-size) + 2 *
+        (var(--md-sys-state-focus-indicator-offset) + var(--md-sys-state-focus-indicator-thickness))
+    );
+    border-radius: var(--md-sys-shape-corner-full);
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--_layer-color) var(--_layer-opacity), transparent)
+        calc(var(--m3-selection-layer-size) / 2),
+      transparent calc(var(--m3-selection-layer-size) / 2 + var(--m3-stroke-hairline) / 2),
+      transparent calc(var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset)),
+      var(--_ring) calc(var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset)),
+      var(--_ring)
+        calc(
+          var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset) +
+            var(--md-sys-state-focus-indicator-thickness)
+        ),
+      transparent
+        calc(
+          var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset) +
+            var(--md-sys-state-focus-indicator-thickness) + var(--m3-stroke-hairline) / 2
+        )
+    );
+  }
+
+  &:hover {
+    --_layer-opacity: var(--md-sys-state-hover-state-layer-opacity);
+  }
+  &:focus-visible {
+    --_layer-opacity: var(--md-sys-state-focus-state-layer-opacity);
+    --_ring: var(--md-sys-color-secondary);
+  }
+  &:active {
+    --_layer-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+  }
+
+  // Gradients are dropped in forced-colors mode: fall back to an outline ring.
+  @media (forced-colors: active) {
+    &:focus-visible {
+      outline: var(--md-sys-state-focus-indicator-thickness) solid Highlight;
+      outline-offset: var(--md-sys-state-focus-indicator-offset);
+    }
+  }
+}
+
 // --- accessibility ----------------------------------------------------------
 
 // Expand small controls to a >= 48x48px hit target with a pseudo-element.
@@ -512,6 +574,20 @@ $-own-pseudo-selectors: ();
   border-right: $stroke solid currentColor;
   border-bottom: $stroke solid currentColor;
   rotate: 45deg;
+}
+
+// The Material Symbols "check" glyph at a given icon size, drawn as a
+// rotated L of borders. Proportions come from the glyph's 24-unit path
+// (M4.1,12.7 9,17.6 20.3,6.3): short arm 0.289 x size, long arm 0.667 x
+// size. The rotated L's visual center sits (short / 2*sqrt2) below the box
+// center, so the mark is nudged up by 0.102 x size to sit optically centered.
+@mixin check-glyph($size, $stroke: var(--m3-stroke-thick)) {
+  width: calc(#{$size} * 0.289);
+  height: calc(#{$size} * 0.667);
+  border-right: $stroke solid currentColor;
+  border-bottom: $stroke solid currentColor;
+  rotate: 45deg;
+  translate: 0 calc(#{$size} * -0.102);
 }
 
 // CSS-drawn checkmark: rotated half-square of borders.

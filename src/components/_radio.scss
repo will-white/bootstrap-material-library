@@ -25,6 +25,8 @@
   --#{c.$prefix}-radio-outline-color: var(--md-sys-color-on-surface-variant);
   --#{c.$prefix}-radio-selected-color: var(--md-sys-color-primary);
   --#{c.$prefix}-radio-dot-size: #{fn.rem(10)};
+  --#{c.$prefix}-radio-state-layer-color: var(--md-sys-color-on-surface);
+  --#{c.$prefix}-radio-selected-state-layer-color: var(--md-sys-color-primary);
 }
 
 // The whole control: ring on the input's own border, dot on ::after,
@@ -34,8 +36,8 @@
 // hit area constant regardless.
 @mixin control {
   @include m.own-box;
-  // State-layer tint: outline color unselected, selected color when checked.
-  --_layer-color: var(--#{c.$prefix}-radio-outline-color);
+  // 40dp state layer: on-surface unselected, primary selected; pressed swaps.
+  --_layer-color: var(--#{c.$prefix}-radio-state-layer-color);
 
   appearance: none;
   inline-size: var(--#{c.$prefix}-radio-size);
@@ -48,21 +50,12 @@
   place-content: center;
   cursor: pointer;
   flex: none;
-  @include m.focus-ring;
   @include m.transition(border-color);
   @include m.touch-target-before;
+  @include m.selection-layer;
 
-  // The >= 48px hit area doubles as the circular hover state layer.
-  &::before {
-    border-radius: var(--md-sys-shape-corner-full);
-  }
-
-  &:hover::before {
-    background-color: color-mix(
-      in srgb,
-      var(--_layer-color) var(--md-sys-state-hover-state-layer-opacity),
-      transparent
-    );
+  &:active {
+    --_layer-color: var(--#{c.$prefix}-radio-selected-state-layer-color);
   }
 
   // Selection dot, scaled in from the center when checked.
@@ -83,8 +76,12 @@
   }
 
   &:checked {
-    --_layer-color: var(--#{c.$prefix}-radio-selected-color);
+    --_layer-color: var(--#{c.$prefix}-radio-selected-state-layer-color);
     border-color: var(--#{c.$prefix}-radio-selected-color);
+
+    &:active {
+      --_layer-color: var(--#{c.$prefix}-radio-state-layer-color);
+    }
 
     &::after {
       scale: 1;

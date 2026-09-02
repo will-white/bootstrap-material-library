@@ -313,10 +313,19 @@ decorative gradients):
 background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
 ```
 
-State-layer opacities are tokens (hover 8%, focus 10%, pressed 12%, dragged
+State-layer opacities are tokens (hover 8%, focus 10%, pressed 10%, dragged
 16%); disabled content is `on-surface` at 38%, containers at 12%. Focus is
 `:focus-visible` everywhere: a 3px indicator with 2px offset, both tokenized
-(`--md-sys-state-focus-indicator-*`).
+(`--md-sys-state-focus-indicator-*`), drawn around the component's shape.
+
+Selection controls follow the spec's own geometry rather than the generic
+pattern: checkbox and radio paint a 40dp circular state layer inside the 48dp
+touch target (on-surface unselected, primary selected, the two swapping when
+pressed) and their focus indicator is the ring 2dp outside that circle, not a
+box around the glyph; the switch paints its 40dp layer centered on the handle,
+which grows to 28dp while pressed; a selected segmented button shows the check
+icon. Check marks (checkbox, filter chip, segmented button) are drawn at the
+Material Symbols glyph proportions and optically centered.
 
 ---
 
