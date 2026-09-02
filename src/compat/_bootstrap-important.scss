@@ -1,0 +1,20 @@
+// ============================================================================
+// Importance parity with stock Bootstrap 5.3 (section 9, optional).
+//
+// Stock Bootstrap marks its utilities !important. Nearly all of them are
+// var(--bs-*) driven, so with the 9a remap they already compute to M3
+// values. The rest carry literals; for those, this partial re-emits the
+// m3x value with !important into the `reset` layer. `reset` is the only
+// layer ordered before `bootstrap`, and among important declarations the
+// earlier layer wins -- so these beat stock's, and consumers face exactly
+// the importance they already faced with stock Bootstrap.
+//
+// Emitted only with $enable-bootstrap-important-parity: true.
+// ============================================================================
+
+@use "../config" as c;
+@use "bootstrap-components" as components;
+
+@mixin parity {
+  @include components.important-parity;
+}

@@ -121,6 +121,7 @@
 
   .#{c.$prefix}-fab__label {
     @include m.own-box;
+    display: inline;
     @include m.typescale("label-large");
     color: inherit;
     white-space: nowrap;

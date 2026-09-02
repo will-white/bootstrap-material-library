@@ -58,6 +58,25 @@
   max-block-size: calc(100% - var(--m3-space-6));
   margin: auto;
 
+  // The UA's <dialog> layout, restated because the box is owned: closed
+  // dialogs stay hidden, show() renders in flow, showModal() pins to the
+  // viewport.
+  display: block;
+  position: absolute;
+  inset-inline: var(--m3-space-none);
+  inline-size: fit-content;
+  block-size: fit-content;
+  overflow: auto;
+
+  &:not([open]) {
+    display: none;
+  }
+
+  &:modal {
+    position: fixed;
+    inset: var(--m3-space-none);
+  }
+
   &::backdrop {
     @include backdrop-fill;
   }
@@ -91,6 +110,7 @@
 
 @mixin title {
   @include m.own-box;
+  display: block;
   @include m.typescale("headline-small");
   color: var(--#{c.$prefix}-dialog-content-color);
   margin-block-end: var(--m3-space-4);
@@ -98,6 +118,7 @@
 
 @mixin content {
   @include m.own-box;
+  display: block;
   @include m.typescale("body-medium");
   color: var(--md-sys-color-on-surface-variant);
 }

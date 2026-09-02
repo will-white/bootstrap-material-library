@@ -46,6 +46,7 @@
 // Linear track: thin rounded rail that clips the bar.
 @mixin linear-track {
   @include m.own-box;
+  display: block;
   block-size: var(--#{c.$prefix}-progress-thickness);
   border-radius: var(--md-sys-shape-corner-full);
   background: var(--#{c.$prefix}-progress-track-color);
@@ -56,6 +57,7 @@
 // width, which wins the cascade -- see header).
 @mixin linear-bar {
   @include m.own-box;
+  display: block;
   block-size: 100%;
   border-radius: inherit;
   background: var(--#{c.$prefix}-progress-color);
@@ -94,6 +96,7 @@
   @include m.own-box;
   --_active: var(--#{c.$prefix}-progress-color);
   --_track: var(--#{c.$prefix}-progress-track-color);
+  color: var(--_active);
 
   display: inline-block;
   inline-size: var(--#{c.$prefix}-progress-circle-size);

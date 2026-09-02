@@ -61,6 +61,7 @@
 // Message slot; padding-block keeps two-line messages breathing.
 @mixin text {
   @include m.own-box;
+  display: block;
   @include m.typescale("body-medium");
   color: var(--#{c.$prefix}-snackbar-content-color);
   flex: 1;
@@ -70,6 +71,9 @@
 // Inline text button on the inverse surface (transparent container).
 @mixin action {
   @include m.own-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   --_container: transparent;
   --_content: var(--#{c.$prefix}-snackbar-action-color);
@@ -95,6 +99,9 @@
 // Square dismiss affordance with a CSS-drawn cross.
 @mixin close {
   @include m.own-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   @include m.typescale("label-large");
   --_container: transparent;

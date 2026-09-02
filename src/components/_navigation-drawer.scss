@@ -44,6 +44,7 @@
 // The drawer surface, shared by standard and modal.
 @mixin container {
   @include m.own-box;
+  display: block;
   inline-size: var(--#{c.$prefix}-drawer-width);
   max-inline-size: 80%;
   block-size: 100%;
@@ -57,8 +58,21 @@
 // trailing corners, scrim backdrop, discrete slide-in via @starting-style.
 @mixin modal {
   @include container;
+  // The UA's <dialog> layout, restated because the box is owned (see dialog).
+  position: absolute;
+  inset-inline: var(--m3-space-none);
+  overflow: auto;
   margin: var(--m3-space-none);
   margin-inline-end: auto;
+
+  &:not([open]) {
+    display: none;
+  }
+
+  &:modal {
+    position: fixed;
+    inset: var(--m3-space-none);
+  }
   block-size: 100%;
   max-block-size: 100%;
   border: none;
@@ -119,6 +133,7 @@
 // Section headline above a group of items.
 @mixin headline {
   @include m.own-box;
+  display: block;
   @include m.typescale("title-small");
   color: var(--#{c.$prefix}-drawer-item-color);
   padding-inline: var(--m3-space-4);
@@ -128,6 +143,7 @@
 // Trailing badge (label-large count) inside an item.
 @mixin badge {
   @include m.own-box;
+  display: inline-block;
   margin-inline-start: auto;
   @include m.typescale("label-large");
   color: var(--#{c.$prefix}-drawer-item-color);

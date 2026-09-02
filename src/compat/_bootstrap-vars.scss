@@ -90,6 +90,8 @@ $-extra-triplets: (
   // Absolute black/white (the neutral palette's end tones).
   --bs-black: var(--md-ref-palette-neutral0);
   --bs-white: var(--md-ref-palette-neutral100);
+  --bs-black-rgb: 0, 0, 0;
+  --bs-white-rgb: 255, 255, 255;
   --bs-gradient: linear-gradient(
     180deg,
     color-mix(in srgb, var(--bs-white) 15%, transparent),
@@ -161,8 +163,12 @@ $-extra-triplets: (
         var(--md-sys-state-hover-state-layer-opacity),
       var(--md-sys-color-primary)
     );
+    --bs-link-color-rgb: var(--bs-primary-rgb);
+    --bs-link-hover-color-rgb: var(--bs-primary-rgb);
     --bs-heading-color: var(--md-sys-color-on-surface);
     --bs-code-color: var(--md-sys-color-tertiary);
+    --bs-font-monospace: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+      "Liberation Mono", "Courier New", monospace;
 
     // Typography.
     --bs-body-font-family: var(--md-ref-typeface-plain);

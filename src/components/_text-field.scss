@@ -76,9 +76,18 @@
   cursor: text;
   appearance: none;
 
-  // A textarea keeps the UA's whitespace handling for its own content.
+  // The UA's text-control internals, restated because the box is owned.
+  &:where(input) {
+    display: block;
+    overflow: clip;
+  }
+
   &:where(textarea) {
+    display: block;
+    overflow: auto;
+    resize: vertical;
     white-space: pre-wrap;
+    overflow-wrap: break-word;
   }
   @include m.typescale("body-large");
   @include m.transition((background-color, border-color, box-shadow));
@@ -226,6 +235,7 @@
 
 @mixin label-resting {
   @include m.own-box;
+  display: block;
   position: absolute;
   inset-inline-start: var(--#{c.$prefix}-field-padding-inline);
   inset-block-start: calc(

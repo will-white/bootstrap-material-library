@@ -94,6 +94,7 @@
 // hit area constant regardless.
 @mixin control {
   @include m.own-box;
+  display: inline-block;
   -webkit-appearance: none;
   appearance: none;
   inline-size: 100%;

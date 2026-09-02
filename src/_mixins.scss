@@ -6,6 +6,7 @@
 // ============================================================================
 
 @use "sass:list";
+@use "sass:map";
 @use "config";
 
 // --- typography -------------------------------------------------------------
@@ -149,21 +150,41 @@
 
 // --- box ownership ----------------------------------------------------------
 //
-// Every piece of component CHROME owns its resting box, so no UA default and
-// no host stylesheet (a reset, a legacy theme, stock Bootstrap in the reserved
-// layer) can influence it. Three ownership mixins exist:
-//   own-box     chrome elements (box + non-typographic text properties)
-//   own-region  content regions / slots (non-inherited box properties only)
-//   own-pseudo  generated content (box reset + explicit inheritance)
+// Every piece of component CHROME owns its complete resting box, so no UA
+// default and no host stylesheet (a reset, a legacy theme, stock Bootstrap in
+// the reserved layer) can influence it. The contract is "every property a
+// stylesheet can visibly set", split by inheritance:
+//   non-inherited  -> reset to the neutral value (position, size, paint,
+//                     effects, motion, decoration, ...);
+//   inherited text -> chrome text is library-neutral (no italics, shadows,
+//                     transforms, indents from the page); typescale() then
+//                     owns the face where the chrome carries text;
+//   inherited rest -> explicit `inherit` (color, cursor, visibility,
+//                     pointer-events, ...): the part follows its component
+//                     root, the root follows the page, and a host rule aimed
+//                     at the element itself has no effect.
+// `display` is the one visual property with no neutral value: every chrome
+// rule states it explicitly.
+//
+// Three ownership mixins exist:
+//   own-box     chrome elements
+//   own-region  content regions / slots: box reset, every inherited
+//               property re-inherited, so the consumer's content inside
+//               keeps its own typography
+//   own-pseudo  generated content: box reset, `content: none`, inherited
+//               properties re-inherited (marks drawn with currentColor keep
+//               the control's color, the hit area keeps its cursor)
 // They are included FIRST in a component's base/root mixin; the component's
 // own declarations follow. Never include them in a modifier mixin: modifiers
-// re-point tokens and privates only. Typography is owned via typescale().
+// re-point tokens and privates only.
 //
 // Emission modes ($ownership):
 //   "collect"  (the m3x entry point) -- the including selectors are gathered
 //              and emitted as ONE shared rule per layer, in that layer's
 //              `own` sub-layer, which every rule in the layer's `rules`
 //              sub-layer beats regardless of specificity or source order.
+//              The generated content (::before/::after) of every chrome
+//              element is owned in the same pass.
 //   "inline"   (default; standalone mixin use in a consumer's Sass) -- the
 //              declarations are emitted where the mixin is included.
 $ownership: "inline" !default;
@@ -171,9 +192,16 @@ $-own-box-selectors: ();
 $-own-region-selectors: ();
 $-own-pseudo-selectors: ();
 
+@function -collect($map, $selector) {
+  @each $complex in $selector {
+    $map: map.set($map, "#{$complex}", true);
+  }
+  @return $map;
+}
+
 @mixin own-box {
   @if $ownership == "collect" and & {
-    $-own-box-selectors: list.join($-own-box-selectors, &, comma) !global;
+    $-own-box-selectors: -collect($-own-box-selectors, &) !global;
   } @else {
     @include own-box-declarations;
   }
@@ -181,7 +209,7 @@ $-own-pseudo-selectors: ();
 
 @mixin own-region {
   @if $ownership == "collect" and & {
-    $-own-region-selectors: list.join($-own-region-selectors, &, comma) !global;
+    $-own-region-selectors: -collect($-own-region-selectors, &) !global;
   } @else {
     @include own-region-declarations;
   }
@@ -189,7 +217,7 @@ $-own-pseudo-selectors: ();
 
 @mixin own-pseudo {
   @if $ownership == "collect" and & {
-    $-own-pseudo-selectors: list.join($-own-pseudo-selectors, &, comma) !global;
+    $-own-pseudo-selectors: -collect($-own-pseudo-selectors, &) !global;
   } @else {
     @include own-pseudo-declarations;
   }
@@ -199,18 +227,29 @@ $-own-pseudo-selectors: ();
 // collectors. The entry point includes this inside each layer's `own`
 // sub-layer, after the layer's `rules` sub-layer has been emitted.
 @mixin emit-ownership {
-  @if list.length($-own-box-selectors) > 0 {
-    #{$-own-box-selectors} {
+  $boxes: map.keys($-own-box-selectors);
+  $regions: map.keys($-own-region-selectors);
+  $pseudos: $-own-pseudo-selectors;
+
+  @if list.length($boxes) > 0 {
+    #{$boxes} {
       @include own-box-declarations;
     }
   }
-  @if list.length($-own-region-selectors) > 0 {
-    #{$-own-region-selectors} {
+  @if list.length($regions) > 0 {
+    #{$regions} {
       @include own-region-declarations;
     }
   }
-  @if list.length($-own-pseudo-selectors) > 0 {
-    #{$-own-pseudo-selectors} {
+  // The generated content of every chrome element is owned too: a host
+  // `.btn::before { content: "..." }` cannot decorate a component. Rules
+  // that draw with ::before/::after set `content` after this.
+  @each $chrome in list.join($boxes, $regions, comma) {
+    $pseudos: map.set($pseudos, "#{$chrome}::before", true);
+    $pseudos: map.set($pseudos, "#{$chrome}::after", true);
+  }
+  @if list.length(map.keys($pseudos)) > 0 {
+    #{map.keys($pseudos)} {
       @include own-pseudo-declarations;
     }
   }
@@ -219,67 +258,140 @@ $-own-pseudo-selectors: ();
   $-own-pseudo-selectors: () !global;
 }
 
-@mixin own-box-declarations {
+// Non-inherited properties: layout, size, paint, effects, motion, decoration.
+@mixin -own-layout-paint {
   box-sizing: border-box;
-  margin: var(--m3-space-none);
-  padding: var(--m3-space-none);
-  border: none;
-  border-radius: var(--md-sys-shape-corner-none);
-  background-color: transparent;
-  background-image: none;
-  box-shadow: var(--md-sys-elevation-0);
-  outline: none;
-  outline-offset: var(--m3-space-none);
-  opacity: var(--m3-opacity-full);
+  position: static;
+  inset: auto;
+  z-index: auto;
+  float: none;
+  clear: none;
+  inline-size: auto;
+  block-size: auto;
   min-inline-size: var(--m3-space-none);
   min-block-size: var(--m3-space-none);
-  font-style: normal;
-  text-transform: none;
-  text-decoration: none;
-  text-shadow: none;
-  text-align: start;
-  vertical-align: baseline;
-  white-space: normal;
-  list-style: none;
+  max-inline-size: none;
+  max-block-size: none;
+  margin: var(--m3-space-none);
+  padding: var(--m3-space-none);
+  overflow: visible;
+  flex: 0 1 auto;
+  order: 0;
+  align-self: auto;
+  justify-self: auto;
+  gap: normal;
+  columns: auto;
+  aspect-ratio: auto;
+  border: none;
+  border-radius: var(--md-sys-shape-corner-none);
+  border-image: none;
+  outline: none;
+  outline-offset: var(--m3-space-none);
+  background: transparent;
+  box-shadow: var(--md-sys-elevation-0);
+  opacity: var(--m3-opacity-full);
+  transform: none;
+  translate: none;
+  rotate: none;
+  scale: none;
+  filter: none;
+  backdrop-filter: none;
+  clip-path: none;
+  mask: none;
+  mix-blend-mode: normal;
+  isolation: auto;
+  will-change: auto;
+  contain: none;
+  animation: none;
+  transition: none;
   appearance: none;
-  // Cursor is inherited by design: interactive roots set pointer/text and
-  // their parts follow; non-interactive chrome follows the page.
-  cursor: inherit;
+  resize: none;
+  object-fit: fill;
+  object-position: 50% 50%;
+  user-select: auto;
+  touch-action: auto;
+  box-decoration-break: slice;
+  text-decoration: none;
+  text-underline-offset: auto;
+  text-overflow: clip;
+  vertical-align: baseline;
 }
 
-// Generated content (touch targets, CSS-drawn marks, chevrons, dividers)
-// must own its box too, or a host `*::before, *::after` rule paints it.
-// Non-inherited properties reset; inherited ones explicitly `inherit`, so
-// the pseudo-element behaves exactly as if the host rule did not exist
-// (marks drawn with currentColor keep the control's color, the hit area
-// keeps the control's cursor).
-@mixin own-pseudo-declarations {
-  box-sizing: border-box;
-  margin: var(--m3-space-none);
-  padding: var(--m3-space-none);
-  border: none;
-  border-radius: var(--md-sys-shape-corner-none);
-  background-color: transparent;
-  background-image: none;
-  box-shadow: var(--md-sys-elevation-0);
-  outline: none;
-  outline-offset: var(--m3-space-none);
-  opacity: var(--m3-opacity-full);
-  min-inline-size: var(--m3-space-none);
-  min-block-size: var(--m3-space-none);
-  text-decoration: none;
-  vertical-align: baseline;
-  transform: none;
-  appearance: none;
+// Inherited text properties, neutral: chrome text never inherits the page's
+// italics, transforms, shadows, indents or spacing. Typography itself is
+// re-inherited here and owned by typescale() where the chrome carries text.
+@mixin -own-text-neutral {
+  font: inherit;
+  font-style: normal;
+  font-variant: normal;
+  font-stretch: normal;
+  font-kerning: auto;
+  font-feature-settings: normal;
+  letter-spacing: normal;
+  word-spacing: normal;
+  text-indent: var(--m3-space-none);
+  text-transform: none;
+  text-shadow: none;
+  text-align: start;
+  text-emphasis: none;
+  white-space: normal;
+  hyphens: manual;
+  overflow-wrap: break-word; // the library's own reset value, not the host's
+  word-break: normal;
   list-style: none;
+  quotes: auto;
+}
+
+// Inherited text properties, re-inherited: content regions and generated
+// content follow whatever surrounds them.
+@mixin -own-text-inherit {
   font: inherit;
   letter-spacing: inherit;
+  word-spacing: inherit;
+  text-indent: inherit;
   text-transform: inherit;
-  text-align: inherit;
   text-shadow: inherit;
+  text-align: inherit;
+  text-emphasis: inherit;
   white-space: inherit;
+  hyphens: inherit;
+  overflow-wrap: inherit;
+  word-break: inherit;
+  list-style: inherit;
+  quotes: inherit;
+}
+
+// Inherited by design: the part follows its component root, the root follows
+// the page. Interactive roots set pointer/text cursors; fields set carets.
+@mixin -own-follow {
   color: inherit;
   cursor: inherit;
+  visibility: inherit;
+  pointer-events: inherit;
+  caret-color: inherit;
+  accent-color: inherit;
+  color-scheme: inherit;
+  image-rendering: inherit;
+}
+
+@mixin own-box-declarations {
+  @include -own-layout-paint;
+  @include -own-text-neutral;
+  @include -own-follow;
+}
+
+@mixin own-region-declarations {
+  @include -own-layout-paint;
+  @include -own-text-inherit;
+  @include -own-follow;
+}
+
+@mixin own-pseudo-declarations {
+  @include -own-layout-paint;
+  display: inline;
+  content: none;
+  @include -own-text-inherit;
+  @include -own-follow;
 }
 
 // Inline text parts that follow their parent's typography (an .alert-link
@@ -289,28 +401,6 @@ $-own-pseudo-selectors: ();
   font: inherit;
   letter-spacing: inherit;
   color: inherit;
-}
-
-// Content regions (slots, bodies) hand typography to the consumer's content,
-// so they own only the NON-inherited box properties: nothing here reaches
-// the consumer's markup by inheritance.
-@mixin own-region-declarations {
-  box-sizing: border-box;
-  margin: var(--m3-space-none);
-  padding: var(--m3-space-none);
-  border: none;
-  border-radius: var(--md-sys-shape-corner-none);
-  background-color: transparent;
-  background-image: none;
-  box-shadow: var(--md-sys-elevation-0);
-  outline: none;
-  outline-offset: var(--m3-space-none);
-  opacity: var(--m3-opacity-full);
-  min-inline-size: var(--m3-space-none);
-  min-block-size: var(--m3-space-none);
-  text-decoration: none;
-  vertical-align: baseline;
-  appearance: none;
 }
 
 // --- accessibility ----------------------------------------------------------
@@ -352,6 +442,7 @@ $-own-pseudo-selectors: ();
 // focusable and clickable; the label draws every visual.
 @mixin hidden-control {
   @include own-box;
+  display: block;
   position: absolute;
   inset-block-start: var(--m3-space-none);
   inset-inline-start: var(--m3-space-none);

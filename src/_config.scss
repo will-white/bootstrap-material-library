@@ -20,6 +20,13 @@ $enable-bootstrap-reskin: true !default; // full component re-skin (9b)
 $enable-bootstrap-grid: true !default; // containers, row/col grid, gutters
 $enable-bootstrap-utilities: true !default; // the full utility API (9c)
 $enable-bootstrap-helpers: true !default; // helpers + content/type classes
+// Importance parity with stock Bootstrap: re-emits, with !important, the few
+// utility declarations stock marks !important whose values are literal (not
+// var(--bs-*) driven), into the `reset` layer -- the one layer ordered
+// before `bootstrap`, where an important declaration beats stock's. Turn on
+// when real bootstrap.css sits in the reserved layer; off, m3x ships no
+// !important beyond [hidden].
+$enable-bootstrap-important-parity: false !default;
 
 // Bootstrap's responsive breakpoints and container widths (the grid,
 // responsive utilities, and .navbar-expand-* read these). Media queries

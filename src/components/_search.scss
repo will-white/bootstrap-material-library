@@ -64,6 +64,7 @@
 // The real input[type="search"]; the bar carries the focus ring.
 @mixin input {
   @include m.own-box;
+  display: block;
   flex: 1 1 auto;
   background-color: transparent;
   border: none;

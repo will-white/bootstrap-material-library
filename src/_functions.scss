@@ -102,7 +102,9 @@ $all-tones: (
 
 // "R, G, B" triplet string for the --bs-*-rgb compatibility variables.
 @function rgb-triplet($c) {
-  $rgb: color.to-space($c, rgb);
+  // Map into sRGB the way CSS Color 4 does (local-MINDE), so the triplet
+  // matches what the browser renders for the oklch() token.
+  $rgb: color.to-space(color.to-gamut($c, $space: rgb, $method: local-minde), rgb);
   $r: math.clamp(0, math.round(color.channel($rgb, "red")), 255);
   $g: math.clamp(0, math.round(color.channel($rgb, "green")), 255);
   $b: math.clamp(0, math.round(color.channel($rgb, "blue")), 255);

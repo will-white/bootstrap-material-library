@@ -60,6 +60,7 @@
 // One slide; media fills the rounded frame.
 @mixin item {
   @include m.own-box;
+  display: block;
   scroll-snap-align: center;
   border-radius: var(--#{c.$prefix}-carousel-shape);
   overflow: clip;
@@ -84,6 +85,7 @@
 // 38% mix, the active dot is solid.
 @mixin indicator {
   @include m.own-box;
+  display: inline-block;
   text-align: center;
   @include m.typescale("label-large");
   color: var(--#{c.$prefix}-carousel-indicator-color);

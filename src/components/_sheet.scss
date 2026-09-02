@@ -100,6 +100,22 @@
   max-block-size: 75%;
   @include m.elevation(1);
 
+  // The UA's <dialog> layout, restated because the box is owned (see dialog).
+  display: block;
+  position: absolute;
+  inset-inline: var(--m3-space-none);
+  block-size: fit-content;
+  overflow: auto;
+
+  &:not([open]) {
+    display: none;
+  }
+
+  &:modal {
+    position: fixed;
+    inset: var(--m3-space-none);
+  }
+
   &::backdrop {
     @include -scrim;
   }
@@ -120,6 +136,22 @@
   max-inline-size: 100%;
   border-start-start-radius: var(--md-sys-shape-corner-large);
   border-end-start-radius: var(--md-sys-shape-corner-large);
+
+  // The UA's <dialog> layout, restated because the box is owned (see dialog).
+  display: block;
+  position: absolute;
+  inset-inline: var(--m3-space-none);
+  block-size: fit-content;
+  overflow: auto;
+
+  &:not([open]) {
+    display: none;
+  }
+
+  &:modal {
+    position: fixed;
+    inset: var(--m3-space-none);
+  }
 
   &::backdrop {
     @include -scrim;
@@ -148,6 +180,7 @@
 // layout by a hairline instead of a scrim.
 @mixin standard-side {
   @include m.own-box;
+  display: block;
   inline-size: var(--#{c.$prefix}-sheet-side-width);
   background-color: var(--#{c.$prefix}-sheet-container-color);
   color: var(--#{c.$prefix}-sheet-content-color);
@@ -198,6 +231,7 @@
   // Consumer content region: box owned, typography left to the content.
   .#{$p}-sheet__slot {
     @include m.own-region;
+    display: block;
   }
 
   @include internals;

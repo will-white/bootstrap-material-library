@@ -193,6 +193,9 @@
 // it above the absolutely positioned hidden checkbox so it stays clickable.
 @mixin remove {
   @include m.own-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
   inline-size: var(--#{c.$prefix}-chip-icon-size);
   block-size: var(--#{c.$prefix}-chip-icon-size);

@@ -109,13 +109,33 @@ library's order statement with `$emit-layer-statement: false`.
 ### Box ownership
 
 Every piece of component chrome -- a button, a card container, a list item's
-headline, a switch's handle, a touch target -- declares its **complete resting
-box**, not only the properties M3 has an opinion about: box-sizing, margin,
-padding, border, radius, background, shadow, outline, opacity, minimum sizes,
-text decoration/transform/shadow, alignment, list style, `appearance`, and the
-typography of anything that carries text. Nothing about a component's resting
-look is left to the UA stylesheet or to whatever the host page declares in a
-lower layer (a reset, a legacy theme, stock Bootstrap in the reserved layer).
+headline, a switch's handle, a touch target -- owns its **complete resting
+box**: every property a stylesheet can visibly set. Nothing about a
+component's resting look is left to the UA stylesheet or to whatever the host
+page declares in a lower layer (a reset, a legacy theme, stock Bootstrap in
+the reserved layer). The contract splits by inheritance:
+
+- **Non-inherited properties are reset** to their neutral value: position and
+  insets, z-index, float, sizes and min/max sizes, margin, padding, overflow,
+  flex and grid item properties, gap, columns, aspect-ratio, border, radius,
+  border-image, outline, background (every longhand), shadow, opacity,
+  transforms, filters, clip-path, mask, blend mode, isolation, will-change,
+  contain, animation, transition, appearance, resize, object-fit/position,
+  user-select, touch-action, text decoration, text-overflow, vertical-align.
+- **Inherited text properties are neutral on chrome.** Chrome text never
+  inherits the page's italics, small caps, transforms, shadows, indents,
+  spacing, hyphenation or list markers; the face itself is owned by the
+  typescale wherever chrome carries text.
+- **The rest is inherited on purpose, explicitly:** color, cursor, visibility,
+  pointer-events, caret and accent color, color-scheme, image-rendering. A
+  part follows its component root, the root follows the page, and a host
+  rule aimed at the element itself has no effect.
+- **Generated content is owned too.** `::before`/`::after` of every chrome
+  element reset to `content: none`; the marks, chevrons, dividers and touch
+  targets m3x draws set `content` after that and explicitly inherit font,
+  color and cursor, so a host `*::after` rule cannot repaint them.
+- **`display` is stated by every chrome rule** (it is the one visual
+  property with no neutral value).
 
 Two consequences worth knowing:
 
@@ -124,10 +144,13 @@ Two consequences worth knowing:
   rule such as `.btn { padding: 6px 12px }` in the `bootstrap` layer changes
   nothing; padding is horizontal only.
 - **Content regions inherit on purpose.** Slots and bodies (`.m3-card__slot`,
-  `.card-body`, `.m3-list-item__slot`, `.offcanvas-body`, ...) own only their
-  non-inherited box properties, so the typography of *your* content inside
-  them stays yours. Cursor inherits by design: interactive roots set
-  `pointer`/`text`, their parts follow, non-interactive chrome follows the page.
+  `.card-body`, `.m3-list-item__slot`, `.offcanvas-body`, ...) reset their
+  non-inherited box and re-inherit everything else, so the typography of
+  *your* content inside them stays yours.
+
+Not chrome, and deliberately not owned beyond what they set: wrappers placed
+on your own elements (`.m3-badge-anchor`, `.m3-tooltip-anchor`) and layout
+scaffolding (`.container*`, `.row`, `.col*`).
 
 Mechanically, each layer that carries chrome (`bootstrap-compat`,
 `components`, `utilities`) is split into two sub-layers:
@@ -136,7 +159,10 @@ Mechanically, each layer that carries chrome (`bootstrap-compat`,
 @layer components {
   @layer own, rules;
   @layer rules { /* every component rule */ }
-  @layer own   { .m3-btn, .m3-card, .m3-list-item__headline, ... { /* one shared reset */ } }
+  @layer own   {
+    .m3-btn, .m3-card, .m3-list-item__headline, ... { /* one shared reset */ }
+    .m3-btn::before, .m3-btn::after, ... { content: none; /* ... */ }
+  }
 }
 ```
 
@@ -146,12 +172,14 @@ per component. Rules you write directly into `@layer components { }` beat both
 sub-layers (a layer's own declarations rank above its sub-layers); unlayered
 CSS and `overrides` beat everything, as before.
 
-This is verified by a differential audit: every component and every re-skinned
-Bootstrap class is rendered once cleanly and once under a hostile host (a
-universal `*, *::before, *::after` rule with absurd values for all of the
-above, plus stock Bootstrap 5.3, both in the `bootstrap` layer), and the
-computed style of every chrome element must be identical. Only the documented
-`!important` residuals of stock Bootstrap's utilities differ.
+This is verified by a differential audit in headless Chromium: every
+component, every re-skinned Bootstrap class, and open dialogs, sheets and
+popovers are rendered once cleanly and once under a hostile host -- a
+universal `*, *::before, *::after` rule that sets a visibly wrong value for
+every property in the contract (`display`, `content` and the
+inherited-by-design properties are aimed at leaf chrome so legitimate
+inheritance is never confused with a leak), plus stock Bootstrap 5.3, both in
+the `bootstrap` layer. 449 elements, 0 leaked declarations.
 
 ---
 
@@ -321,7 +349,7 @@ Three pieces:
   position, border, sizing, font, text, color, link, background,
   interaction, rounded, visibility, and z-index utilities. Emitted in the
   `utilities` layer so they beat every component layer. Two deliberate
-  differences from Bootstrap: no `!important` (utilities beat all library
+  differences from Bootstrap: no `!important` unless importance parity is on (utilities beat all library
   layers but never your own unlayered CSS -- that is the layer contract),
   and the `--bs-text-opacity`/`--bs-bg-opacity`/`--bs-border-opacity`/
   `--bs-link-opacity` contracts are honored through `color-mix()` instead of
@@ -354,11 +382,54 @@ reserved layer so every m3x layer beats it:
 @import url("m3x.css");
 ```
 
-Everything m3x defines beats the `bootstrap` layer; anything m3x doesn't
-define falls through to Bootstrap untouched. Because every component owns its
-resting box (see *Box ownership*), a Bootstrap theme in that layer cannot leak
-spacing, borders or typography into re-skinned components either: only the
-theme's own `!important` declarations reach them.
+Everything m3x defines beats the `bootstrap` layer, and because every
+component owns its resting box (see *Box ownership*), a Bootstrap theme in
+that layer cannot leak spacing, borders, typography or effects into
+components. Stock Bootstrap's own `!important` declarations (its utilities,
+helpers and responsive navbar/offcanvas rules) are `var(--bs-*)`-driven almost
+without exception, and m3x defines those variables, so they compute to M3
+values too. The handful with literal values (`.text-bg-*` forces `#fff`/`#000`
+text) are covered by **importance parity**:
+
+```scss
+@use "m3x/src" with ($enable-bootstrap-important-parity: true);
+```
+
+This re-emits exactly those declarations, with m3x's values and `!important`,
+into the `reset` layer. `reset` is the only layer ordered before `bootstrap`,
+and among important declarations the *earlier* layer wins, so m3x's values
+prevail -- and consumers face precisely the importance they already faced
+with stock Bootstrap, nothing more. Off (the default), m3x ships no
+`!important` beyond `[hidden]`.
+
+With the flag on, the parity audit -- every component, re-skinned class,
+utility and helper in the audit page, light and dark scheme -- computes
+identically with and without `bootstrap.css` in the reserved layer: 0
+differing declarations. Off, the only differences are the `.text-bg-*` text
+colors. (Bootstrap's `--bs-*-rgb` triplets are build-time sRGB renderings of
+the OKLCH tokens; where a stock important utility reads one, the color can
+differ from the token by up to 5/255 per channel in the dark scheme, below
+visual threshold.)
+
+Two details make the "with or without" invariant hold:
+
+- Bootstrap's reboot applies to every element, while m3x's `base` layer only
+  styles *unclassed* ones (so it can never beat a compat component). The
+  compat layer therefore opens with zero-specificity reboot rules for
+  **classed** elements (`:where(p[class]) { margin-block: 0 1rem }`, link
+  color on classed anchors, heading sizes, ...), which every component rule
+  overrides -- exactly the cascade a page sees with stock Bootstrap present.
+- The utility API follows Bootstrap's contract where stock forces a literal:
+  `.fs-*` uses Bootstrap's fluid sizes, `.float-*` is physical, `.z-*` is
+  numeric, helpers own every property stock sets on the same class.
+
+What can still reach a component is a host's **own** `!important` in the
+`bootstrap` layer (or unlayered). Strip importance from that theme at build
+time (`bootstrap.css` itself stays untouched), extend the parity block, or
+isolate with Shadow DOM. Blanket `!important` inside m3x would not help:
+`bootstrap` precedes every m3x layer, so a theme's important declaration
+beats an m3x important declaration regardless, while m3x's would beat every
+normal declaration you write.
 
 ### Migration zones
 
@@ -505,6 +576,7 @@ no `@import`).
   $enable-bootstrap-grid: true,    // containers + .row/.col grid
   $enable-bootstrap-utilities: true, // full utility API (9c)
   $enable-bootstrap-helpers: true, // helpers + content classes
+  $enable-bootstrap-important-parity: false, // literal !important parity with stock
   $grid-breakpoints: (...),        // xs 0 / sm 576px / ... / xxl 1400px
   $container-max-widths: (...),    // sm 540px / ... / xxl 1320px
   $grid-columns: 12,
@@ -546,6 +618,8 @@ npm run watch
 - The top-level layer order statement is unchanged; `bootstrap-compat`,
   `components` and `utilities` additionally declare `own` and `rules`
   sub-layers (see *Box ownership*).
+- `!important` appears only on `[hidden]`, plus the `.text-bg-*` text colors
+  when `$enable-bootstrap-important-parity` is on.
 - `dist/m3x.css` (expanded) contains zero `rgba()`/`hsla()` anywhere. In
   `dist/m3x.min.css`, Dart Sass's compressed mode re-serializes the
   `transparent` keyword as `rgba(0,0,0,0)` in a handful of structural

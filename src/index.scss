@@ -68,6 +68,7 @@
 @use "compat/bootstrap-grid";
 @use "compat/bootstrap-utilities";
 @use "compat/bootstrap-helpers";
+@use "compat/bootstrap-important";
 @use "components/button";
 @use "components/icon-button";
 @use "components/fab";
@@ -119,6 +120,10 @@
 // --- 2. reset ----------------------------------------------------------------
 @layer reset {
   @include reset.styles;
+
+  @if c.$enable-bootstrap-compat and c.$enable-bootstrap-important-parity {
+    @include bootstrap-important.parity;
+  }
 }
 
 // --- 3. tokens ---------------------------------------------------------------
@@ -403,11 +408,11 @@ m.$ownership: "collect";
     // Bootstrap's utility API and helpers must beat every component layer
     // (.d-none on a .m3-card, .visually-hidden on a .btn), so they live here,
     // not in bootstrap-compat.
-    @if c.$enable-bootstrap-compat and c.$enable-bootstrap-utilities {
-      @include bootstrap-utilities.emit;
-    }
     @if c.$enable-bootstrap-compat and c.$enable-bootstrap-helpers {
       @include bootstrap-helpers.emit;
+    }
+    @if c.$enable-bootstrap-compat and c.$enable-bootstrap-utilities {
+      @include bootstrap-utilities.emit;
     }
   }
 

@@ -135,8 +135,19 @@
 
   // The UA default margin: auto is intended: an un-anchored open centers in
   // the viewport; consumers reposition with anchor positioning or insets.
-  .#{$p}-menu[popover] {
+  .#{$p}-menu[popover]:not(.#{$p}-menu--static) {
+    // The UA's [popover] layout, restated because the box is owned.
+    display: none;
+    position: fixed;
+    inset: var(--m3-space-none);
+    inline-size: fit-content;
+    block-size: fit-content;
+    overflow: auto;
     margin: auto;
+
+    &:popover-open {
+      display: block;
+    }
   }
 
   .#{$p}-menu--static {

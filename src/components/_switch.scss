@@ -49,6 +49,7 @@
 // NOT participate in density.
 @mixin control {
   @include m.own-box;
+  display: inline-block;
   appearance: none;
   inline-size: var(--#{c.$prefix}-switch-width);
   block-size: var(--#{c.$prefix}-switch-height);

@@ -42,6 +42,7 @@
 
 @mixin list {
   @include m.own-box;
+  display: block;
   list-style: none;
   padding-inline: var(--m3-space-none);
   padding-block: var(--m3-space-2);
@@ -107,12 +108,14 @@
 
 @mixin headline {
   @include m.own-box;
+  display: block;
   @include m.typescale("body-large");
   color: var(--#{c.$prefix}-list-item-headline-color);
 }
 
 @mixin supporting {
   @include m.own-box;
+  display: block;
   @include m.typescale("body-medium");
   color: var(--#{c.$prefix}-list-item-supporting-color);
 }
@@ -210,6 +213,7 @@
   // Consumer content region: box owned, typography left to the content.
   .#{$p}-list-item__slot {
     @include m.own-region;
+    display: block;
     flex: 1 1 auto;
     min-inline-size: 0;
   }

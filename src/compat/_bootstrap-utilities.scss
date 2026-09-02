@@ -78,13 +78,15 @@ $-radii: (
   circle: 50%,
   pill: var(--bs-border-radius-pill),
 );
+// Bootstrap's .fs-* contract (RFS: fluid below 1200px, fixed above), so a
+// page renders identically with or without stock bootstrap.css present.
 $-font-sizes: (
-  1: var(--md-sys-typescale-display-small-size),
-  2: var(--md-sys-typescale-headline-large-size),
-  3: var(--md-sys-typescale-headline-medium-size),
-  4: var(--md-sys-typescale-headline-small-size),
-  5: var(--md-sys-typescale-title-large-size),
-  6: var(--md-sys-typescale-body-large-size),
+  1: (calc(1.375rem + 1.5vw), 2.5rem),
+  2: (calc(1.325rem + 0.9vw), 2rem),
+  3: (calc(1.3rem + 0.6vw), 1.75rem),
+  4: (calc(1.275rem + 0.3vw), 1.5rem),
+  5: (1.25rem, 1.25rem),
+  6: (1rem, 1rem),
 );
 $-font-weights: (
   lighter: lighter,
@@ -120,10 +122,10 @@ $-z-indices: (n1: -1, 0: 0, 1: 1, 2: 2, 3: 3);
   }
 
   .float#{$infix}-start {
-    float: inline-start;
+    float: left;
   }
   .float#{$infix}-end {
-    float: inline-end;
+    float: right;
   }
   .float#{$infix}-none {
     float: none;
@@ -441,11 +443,18 @@ $-z-indices: (n1: -1, 0: 0, 1: 1, 2: 2, 3: 3);
 
   // font + text
   .font-monospace {
-    font-family: ui-monospace, monospace;
+    font-family: var(--bs-font-monospace);
   }
   @each $k, $v in $-font-sizes {
     .fs-#{$k} {
-      font-size: $v;
+      font-size: list.nth($v, 1);
+    }
+  }
+  @media (min-width: 1200px) {
+    @each $k, $v in $-font-sizes {
+      .fs-#{$k} {
+        font-size: list.nth($v, 2);
+      }
     }
   }
   .fst-italic {

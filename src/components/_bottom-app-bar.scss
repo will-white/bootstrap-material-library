@@ -42,6 +42,7 @@
 // Trailing slot, pushed to the far inline end (typically holds a .m3-fab).
 @mixin trailing {
   @include m.own-box;
+  display: block;
   margin-inline-start: auto;
 }
 

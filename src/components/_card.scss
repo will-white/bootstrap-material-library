@@ -84,11 +84,13 @@
     @include m.own-region;
     display: block;
     inline-size: 100%;
+    overflow: clip;
     object-fit: cover;
   }
 
   #{$root}__slot {
     @include m.own-region;
+    display: block;
     padding: var(--#{c.$prefix}-card-padding);
     flex: 1 1 auto;
   }

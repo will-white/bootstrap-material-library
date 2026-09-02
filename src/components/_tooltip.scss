@@ -57,6 +57,7 @@
 // Plain tooltip surface (reused by Bootstrap compat for .tooltip-inner).
 @mixin plain {
   @include m.own-box;
+  display: inline-block;
   width: max-content;
   max-inline-size: var(--#{c.$prefix}-tooltip-max-width);
   padding-block: var(--m3-space-1);
@@ -81,6 +82,7 @@
 // Rich tooltip subhead (reused by Bootstrap compat for .popover-header).
 @mixin rich-title {
   @include m.own-box;
+  display: block;
   @include m.typescale("title-small");
   color: var(--#{c.$prefix}-tooltip-rich-title-color);
   margin-block-end: var(--m3-space-1);

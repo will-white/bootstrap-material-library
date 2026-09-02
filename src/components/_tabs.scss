@@ -126,6 +126,7 @@
 // Real input, visually hidden but focusable (preceding sibling of its label).
 @mixin input-hidden {
   @include m.own-box;
+  display: block;
   position: absolute;
   opacity: var(--m3-opacity-hidden);
   pointer-events: none;

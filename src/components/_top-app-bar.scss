@@ -48,6 +48,7 @@
 // Headline slot (also emitted for Bootstrap's .navbar-brand).
 @mixin title {
   @include m.own-box;
+  display: block;
   @include m.typescale("title-large");
   color: var(--#{c.$prefix}-top-app-bar-content-color);
   flex: 1 1 auto;
