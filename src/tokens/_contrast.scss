@@ -305,14 +305,19 @@ $roles: map.merge($sys-roles, $extended-roles);
     $upper: math.max($bg-tone, $bg2-tone);
     $lower: math.min($bg-tone, $bg2-tone);
     @if ratio($upper, $answer) < $target or ratio($lower, $answer) < $target {
+      // MCU: the light option when either background prefers light text;
+      // otherwise the dark option unless only the light one reaches the
+      // target (neither reaching it resolves to the dark option, i.e. 0).
       $light: -lighter($upper, $target);
       $dark: -darker($lower, $target);
+      $light-reaches: ratio($light, $upper) >= $target;
+      $dark-reaches: ratio($dark, $lower) >= $target;
       @if -prefers-light($bg-tone) or -prefers-light($bg2-tone) {
         $answer: $light;
-      } @else if ratio($dark, $lower) >= $target {
-        $answer: $dark;
-      } @else {
+      } @else if $light-reaches and not $dark-reaches {
         $answer: $light;
+      } @else {
+        $answer: $dark;
       }
     }
   }

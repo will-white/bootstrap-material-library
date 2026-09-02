@@ -9,13 +9,18 @@
   "files": [
     "src",
     "dist",
+    "scripts",
     "README.md"
   ],
   "scripts": {
-    "build": "sass src/index.scss dist/m3x.css --style=expanded --source-map && sass src/index.scss dist/m3x.min.css --style=compressed --source-map",
-    "watch": "sass --watch src/index.scss dist/m3x.css --style=expanded --source-map"
+    "build": "sass src/index.scss dist/m3x.css --style=expanded --source-map && sass src/index.scss dist/m3x.min.css --style=compressed --source-map && node scripts/tokens.js",
+    "watch": "sass --watch src/index.scss dist/m3x.css --style=expanded --source-map",
+    "tokens": "node scripts/tokens.js",
+    "test": "node test/run.js"
   },
   "devDependencies": {
+    "bootstrap": "^5.3.8",
+    "playwright-core": "^1.62.1",
     "sass": "^1.79.0"
   }
 }

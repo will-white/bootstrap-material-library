@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Aurora Mail Settings - m3x demo</title>
   <link rel="stylesheet" href="../dist/m3x.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
   <style>
     /* Demo shell scaffolding only -- everything visual comes from m3x.css. */
     .demo-shell { display: grid; grid-template-columns: auto 1fr; min-height: 100dvh; }
@@ -33,6 +34,15 @@
       <option value="auto" selected>Auto</option>
       <option value="light">Light</option>
       <option value="dark">Dark</option>
+    </select>
+  </label>
+  <label class="m3-body-medium" for="contrast" style="display: inline-flex; align-items: center; gap: var(--m3-space-2);">
+    Contrast
+    <select id="contrast" class="m3-select" style="--m3-field-height: 2.5rem; min-inline-size: 7rem;">
+      <option value="" selected>Auto</option>
+      <option value="standard">Standard</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
     </select>
   </label>
 </header>
@@ -889,6 +899,64 @@
       </div>
     </section>
 
+    <section id="modern" aria-labelledby="modern-h">
+      <h2 id="modern-h" class="m3-headline-small">Icons, springs, contrast, adaptive layout</h2>
+      <p class="m3-body-medium">Material Symbols through <code>.m3-icon</code> (the font comes from Google Fonts; the library ships no font). Selected controls set <code>--m3-icon-fill: 1</code>, so outlined symbols fill on select while the button morphs its shape on a spring. Pick a contrast level in the header, or see the <a href="adaptive.html">adaptive layout page</a> for the navigation bar / rail / drawer, the collapsing large app bar and a list-detail layout.</p>
+      <div class="demo-grid">
+        <div class="demo-pair">
+          <small class="m3-label-medium">.m3-icon in buttons; aria-pressed toggles (click to select)</small>
+          <div class="demo-row">
+            <button class="m3-btn m3-btn--filled" type="button"><span class="m3-icon" aria-hidden="true">send</span>Send</button>
+            <button class="m3-btn m3-btn--tonal" type="button" aria-pressed="false" data-toggle><span class="m3-icon" aria-hidden="true">bookmark</span>Save</button>
+            <button class="m3-btn m3-btn--outlined m3-btn--square" type="button" aria-pressed="false" data-toggle><span class="m3-icon" aria-hidden="true">push_pin</span>Pin</button>
+            <button class="m3-icon-btn m3-icon-btn--tonal" type="button" aria-label="Favorite" aria-pressed="true" data-toggle><span class="m3-icon" aria-hidden="true">favorite</span></button>
+            <button class="m3-icon-btn m3-icon-btn--outlined m3-icon-btn--medium" type="button" aria-label="Notifications" aria-pressed="false" data-toggle><span class="m3-icon" aria-hidden="true">notifications</span></button>
+            <span class="m3-icon" aria-hidden="true" style="--m3-icon-weight: 200;">home</span>
+            <span class="m3-icon m3-icon--filled" aria-hidden="true" style="color: var(--md-sys-color-tertiary);">home</span>
+            <span class="m3-icon" aria-hidden="true" style="--m3-icon-weight: 700; --m3-icon-grade: 200;">home</span>
+          </div>
+        </div>
+        <div class="demo-pair">
+          <small class="m3-label-medium">details.m3-disclosure (exclusive group via name; animated ::details-content)</small>
+          <div>
+            <details class="m3-disclosure" name="faq" open><summary>Where is my data stored?</summary><p class="m3-body-medium" style="margin: 0 var(--m3-space-3) var(--m3-space-3);">In the region you picked when the account was created.</p></details>
+            <details class="m3-disclosure" name="faq"><summary>Can I export everything?</summary><p class="m3-body-medium" style="margin: 0 var(--m3-space-3) var(--m3-space-3);">Yes: Settings, Export, then pick a format.</p></details>
+            <details class="m3-disclosure" name="faq"><summary>How do I delete my account?</summary><p class="m3-body-medium" style="margin: 0 var(--m3-space-3) var(--m3-space-3);">Settings, Delete forever. It takes thirty days.</p></details>
+          </div>
+        </div>
+        <div class="demo-pair">
+          <small class="m3-label-medium">select with the customizable picker (appearance: base-select) / auto-growing textarea (field-sizing)</small>
+          <div class="demo-row">
+            <select class="m3-select" aria-label="Signature">
+              <option>No signature</option>
+              <option selected>Aurora default</option>
+              <optgroup label="Custom"><option>Work</option><option>Personal</option></optgroup>
+            </select>
+            <label class="m3-field m3-field--outlined" style="flex: 1 1 14rem;">
+              <textarea class="m3-field__input" placeholder=" " rows="1"></textarea>
+              <span class="m3-field__label">Signature text (grows as you type)</span>
+            </label>
+          </div>
+        </div>
+        <div class="demo-pair">
+          <small class="m3-label-medium">data-contrast on a subtree (high) beside the page's level</small>
+          <div class="demo-row">
+            <button class="m3-btn m3-btn--filled" type="button">Page level</button>
+            <button class="m3-btn m3-btn--tonal" type="button">Tonal</button>
+            <span data-contrast="high" class="demo-row" style="padding: var(--m3-space-2); border-radius: var(--md-sys-shape-corner-medium); background: var(--md-sys-color-surface-container);">
+              <button class="m3-btn m3-btn--filled" type="button">High contrast</button>
+              <button class="m3-btn m3-btn--tonal" type="button">Tonal</button>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="m3-pane-layout m3-pane-layout--list-detail" style="padding-inline: 0;">
+        <section class="m3-pane"><span class="m3-title-small">.m3-pane-layout--list-detail</span><br><span class="m3-body-medium">One column below the expanded size class (840px), a 360px list beside the detail above it.</span></section>
+        <section class="m3-pane"><span class="m3-title-small">.m3-pane</span><br><span class="m3-body-medium">Panes sit on surface-container-low with 16px corners; --supporting-pane and --feed are the other canonical layouts.</span></section>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
     <section id="layout" aria-labelledby="layout-h">
       <h2 id="layout-h" class="m3-headline-small">Layout, utilities, helpers &mdash; no bootstrap.css</h2>
       <p class="m3-body-medium">Everything below is Bootstrap 5.3 layout and utility markup rendered by m3x alone: the grid, gutters, spacing, display, flex, text and background utilities, and helpers.</p>
@@ -961,7 +1029,7 @@
     </section>
 
     <footer class="m3-body-small" style="color: var(--md-sys-color-on-surface-variant); padding-block: var(--m3-space-5);">
-      m3x demo &mdash; zero runtime JavaScript in the library; the only script on this page is the theme toggle and seed picker below (&le; 20 lines).
+      m3x demo &mdash; zero runtime JavaScript in the library; the only script on this page is the theme, contrast and seed pickers and the aria-pressed toggles below (&le; 30 lines).
     </footer>
 
   </main>
@@ -978,6 +1046,14 @@
   });
   document.getElementById("seed").addEventListener("input", function (e) {
     root.style.setProperty("--md-seed", e.target.value);
+  });
+  document.getElementById("contrast").addEventListener("change", function (e) {
+    if (e.target.value) root.setAttribute("data-contrast", e.target.value);
+    else root.removeAttribute("data-contrast");
+  });
+  // aria-pressed toggles are state, not styling: three lines of demo script.
+  document.querySelectorAll("[data-toggle]").forEach(function (b) {
+    b.addEventListener("click", function () { b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true"); });
   });
   // Indeterminate is a DOM property, not an attribute.
   document.querySelectorAll("[data-indeterminate]").forEach(function (i) { i.indeterminate = true; });

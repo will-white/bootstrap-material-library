@@ -57,6 +57,9 @@
   user-select: none;
   font-feature-settings: "liga";
   -webkit-font-smoothing: antialiased;
+  // Color is the one property an icon does not own: it is the glyph's
+  // currentColor, i.e. whatever its control paints its content with.
+  color: inherit;
   font-variation-settings:
     "FILL" var(--#{c.$prefix}-icon-fill, 0),
     "wght" var(--#{c.$prefix}-icon-weight),

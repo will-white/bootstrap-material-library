@@ -1,0 +1,36 @@
+/* Non-inherited properties: every element and every pseudo-element. */
+*:not(html), *::before, *::after {
+  display: inline-grid;
+  position: relative; inset: 3px; z-index: 7; float: left; clear: both;
+  max-width: 999px; max-height: 999px; min-width: 3px; min-height: 3px;
+  padding: 13px 11px 9px 7px; margin: 3px 2px 1px 4px;
+  overflow: scroll;
+  flex: 2 2 10px; order: 3; align-self: center; justify-self: end; gap: 9px; columns: 2; aspect-ratio: 3 / 1;
+  border: 3px dotted rgb(255, 0, 0); border-radius: 17px 13px 11px 7px; border-image: linear-gradient(red, blue) 1;
+  outline: 4px dashed rgb(0, 255, 255); outline-offset: 6px;
+  background: rgb(0, 255, 0) linear-gradient(rgb(0, 0, 255), rgb(0, 0, 255)) 5px 5px / 7px 7px repeat-x fixed content-box padding-box;
+  box-shadow: 0 0 0 5px rgb(255, 0, 255); opacity: 0.9;
+  transform: rotate(1deg); translate: 1px 1px; rotate: 1deg; scale: 1.01;
+  filter: sepia(0.5); backdrop-filter: blur(1px); clip-path: inset(1px); mask: linear-gradient(#000, transparent);
+  mix-blend-mode: multiply; isolation: isolate; will-change: transform; contain: paint;
+  animation: hostile 1s infinite; transition: all 3s;
+  appearance: auto; -webkit-appearance: auto; resize: both; object-fit: contain; object-position: 10% 10%;
+  user-select: none; touch-action: none; box-decoration-break: clone; -webkit-box-decoration-break: clone;
+  text-decoration: underline wavy rgb(255, 128, 0); text-underline-offset: 3px; text-overflow: ellipsis;
+  vertical-align: bottom; box-sizing: content-box;
+  /* Inherited text properties. */
+  font-family: "Comic Sans MS", cursive; font-size: 23px; font-weight: 900; font-style: italic; line-height: 3;
+  letter-spacing: 5px; word-spacing: 9px; text-indent: 15px; text-transform: uppercase; text-shadow: 1px 1px rgb(0, 0, 0);
+  text-align: right; white-space: pre; text-emphasis: filled circle rgb(255, 0, 0);
+  hyphens: auto; overflow-wrap: anywhere; word-break: break-all; list-style: square inside; quotes: "\00AB" "\00BB";
+  font-variant: small-caps; font-stretch: condensed; font-kerning: none; font-feature-settings: "smcp";
+  text-rendering: optimizeSpeed; -webkit-font-smoothing: none;
+  color: rgb(255, 0, 255); cursor: help;
+}
+*::before, *::after { content: "\2620"; }
+/* Inherited-by-design properties: only LEAF chrome is targeted, so inheritance
+   from ancestors (the legitimate path) is never confused with a leak. */
+#sink [class]:not(:has(*)), #sink [class]:not(:has(*))::before, #sink [class]:not(:has(*))::after {
+  visibility: hidden; pointer-events: none; caret-color: rgb(0, 128, 0); color-scheme: dark; image-rendering: pixelated;
+}
+@keyframes hostile { to { opacity: 0.5; } }

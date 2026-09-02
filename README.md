@@ -18,6 +18,11 @@ primitives, with a complete Bootstrap 5.3 interop surface.**
   API, helpers, and reboot-level element defaults all ship from m3x, so a
   Bootstrap 5.3 codebase needs **nothing from `bootstrap.css`** -- only its
   JS, if you still want Bootstrap-driven behavior.
+- Modern CSS with a fallback for every feature. Scheme variants, contrast
+  levels, spring easings, scroll-driven app bars, customizable selects,
+  animated disclosures and adaptive layouts each tier up behind `@supports`
+  or a media query, and every gate has a documented "without it" (see
+  *Browser support*).
 
 ```bash
 npm i && npm run build
@@ -39,8 +44,16 @@ via `@supports`:
 | `light-dark()` scheme switching | `@supports (color: light-dark(#000, #fff))` | media-query dark scheme; `[data-theme]` forcing unavailable |
 | OKLCH palettes | `@supports (color: oklch(0% 0 0)) and (color: light-dark(#000, #fff))` | build-time sRGB equivalents |
 | Runtime seed retheming | `@supports (color: oklch(from red l c h))` | Sass-precomputed palette stands |
+| Contrast levels (`prefers-contrast: more`, `[data-contrast]`) | none: emitted per tier, static + media pairs first, `light-dark()` pairs above | -- (a tier-1 browser switches levels through the same static/media pairing as its base scheme) |
+| Spring easings as `linear()` curves | `@supports (transition-timing-function: linear(0, 1))` | cubic-bezier stand-ins at the same durations |
+| Hover states | `@media (hover: hover)` (universal) | -- (touch screens never keep a hover stuck on) |
+| Scroll-driven top app bar | `@supports (animation-timeline: scroll())` | the resting look; `.m3-top-app-bar--scrolled` applies the tint from a class you toggle |
+| Customizable `<select>` picker | `@supports (appearance: base-select)` | the styled native select (CSS chevron, native picker) |
+| Animated disclosure, `auto` sizes | `@supports selector(::details-content)` and `@supports (interpolate-size: allow-keywords)` | instant open/close, exactly like a bare `<details>` |
+| Auto-growing textareas | `@supports (field-sizing: content)` | the `rows` attribute / the field's minimum height |
+| Dense toolbar overflow | `@container` (Baseline 2023) | groups never collapse; `__more` stays hidden |
 | `@scope` refinements | none -- see below | slightly less isolation, identical rendering |
-| Anchor-positioned tooltips, Popover menus | per-feature `@supports` | hidden gracefully / static fallback |
+| Anchor-positioned tooltips/menus, Popover menus, `:has()` selection states | per-feature `@supports`; every `:has()` / `:popover-open` rule stands alone in its selector list | hidden gracefully / static fallback / the non-`:has()` state |
 
 `@scope` (Chrome 118, Safari 17.4, Firefox 140) carries **refinement, never
 load-bearing structure**: donut slot protection, low-specificity internals, and
@@ -193,11 +206,63 @@ to `material-color-utilities` output: OKLCH hue lines and gamut mapping differ
 slightly from HCT's. Chroma is capped per tone at build time so every static
 value stays inside sRGB.
 
-Five palettes derive from the seed (`$seed: #6750a4` by default): `primary`
-(seed chroma capped at 0.17), `secondary` (~0.05), `tertiary` (hue +60deg,
-~0.08), `neutral` (~0.012), `neutral-variant` (~0.025), plus a fixed `error`
-palette and **extended** `success` / `warning` / `info` palettes
-(`--md-extended-color-*`) for Bootstrap parity.
+Five palettes derive from the seed (`$seed: #6750a4` by default) by the rules
+of the configured **scheme variant** (below; the default `tonal-spot` caps
+`primary` at chroma 0.17, `secondary` ~0.05, `tertiary` at hue +60deg ~0.08,
+`neutral` ~0.012, `neutral-variant` ~0.025), plus a fixed `error` palette,
+**extended** `success` / `warning` / `info` palettes (`--md-extended-color-*`)
+for Bootstrap parity, and any **custom colors** you configure. Role tones
+follow the current M3 table (`on-*-container` is tone 30 in light schemes).
+
+### Scheme variants
+
+`$scheme` selects one of M3's nine variants; each is a per-palette rule
+(chroma cap, fixed chroma, or a multiple of the seed's chroma, plus a hue
+shift) that the runtime relative-color tier reproduces exactly:
+
+| `$scheme` | Character |
+|---|---|
+| `tonal-spot` (default) | M3's default: muted accents, near-neutral surfaces |
+| `vibrant` | maximal primary chroma, secondary/tertiary shifted 15/30deg |
+| `expressive` | primary rotated 240deg, bright secondary and tertiary |
+| `neutral` | barely tinted, near-grayscale |
+| `monochrome` | zero chroma everywhere |
+| `fidelity` / `content` | palettes keep the seed's chroma (for imagery-derived seeds; tertiary +180 / +60deg) |
+| `rainbow` | saturated primary, gray neutrals |
+| `fruit-salad` | primary and secondary rotated -50deg |
+
+### Contrast levels
+
+Every role carries M3's **contrast curve** (its target ratio at standard,
+medium and high contrast against the background it reads on). The build
+resolves the medium and high tones with the reference algorithm from
+`material-color-utilities` (a role keeps its tone while it meets the target,
+otherwise moves away from its background until it does; accents and their
+containers keep at least ten tones apart; background roles avoid tones 50-59),
+so a level switch is a pure `var()` re-pointing at runtime:
+
+```css
+@media (prefers-contrast: more) { /* every role at high contrast, automatically */ }
+```
+
+```html
+<html data-contrast="high">     <!-- force a level: standard | medium | high -->
+<section data-contrast="medium"> <!-- or on any subtree -->
+```
+
+`$contrast` bakes a level into the base tokens (and the `--bs-*-rgb`
+triplets); the other levels stay available at runtime. The tone tables are
+integer palette steps, so the extra steps a level needs are emitted in every
+palette tier, and `npm test` asserts the resulting ratios in both modes.
+
+### Custom colors
+
+`$custom-colors: ("brand": #ff6f00)` adds a harmonized palette (hue rotated
+toward the seed by up to 15deg, M3's blend) with the full role set --
+`--md-extended-color-brand`, `-on-brand`, `-brand-container`,
+`-on-brand-container` -- contrast-curved like an accent, plus `.m3-bg-brand`,
+`.m3-bg-brand-container` and `.m3-text-brand` utilities (the same utilities
+exist for `success` / `warning` / `info`).
 
 **Runtime retheming** (behind the relative-color gate): every palette step is
 re-derived from `--md-seed`, so one line rethemes the entire app -- both
@@ -299,6 +364,31 @@ components.
 | `--m3-btn-outlined-label-color` | `primary` | |
 | `--m3-btn-outlined-outline-color` | `outline` | |
 | `--m3-btn-text-label-color` | `primary` | |
+
+---
+
+## Motion and shape (M3 Expressive)
+
+**Springs.** `--md-sys-motion-spring-{fast,default,slow}-{spatial,effects}`
+(+ `-duration`) are the six physics specs of `$motion-scheme` (`expressive`,
+the default, or `standard`), each resolved at build time into a CSS `linear()`
+curve sampled from the damped-oscillator solution, with the settle time as its
+duration. The tokens default to cubic-bezier stand-ins and upgrade under
+`@supports (transition-timing-function: linear(0, 1))`. Chevrons, switch
+handles, menu entry and the shape morphs ride them; build your own with
+`m3.spring-transition((rotate, translate), "fast-spatial")` or the
+`$spring-properties` argument of `m3.transition()`.
+
+**Shape morphs.** Buttons and icon buttons take a squarer shape while pressed
+(`--m3-btn-shape-pressed`, per size) and when selected (`aria-pressed="true"`
+or a checked `.m3-btn-check`: `--m3-btn-shape-selected`); square toggles go
+round instead. Connected button groups and the dense toolbar keep their own
+geometry. Icon-button tokens mirror these (`--m3-icon-btn-shape-*`).
+
+**Pointer gating.** Every hover state in the library sits behind
+`@media (hover: hover)`, so a tap on a touch screen never leaves a control
+stuck in its hover look. Bootstrap's explicit hover utilities
+(`.link-*-hover`, `.table-hover`, `.icon-link-hover`) keep stock semantics.
 
 ---
 
@@ -534,8 +624,8 @@ pure-CSS equivalent -- divergences are listed.
 
 | Component | Classes | Divergence from JS-driven M3 |
 |---|---|---|
-| Buttons | `.m3-btn` + `--filled/--tonal/--elevated/--outlined/--text`, sizes `--xs/--small/--medium/--large/--xl`, `--square` | -- |
-| Icon buttons | `.m3-icon-btn` + variants, sizes `--xs/--small/--medium/--large/--xl`, `--square` | toggle state via `aria-pressed` |
+| Buttons | `.m3-btn` + `--filled/--tonal/--elevated/--outlined/--text`, sizes `--xs/--small/--medium/--large/--xl`, `--square` | pressed / selected shape morphs on springs |
+| Icon buttons | `.m3-icon-btn` + variants, sizes `--xs/--small/--medium/--large/--xl`, `--square` | toggle state via `aria-pressed` (shape morph + icon fill) |
 | Button groups | `.m3-button-group` + `--connected`, sizes `--xs..--xl`, `.m3-btn-check` hidden inputs | selected via `aria-pressed`, `.active`, or a checked `.m3-btn-check`; in a connected group an icon button's 48dp hit area keeps its block-axis overhang but stops at the seam |
 | Split button | `.m3-split-button` (`__action` + `__toggle` on `.m3-btn`) + `--tonal/--outlined/--elevated`, sizes `--xs/--medium/--large/--xl`; `__option` radios in `<label>` menu items + `__label` spans let the menu choose the leading action | two independently enabled buttons on one pill (spec paddings, seam corners, 48dp trailing half); the toggle is the `popovertarget` of a `.m3-menu[popover]`, and while it is open (or `aria-expanded="true"`) it morphs to a circle with a pressed state layer and its chevron flips |
 | Toolbar | `.m3-toolbar` + `--floating/--docked/--standard/--vibrant/--vertical/--fixed`; `--dense` editor bar with `__group` (+ `--priority-low/--priority-medium`), `__dropdown`, `__choice` (+ `__option`/`__label`), `__select`, `__stepper` + `__stepper-input`, `__color` + `__swatch`, `__spacer`, `__more` | dense groups collapse through container queries on the bar; what the overflow menu lists is yours |
@@ -554,9 +644,12 @@ pure-CSS equivalent -- divergences are listed.
 | Divider | `.m3-divider` on `<hr>` | -- |
 | Lists | `.m3-list` (+ `--dividers`, `--inset`), `.m3-list__subheader`, `.m3-list-item` (one to three lines, donut) with `__overline`, `__leading--avatar/--image/--video`, `__trailing--meta`, trailing controls | -- |
 | Bottom/side sheets | `.m3-sheet--bottom/--side` on `<dialog>`, `--side-standard` on `<aside>` | modal variants via `showModal()` |
-| Navigation bar/rail/drawer | `.m3-nav-bar`, `.m3-rail`, `.m3-drawer` (+ `--modal`) | active via `aria-current` |
+| Navigation bar/rail/drawer | `.m3-nav-bar`, `.m3-rail`, `.m3-drawer` (+ `--modal`) | active via `aria-current`; active icons fill (`--m3-icon-fill: 1`) |
+| Adaptive layout | `.m3-adaptive-layout` + `.m3-adaptive-nav` (`__item`, `__icon`, `__label`: navigation bar / rail / drawer by window size class), `.m3-pane-layout` + `--list-detail/--supporting-pane/--feed`, `.m3-pane`, `.m3-only-*` / `.m3-hide-*` | viewport media queries at M3's window size classes (`$window-size-classes`); which pane a compact window shows is yours |
+| Icon | `.m3-icon` (+ `--filled`) for Material Symbols variable fonts | you load the font; selected controls set `--m3-icon-fill: 1` and the FILL axis animates |
+| Disclosure | `details.m3-disclosure` (+ `name` for exclusive groups) | animated `::details-content` where supported |
 | Tabs | `.m3-tabs` (aria/`.active` or real radio inputs) | pane switching is yours |
-| Top/bottom app bars | `.m3-top-app-bar` + size variants, `.m3-bottom-app-bar` | no scroll-elevate (JS) |
+| Top/bottom app bars | `.m3-top-app-bar` + size variants + `--sticky` (+ `--scrolled` class), `.m3-bottom-app-bar` | a sticky bar tints on scroll and a sticky medium/large bar collapses to the small height through scroll-driven animations; elsewhere toggle `--scrolled` yourself |
 | Checkbox / radio / switch | `.m3-checkbox`, `.m3-radio`, `.m3-switch` | `:indeterminate` styled; set it from your code |
 | Chips | `.m3-chip` + assist/filter/input/suggestion | filter/input ride real checkboxes; remove button styling only |
 | Menus | `.m3-menu` on `[popover]` | positioning via Popover API; hidden gracefully without it |
@@ -566,7 +659,7 @@ pure-CSS equivalent -- divergences are listed.
 | Time picker | `.m3-time-picker` (input mode; `--modal`) with hour/minute fields and the AM/PM selector | the dial mode needs script and is not shipped |
 | Text fields | `.m3-field` filled/outlined, floating label, supporting text | -- |
 | Search | `.m3-search` (+ `[popover]`/focus panel) | -- |
-| Select | `.m3-select` on native `<select>` | native option list, CSS chevron |
+| Select | `.m3-select` on native `<select>` | the picker is an M3 menu under `appearance: base-select` (also `.form-select` and the dense toolbar select); native option list elsewhere, CSS chevron either way |
 
 ---
 
@@ -667,6 +760,11 @@ no `@import`).
 ```scss
 @use "m3x/src" with (
   $seed: #6750a4,                  // scheme seed (any Sass-parsable color)
+  $scheme: "tonal-spot",           // M3 scheme variant (vibrant, expressive, neutral, monochrome, fidelity, content, rainbow, fruit-salad)
+  $contrast: "standard",           // baked contrast level: standard | medium | high
+  $custom-colors: (),              // ("brand": #ff6f00) -> harmonized --md-extended-color-brand roles + utilities
+  $motion-scheme: "expressive",    // spring physics set: expressive | standard
+  $window-size-classes: (...),     // compact 0 / medium 600px / expanded 840px / large 1200px / extra-large 1600px
   $prefix: "m3",                   // class + tier-3 token prefix
   $enable-bootstrap-compat: true,  // --bs-* remap (9a)
   $enable-bootstrap-reskin: true,  // component re-skin (9b)
@@ -687,10 +785,12 @@ no `@import`).
 
 Functions and mixins are forwarded for building your own components:
 `tone($hue, $chroma, $t)`, `palette()`, `okl()`, `rem()`, `hex()`, plus
-`state-layer()`, `typescale()`, `focus-ring()`, `elevation()`, `transition()`,
-`touch-target()`, the ownership mixins `own-box()` / `own-region()` /
-`own-pseudo()`, and every component's rules mixins under prefixed names
-(`btn-filled`, `card-container`, `field-input-filled`, ...):
+`state-layer()`, `typescale()`, `focus-ring()`, `elevation()`, `transition()`
+(with `$spring-properties`), `spring-transition()`, `hover()`, `touch-target()`,
+the ownership mixins `own-box()` / `own-region()` / `own-pseudo()`, the
+layout helpers `layout-at("medium")` / `layout-only("compact")`, and every
+component's rules mixins under prefixed names (`btn-filled`, `card-container`,
+`field-input-filled`, ...):
 
 ```scss
 @use "m3x/src" as m3;
@@ -706,9 +806,45 @@ the `own` sub-layer.
 
 ```bash
 npm i
-npm run build    # dist/m3x.css + dist/m3x.min.css with source maps
+npm run build    # dist/m3x.css + dist/m3x.min.css with source maps + dist/m3x.tokens.json
 npm run watch
+npm run tokens   # regenerate the token export from dist/m3x.css
+npm test         # contrast assertions, box-ownership + stock-parity audits, hit areas
 ```
+
+### Tests
+
+`npm test` runs three suites against the built CSS:
+
+- **contrast** (`test/contrast.js`, no browser): reads the static sRGB tier
+  and asserts M3's minimum ratios for every accent / on-accent, container /
+  on-container, surface / on-surface, outline and inverse pair in light and
+  dark, at the configured level and at high contrast.
+- **audit** (`test/audit.js`, headless Chromium): the differential audits the
+  library is built with. *Box ownership* compares every chrome element's
+  computed style on a clean page against a hostile host (stock `bootstrap.css`
+  plus a universal hostile rule in the reserved `bootstrap` layer) and demands
+  zero differences; *stock parity* renders the Bootstrap vocabulary with and
+  without stock `bootstrap.css` in that layer, light and dark, on the
+  `$enable-bootstrap-important-parity` build, and demands identity. The
+  fixture is `test/fixtures/sink.html` (one of everything).
+- **hit areas** (`test/hit-areas.js`): 48dp touch targets stay 48dp, and never
+  cross the seam of a connected button group or the dense toolbar.
+
+Chromium comes from `CHROME_PATH`, `npx playwright-core install chromium`, or
+a `PLAYWRIGHT_BROWSERS_PATH` directory, in that order. Stock `bootstrap.css`
+for the audits comes from the `bootstrap` devDependency.
+
+### Token export
+
+`dist/m3x.tokens.json` is a [W3C Design Tokens](https://tr.designtokens.org/format/)
+file generated from the built CSS: `md.ref.palette.*` as sRGB hex,
+`md.sys.color.*` as an alias to the light step with the dark step in
+`$extensions.m3x.dark`, and every `md.sys.*` / `m3.*` token typed by value
+(dimension, duration, cubicBezier, number, fontFamily); `var()` references
+become `{aliases}`, computed values keep their CSS text alongside
+`$extensions.m3x.css`. Whatever Sass configuration produced the build is what
+gets exported.
 
 ---
 
@@ -719,6 +855,8 @@ npm run watch
   sub-layers (see *Box ownership*).
 - `!important` appears only on `[hidden]`, plus the `.text-bg-*` text colors
   when `$enable-bootstrap-important-parity` is on.
+- `dist/m3x.tokens.json` is regenerated by `npm run build` (see *Token
+  export*).
 - `dist/m3x.css` (expanded) contains zero `rgba()`/`hsla()` anywhere. In
   `dist/m3x.min.css`, Dart Sass's compressed mode re-serializes the
   `transparent` keyword as `rgba(0,0,0,0)` in a handful of structural

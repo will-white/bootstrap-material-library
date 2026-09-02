@@ -231,7 +231,9 @@
     #{$item} {
       @include drawer.item;
       flex-direction: row;
+      justify-content: flex-start;
       inline-size: auto;
+      max-inline-size: none;
       text-align: start;
 
       @include m.hover {
