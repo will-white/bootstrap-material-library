@@ -155,7 +155,7 @@
     display: inline-block;
   }
 
-  #{$input}:hover + #{$label} {
+  @include m.hover-selector("#{$input}:hover + #{$label}") {
     --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
   }
 

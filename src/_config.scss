@@ -11,6 +11,27 @@ $prefix: "m3" !default;
 // Source color for the whole scheme. Any CSS color Sass can parse.
 $seed: #6750a4 !default;
 
+// Scheme variant: how the five palettes take chroma and hue from the seed,
+// after M3's dynamic-scheme variants (hue rotations approximated as
+// constants): "tonal-spot" (the default), "vibrant", "expressive", "neutral",
+// "monochrome", "fidelity", "content", "rainbow", "fruit-salad".
+$scheme: "tonal-spot" !default;
+
+// Contrast level of the emitted scheme: "standard", "medium" or "high".
+// Tones move only where a role fails its M3 contrast target for the level
+// (the material-color-utilities rule). Whatever the build level, the high
+// level is also served under prefers-contrast: more, and
+// [data-contrast="standard" | "medium" | "high"] on an ancestor forces one.
+$contrast: "standard" !default;
+
+// Custom color roles: name -> source color. Each name gets a tonal palette
+// (its own chroma, hue harmonized toward the seed by up to 15 degrees) and
+// the roles --md-extended-color-<name>, on-<name>, <name>-container and
+// on-<name>-container, plus .m3-bg-<name> / .m3-text-<name> utilities.
+//   @use "m3x/src" with ($custom-colors: ("brand": #ff6f00));
+$custom-colors: () !default;
+$motion-scheme: "expressive" !default; // expressive | standard: the spring physics set behind --md-sys-motion-spring-*
+
 // Bootstrap interop switches (see README section "Bootstrap interop").
 // With all of these on (the default) a Bootstrap 5.3 codebase needs nothing
 // from bootstrap.css: components, grid, utilities, helpers, and reboot-level

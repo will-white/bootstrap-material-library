@@ -1,8 +1,107 @@
 // ============================================================================
 // m3x motion tokens (--md-sys-motion-*)
-// Official M3 easing curves and duration ramp. Every animated declaration in
-// the library sits behind prefers-reduced-motion: no-preference.
+// Official M3 easing curves and duration ramp, plus the M3 Expressive spring
+// tokens. Every animated declaration in the library sits behind
+// prefers-reduced-motion: no-preference.
+//
+// Springs (--md-sys-motion-spring-<name> + -duration): the six physics specs
+// of the configured $motion-scheme (fast / default / slow x spatial /
+// effects), each resolved at build time into a CSS `linear()` curve sampled
+// from the damped-oscillator solution, with the settle time (within 0.1% of
+// rest) as its duration. The tokens default to cubic-bezier stand-ins and
+// are upgraded under @supports (transition-timing-function: linear(0, 1)),
+// so a browser without linear() still gets a sensible curve at the same
+// duration. Consumers: m.spring-transition() and m.transition()'s
+// $spring-properties argument.
 // ============================================================================
+
+@use "sass:list";
+@use "sass:map";
+@use "sass:math";
+@use "sass:string";
+@use "../config";
+
+// spring -> (damping ratio, stiffness); mass is 1 (M3 motion physics).
+$-schemes: (
+  "expressive": (
+    "fast-spatial": (0.6, 800),
+    "default-spatial": (0.8, 380),
+    "slow-spatial": (0.8, 200),
+    "fast-effects": (1, 3800),
+    "default-effects": (1, 1600),
+    "slow-effects": (1, 800),
+  ),
+  "standard": (
+    "fast-spatial": (0.9, 1400),
+    "default-spatial": (0.9, 700),
+    "slow-spatial": (0.9, 300),
+    "fast-effects": (1, 3800),
+    "default-effects": (1, 1600),
+    "slow-effects": (1, 800),
+  ),
+);
+
+$-springs: map.get($-schemes, config.$motion-scheme);
+@if $-springs == null {
+  @error "Unknown $motion-scheme #{config.$motion-scheme}; one of #{map.keys($-schemes)}";
+}
+
+// cubic-bezier stand-ins: overshooting springs get an overshooting bezier.
+@function -fallback($zeta) {
+  @if $zeta < 0.7 {
+    @return cubic-bezier(0.34, 1.4, 0.64, 1);
+  } @else if $zeta < 1 {
+    @return cubic-bezier(0.05, 0.7, 0.1, 1);
+  }
+  @return cubic-bezier(0.2, 0, 0, 1);
+}
+
+// Normalized position of a unit spring at time t (seconds).
+@function -position($t, $zeta, $stiffness) {
+  $omega: math.sqrt($stiffness);
+  @if $zeta >= 1 {
+    @return 1 - math.pow(math.$e, -$omega * $t) * (1 + $omega * $t);
+  }
+  $wd: $omega * math.sqrt(1 - $zeta * $zeta);
+  @return 1 -
+    math.pow(math.$e, -$zeta * $omega * $t) *
+    (math.cos($wd * $t) + math.div($zeta * $omega, $wd) * math.sin($wd * $t));
+}
+
+// Settle time in ms (last moment the response is more than 0.1% from rest,
+// scanned in 5ms steps, rounded up to 10ms).
+@function -settle-ms($zeta, $stiffness) {
+  $last: 0;
+  @for $i from 1 through 400 {
+    $t: $i * 0.005;
+    @if math.abs(-position($t, $zeta, $stiffness) - 1) > 0.001 {
+      $last: $t;
+    }
+  }
+  @return math.ceil(math.div($last, 0.01)) * 10;
+}
+
+// linear() easing sampled uniformly over the settle time.
+@function -linear($zeta, $stiffness, $duration-ms, $samples: 40) {
+  $out: "0";
+  @for $i from 1 through $samples {
+    $x: 1;
+    @if $i < $samples {
+      $t: math.div($i, $samples) * math.div($duration-ms, 1000);
+      $x: math.div(math.round(-position($t, $zeta, $stiffness) * 10000), 10000);
+    }
+    $out: $out + ", " + $x;
+  }
+  @return string.unquote("linear(" + $out + ")");
+}
+
+// name -> (zeta, stiffness, duration ms), resolved once.
+$springs: ();
+@each $name, $spec in $-springs {
+  $zeta: list.nth($spec, 1);
+  $k: list.nth($spec, 2);
+  $springs: map.set($springs, $name, ($zeta, $k, -settle-ms($zeta, $k)));
+}
 
 @mixin tokens {
   --md-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
@@ -29,4 +128,24 @@
   --md-sys-motion-duration-extra-long2: 800ms;
   --md-sys-motion-duration-extra-long3: 900ms;
   --md-sys-motion-duration-extra-long4: 1000ms;
+
+  // Springs: bezier stand-ins here, linear() curves via the springs mixin.
+  @each $name, $def in $springs {
+    --md-sys-motion-spring-#{$name}: #{-fallback(list.nth($def, 1))};
+    --md-sys-motion-spring-#{$name}-duration: #{list.nth($def, 3)}ms;
+  }
+}
+
+@mixin springs {
+  @supports (transition-timing-function: linear(0, 1)) {
+    :root {
+      @each $name, $def in $springs {
+        --md-sys-motion-spring-#{$name}: #{-linear(
+            list.nth($def, 1),
+            list.nth($def, 2),
+            list.nth($def, 3)
+          )};
+      }
+    }
+  }
 }

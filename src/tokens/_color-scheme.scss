@@ -13,6 +13,12 @@
 //   tier 2  @supports light-dark(): every role as light-dark(var(), var()).
 //   (tiers 3 and 4 upgrade the ref palettes underneath; see _palette.scss.)
 //
+// Contrast levels (tokens/_contrast.scss) re-point the same roles at other
+// palette steps: `@media (prefers-contrast: more)` raises the scheme to
+// high contrast, and [data-contrast="standard" | "medium" | "high"] forces
+// a level on any subtree. Both are emitted per tier, so tier-1 browsers get
+// them through the same static / media pairing as the base scheme.
+//
 // Every role is registered via @property with a computationally independent
 // static sRGB initial-value; the light-dark() assignment is a separate
 // declaration on :root.
@@ -20,94 +26,37 @@
 
 @use "sass:list";
 @use "sass:map";
+@use "../config";
 @use "../functions" as fn;
+@use "contrast";
 @use "palette";
 
-// role -> (palette, light tone, dark tone)
-$sys-roles: (
-  "primary": ("primary", 40, 80),
-  "on-primary": ("primary", 100, 20),
-  "primary-container": ("primary", 90, 30),
-  "on-primary-container": ("primary", 10, 90),
-  "inverse-primary": ("primary", 80, 40),
-  "primary-fixed": ("primary", 90, 90),
-  "primary-fixed-dim": ("primary", 80, 80),
-  "on-primary-fixed": ("primary", 10, 10),
-  "on-primary-fixed-variant": ("primary", 30, 30),
-  "secondary": ("secondary", 40, 80),
-  "on-secondary": ("secondary", 100, 20),
-  "secondary-container": ("secondary", 90, 30),
-  "on-secondary-container": ("secondary", 10, 90),
-  "secondary-fixed": ("secondary", 90, 90),
-  "secondary-fixed-dim": ("secondary", 80, 80),
-  "on-secondary-fixed": ("secondary", 10, 10),
-  "on-secondary-fixed-variant": ("secondary", 30, 30),
-  "tertiary": ("tertiary", 40, 80),
-  "on-tertiary": ("tertiary", 100, 20),
-  "tertiary-container": ("tertiary", 90, 30),
-  "on-tertiary-container": ("tertiary", 10, 90),
-  "tertiary-fixed": ("tertiary", 90, 90),
-  "tertiary-fixed-dim": ("tertiary", 80, 80),
-  "on-tertiary-fixed": ("tertiary", 10, 10),
-  "on-tertiary-fixed-variant": ("tertiary", 30, 30),
-  "error": ("error", 40, 80),
-  "on-error": ("error", 100, 20),
-  "error-container": ("error", 90, 30),
-  "on-error-container": ("error", 10, 90),
-  "surface": ("neutral", 98, 6),
-  "surface-dim": ("neutral", 87, 6),
-  "surface-bright": ("neutral", 98, 24),
-  "surface-container-lowest": ("neutral", 100, 4),
-  "surface-container-low": ("neutral", 96, 10),
-  "surface-container": ("neutral", 94, 12),
-  "surface-container-high": ("neutral", 92, 17),
-  "surface-container-highest": ("neutral", 90, 22),
-  "on-surface": ("neutral", 10, 90),
-  "surface-variant": ("neutral-variant", 90, 30),
-  "on-surface-variant": ("neutral-variant", 30, 80),
-  "outline": ("neutral-variant", 50, 60),
-  "outline-variant": ("neutral-variant", 80, 30),
-  "inverse-surface": ("neutral", 20, 90),
-  "inverse-on-surface": ("neutral", 95, 20),
-  "background": ("neutral", 98, 6),
-  "on-background": ("neutral", 10, 90),
-  "scrim": ("neutral", 0, 0),
-  "shadow": ("neutral", 0, 0),
-  "surface-tint": ("primary", 40, 80),
-);
+// role -> definition (see tokens/_contrast.scss for the tuple shape)
+$sys-roles: contrast.$sys-roles;
+$extended-roles: contrast.$extended-roles;
 
-// Library extensions for Bootstrap parity, namespaced --md-extended-color-*.
-$extended-roles: (
-  "success": ("success", 40, 80),
-  "on-success": ("success", 100, 20),
-  "success-container": ("success", 90, 30),
-  "on-success-container": ("success", 10, 90),
-  "warning": ("warning", 40, 80),
-  "on-warning": ("warning", 100, 20),
-  "warning-container": ("warning", 90, 30),
-  "on-warning-container": ("warning", 10, 90),
-  "info": ("info", 40, 80),
-  "on-info": ("info", 100, 20),
-  "info-container": ("info", 90, 30),
-  "on-info-container": ("info", 10, 90),
-);
+// Build-time accessors: palette step and resolved Sass color for a role in
+// a scheme at a contrast level. Used for @property initial values, the
+// Bootstrap RGB triplets and the audits.
+@function role-tone($role, $scheme: light, $level: config.$contrast) {
+  @return contrast.tone($role, $scheme, $level);
+}
 
-// Build-time accessor: resolved Sass color for a role in a given scheme.
-// Used for @property initial values and the Bootstrap RGB triplets.
-@function role-color($role, $scheme: light) {
-  $def: map.get($sys-roles, $role);
-  @if $def == null {
-    $def: map.get($extended-roles, $role);
+@function role-color($role, $scheme: light, $level: config.$contrast) {
+  @return palette.get(contrast.palette-of($role), role-tone($role, $scheme, $level));
+}
+
+@function -prop($role) {
+  @if map.has-key($sys-roles, $role) {
+    @return "--md-sys-color-#{$role}";
   }
-  @if $def == null {
-    @error "Unknown color role #{$role}";
-  }
-  $palette: list.nth($def, 1);
-  $tone: list.nth($def, 3);
-  @if $scheme == light {
-    $tone: list.nth($def, 2);
-  }
-  @return palette.get($palette, $tone);
+  @return "--md-extended-color-#{$role}";
+}
+
+@function -ref($role, $scheme, $level) {
+  @return fn.raw(
+    "var(--md-ref-palette-#{contrast.palette-of($role)}#{role-tone($role, $scheme, $level)})"
+  );
 }
 
 // --- @property registrations ------------------------------------------------
@@ -143,38 +92,40 @@ $extended-roles: (
   }
 }
 
+// --- declaration helpers ----------------------------------------------------
+
+// Static declarations for one scheme (tier 1).
+@mixin -static($roles, $scheme, $level) {
+  @each $role in $roles {
+    #{-prop($role)}: #{-ref($role, $scheme, $level)};
+  }
+}
+
+// light-dark() declarations (tier 2).
+@mixin -paired($roles, $level) {
+  @each $role in $roles {
+    #{-prop($role)}: light-dark(#{-ref($role, light, $level)}, #{-ref($role, dark, $level)});
+  }
+}
+
+// Tier-1 dark guard: :where() keeps specificity at (0,1,0) so the tier 2
+// block, which comes later in source order, wins the tie in capable
+// browsers. The [data-bs-theme] exclusion mirrors the compat rgb-triplet
+// guard so tier-1 browsers stay internally consistent under Bootstrap
+// togglers.
+$-dark-guard: ':where(:not([data-theme="light"]):not([data-bs-theme="light"]))';
+
 // --- tier 1: static fallback (no light-dark support) ------------------------
+
+$-all-roles: list.join(map.keys($sys-roles), map.keys($extended-roles));
 
 @mixin tier1 {
   :root {
-    @each $role, $def in $sys-roles {
-      --md-sys-color-#{$role}: var(
-        --md-ref-palette-#{list.nth($def, 1)}#{list.nth($def, 2)}
-      );
-    }
-    @each $role, $def in $extended-roles {
-      --md-extended-color-#{$role}: var(
-        --md-ref-palette-#{list.nth($def, 1)}#{list.nth($def, 2)}
-      );
-    }
+    @include -static($-all-roles, light, config.$contrast);
   }
-
-  // :where() keeps specificity at (0,1,0) so the tier 2 :root block, which
-  // comes later in source order, wins the tie in capable browsers. The
-  // [data-bs-theme] exclusion mirrors the compat rgb-triplet guard so
-  // tier-1 browsers stay internally consistent under Bootstrap togglers.
   @media (prefers-color-scheme: dark) {
-    :root:where(:not([data-theme="light"]):not([data-bs-theme="light"])) {
-      @each $role, $def in $sys-roles {
-        --md-sys-color-#{$role}: var(
-          --md-ref-palette-#{list.nth($def, 1)}#{list.nth($def, 3)}
-        );
-      }
-      @each $role, $def in $extended-roles {
-        --md-extended-color-#{$role}: var(
-          --md-ref-palette-#{list.nth($def, 1)}#{list.nth($def, 3)}
-        );
-      }
+    :root#{$-dark-guard} {
+      @include -static($-all-roles, dark, config.$contrast);
     }
   }
 }
@@ -184,18 +135,86 @@ $extended-roles: (
 @mixin tier2 {
   @supports (color: light-dark(#000, #fff)) {
     :root {
-      @each $role, $def in $sys-roles {
-        --md-sys-color-#{$role}: light-dark(
-          var(--md-ref-palette-#{list.nth($def, 1)}#{list.nth($def, 2)}),
-          var(--md-ref-palette-#{list.nth($def, 1)}#{list.nth($def, 3)})
-        );
+      @include -paired($-all-roles, config.$contrast);
+    }
+  }
+}
+
+// --- contrast levels --------------------------------------------------------
+
+// Roles whose tone at $level differs from the configured level in either
+// scheme: the only ones a level switch has to restate.
+@function -differing($level, $against: config.$contrast) {
+  $out: ();
+  @each $role in $-all-roles {
+    @if role-tone($role, light, $level) != role-tone($role, light, $against) or
+      role-tone($role, dark, $level) != role-tone($role, dark, $against)
+    {
+      $out: list.append($out, $role);
+    }
+  }
+  @return $out;
+}
+
+// Roles that vary across any level: every forced [data-contrast] block
+// restates all of them so it beats the prefers-contrast media block whatever
+// the OS asks for.
+@function -varying() {
+  $out: ();
+  @each $level in map.keys(contrast.$levels) {
+    @each $role in -differing($level) {
+      @if list.index($out, $role) == null {
+        $out: list.append($out, $role);
       }
-      @each $role, $def in $extended-roles {
-        --md-extended-color-#{$role}: light-dark(
-          var(--md-ref-palette-#{list.nth($def, 1)}#{list.nth($def, 2)}),
-          var(--md-ref-palette-#{list.nth($def, 1)}#{list.nth($def, 3)})
-        );
+    }
+  }
+  @return $out;
+}
+
+// One level's static (tier 1) light + dark pair for a selector.
+@mixin -static-level($selector, $roles, $level) {
+  @if list.length($roles) > 0 {
+    #{$selector} {
+      @include -static($roles, light, $level);
+    }
+    @media (prefers-color-scheme: dark) {
+      #{$selector}#{$-dark-guard} {
+        @include -static($roles, dark, $level);
       }
+    }
+  }
+}
+
+@mixin -paired-level($selector, $roles, $level) {
+  @if list.length($roles) > 0 {
+    #{$selector} {
+      @include -paired($roles, $level);
+    }
+  }
+}
+
+// contrast-levels: emitted after tier 2 so order settles every tie.
+//   @media (prefers-contrast: more)  -> high (roles differing from the build)
+//   [data-contrast="<level>"]        -> that level, on any subtree
+@mixin contrast-levels {
+  $high: -differing("high");
+  $varying: -varying();
+
+  // tier 1
+  @media (prefers-contrast: more) {
+    @include -static-level(":root", $high, "high");
+  }
+  @each $level in map.keys(contrast.$levels) {
+    @include -static-level('[data-contrast="#{$level}"]', $varying, $level);
+  }
+
+  // tier 2
+  @supports (color: light-dark(#000, #fff)) {
+    @media (prefers-contrast: more) {
+      @include -paired-level(":root", $high, "high");
+    }
+    @each $level in map.keys(contrast.$levels) {
+      @include -paired-level('[data-contrast="#{$level}"]', $varying, $level);
     }
   }
 }

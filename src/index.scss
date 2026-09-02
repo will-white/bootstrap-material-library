@@ -288,6 +288,10 @@
   //   tier 4: ref palettes derived from --md-seed at runtime
   @include color-scheme.tier1;
   @include color-scheme.tier2;
+  @include color-scheme.contrast-levels;
+
+  // Spring easings upgraded to linear() curves where supported.
+  @include motion.springs;
 
   @supports (color: #{fn.raw("oklch(0% 0 0)")}) and (color: light-dark(#000, #fff)) {
     :root {

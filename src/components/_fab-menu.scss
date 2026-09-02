@@ -77,7 +77,7 @@
 @mixin fab {
   > svg,
   > img {
-    @include m.transition(rotate);
+    @include m.spring-transition(rotate, "fast-spatial");
   }
 }
 
@@ -180,7 +180,7 @@
   @include m.transition((background-color, color, box-shadow));
   @include m.forced-colors-border;
 
-  &:hover {
+  @include m.hover {
     @include m.elevation(2);
   }
 

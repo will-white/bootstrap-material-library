@@ -85,8 +85,10 @@
   @include m.focus-ring;
   @include m.transition((color));
 
-  &:hover .#{c.$prefix}-nav-bar__icon {
-    --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
+  @media (hover: hover) {
+    &:hover .#{c.$prefix}-nav-bar__icon {
+      --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
+    }
   }
 
   &:active .#{c.$prefix}-nav-bar__icon {

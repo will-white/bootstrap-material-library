@@ -1,0 +1,368 @@
+// ============================================================================
+// m3x contrast engine (build time)
+// A port of Material Color Utilities' DynamicColor tone resolution. Every
+// color role carries a base tone per mode, the background role it must read
+// against and a contrast curve: the target ratio at low / standard / medium
+// / high contrast. A role keeps its base tone while it meets the target and
+// otherwise moves away from its background until it does. Tone-delta pairs
+// keep accents and their containers at least ten tones apart, and
+// background roles avoid the 50-59 "awkward zone". Tones are rounded away
+// from the background so every emitted step is an integer palette tone.
+// ============================================================================
+
+@use "sass:list";
+@use "sass:map";
+@use "sass:math";
+@use "sass:string";
+@use "../config";
+
+// contrast level -> index into a curve (low, standard, medium, high)
+$levels: ("standard": 2, "medium": 3, "high": 4);
+
+@if map.get($levels, config.$contrast) == null {
+  @error "Unknown $contrast #{config.$contrast}; one of #{map.keys($levels)}";
+}
+
+// The "highest surface" every accent reads against: the darkest light
+// surface and the brightest dark surface.
+$-highest-surface: (light: 87, dark: 24);
+
+// --- role tables ------------------------------------------------------------
+// role -> (palette, light tone, dark tone, background, second background,
+//          curve, tone-delta pair, is-background)
+// pair -> (role a, role b, delta, polarity, stay-together)
+
+@function -accent-family($name, $palette, $fixed: false) {
+  $pair: ($name + "-container", $name, 10, "nearer", false);
+  $family: (
+    $name: ($palette, 40, 80, "highest-surface", null, (3, 4.5, 7, 7), $pair, true),
+    "on-" + $name: ($palette, 100, 20, $name, null, (4.5, 7, 11, 21), null, false),
+    $name + "-container": ($palette, 90, 30, "highest-surface", null, (1, 1, 3, 4.5), $pair, true),
+    "on-" + $name + "-container": ($palette, 30, 90, $name + "-container", null, (3, 4.5, 7, 11), null, false),
+  );
+  @if $fixed {
+    $fixed-pair: ($name + "-fixed", $name + "-fixed-dim", 10, "lighter", true);
+    $family: map.merge(
+      $family,
+      (
+        $name + "-fixed": ($palette, 90, 90, "highest-surface", null, (1, 1, 3, 4.5), $fixed-pair, true),
+        $name + "-fixed-dim": ($palette, 80, 80, "highest-surface", null, (1, 1, 3, 4.5), $fixed-pair, true),
+        "on-" + $name + "-fixed": ($palette, 10, 10, $name + "-fixed-dim", $name + "-fixed", (4.5, 7, 11, 21), null, false),
+        "on-" + $name + "-fixed-variant": ($palette, 30, 30, $name + "-fixed-dim", $name + "-fixed", (3, 4.5, 7, 11), null, false),
+      )
+    );
+  }
+  @return $family;
+}
+
+$sys-roles: map.merge(
+  -accent-family("primary", "primary", $fixed: true),
+  ("inverse-primary": ("primary", 80, 40, "inverse-surface", null, (3, 4.5, 7, 7), null, false))
+);
+$sys-roles: map.merge($sys-roles, -accent-family("secondary", "secondary", $fixed: true));
+$sys-roles: map.merge($sys-roles, -accent-family("tertiary", "tertiary", $fixed: true));
+$sys-roles: map.merge($sys-roles, -accent-family("error", "error"));
+$sys-roles: map.merge(
+  $sys-roles,
+  (
+    "surface": ("neutral", 98, 6, null, null, null, null, true),
+    "surface-dim": ("neutral", 87, 6, null, null, null, null, true),
+    "surface-bright": ("neutral", 98, 24, null, null, null, null, true),
+    "surface-container-lowest": ("neutral", 100, 4, null, null, null, null, true),
+    "surface-container-low": ("neutral", 96, 10, null, null, null, null, true),
+    "surface-container": ("neutral", 94, 12, null, null, null, null, true),
+    "surface-container-high": ("neutral", 92, 17, null, null, null, null, true),
+    "surface-container-highest": ("neutral", 90, 22, null, null, null, null, true),
+    "on-surface": ("neutral", 10, 90, "highest-surface", null, (4.5, 7, 11, 21), null, false),
+    "surface-variant": ("neutral-variant", 90, 30, null, null, null, null, true),
+    "on-surface-variant": ("neutral-variant", 30, 80, "highest-surface", null, (3, 4.5, 7, 11), null, false),
+    "outline": ("neutral-variant", 50, 60, "highest-surface", null, (1.5, 3, 4.5, 7), null, false),
+    "outline-variant": ("neutral-variant", 80, 30, "highest-surface", null, (1, 1, 3, 4.5), null, false),
+    "inverse-surface": ("neutral", 20, 90, null, null, null, null, true),
+    "inverse-on-surface": ("neutral", 95, 20, "inverse-surface", null, (4.5, 7, 11, 21), null, false),
+    "background": ("neutral", 98, 6, null, null, null, null, true),
+    "on-background": ("neutral", 10, 90, "background", null, (3, 3, 4.5, 7), null, false),
+    "scrim": ("neutral", 0, 0, null, null, null, null, false),
+    "shadow": ("neutral", 0, 0, null, null, null, null, false),
+    "surface-tint": ("primary", 40, 80, null, null, null, null, false),
+  )
+);
+
+// Library extensions (Bootstrap parity) plus the configured custom colors,
+// namespaced --md-extended-color-*.
+$extended-roles: map.merge(
+  -accent-family("success", "success"),
+  -accent-family("warning", "warning")
+);
+$extended-roles: map.merge($extended-roles, -accent-family("info", "info"));
+@each $name, $source in config.$custom-colors {
+  $extended-roles: map.merge($extended-roles, -accent-family($name, $name));
+}
+
+$roles: map.merge($sys-roles, $extended-roles);
+
+@function def($role) {
+  $def: map.get($roles, $role);
+  @if $def == null {
+    @error "Unknown color role #{$role}";
+  }
+  @return $def;
+}
+
+@function palette-of($role) {
+  @return list.nth(def($role), 1);
+}
+
+@function base-tone($role, $mode) {
+  @if $mode == light {
+    @return list.nth(def($role), 2);
+  }
+  @return list.nth(def($role), 3);
+}
+
+// --- tone math (CIELAB L* <-> relative luminance) ---------------------------
+
+@function -y($tone) {
+  $ft: math.div($tone + 16, 116);
+  $cube: $ft * $ft * $ft;
+  @if $cube > 0.008856 {
+    @return 100 * $cube;
+  }
+  @return math.div(100 * $tone, 903.2963);
+}
+
+@function -lstar($y) {
+  $yn: math.div($y, 100);
+  @if $yn > 0.008856 {
+    @return 116 * math.pow($yn, math.div(1, 3)) - 16;
+  }
+  @return 903.2963 * $yn;
+}
+
+// WCAG contrast ratio between two tones.
+@function ratio($a, $b) {
+  $ya: -y($a);
+  $yb: -y($b);
+  @return math.div(math.max($ya, $yb) + 5, math.min($ya, $yb) + 5);
+}
+
+// Lightest / darkest integer tone reaching $ratio against $bg (100 / 0 when
+// unreachable, like MCU's lighterUnsafe / darkerUnsafe).
+@function -lighter($bg, $ratio) {
+  $light-y: $ratio * (-y($bg) + 5) - 5;
+  @if $light-y > 100 {
+    @return 100;
+  }
+  @return math.min(math.ceil(-lstar($light-y) + 0.4), 100);
+}
+
+@function -darker($bg, $ratio) {
+  $dark-y: math.div(-y($bg) + 5, $ratio) - 5;
+  @if $dark-y < 0 {
+    @return 0;
+  }
+  @return math.max(math.floor(-lstar($dark-y) - 0.4), 0);
+}
+
+@function -prefers-light($bg) {
+  @return math.round($bg) < 60;
+}
+
+// MCU foregroundTone: the tone reaching $ratio on $bg, in the preferred
+// direction (light text on dark backgrounds and vice versa) when possible.
+@function foreground-tone($bg, $ratio) {
+  $lighter: -lighter($bg, $ratio);
+  $darker: -darker($bg, $ratio);
+  $lr: ratio($lighter, $bg);
+  $dr: ratio($darker, $bg);
+  @if -prefers-light($bg) {
+    $negligible: math.abs($lr - $dr) < 0.1 and $lr < $ratio and $dr < $ratio;
+    @if $lr >= $ratio or $lr >= $dr or $negligible {
+      @return $lighter;
+    }
+    @return $darker;
+  }
+  @if $dr >= $ratio or $dr >= $lr {
+    @return $darker;
+  }
+  @return $lighter;
+}
+
+// --- role resolution --------------------------------------------------------
+
+@function -target($role, $level) {
+  @return list.nth(list.nth(def($role), 6), map.get($levels, $level));
+}
+
+@function -background-tone($bg, $mode, $level) {
+  @if $bg == "highest-surface" {
+    @return map.get($-highest-surface, $mode);
+  }
+  @return tone($bg, $mode, $level);
+}
+
+@function -clamp-tone($t) {
+  @return math.clamp(0, $t, 100);
+}
+
+@function -pair-tone($role, $pair, $mode, $level, $bg) {
+  $a: list.nth($pair, 1);
+  $b: list.nth($pair, 2);
+  $delta: list.nth($pair, 3);
+  $polarity: list.nth($pair, 4);
+  $stay: list.nth($pair, 5);
+  $a-nearer: $polarity == "nearer" or ($polarity == "lighter" and $mode == light) or
+    ($polarity == "darker" and $mode == dark);
+  $nearer: $b;
+  $farther: $a;
+  @if $a-nearer {
+    $nearer: $a;
+    $farther: $b;
+  }
+  $dir: -1;
+  @if $mode == dark {
+    $dir: 1;
+  }
+
+  $n-target: -target($nearer, $level);
+  $f-target: -target($farther, $level);
+  $n: base-tone($nearer, $mode);
+  @if ratio($bg, $n) < $n-target {
+    $n: foreground-tone($bg, $n-target);
+  }
+  $f: base-tone($farther, $mode);
+  @if ratio($bg, $f) < $f-target {
+    $f: foreground-tone($bg, $f-target);
+  }
+
+  @if ($f - $n) * $dir < $delta {
+    $f: -clamp-tone($n + $delta * $dir);
+    @if ($f - $n) * $dir < $delta {
+      $n: -clamp-tone($f - $delta * $dir);
+    }
+  }
+
+  @if $n >= 50 and $n < 60 {
+    @if $dir > 0 {
+      $n: 60;
+      $f: math.max($f, $n + $delta);
+    } @else {
+      $n: 49;
+      $f: math.min($f, $n - $delta);
+    }
+  } @else if $f >= 50 and $f < 60 {
+    @if $stay {
+      @if $dir > 0 {
+        $n: 60;
+        $f: math.max($f, $n + $delta);
+      } @else {
+        $n: 49;
+        $f: math.min($f, $n - $delta);
+      }
+    } @else if $dir > 0 {
+      $f: 60;
+    } @else {
+      $f: 49;
+    }
+  }
+
+  @if $role == $nearer {
+    @return $n;
+  }
+  @return $f;
+}
+
+// tone(): the integer tone a role takes in $mode (light | dark) at $level
+// (standard | medium | high). Standard contrast is the M3 baseline table.
+@function tone($role, $mode, $level: config.$contrast) {
+  $def: def($role);
+  $base: base-tone($role, $mode);
+  $bg: list.nth($def, 4);
+  @if $bg == null or $level == "standard" {
+    @return $base;
+  }
+  $target: -target($role, $level);
+  $bg-tone: -background-tone($bg, $mode, $level);
+  $pair: list.nth($def, 7);
+  @if $pair != null {
+    @return -pair-tone($role, $pair, $mode, $level, $bg-tone);
+  }
+
+  $answer: $base;
+  @if ratio($bg-tone, $answer) < $target {
+    $answer: foreground-tone($bg-tone, $target);
+  }
+  @if list.nth($def, 8) and $answer >= 50 and $answer < 60 {
+    $answer: 60;
+    @if ratio(49, $bg-tone) >= $target {
+      $answer: 49;
+    }
+  }
+
+  $bg2: list.nth($def, 5);
+  @if $bg2 != null {
+    $bg2-tone: -background-tone($bg2, $mode, $level);
+    $upper: math.max($bg-tone, $bg2-tone);
+    $lower: math.min($bg-tone, $bg2-tone);
+    @if ratio($upper, $answer) < $target or ratio($lower, $answer) < $target {
+      $light: -lighter($upper, $target);
+      $dark: -darker($lower, $target);
+      @if -prefers-light($bg-tone) or -prefers-light($bg2-tone) {
+        $answer: $light;
+      } @else if ratio($dark, $lower) >= $target {
+        $answer: $dark;
+      } @else {
+        $answer: $light;
+      }
+    }
+  }
+  @return $answer;
+}
+
+// --- palette steps the scheme needs -----------------------------------------
+
+@function -sorted-insert($list, $value) {
+  @if list.index($list, $value) != null {
+    @return $list;
+  }
+  $out: ();
+  $placed: false;
+  @each $item in $list {
+    @if not $placed and $value < $item {
+      $out: list.append($out, $value);
+      $placed: true;
+    }
+    $out: list.append($out, $item);
+  }
+  @if not $placed {
+    $out: list.append($out, $value);
+  }
+  @return $out;
+}
+
+// palette -> sorted tones used by any role at any level in either mode.
+@function needed-tones() {
+  $out: ();
+  @each $role, $def in $roles {
+    $palette: list.nth($def, 1);
+    $tones: map.get($out, $palette);
+    @if $tones == null {
+      $tones: ();
+    }
+    @each $mode in (light, dark) {
+      @each $level in map.keys($levels) {
+        $tones: -sorted-insert($tones, tone($role, $mode, $level));
+      }
+    }
+    $out: map.set($out, $palette, $tones);
+  }
+  @return $out;
+}
+
+@function sorted-union($a, $b) {
+  $out: ();
+  @each $t in list.join($a, $b) {
+    $out: -sorted-insert($out, $t);
+  }
+  @return $out;
+}

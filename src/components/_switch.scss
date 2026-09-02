@@ -95,7 +95,9 @@
     );
     translate: 0 -50%;
     @include m.transition(
-      (inset-inline-start, inline-size, block-size, background-color)
+      (background-color),
+      $spring-properties: (inset-inline-start, inline-size, block-size),
+      $spring: "fast-spatial"
     );
   }
 
@@ -111,7 +113,7 @@
     );
   }
 
-  &:hover {
+  @include m.hover {
     --_layer-opacity: var(--md-sys-state-hover-state-layer-opacity);
   }
   &:focus-visible {
@@ -122,8 +124,10 @@
     --_handle: var(--#{c.$prefix}-switch-pressed-handle-size);
   }
 
-  &:hover:not(:disabled)::before {
-    background-color: var(--#{c.$prefix}-switch-hover-handle-color);
+  @media (hover: hover) {
+    &:hover:not(:disabled)::before {
+      background-color: var(--#{c.$prefix}-switch-hover-handle-color);
+    }
   }
 
   &:checked {
@@ -145,8 +149,10 @@
       );
     }
 
-    &:hover:not(:disabled)::before {
-      background-color: var(--#{c.$prefix}-switch-selected-hover-handle-color);
+    @media (hover: hover) {
+      &:hover:not(:disabled)::before {
+        background-color: var(--#{c.$prefix}-switch-selected-hover-handle-color);
+      }
     }
   }
 

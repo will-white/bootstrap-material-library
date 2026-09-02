@@ -9,6 +9,28 @@
 @use "sass:map";
 @use "config";
 
+// --- pointer gating -----------------------------------------------------------
+
+// Hover styles only where a hovering pointer exists: touch screens otherwise
+// keep the hover state stuck on after a tap. `&:hover` inside a media query,
+// so the guard costs nothing in the selector.
+@mixin hover {
+  @media (hover: hover) {
+    &:hover {
+      @content;
+    }
+  }
+}
+
+// Same guard for a selector that is not a plain parent suffix.
+@mixin hover-selector($selector) {
+  @media (hover: hover) {
+    #{$selector} {
+      @content;
+    }
+  }
+}
+
 // --- typography -------------------------------------------------------------
 
 // Apply one role of the M3 typescale, e.g. @include typescale("label-large");
@@ -37,7 +59,7 @@
     var(--_container)
   );
 
-  &:hover {
+  @include hover {
     --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
   }
   &:focus-visible {
@@ -61,8 +83,10 @@
       var(--_container)
     );
   }
-  &:hover #{$child} {
-    --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
+  @media (hover: hover) {
+    &:hover #{$child} {
+      --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
+    }
   }
   &:focus-within #{$child} {
     --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
@@ -467,7 +491,7 @@ $-own-pseudo-selectors: ();
     );
   }
 
-  &:hover {
+  @include hover {
     --_layer-opacity: var(--md-sys-state-hover-state-layer-opacity);
   }
   &:focus-visible {
@@ -546,15 +570,53 @@ $-own-pseudo-selectors: ();
 
 // Transition helper, always behind prefers-reduced-motion.
 // $properties is a comma-separated list: transition((background-color, color)).
+// $spring-properties ride the named spring token pair instead of the
+// duration/easing arguments (shape morphs, handle travel, chevron turns).
 @mixin transition(
   $properties,
   $duration: var(--md-sys-motion-duration-short4),
-  $easing: var(--md-sys-motion-easing-standard)
+  $easing: var(--md-sys-motion-easing-standard),
+  $spring-properties: (),
+  $spring: "default-spatial"
 ) {
   @media (prefers-reduced-motion: no-preference) {
+    @if list.length($spring-properties) == 0 {
+      transition-property: $properties;
+      transition-duration: $duration;
+      transition-timing-function: $easing;
+    } @else {
+      $props: ();
+      $durations: ();
+      $easings: ();
+      @each $property in $properties {
+        $props: list.append($props, $property, comma);
+        $durations: list.append($durations, $duration, comma);
+        $easings: list.append($easings, $easing, comma);
+      }
+      @each $property in $spring-properties {
+        $props: list.append($props, $property, comma);
+        $durations: list.append(
+          $durations,
+          var(--md-sys-motion-spring-#{$spring}-duration),
+          comma
+        );
+        $easings: list.append($easings, var(--md-sys-motion-spring-#{$spring}), comma);
+      }
+      transition-property: $props;
+      transition-duration: $durations;
+      transition-timing-function: $easings;
+    }
+  }
+}
+
+// Every listed property on one spring (fast-spatial for small, snappy
+// morphs; default-spatial for container-scale movement; *-effects for
+// color and opacity).
+@mixin spring-transition($properties, $spring: "default-spatial") {
+  @media (prefers-reduced-motion: no-preference) {
     transition-property: $properties;
-    transition-duration: $duration;
-    transition-timing-function: $easing;
+    transition-duration: var(--md-sys-motion-spring-#{$spring}-duration);
+    transition-timing-function: var(--md-sys-motion-spring-#{$spring});
   }
 }
 

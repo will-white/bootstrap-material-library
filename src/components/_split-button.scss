@@ -161,10 +161,15 @@
   border-start-end-radius: var(--#{c.$prefix}-split-button-inner-shape);
   border-end-end-radius: var(--#{c.$prefix}-split-button-inner-shape);
   @include m.transition(
-    (background-color, color, box-shadow, border-color, border-radius)
+    (background-color, color, box-shadow, border-color),
+    $spring-properties: (border-radius),
+    $spring: "fast-spatial"
   );
 
-  &:hover,
+  @include m.hover {
+    border-start-end-radius: var(--#{c.$prefix}-split-button-inner-shape-active);
+    border-end-end-radius: var(--#{c.$prefix}-split-button-inner-shape-active);
+  }
   &:active {
     border-start-end-radius: var(--#{c.$prefix}-split-button-inner-shape-active);
     border-end-end-radius: var(--#{c.$prefix}-split-button-inner-shape-active);
@@ -183,10 +188,15 @@
   border-start-start-radius: var(--#{c.$prefix}-split-button-inner-shape);
   border-end-start-radius: var(--#{c.$prefix}-split-button-inner-shape);
   @include m.transition(
-    (background-color, color, box-shadow, border-color, border-radius)
+    (background-color, color, box-shadow, border-color),
+    $spring-properties: (border-radius),
+    $spring: "fast-spatial"
   );
 
-  &:hover,
+  @include m.hover {
+    border-start-start-radius: var(--#{c.$prefix}-split-button-inner-shape-active);
+    border-end-start-radius: var(--#{c.$prefix}-split-button-inner-shape-active);
+  }
   &:active {
     border-start-start-radius: var(--#{c.$prefix}-split-button-inner-shape-active);
     border-end-start-radius: var(--#{c.$prefix}-split-button-inner-shape-active);
@@ -205,7 +215,7 @@
     // Optical centering: the rotated L's visual center sits below the box
     // center.
     translate: 0 -25%;
-    @include m.transition((rotate, translate));
+    @include m.spring-transition((rotate, translate), "fast-spatial");
   }
 
   &[aria-expanded="true"] {
@@ -293,7 +303,7 @@
   > .#{c.$prefix}-split-button__toggle {
     @include m.elevation(1);
 
-    &:hover {
+    @include m.hover {
       @include m.elevation(2);
     }
 

@@ -96,7 +96,7 @@
   @include m.transition((background-color, box-shadow));
   @include m.forced-colors-border;
 
-  &:hover {
+  @include m.hover {
     @include m.elevation(4);
   }
 

@@ -136,8 +136,10 @@
     opacity: var(--m3-opacity-full);
     translate: 0 0;
     transition-property: opacity, translate;
-    transition-duration: var(--md-sys-motion-duration-short4);
-    transition-timing-function: var(--md-sys-motion-easing-emphasized-decelerate);
+    transition-duration: var(--md-sys-motion-spring-fast-effects-duration),
+      var(--md-sys-motion-spring-default-spatial-duration);
+    transition-timing-function: var(--md-sys-motion-spring-fast-effects),
+      var(--md-sys-motion-spring-default-spatial);
     transition-behavior: allow-discrete;
 
     @starting-style {

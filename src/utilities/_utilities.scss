@@ -5,10 +5,12 @@
 // helper (section 5's typed-token interpolation payoff).
 // ============================================================================
 
+@use "sass:list";
 @use "sass:map";
 @use "../config" as c;
 @use "../mixins" as m;
 @use "../tokens/typography";
+@use "../tokens/contrast";
 
 // bg role -> paired on-color
 $-bg-pairs: (
@@ -43,6 +45,17 @@ $-text-roles: (
   "inverse-primary"
 );
 
+// Accent names among the extended roles: those with an on-<name> partner.
+@function -extended-names() {
+  $out: ();
+  @each $role, $def in contrast.$extended-roles {
+    @if map.has-key(contrast.$extended-roles, "on-" + $role) {
+      $out: list.append($out, $role);
+    }
+  }
+  @return $out;
+}
+
 @mixin styles {
   $p: c.$prefix;
 
@@ -64,6 +77,22 @@ $-text-roles: (
   @each $role in $-text-roles {
     .#{$p}-text-#{$role} {
       color: var(--md-sys-color-#{$role});
+    }
+  }
+
+  // Extended roles (success / warning / info) and every configured custom
+  // color: .m3-bg-<name>, .m3-bg-<name>-container, .m3-text-<name>.
+  @each $name in -extended-names() {
+    .#{$p}-bg-#{$name} {
+      background-color: var(--md-extended-color-#{$name});
+      color: var(--md-extended-color-on-#{$name});
+    }
+    .#{$p}-bg-#{$name}-container {
+      background-color: var(--md-extended-color-#{$name}-container);
+      color: var(--md-extended-color-on-#{$name}-container);
+    }
+    .#{$p}-text-#{$name} {
+      color: var(--md-extended-color-#{$name});
     }
   }
 

@@ -63,7 +63,7 @@
     text-decoration: underline;
     text-underline-offset: var(--m3-stroke-thick);
 
-    &:hover {
+    @include m.hover {
       color: color-mix(
         in srgb,
         var(--md-sys-color-on-surface)

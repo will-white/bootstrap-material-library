@@ -156,7 +156,7 @@
   padding-block-start: var(--m3-space-4);
   padding-block-end: var(--m3-space-1);
 
-  &:hover {
+  @include m.hover {
     background-color: color-mix(
       in srgb,
       var(--md-sys-color-on-surface)
@@ -202,7 +202,7 @@
   border-radius: var(--#{c.$prefix}-field-shape);
   padding-block: var(--m3-space-3);
 
-  &:hover {
+  @include m.hover {
     border-color: var(--md-sys-color-on-surface);
   }
 

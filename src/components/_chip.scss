@@ -131,7 +131,7 @@
     }
   }
 
-  .#{c.$prefix}-chip__input:hover + .#{c.$prefix}-chip__label {
+  @include m.hover-selector(".#{c.$prefix}-chip__input:hover + .#{c.$prefix}-chip__label") {
     --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
   }
 
@@ -207,7 +207,7 @@
   );
   @include m.focus-ring;
 
-  &:hover {
+  @include m.hover {
     background-color: color-mix(
       in srgb,
       currentColor var(--md-sys-state-hover-state-layer-opacity),

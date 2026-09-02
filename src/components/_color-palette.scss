@@ -179,7 +179,7 @@
     mix-blend-mode: difference;
   }
 
-  &:hover {
+  @include m.hover {
     outline: var(--m3-stroke-hairline) solid var(--md-sys-color-outline);
     outline-offset: var(--m3-stroke-thick);
   }

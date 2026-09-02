@@ -246,7 +246,7 @@
       calc(var(--m3-chevron-size) / 2 + var(--m3-stroke-thick))
     );
     translate: 0 -25%;
-    @include m.transition((rotate));
+    @include m.spring-transition(rotate, "fast-spatial");
   }
 
   &[aria-expanded="true"]::after {

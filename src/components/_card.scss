@@ -73,7 +73,7 @@
   @include m.focus-ring;
   @include m.transition((background-color, box-shadow));
 
-  &:hover {
+  @include m.hover {
     @include m.elevation(2);
   }
 }

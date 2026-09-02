@@ -16,6 +16,13 @@
 //   --m3-icon-btn-shape-square-medium         corner-large   --square + --medium
 //   --m3-icon-btn-shape-square-large          corner-extra-large  --square +
 //                                                            --large / --xl
+//   --m3-icon-btn-shape-pressed               corner-small   shape while :active
+//   --m3-icon-btn-shape-pressed-medium        corner-medium  --medium
+//   --m3-icon-btn-shape-pressed-large         corner-large   --large / --xl
+//   --m3-icon-btn-shape-selected              corner-medium  round toggle selected
+//   --m3-icon-btn-shape-selected-medium       corner-large   --medium
+//   --m3-icon-btn-shape-selected-large        corner-extra-large  --large / --xl
+//   (a selected --square icon button goes the other way: corner-full)
 //   --m3-icon-btn-icon-size                   icon-size (24px) child svg/img
 //   --m3-icon-btn-icon-size-xs                20px   .m3-icon-btn--xs
 //   --m3-icon-btn-icon-size-large             32px   .m3-icon-btn--large
@@ -59,6 +66,12 @@
   --#{c.$prefix}-icon-btn-shape-square: var(--md-sys-shape-corner-medium);
   --#{c.$prefix}-icon-btn-shape-square-medium: var(--md-sys-shape-corner-large);
   --#{c.$prefix}-icon-btn-shape-square-large: var(--md-sys-shape-corner-extra-large);
+  --#{c.$prefix}-icon-btn-shape-pressed: var(--md-sys-shape-corner-small);
+  --#{c.$prefix}-icon-btn-shape-pressed-medium: var(--md-sys-shape-corner-medium);
+  --#{c.$prefix}-icon-btn-shape-pressed-large: var(--md-sys-shape-corner-large);
+  --#{c.$prefix}-icon-btn-shape-selected: var(--md-sys-shape-corner-medium);
+  --#{c.$prefix}-icon-btn-shape-selected-medium: var(--md-sys-shape-corner-large);
+  --#{c.$prefix}-icon-btn-shape-selected-large: var(--md-sys-shape-corner-extra-large);
   --#{c.$prefix}-icon-btn-icon-size: var(--m3-icon-size);
   --#{c.$prefix}-icon-btn-icon-size-xs: #{fn.rem(20)};
   --#{c.$prefix}-icon-btn-icon-size-large: #{fn.rem(32)};
@@ -82,7 +95,7 @@
 // no variant class is the standard icon button, so base also carries the
 // standard selected + disabled treatments; variants re-point the tier-4
 // private variables and override the disabled treatment where needed.
-@mixin base {
+@mixin base($check: ".#{c.$prefix}-btn-check") {
   @include m.own-box;
   text-align: center;
   @include m.typescale("label-large");
@@ -109,13 +122,26 @@
   @include m.state-layer;
   @include m.focus-ring;
   @include m.touch-target;
-  @include m.transition((background-color, color));
+  @include m.transition(
+    (background-color, color),
+    $spring-properties: (border-radius),
+    $spring: "fast-spatial"
+  );
   @include m.forced-colors-border;
 
   > svg,
   > img {
     inline-size: var(--#{c.$prefix}-icon-btn-icon-size);
     block-size: var(--#{c.$prefix}-icon-btn-icon-size);
+  }
+
+  // M3 Expressive shape morphs (see button.scss).
+  &:active {
+    border-radius: var(--#{c.$prefix}-icon-btn-shape-pressed);
+  }
+  &[aria-pressed="true"],
+  #{$check}:checked + & {
+    border-radius: var(--#{c.$prefix}-icon-btn-shape-selected);
   }
 
   &[aria-pressed="true"] {
@@ -221,24 +247,36 @@
 @mixin medium {
   --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-icon-btn-size-medium);
   --#{c.$prefix}-icon-btn-shape-square: var(--#{c.$prefix}-icon-btn-shape-square-medium);
+  --#{c.$prefix}-icon-btn-shape-pressed: var(--#{c.$prefix}-icon-btn-shape-pressed-medium);
+  --#{c.$prefix}-icon-btn-shape-selected: var(--#{c.$prefix}-icon-btn-shape-selected-medium);
 }
 
 @mixin large {
   --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-icon-btn-size-large);
   --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-icon-btn-icon-size-large);
   --#{c.$prefix}-icon-btn-shape-square: var(--#{c.$prefix}-icon-btn-shape-square-large);
+  --#{c.$prefix}-icon-btn-shape-pressed: var(--#{c.$prefix}-icon-btn-shape-pressed-large);
+  --#{c.$prefix}-icon-btn-shape-selected: var(--#{c.$prefix}-icon-btn-shape-selected-large);
 }
 
 @mixin xl {
   --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-icon-btn-size-xl);
   --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-icon-btn-icon-size-xl);
   --#{c.$prefix}-icon-btn-shape-square: var(--#{c.$prefix}-icon-btn-shape-square-large);
+  --#{c.$prefix}-icon-btn-shape-pressed: var(--#{c.$prefix}-icon-btn-shape-pressed-large);
+  --#{c.$prefix}-icon-btn-shape-selected: var(--#{c.$prefix}-icon-btn-shape-selected-large);
 }
 
 // Square shape: the radius follows the size via the --m3-icon-btn-shape-square
 // token the size modifiers re-point.
-@mixin square {
+@mixin square($check: ".#{c.$prefix}-btn-check") {
   border-radius: var(--#{c.$prefix}-icon-btn-shape-square);
+
+  // Square toggles morph the other way: round when selected.
+  &[aria-pressed="true"],
+  #{$check}:checked + & {
+    border-radius: var(--md-sys-shape-corner-full);
+  }
 }
 
 @mixin classes {

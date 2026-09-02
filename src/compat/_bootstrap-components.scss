@@ -269,7 +269,7 @@ $-themes: (
   // Buttons (.btn renders through the same mixins as .m3-btn)
   // ==========================================================================
   .btn {
-    @include button.base;
+    @include button.base($check: ".btn-check");
   }
 
   .btn-primary {
@@ -650,7 +650,7 @@ $-themes: (
       flex: none;
       margin-inline-start: auto;
       @include m.chevron-icon;
-      @include m.transition((rotate), var(--md-sys-motion-duration-short4));
+      @include m.spring-transition(rotate, "fast-spatial");
     }
 
     &:not(.collapsed) {
@@ -877,7 +877,7 @@ $-themes: (
     @include m.focus-ring;
     @include m.transition((color, background-color));
 
-    &:hover {
+    @include m.hover {
       color: var(--md-sys-color-on-surface);
     }
 

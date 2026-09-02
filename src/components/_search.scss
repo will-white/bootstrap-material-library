@@ -51,7 +51,7 @@
   @include m.focus-ring-within;
   @include m.transition((background-color));
 
-  &:hover {
+  @include m.hover {
     background-color: color-mix(
       in srgb,
       var(--#{c.$prefix}-search-content-color)

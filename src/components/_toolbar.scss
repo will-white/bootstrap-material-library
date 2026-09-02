@@ -320,6 +320,8 @@
   --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-toolbar-dense-control-size);
   --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-toolbar-dense-icon-size);
   --#{c.$prefix}-icon-btn-shape: var(--#{c.$prefix}-toolbar-dense-control-shape);
+  --#{c.$prefix}-icon-btn-shape-pressed: var(--#{c.$prefix}-toolbar-dense-control-shape);
+  --#{c.$prefix}-icon-btn-shape-selected: var(--#{c.$prefix}-toolbar-dense-control-shape);
   --#{c.$prefix}-icon-btn-selected-container-color: var(
     --#{c.$prefix}-toolbar-dense-selected-container-color
   );
@@ -329,6 +331,8 @@
   --#{c.$prefix}-btn-icon-gap: var(--m3-space-1);
   --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-toolbar-dense-icon-size);
   --#{c.$prefix}-btn-shape: var(--#{c.$prefix}-toolbar-dense-control-shape);
+  --#{c.$prefix}-btn-shape-pressed: var(--#{c.$prefix}-toolbar-dense-control-shape);
+  --#{c.$prefix}-btn-shape-selected: var(--#{c.$prefix}-toolbar-dense-control-shape);
   // Split controls: the halves take the control size, the seam corners the
   // control shape (no hover morph at this size), and the trailing sliver
   // narrows to a small chevron.
@@ -467,7 +471,7 @@
     );
     margin-inline-start: var(--m3-space-1);
     translate: 0 -25%;
-    @include m.transition((rotate, translate));
+    @include m.spring-transition((rotate, translate), "fast-spatial");
   }
 
   &[aria-expanded="true"]::after {
@@ -570,7 +574,7 @@
     margin: var(--m3-space-none);
   }
 
-  &:hover {
+  @include m.hover {
     border-color: var(--md-sys-color-on-surface);
   }
 
