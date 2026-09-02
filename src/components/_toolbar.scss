@@ -113,6 +113,27 @@
 //               aria-label="Align"><svg ...></svg></button>
 //       <div class="m3-menu" id="align-menu" popover>...</div>
 //     </div>
+//     <div class="m3-toolbar__group">
+//       <!-- a choice: the menu picks the dropdown's label (radio options) -->
+//       <details class="m3-toolbar__choice" name="bar">
+//         <summary class="m3-toolbar__dropdown">
+//           <span class="m3-toolbar__label">Roboto</span>
+//           <span class="m3-toolbar__label">Inter</span>
+//         </summary>
+//         <div class="m3-menu">
+//           <label class="m3-menu__item"><input class="m3-toolbar__option"
+//                  type="radio" name="font" checked>Roboto</label>
+//           <label class="m3-menu__item"><input class="m3-toolbar__option"
+//                  type="radio" name="font">Inter</label>
+//         </div>
+//       </details>
+//       <!-- a color: the swatch button opens a palette; its bar follows -->
+//       <span class="m3-toolbar__color">
+//         <button class="m3-icon-btn m3-toolbar__swatch" popovertarget="text-color"
+//                 aria-label="Text color"><svg ...></svg></button>
+//         <div class="m3-color-palette" id="text-color" popover>...</div>
+//       </span>
+//     </div>
 //     <div class="m3-toolbar__spacer"></div>
 //     <div class="m3-toolbar__group">
 //       <button class="m3-toolbar__dropdown" popovertarget="mode-menu">
@@ -146,8 +167,23 @@
 // invoker where anchor positioning exists (centered otherwise). Groups marked
 // --priority-low / --priority-medium hide as the bar narrows and __more
 // appears; what the overflow menu lists is yours.
+//
+// Choices (__choice around a __dropdown and a .m3-menu of __option radios in
+// <label> items) show the checked option's __label span in the dropdown. As
+// a <div>, the dropdown is the menu's popovertarget: the Popover API opens
+// it and the chevron flips (:has + :popover-open); anchor positioning places
+// it under the dropdown, a centered popover elsewhere. As a <details>, the
+// dropdown is its <summary> and the menu (no popover attribute) drops below
+// it, open state and all, in every browser that has :has() -- the
+// backward-compatible form. A native __select keeps the OS picker and flips
+// its chevron only where :open exists.
+//
+// Colors (__color around a __swatch button and a .m3-color-palette popover):
+// the bar under the icon follows the checked swatch through the
+// $color-palette config, so the markup carries no colors.
 // ============================================================================
 
+@use "sass:list";
 @use "sass:map";
 @use "../config" as c;
 @use "../functions" as fn;
@@ -354,7 +390,8 @@
   // the viewport runs out. Written at a specificity that beats the split
   // button's own end-aligned placement, so every menu in the bar hangs the
   // same way.
-  &.#{c.$prefix}-toolbar .#{c.$prefix}-menu[popover]:not(.#{c.$prefix}-menu--static) {
+  &.#{c.$prefix}-toolbar
+    :is(.#{c.$prefix}-menu, .#{c.$prefix}-color-palette)[popover]:not(.#{c.$prefix}-menu--static) {
     @supports (position-area: block-end) {
       inset: auto;
       margin: var(--m3-space-none);
@@ -362,6 +399,24 @@
       position-area: block-end span-inline-end;
       position-try-fallbacks: flip-block, flip-inline;
     }
+  }
+
+  // Past the spacer (the bar's trailing end) menus hang end-aligned instead.
+  &.#{c.$prefix}-toolbar
+    .#{c.$prefix}-toolbar__spacer
+    ~ .#{c.$prefix}-toolbar__group
+    :is(.#{c.$prefix}-menu, .#{c.$prefix}-color-palette)[popover]:not(.#{c.$prefix}-menu--static) {
+    @supports (position-area: block-end) {
+      position-area: block-end span-inline-start;
+    }
+  }
+
+  .#{c.$prefix}-toolbar__spacer
+    ~ .#{c.$prefix}-toolbar__group
+    .#{c.$prefix}-toolbar__choice
+    > .#{c.$prefix}-menu:not([popover]) {
+    inset-inline-start: auto;
+    inset-inline-end: var(--m3-space-none);
   }
 
   // A split control's menu hangs under the whole control, not its sliver.
@@ -572,6 +627,78 @@
   align-self: stretch;
 }
 
+// A choice: a dropdown whose menu picks its label. As a <div>, the dropdown
+// is the popovertarget of the .m3-menu[popover] after it. As a <details>,
+// the dropdown is the <summary> and the plain .m3-menu drops below it.
+@mixin dense-choice {
+  @include m.own-box;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+
+  > summary {
+    list-style: none;
+  }
+
+  > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  &[open] > .#{c.$prefix}-toolbar__dropdown::after {
+    rotate: 225deg;
+    translate: 0 25%;
+  }
+
+  > .#{c.$prefix}-menu:not([popover]) {
+    display: block;
+    position: absolute;
+    inset-block-start: calc(100% + var(--#{c.$prefix}-toolbar-dense-menu-offset));
+    inset-inline-start: var(--m3-space-none);
+    z-index: var(--m3-z-overlay);
+  }
+}
+
+// A choice's option: a hidden radio inside a <label> menu item.
+@mixin dense-option {
+  @include m.own-box;
+  display: block;
+  position: absolute;
+  opacity: var(--m3-opacity-hidden);
+  pointer-events: none;
+}
+
+// A choice's label span in the dropdown: shown for the checked option.
+@mixin dense-label {
+  @include m.own-region;
+  display: none;
+}
+
+// A color control: the swatch button plus its palette popover. The button's
+// color bar reads --m3-toolbar-swatch-color from here.
+@mixin dense-color {
+  @include m.own-box;
+  display: inline-flex;
+  align-items: center;
+}
+
+// The indicator follows the checked swatch: one rule per configured color.
+@mixin dense-color-sync {
+  $p: c.$prefix;
+  @each $group, $colors in c.$color-palette {
+    @for $i from 1 through list.length($colors) {
+      .#{$p}-toolbar__color:has(
+          .#{$p}-color-palette__#{$group} > .#{$p}-color-palette__swatch:nth-child(#{$i}) > :checked
+        ) {
+        --#{$p}-toolbar-swatch-color: #{list.nth($colors, $i)};
+      }
+    }
+  }
+
+  .#{$p}-toolbar__color:has(.#{$p}-color-palette__swatch--none > :checked) {
+    --#{$p}-toolbar-swatch-color: transparent;
+  }
+}
+
 // Priority collapse: container queries on the bar itself. The overflow
 // button is hidden while every group fits.
 @mixin dense-collapse {
@@ -663,5 +790,31 @@
     @include dense-spacer;
   }
 
+  .#{$p}-toolbar__choice {
+    @include dense-choice;
+  }
+
+  .#{$p}-toolbar__option {
+    @include dense-option;
+  }
+
+  .#{$p}-toolbar__label {
+    @include dense-label;
+  }
+
+  @include m.chosen-labels(
+    ".#{$p}-toolbar__choice",
+    ".#{$p}-menu",
+    ".#{$p}-menu__item",
+    ".#{$p}-toolbar__option",
+    ".#{$p}-toolbar__dropdown",
+    ".#{$p}-toolbar__label"
+  );
+
+  .#{$p}-toolbar__color {
+    @include dense-color;
+  }
+
+  @include dense-color-sync;
   @include dense-collapse;
 }

@@ -538,7 +538,8 @@ pure-CSS equivalent -- divergences are listed.
 | Icon buttons | `.m3-icon-btn` + variants, sizes `--xs/--small/--medium/--large/--xl`, `--square` | toggle state via `aria-pressed` |
 | Button groups | `.m3-button-group` + `--connected`, sizes `--xs..--xl`, `.m3-btn-check` hidden inputs | selected via `aria-pressed`, `.active`, or a checked `.m3-btn-check`; in a connected group an icon button's 48dp hit area keeps its block-axis overhang but stops at the seam |
 | Split button | `.m3-split-button` (`__action` + `__toggle` on `.m3-btn`) + `--tonal/--outlined/--elevated`, sizes `--xs/--medium/--large/--xl`; `__option` radios in `<label>` menu items + `__label` spans let the menu choose the leading action | two independently enabled buttons on one pill (spec paddings, seam corners, 48dp trailing half); the toggle is the `popovertarget` of a `.m3-menu[popover]`, and while it is open (or `aria-expanded="true"`) it morphs to a circle with a pressed state layer and its chevron flips |
-| Toolbar | `.m3-toolbar` + `--floating/--docked/--standard/--vibrant/--vertical/--fixed`; `--dense` editor bar with `__group` (+ `--priority-low/--priority-medium`), `__dropdown`, `__select`, `__stepper` + `__stepper-input`, `__swatch`, `__spacer`, `__more` | dense groups collapse through container queries on the bar; what the overflow menu lists is yours |
+| Toolbar | `.m3-toolbar` + `--floating/--docked/--standard/--vibrant/--vertical/--fixed`; `--dense` editor bar with `__group` (+ `--priority-low/--priority-medium`), `__dropdown`, `__choice` (+ `__option`/`__label`), `__select`, `__stepper` + `__stepper-input`, `__color` + `__swatch`, `__spacer`, `__more` | dense groups collapse through container queries on the bar; what the overflow menu lists is yours |
+| Color palette | `.m3-color-palette` on `[popover]` with `__label`, `__theme`/`__standard`/`__grid` groups of `__swatch` labels (hidden radios), `__swatch--none`, `__custom` (native color input) | swatch colors come from `$color-palette` by position; a toolbar swatch button's bar follows the checked swatch; the custom input's value needs script to reach the bar |
 | FAB / extended FAB | `.m3-fab` + `--small/--medium/--large/--extended/--fixed`, colors `--primary/--secondary/--tertiary/--surface` | -- |
 | FAB menu | `.m3-fab-menu` (`__fab` + `__items[popover]` of `__item`s) | opens through `popovertarget`; the FAB flips to its open look through `:has()`; anchored above the FAB where anchor positioning exists |
 | Loading indicator | `.m3-loading-indicator` + `--contained/--small/--large` | shape-morphing loader (build-time polygons, `clip-path`); static under reduced motion |
@@ -608,6 +609,37 @@ invoker, start-aligned, where anchor positioning exists. Select chevrons
 (`__select`, `.m3-select`, `.form-select`) point up while the native picker
 is showing, in browsers with `:open`.
 
+**Choices.** `__choice` wraps a `__dropdown` and a `.m3-menu` whose items are
+`<label>`s around `__option` radios; the checked option's `__label` span shows
+in the dropdown (the first while none is checked), the same zero-JS mechanism
+as the split button's option pattern. Two forms:
+
+- `<div class="m3-toolbar__choice">` with a `popovertarget` dropdown and a
+  `.m3-menu[popover]`: the Popover API opens it, the chevron flips through
+  `:has(+ .m3-menu:popover-open)`, and anchor positioning hangs it under the
+  dropdown (a centered popover where anchor positioning is missing).
+- `<details class="m3-toolbar__choice">` with a `<summary class="m3-toolbar__dropdown">`
+  and a plain `.m3-menu`: the disclosure opens and closes it, `[open]` flips
+  the chevron, and the menu drops below it as an absolutely positioned box.
+  This form needs only `<details>` and `:has()`, so it behaves the same in
+  Firefox, Safari and Chromium; give sibling choices the same `name` so
+  opening one closes the others. Menus past the `__spacer` align to the end.
+
+A native `__select` keeps the operating-system picker and the best keyboard
+and touch behavior, but its chevron can only flip through `:open`, which
+Chromium has and Firefox and Safari do not yet. Pick the `<details>` choice
+when the flip matters everywhere.
+
+**Colors.** `__color` wraps a `__swatch` button (its `popovertarget`) and a
+`.m3-color-palette` popover. The bar under the icon follows the checked
+swatch: the palette's `__theme` and `__standard` groups are painted by
+position from the `$color-palette` Sass map, and the same map emits one
+`:has()` rule per color on the wrapper, so the markup carries no colors. A
+`__swatch--none` swatch clears the bar; the `__custom` swatch is a native
+color input that shows its own value but cannot reach the bar without script.
+Picking a swatch leaves the popover open until light dismiss, because labels
+are not popover invokers.
+
 Priority collapse is CSS-only: the bar is a container-query context, groups
 marked `__group--priority-low` hide below the `"low"` width and
 `__group--priority-medium` below `"medium"`, and `__more` shows once the first
@@ -646,6 +678,7 @@ no `@import`).
   $container-max-widths: (...),    // sm 540px / ... / xxl 1320px
   $grid-columns: 12,
   $toolbar-dense-collapse: ("low": 68rem, "medium": 56rem), // dense toolbar collapse widths
+  $color-palette: ("theme": (...), "standard": (...)), // palette swatches by position
   $bootstrap-reskin-scope: null,   // e.g. "[data-m3]" for migration zones
   $emit-layer-statement: true,     // suppress if you own the layer order
   $components: (...)               // prune the catalog; default: all

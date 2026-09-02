@@ -246,22 +246,15 @@
 
 @mixin selection($max: 8) {
   $p: c.$prefix;
-
-  .#{$p}-split-button:not(:has(.#{$p}-split-button__option:checked))
-    > .#{$p}-split-button__action
-    > .#{$p}-split-button__label:first-of-type {
-    display: inline;
-  }
-
-  @for $i from 1 through $max {
-    .#{$p}-split-button:has(
-        > .#{$p}-menu > .#{$p}-menu__item:nth-of-type(#{$i}) > .#{$p}-split-button__option:checked
-      )
-      > .#{$p}-split-button__action
-      > .#{$p}-split-button__label:nth-of-type(#{$i}) {
-      display: inline;
-    }
-  }
+  @include m.chosen-labels(
+    ".#{$p}-split-button",
+    ".#{$p}-menu",
+    ".#{$p}-menu__item",
+    ".#{$p}-split-button__option",
+    ".#{$p}-split-button__action",
+    ".#{$p}-split-button__label",
+    $max
+  );
 }
 
 // Variants re-point the filled button tokens both halves read by default.

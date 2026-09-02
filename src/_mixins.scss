@@ -104,6 +104,28 @@
   pointer-events: none;
 }
 
+// --- menu-chosen labels (zero JS) -------------------------------------------
+
+// The n-th checked option in a menu reveals the n-th label span in a target,
+// the first label standing in while none is checked. Structure:
+//   root > menu > item(nth-of-type) > option:checked
+//   root > target > label(nth-of-type)
+// Hidden radios in <label> items are the options; spans in the target are the
+// labels. Emitted per index up to $max.
+@mixin chosen-labels($root, $menu, $item, $option, $target, $label, $max: 8) {
+  #{$root}:not(:has(#{$option}:checked)) > #{$target} > #{$label}:first-of-type {
+    display: inline;
+  }
+
+  @for $i from 1 through $max {
+    #{$root}:has(> #{$menu} > #{$item}:nth-of-type(#{$i}) > #{$option}:checked)
+      > #{$target}
+      > #{$label}:nth-of-type(#{$i}) {
+      display: inline;
+    }
+  }
+}
+
 // --- focus ------------------------------------------------------------------
 
 // M3 focus indicator: tokenized thickness + offset, secondary role color.
