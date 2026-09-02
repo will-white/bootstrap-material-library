@@ -8,6 +8,9 @@
 //   --m3-progress-value             0                          unitless 0-100
 //   --m3-progress-circle-size       48px                       circle / spinner box
 //   --m3-progress-circle-thickness  4px                        ring / border width
+//   --m3-progress-wave-amplitude    3px    wavy variants: wave rise above /
+//                                          below the rail (and scallop radius)
+//   --m3-progress-wave-wavelength   24px   wavy linear: one crest + one trough
 //
 // Markup:
 //   <div class="m3-progress" role="progressbar" aria-valuenow="60"
@@ -20,6 +23,21 @@
 //   <div class="m3-progress-circle" role="progressbar"
 //        style="--m3-progress-value: 60"></div>
 //   <div class="m3-spinner" role="status"></div>
+//   <div class="m3-progress m3-progress--wavy" role="progressbar"
+//        aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+//        style="--m3-progress-value: 60">
+//     <div class="m3-progress__bar"></div>
+//   </div>
+//   <div class="m3-progress-circle m3-progress-circle--wavy" role="progressbar"
+//        style="--m3-progress-value: 60"></div>
+//
+// Wavy variants (M3 Expressive): --wavy on the linear track masks the bar to
+// a wave of circular arcs (amplitude and wavelength tokens; the stroke keeps
+// the thickness token) that scrolls under no-preference; --wavy on the circle
+// is a static gentle scallop (12 bumps of the amplitude radius on the ring's
+// outer edge, count fixed at build time) -- a CSS-only stand-in for the
+// spec's wavy arc. Combining --wavy with --indeterminate keeps the sweep
+// (the wave squashes with the sweep's scaleX).
 //
 // Setting the determinate value: either set the custom property
 // (style="--m3-progress-value: 60") or give the bar an inline width
@@ -30,6 +48,8 @@
 // track, the spinner shows a static arc, and the pulse shows a static disc.
 // ============================================================================
 
+@use "sass:list";
+@use "sass:math";
 @use "../config" as c;
 @use "../functions" as fn;
 @use "../mixins" as m;
@@ -41,6 +61,8 @@
   --#{c.$prefix}-progress-value: 0;
   --#{c.$prefix}-progress-circle-size: #{fn.rem(48)};
   --#{c.$prefix}-progress-circle-thickness: #{fn.rem(4)};
+  --#{c.$prefix}-progress-wave-amplitude: #{fn.rem(3)};
+  --#{c.$prefix}-progress-wave-wavelength: #{fn.rem(24)};
 }
 
 // Linear track: thin rounded rail that clips the bar.
@@ -57,6 +79,7 @@
 // width, which wins the cascade -- see header).
 @mixin linear-bar {
   @include m.own-box;
+  color: var(--#{c.$prefix}-progress-color); // the wavy mask stops resolve from currentColor
   display: block;
   block-size: 100%;
   border-radius: inherit;
@@ -172,6 +195,142 @@
   }
 }
 
+// --- wavy variants (M3 Expressive) --------------------------------------------
+
+// Wavy linear track: grows by twice the amplitude so the wave has room, and
+// paints its rail as a centered band of the track color instead of filling.
+@mixin linear-wavy-track {
+  block-size: calc(
+    var(--#{c.$prefix}-progress-thickness) +
+      2 * var(--#{c.$prefix}-progress-wave-amplitude)
+  );
+  background-color: transparent;
+  background-image: linear-gradient(
+    var(--#{c.$prefix}-progress-track-color),
+    var(--#{c.$prefix}-progress-track-color)
+  );
+  background-size: 100% var(--#{c.$prefix}-progress-thickness);
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+// Wavy bar: fills the taller track and is masked to a wave built from two
+// rows of circular arcs (crests tiled on the top half, troughs on the bottom
+// half; each arc spans half a wavelength with the amplitude as its sagitta),
+// so the stroke keeps the thickness token everywhere. The arc radius follows
+// from chord and sagitta through CSS trigonometry: with half-chord c and
+// sagitta a, tan(theta/2) = a/c and r = c / sin(theta). Under no-preference
+// the mask scrolls one wavelength per cycle; the static wave is the
+// reduced-motion rendering. currentColor is only the opaque mask stop.
+@mixin linear-wavy-bar {
+  $amp: var(--#{c.$prefix}-progress-wave-amplitude);
+  $wl: var(--#{c.$prefix}-progress-wave-wavelength);
+  $ring: (
+    transparent calc(var(--_wave-inner) - var(--m3-stroke-hairline)),
+    currentColor var(--_wave-inner),
+    currentColor var(--_wave-outer),
+    transparent calc(var(--_wave-outer) + var(--m3-stroke-hairline))
+  );
+  $crest: radial-gradient(
+    circle var(--_wave-radius) at 25% calc(100% + var(--_wave-center)),
+    $ring
+  );
+  $trough: radial-gradient(
+    circle var(--_wave-radius) at 75% calc(-1 * var(--_wave-center)),
+    $ring
+  );
+
+  --_wave-radius: calc(#{$wl} / 4 / sin(2 * atan2(#{$amp}, #{$wl} / 4)));
+  --_wave-center: calc(var(--_wave-radius) - #{$amp});
+  --_wave-half: calc(#{$amp} + var(--#{c.$prefix}-progress-thickness) / 2);
+  --_wave-inner: calc(
+    var(--_wave-radius) - var(--#{c.$prefix}-progress-thickness) / 2
+  );
+  --_wave-outer: calc(
+    var(--_wave-radius) + var(--#{c.$prefix}-progress-thickness) / 2
+  );
+  border-radius: var(--md-sys-shape-corner-none);
+  -webkit-mask-image: $crest, $trough;
+  mask-image: $crest, $trough;
+  -webkit-mask-size: #{$wl} var(--_wave-half);
+  mask-size: #{$wl} var(--_wave-half);
+  -webkit-mask-position: 0 0, 0 100%;
+  mask-position: 0 0, 0 100%;
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes #{c.$prefix}-progress-wave {
+      to {
+        -webkit-mask-position: #{$wl} 0, #{$wl} 100%;
+        mask-position: #{$wl} 0, #{$wl} 100%;
+      }
+    }
+
+    animation: #{c.$prefix}-progress-wave
+      var(--md-sys-motion-duration-extra-long4)
+      var(--md-sys-motion-easing-linear) infinite;
+  }
+}
+
+// Wavy + indeterminate: the sweep and the wave scroll run together (both
+// keyframe sets are declared by the mixins above).
+@mixin linear-wavy-indeterminate {
+  @media (prefers-reduced-motion: no-preference) {
+    animation:
+      #{c.$prefix}-progress-slide
+        var(--md-sys-motion-duration-extra-long2)
+        var(--md-sys-motion-easing-standard) infinite,
+      #{c.$prefix}-progress-wave
+        var(--md-sys-motion-duration-extra-long4)
+        var(--md-sys-motion-easing-linear) infinite;
+  }
+}
+
+// Wavy circle, approximated as a gentle scallop: the ring is inset by the
+// amplitude and $-scallops bumps of that radius ride its outer edge, one
+// mask layer each with build-time positions. Static (a mask cannot turn
+// independently of the conic fill); the value reads through it as usual.
+$-scallops: 12;
+
+@function -round4($n) {
+  @return math.div(math.round($n * 10000), 10000);
+}
+
+@mixin circular-wavy {
+  $amp: var(--#{c.$prefix}-progress-wave-amplitude);
+  $thick: var(--#{c.$prefix}-progress-circle-thickness);
+  $layers: (
+    radial-gradient(
+      farthest-side,
+      transparent calc(100% - #{$amp} - #{$thick} - var(--m3-stroke-hairline)),
+      currentColor calc(100% - #{$amp} - #{$thick}),
+      currentColor calc(100% - #{$amp}),
+      transparent calc(100% - #{$amp} + var(--m3-stroke-hairline))
+    ),
+  );
+  @for $i from 0 to $-scallops {
+    $angle: math.div(360 * $i, $-scallops) * 1deg;
+    $cx: -round4(math.cos($angle));
+    $cy: -round4(math.sin($angle));
+    $layers: list.append(
+      $layers,
+      radial-gradient(
+        circle #{$amp} at calc(50% + #{$cx} * (50% - #{$amp}))
+          calc(50% + #{$cy} * (50% - #{$amp})),
+        currentColor calc(100% - var(--m3-stroke-hairline)),
+        transparent 100%
+      ),
+      comma
+    );
+  }
+
+  -webkit-mask-image: $layers;
+  mask-image: $layers;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
 @mixin classes {
   $p: c.$prefix;
 
@@ -187,8 +346,24 @@
     @include linear-indeterminate;
   }
 
+  .#{$p}-progress--wavy {
+    @include linear-wavy-track;
+  }
+
+  .#{$p}-progress--wavy .#{$p}-progress__bar {
+    @include linear-wavy-bar;
+  }
+
+  .#{$p}-progress--wavy.#{$p}-progress--indeterminate .#{$p}-progress__bar {
+    @include linear-wavy-indeterminate;
+  }
+
   .#{$p}-progress-circle {
     @include circular;
+  }
+
+  .#{$p}-progress-circle--wavy {
+    @include circular-wavy;
   }
 
   .#{$p}-spinner {

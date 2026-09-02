@@ -528,10 +528,12 @@ pure-CSS equivalent -- divergences are listed.
 | Button groups | `.m3-button-group` + `--connected`, sizes `--xs..--xl`, `.m3-btn-check` hidden inputs | selected via `aria-pressed`, `.active`, or a checked `.m3-btn-check` |
 | Split button | `.m3-split-button` (`__action` + `__toggle` on `.m3-btn`) + `--tonal/--outlined/--elevated` | the toggle is the `popovertarget` of a `.m3-menu[popover]`; the chevron flips through `:has()` |
 | Toolbar | `.m3-toolbar` + `--floating/--docked/--standard/--vibrant/--vertical/--fixed` | -- |
-| FAB / extended FAB | `.m3-fab` + `--small/--large/--extended/--fixed` | -- |
+| FAB / extended FAB | `.m3-fab` + `--small/--medium/--large/--extended/--fixed`, colors `--primary/--secondary/--tertiary/--surface` | -- |
+| FAB menu | `.m3-fab-menu` (`__fab` + `__items[popover]` of `__item`s) | opens through `popovertarget`; the FAB flips to its open look through `:has()`; anchored above the FAB where anchor positioning exists |
+| Loading indicator | `.m3-loading-indicator` + `--contained/--small/--large` | shape-morphing loader (build-time polygons, `clip-path`); static under reduced motion |
 | Segmented buttons | `.m3-segmented` on real radios/checkboxes | -- |
 | Badges | `.m3-badge`, `--dot`, `.m3-badge-anchor` | -- |
-| Progress | `.m3-progress`, `.m3-progress-circle`, `.m3-spinner` | value via `--m3-progress-value` |
+| Progress | `.m3-progress`, `.m3-progress-circle`, `.m3-spinner`, `--wavy` variants | value via `--m3-progress-value` |
 | Snackbar | `.m3-snackbar` (+ `--fixed`) | show/hide timing is yours |
 | Tooltips | `.m3-tooltip`, `--rich`, `.m3-tooltip-anchor` | anchor positioning behind `@supports`, hidden gracefully otherwise |
 | Cards | `.m3-card` + variants, donut-scoped chrome | -- |

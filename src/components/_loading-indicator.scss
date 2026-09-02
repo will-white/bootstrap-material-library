@@ -1,0 +1,186 @@
+// ============================================================================
+// m3x loading indicator (M3 Expressive): an indeterminate loader whose
+// active indicator is a solid shape that morphs (rounded square -> four-lobe
+// flower -> circle -> three-lobe clover -> ...) while turning slowly. Drawn
+// with background: currentColor clipped by an animated clip-path polygon;
+// every keyframe polygon has the same vertex count so the browser
+// interpolates the morph. Under prefers-reduced-motion: reduce it is a
+// static rounded square.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-loading-indicator-size               48px        box (and shape) size
+//   --m3-loading-indicator-size-small         32px        .m3-loading-indicator--small
+//   --m3-loading-indicator-size-large         64px        .m3-loading-indicator--large
+//   --m3-loading-indicator-color              primary     shape color
+//   --m3-loading-indicator-container-color    primary-container     --contained surface
+//   --m3-loading-indicator-contained-color    on-primary-container  --contained shape
+//   --m3-loading-indicator-container-shape    corner-full  --contained radius
+//   --m3-loading-indicator-container-padding  5px          --contained inset
+//                                                          (48px box -> 38px shape)
+//   --m3-loading-indicator-cycle              4 x extra-long4 (4000ms)  one full
+//                                                          morph loop and one turn
+//
+// Markup (indeterminate: no aria-valuenow; always an accessible name):
+//   <div class="m3-loading-indicator" role="progressbar" aria-label="Loading"></div>
+//   <div class="m3-loading-indicator m3-loading-indicator--contained"
+//        role="progressbar" aria-label="Loading"></div>
+//   <div class="m3-loading-indicator m3-loading-indicator--large"
+//        role="progressbar" aria-label="Loading"></div>
+// ============================================================================
+
+@use "sass:list";
+@use "sass:math";
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+@mixin tokens {
+  --#{c.$prefix}-loading-indicator-size: #{fn.rem(48)};
+  --#{c.$prefix}-loading-indicator-size-small: #{fn.rem(32)};
+  --#{c.$prefix}-loading-indicator-size-large: #{fn.rem(64)};
+  --#{c.$prefix}-loading-indicator-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-loading-indicator-container-color: var(--md-sys-color-primary-container);
+  --#{c.$prefix}-loading-indicator-contained-color: var(--md-sys-color-on-primary-container);
+  --#{c.$prefix}-loading-indicator-container-shape: var(--md-sys-shape-corner-full);
+  --#{c.$prefix}-loading-indicator-container-padding: #{fn.rem(5)};
+  --#{c.$prefix}-loading-indicator-cycle: calc(var(--md-sys-motion-duration-extra-long4) * 4);
+}
+
+// --- shape geometry (build time) ---------------------------------------------
+// Each shape is a polygon of $-vertices points sampled at fixed angles; only
+// the polar radius (in % of the box, max 50) differs per shape, so the
+// clip-path morph moves every vertex radially and stays smooth.
+$-vertices: 24;
+
+@function -round($n) {
+  @return math.div(math.round($n * 100), 100);
+}
+
+// Polar radius of one shape at $deg (unitless degrees).
+@function -radius($shape, $deg) {
+  $a: $deg * 1deg;
+  @if $shape == "square" {
+    // Squircle (superellipse, exponent 4): flat sides, soft corners.
+    $d: math.pow(math.abs(math.cos($a)), 4) + math.pow(math.abs(math.sin($a)), 4);
+    @return math.div(42, math.pow($d, 0.25));
+  } @else if $shape == "flower" {
+    @return 37 + 11 * math.cos(4 * $a);
+  } @else if $shape == "circle" {
+    @return 46;
+  } @else {
+    // "clover": three lobes.
+    @return 37 + 11 * math.cos(3 * $a);
+  }
+}
+
+// polygon(...) for one shape, vertices in % of the box.
+@function -shape($shape) {
+  $points: ();
+  @for $i from 0 to $-vertices {
+    $deg: math.div(360 * $i, $-vertices);
+    $r: -radius($shape, $deg);
+    $x: -round(50 + $r * math.cos($deg * 1deg)) * 1%;
+    $y: -round(50 + $r * math.sin($deg * 1deg)) * 1%;
+    $points: list.append($points, #{$x} #{$y}, comma);
+  }
+  @return polygon(#{$points});
+}
+
+// Root: the box (and, when contained, the container). The shape is the
+// ::before so a container can sit behind it; the padding private is the
+// contained inset and is none by default.
+@mixin root {
+  @include m.own-box;
+  @include m.typescale("body-medium"); // text-less, but its ::before inherits the font
+  --_container: transparent;
+  --_content: var(--#{c.$prefix}-loading-indicator-color);
+  --_padding: var(--m3-space-none);
+
+  display: inline-block;
+  inline-size: var(--#{c.$prefix}-loading-indicator-size);
+  block-size: var(--#{c.$prefix}-loading-indicator-size);
+  padding: var(--_padding);
+  border-radius: var(--#{c.$prefix}-loading-indicator-container-shape);
+  background-color: var(--_container);
+  color: var(--_content);
+  vertical-align: middle;
+
+  &::before {
+    @include m.own-pseudo;
+    content: "";
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    background: currentColor;
+    clip-path: -shape("square");
+
+    @media (prefers-reduced-motion: no-preference) {
+      @keyframes #{c.$prefix}-loading-indicator-morph {
+        0% {
+          clip-path: -shape("square");
+        }
+        25% {
+          clip-path: -shape("flower");
+        }
+        50% {
+          clip-path: -shape("circle");
+        }
+        75% {
+          clip-path: -shape("clover");
+        }
+        100% {
+          clip-path: -shape("square");
+        }
+      }
+
+      @keyframes #{c.$prefix}-loading-indicator-turn {
+        to {
+          rotate: 1turn;
+        }
+      }
+
+      animation:
+        #{c.$prefix}-loading-indicator-morph
+          var(--#{c.$prefix}-loading-indicator-cycle)
+          var(--md-sys-motion-easing-emphasized) infinite,
+        #{c.$prefix}-loading-indicator-turn
+          var(--#{c.$prefix}-loading-indicator-cycle)
+          var(--md-sys-motion-easing-linear) infinite;
+    }
+  }
+}
+
+// Contained: a tonal circle behind the shape, shape in the on-container role.
+@mixin contained {
+  --_container: var(--#{c.$prefix}-loading-indicator-container-color);
+  --_content: var(--#{c.$prefix}-loading-indicator-contained-color);
+  --_padding: var(--#{c.$prefix}-loading-indicator-container-padding);
+}
+
+@mixin small {
+  --#{c.$prefix}-loading-indicator-size: var(--#{c.$prefix}-loading-indicator-size-small);
+}
+
+@mixin large {
+  --#{c.$prefix}-loading-indicator-size: var(--#{c.$prefix}-loading-indicator-size-large);
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-loading-indicator {
+    @include root;
+  }
+
+  .#{$p}-loading-indicator--contained {
+    @include contained;
+  }
+
+  .#{$p}-loading-indicator--small {
+    @include small;
+  }
+
+  .#{$p}-loading-indicator--large {
+    @include large;
+  }
+}

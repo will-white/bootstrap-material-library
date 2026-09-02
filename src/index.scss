@@ -45,6 +45,13 @@
 @forward "components/text-field" as field-*;
 @forward "components/search" as search-*;
 @forward "components/select" as select-*;
+@forward "components/toolbar" as toolbar-*;
+@forward "components/button-group" as button-group-*;
+@forward "components/split-button" as split-button-*;
+@forward "components/fab-menu" as fab-menu-*;
+@forward "components/loading-indicator" as loading-indicator-*;
+@forward "components/date-picker" as date-picker-*;
+@forward "components/time-picker" as time-picker-*;
 
 // --- internal wiring ---------------------------------------------------------
 @use "sass:list";
@@ -99,6 +106,13 @@
 @use "components/text-field";
 @use "components/search";
 @use "components/select";
+@use "components/toolbar";
+@use "components/button-group";
+@use "components/split-button";
+@use "components/fab-menu";
+@use "components/loading-indicator";
+@use "components/date-picker";
+@use "components/time-picker";
 
 @function -on($name) {
   @return list.index(c.$components, $name) != null;
@@ -238,6 +252,27 @@
     }
     @if -tokens-on("select") {
       @include select.tokens;
+    }
+    @if -tokens-on("toolbar") {
+      @include toolbar.tokens;
+    }
+    @if -tokens-on("button-group") {
+      @include button-group.tokens;
+    }
+    @if -tokens-on("split-button") {
+      @include split-button.tokens;
+    }
+    @if -tokens-on("fab-menu") {
+      @include fab-menu.tokens;
+    }
+    @if -tokens-on("loading-indicator") {
+      @include loading-indicator.tokens;
+    }
+    @if -tokens-on("date-picker") {
+      @include date-picker.tokens;
+    }
+    @if -tokens-on("time-picker") {
+      @include time-picker.tokens;
     }
   }
 
@@ -390,6 +425,27 @@ m.$ownership: "collect";
   }
   @if -on("select") {
     @include select.classes;
+  }
+  @if -on("toolbar") {
+    @include toolbar.classes;
+  }
+  @if -on("button-group") {
+    @include button-group.classes;
+  }
+  @if -on("split-button") {
+    @include split-button.classes;
+  }
+  @if -on("fab-menu") {
+    @include fab-menu.classes;
+  }
+  @if -on("loading-indicator") {
+    @include loading-indicator.classes;
+  }
+  @if -on("date-picker") {
+    @include date-picker.classes;
+  }
+  @if -on("time-picker") {
+    @include time-picker.classes;
   }
   }
 

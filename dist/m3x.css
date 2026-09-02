@@ -854,13 +854,22 @@
     --m3-icon-btn-outlined-selected-color: var(--md-sys-color-inverse-on-surface);
     --m3-fab-size: 3.5rem;
     --m3-fab-size-small: 2.5rem;
+    --m3-fab-size-medium: 5rem;
     --m3-fab-size-large: 6rem;
     --m3-fab-shape: var(--md-sys-shape-corner-large);
     --m3-fab-shape-small: var(--md-sys-shape-corner-medium);
+    --m3-fab-shape-medium: var(--md-sys-shape-corner-large);
     --m3-fab-shape-large: var(--md-sys-shape-corner-extra-large);
     --m3-fab-container-color: var(--md-sys-color-primary-container);
     --m3-fab-content-color: var(--md-sys-color-on-primary-container);
+    --m3-fab-secondary-container-color: var(--md-sys-color-secondary-container);
+    --m3-fab-secondary-content-color: var(--md-sys-color-on-secondary-container);
+    --m3-fab-tertiary-container-color: var(--md-sys-color-tertiary-container);
+    --m3-fab-tertiary-content-color: var(--md-sys-color-on-tertiary-container);
+    --m3-fab-surface-container-color: var(--md-sys-color-surface-container-high);
+    --m3-fab-surface-content-color: var(--md-sys-color-primary);
     --m3-fab-icon-size: var(--m3-icon-size);
+    --m3-fab-icon-size-medium: 1.75rem;
     --m3-fab-icon-size-large: 2.25rem;
     --m3-fab-padding-inline: var(--m3-space-4);
     --m3-fab-icon-gap: var(--m3-space-2);
@@ -883,6 +892,8 @@
     --m3-progress-value: 0;
     --m3-progress-circle-size: 3rem;
     --m3-progress-circle-thickness: 0.25rem;
+    --m3-progress-wave-amplitude: 0.1875rem;
+    --m3-progress-wave-wavelength: 1.5rem;
     --m3-snackbar-container-color: var(--md-sys-color-inverse-surface);
     --m3-snackbar-content-color: var(--md-sys-color-inverse-on-surface);
     --m3-snackbar-action-color: var(--md-sys-color-inverse-primary);
@@ -1045,6 +1056,92 @@
     --m3-search-panel-shape: var(--md-sys-shape-corner-medium);
     --m3-select-chevron-size: 0.375rem;
     --m3-select-padding-end: var(--m3-space-7);
+    --m3-toolbar-container-color: var(--md-sys-color-surface-container);
+    --m3-toolbar-content-color: var(--md-sys-color-on-surface);
+    --m3-toolbar-vibrant-container-color: var(--md-sys-color-primary-container);
+    --m3-toolbar-vibrant-content-color: var(--md-sys-color-on-primary-container);
+    --m3-toolbar-shape: var(--md-sys-shape-corner-full);
+    --m3-toolbar-docked-shape: var(--md-sys-shape-corner-large);
+    --m3-toolbar-height: 4rem;
+    --m3-toolbar-gap: var(--m3-space-1);
+    --m3-toolbar-padding: var(--m3-space-2);
+    --m3-toolbar-docked-padding-inline: var(--m3-space-4);
+    --m3-toolbar-fixed-offset: var(--m3-space-4);
+    --m3-button-group-gap: var(--m3-space-2);
+    --m3-button-group-connected-gap: 0.125rem;
+    --m3-button-group-shape: var(--md-sys-shape-corner-full);
+    --m3-button-group-inner-shape: var(--md-sys-shape-corner-small);
+    --m3-button-group-selected-shape: var(--md-sys-shape-corner-full);
+    --m3-button-group-selected-container-color: var(--md-sys-color-primary);
+    --m3-button-group-selected-label-color: var(--md-sys-color-on-primary);
+    --m3-split-button-gap: 0.125rem;
+    --m3-split-button-inner-shape: var(--md-sys-shape-corner-small);
+    --m3-split-button-toggle-padding-inline: var(--m3-space-3);
+    --m3-split-button-chevron-size: var(--m3-chevron-size);
+    --m3-split-button-menu-offset: var(--m3-space-1);
+    --m3-fab-menu-item-height: 3.5rem;
+    --m3-fab-menu-item-shape: var(--md-sys-shape-corner-full);
+    --m3-fab-menu-item-container-color: var(--md-sys-color-primary-container);
+    --m3-fab-menu-item-content-color: var(--md-sys-color-on-primary-container);
+    --m3-fab-menu-item-padding-inline: var(--m3-space-4);
+    --m3-fab-menu-item-icon-gap: var(--m3-space-2);
+    --m3-fab-menu-item-icon-size: var(--m3-icon-size);
+    --m3-fab-menu-gap: var(--m3-space-1);
+    --m3-fab-menu-offset: var(--m3-space-2);
+    --m3-fab-menu-open-container-color: var(--md-sys-color-primary);
+    --m3-fab-menu-open-content-color: var(--md-sys-color-on-primary);
+    --m3-loading-indicator-size: 3rem;
+    --m3-loading-indicator-size-small: 2rem;
+    --m3-loading-indicator-size-large: 4rem;
+    --m3-loading-indicator-color: var(--md-sys-color-primary);
+    --m3-loading-indicator-container-color: var(--md-sys-color-primary-container);
+    --m3-loading-indicator-contained-color: var(--md-sys-color-on-primary-container);
+    --m3-loading-indicator-container-shape: var(--md-sys-shape-corner-full);
+    --m3-loading-indicator-container-padding: 0.3125rem;
+    --m3-loading-indicator-cycle: calc(var(--md-sys-motion-duration-extra-long4) * 4);
+    --m3-date-picker-container-color: var(--md-sys-color-surface-container-high);
+    --m3-date-picker-content-color: var(--md-sys-color-on-surface);
+    --m3-date-picker-shape: var(--md-sys-shape-corner-large);
+    --m3-date-picker-width: 22.5rem;
+    --m3-date-picker-modal-width: 20.5rem;
+    --m3-date-picker-padding: var(--m3-space-3);
+    --m3-date-picker-header-height: 7.5rem;
+    --m3-date-picker-cell-size: 3rem;
+    --m3-date-picker-day-size: 2.5rem;
+    --m3-date-picker-day-shape: var(--md-sys-shape-corner-full);
+    --m3-date-picker-day-color: var(--md-sys-color-on-surface);
+    --m3-date-picker-weekday-color: var(--md-sys-color-on-surface);
+    --m3-date-picker-outside-color: var(--md-sys-color-on-surface-variant);
+    --m3-date-picker-today-color: var(--md-sys-color-primary);
+    --m3-date-picker-selected-container-color: var(--md-sys-color-primary);
+    --m3-date-picker-selected-color: var(--md-sys-color-on-primary);
+    --m3-date-picker-range-container-color: var(--md-sys-color-secondary-container);
+    --m3-date-picker-range-color: var(--md-sys-color-on-secondary-container);
+    --m3-date-picker-menu-color: var(--md-sys-color-on-surface-variant);
+    --m3-date-picker-supporting-color: var(--md-sys-color-on-surface-variant);
+    --m3-date-picker-headline-color: var(--md-sys-color-on-surface);
+    --m3-date-picker-divider-color: var(--md-sys-color-outline-variant);
+    --m3-time-picker-container-color: var(--md-sys-color-surface-container-high);
+    --m3-time-picker-content-color: var(--md-sys-color-on-surface);
+    --m3-time-picker-shape: var(--md-sys-shape-corner-extra-large);
+    --m3-time-picker-padding: var(--m3-space-6);
+    --m3-time-picker-label-color: var(--md-sys-color-on-surface-variant);
+    --m3-time-picker-field-width: 6rem;
+    --m3-time-picker-field-height: 4.5rem;
+    --m3-time-picker-field-shape: var(--md-sys-shape-corner-small);
+    --m3-time-picker-field-container-color: var(--md-sys-color-surface-container-highest);
+    --m3-time-picker-field-color: var(--md-sys-color-on-surface);
+    --m3-time-picker-field-selected-container-color: var(--md-sys-color-primary-container);
+    --m3-time-picker-field-selected-color: var(--md-sys-color-on-primary-container);
+    --m3-time-picker-hint-color: var(--md-sys-color-on-surface-variant);
+    --m3-time-picker-separator-color: var(--md-sys-color-on-surface);
+    --m3-time-picker-period-width: 3.25rem;
+    --m3-time-picker-period-shape: var(--md-sys-shape-corner-small);
+    --m3-time-picker-period-outline-color: var(--md-sys-color-outline);
+    --m3-time-picker-period-outline-width: var(--m3-stroke-hairline);
+    --m3-time-picker-period-label-color: var(--md-sys-color-on-surface-variant);
+    --m3-time-picker-period-selected-container-color: var(--md-sys-color-tertiary-container);
+    --m3-time-picker-period-selected-label-color: var(--md-sys-color-on-tertiary-container);
   }
   :root {
     --md-sys-color-primary: var(
@@ -4468,6 +4565,7 @@
       overflow: visible;
     }
     .progress-bar {
+      color: var(--m3-progress-color);
       display: block;
       block-size: 100%;
       border-radius: inherit;
@@ -8211,6 +8309,16 @@
       width: max(100%, var(--m3-target-size));
       height: max(100%, var(--m3-target-size));
     }
+    .m3-fab--medium {
+      height: calc(var(--m3-fab-size-medium) + var(--m3-density) * var(--m3-density-step));
+      width: calc(var(--m3-fab-size-medium) + var(--m3-density) * var(--m3-density-step));
+      border-radius: var(--m3-fab-shape-medium);
+    }
+    .m3-fab--medium > svg,
+    .m3-fab--medium > img {
+      inline-size: var(--m3-fab-icon-size-medium);
+      block-size: var(--m3-fab-icon-size-medium);
+    }
     .m3-fab--large {
       height: calc(var(--m3-fab-size-large) + var(--m3-density) * var(--m3-density-step));
       width: calc(var(--m3-fab-size-large) + var(--m3-density) * var(--m3-density-step));
@@ -8220,6 +8328,22 @@
     .m3-fab--large > img {
       inline-size: var(--m3-fab-icon-size-large);
       block-size: var(--m3-fab-icon-size-large);
+    }
+    .m3-fab--primary {
+      --_container: var(--m3-fab-container-color);
+      --_content: var(--m3-fab-content-color);
+    }
+    .m3-fab--secondary {
+      --_container: var(--m3-fab-secondary-container-color);
+      --_content: var(--m3-fab-secondary-content-color);
+    }
+    .m3-fab--tertiary {
+      --_container: var(--m3-fab-tertiary-container-color);
+      --_content: var(--m3-fab-tertiary-content-color);
+    }
+    .m3-fab--surface {
+      --_container: var(--m3-fab-surface-container-color);
+      --_content: var(--m3-fab-surface-content-color);
     }
     .m3-fab--extended {
       width: auto;
@@ -8410,6 +8534,7 @@
       overflow: clip;
     }
     .m3-progress__bar {
+      color: var(--m3-progress-color);
       display: block;
       block-size: 100%;
       border-radius: inherit;
@@ -8436,6 +8561,50 @@
         animation: m3-progress-slide var(--md-sys-motion-duration-extra-long2) var(--md-sys-motion-easing-standard) infinite;
       }
     }
+    .m3-progress--wavy {
+      block-size: calc(var(--m3-progress-thickness) + 2 * var(--m3-progress-wave-amplitude));
+      background-color: transparent;
+      background-image: linear-gradient(var(--m3-progress-track-color), var(--m3-progress-track-color));
+      background-size: 100% var(--m3-progress-thickness);
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .m3-progress--wavy .m3-progress__bar {
+      --_wave-radius: calc(var(--m3-progress-wave-wavelength) / 4 / sin(2 * atan2(var(--m3-progress-wave-amplitude), var(--m3-progress-wave-wavelength) / 4)));
+      --_wave-center: calc(var(--_wave-radius) - var(--m3-progress-wave-amplitude));
+      --_wave-half: calc(var(--m3-progress-wave-amplitude) + var(--m3-progress-thickness) / 2);
+      --_wave-inner: calc(
+        var(--_wave-radius) - var(--m3-progress-thickness) / 2
+      );
+      --_wave-outer: calc(
+        var(--_wave-radius) + var(--m3-progress-thickness) / 2
+      );
+      border-radius: var(--md-sys-shape-corner-none);
+      -webkit-mask-image: radial-gradient(circle var(--_wave-radius) at 25% calc(100% + var(--_wave-center)), transparent calc(var(--_wave-inner) - var(--m3-stroke-hairline)), currentColor var(--_wave-inner), currentColor var(--_wave-outer), transparent calc(var(--_wave-outer) + var(--m3-stroke-hairline))), radial-gradient(circle var(--_wave-radius) at 75% calc(-1 * var(--_wave-center)), transparent calc(var(--_wave-inner) - var(--m3-stroke-hairline)), currentColor var(--_wave-inner), currentColor var(--_wave-outer), transparent calc(var(--_wave-outer) + var(--m3-stroke-hairline)));
+      mask-image: radial-gradient(circle var(--_wave-radius) at 25% calc(100% + var(--_wave-center)), transparent calc(var(--_wave-inner) - var(--m3-stroke-hairline)), currentColor var(--_wave-inner), currentColor var(--_wave-outer), transparent calc(var(--_wave-outer) + var(--m3-stroke-hairline))), radial-gradient(circle var(--_wave-radius) at 75% calc(-1 * var(--_wave-center)), transparent calc(var(--_wave-inner) - var(--m3-stroke-hairline)), currentColor var(--_wave-inner), currentColor var(--_wave-outer), transparent calc(var(--_wave-outer) + var(--m3-stroke-hairline)));
+      -webkit-mask-size: var(--m3-progress-wave-wavelength) var(--_wave-half);
+      mask-size: var(--m3-progress-wave-wavelength) var(--_wave-half);
+      -webkit-mask-position: 0 0, 0 100%;
+      mask-position: 0 0, 0 100%;
+      -webkit-mask-repeat: repeat-x;
+      mask-repeat: repeat-x;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      @keyframes m3-progress-wave {
+        to {
+          -webkit-mask-position: var(--m3-progress-wave-wavelength) 0, var(--m3-progress-wave-wavelength) 100%;
+          mask-position: var(--m3-progress-wave-wavelength) 0, var(--m3-progress-wave-wavelength) 100%;
+        }
+      }
+      .m3-progress--wavy .m3-progress__bar {
+        animation: m3-progress-wave var(--md-sys-motion-duration-extra-long4) var(--md-sys-motion-easing-linear) infinite;
+      }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .m3-progress--wavy.m3-progress--indeterminate .m3-progress__bar {
+        animation: m3-progress-slide var(--md-sys-motion-duration-extra-long2) var(--md-sys-motion-easing-standard) infinite, m3-progress-wave var(--md-sys-motion-duration-extra-long4) var(--md-sys-motion-easing-linear) infinite;
+      }
+    }
     .m3-progress-circle {
       --_active: var(--m3-progress-color);
       --_track: var(--m3-progress-track-color);
@@ -8447,6 +8616,12 @@
       background: conic-gradient(var(--_active) calc(var(--m3-progress-value) * 1%), var(--_track) 0);
       -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--m3-progress-circle-thickness)), currentColor calc(100% - var(--m3-progress-circle-thickness)));
       mask: radial-gradient(farthest-side, transparent calc(100% - var(--m3-progress-circle-thickness)), currentColor calc(100% - var(--m3-progress-circle-thickness)));
+    }
+    .m3-progress-circle--wavy {
+      -webkit-mask-image: radial-gradient(farthest-side, transparent calc(100% - var(--m3-progress-wave-amplitude) - var(--m3-progress-circle-thickness) - var(--m3-stroke-hairline)), currentColor calc(100% - var(--m3-progress-wave-amplitude) - var(--m3-progress-circle-thickness)), currentColor calc(100% - var(--m3-progress-wave-amplitude)), transparent calc(100% - var(--m3-progress-wave-amplitude) + var(--m3-stroke-hairline))), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + 1 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + 0 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + 0.866 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + 0.5 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + 0.5 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + 0.866 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + 0 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + 1 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + -0.5 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + 0.866 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + -0.866 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + 0.5 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + -1 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + 0 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + -0.866 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + -0.5 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + -0.5 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + -0.866 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + 0 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + -1 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + 0.5 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + -0.866 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + 0.866 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + -0.5 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%);
+      mask-image: radial-gradient(farthest-side, transparent calc(100% - var(--m3-progress-wave-amplitude) - var(--m3-progress-circle-thickness) - var(--m3-stroke-hairline)), currentColor calc(100% - var(--m3-progress-wave-amplitude) - var(--m3-progress-circle-thickness)), currentColor calc(100% - var(--m3-progress-wave-amplitude)), transparent calc(100% - var(--m3-progress-wave-amplitude) + var(--m3-stroke-hairline))), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + 1 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + 0 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + 0.866 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + 0.5 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + 0.5 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + 0.866 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + 0 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + 1 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + -0.5 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + 0.866 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + -0.866 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + 0.5 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + -1 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + 0 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + -0.866 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + -0.5 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + -0.5 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + -0.866 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + 0 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + -1 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + 0.5 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + -0.866 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%), radial-gradient(circle var(--m3-progress-wave-amplitude) at calc(50% + 0.866 * (50% - var(--m3-progress-wave-amplitude))) calc(50% + -0.5 * (50% - var(--m3-progress-wave-amplitude))), currentColor calc(100% - var(--m3-stroke-hairline)), transparent 100%);
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
     }
     .m3-spinner {
       display: inline-block;
@@ -11273,9 +11448,1144 @@
       border-block-end-color: var(--m3-field-valid-color);
       box-shadow: inset 0 calc(-1 * var(--m3-field-indicator-width)) 0 0 var(--m3-field-valid-color);
     }
+    .m3-toolbar {
+      --_container: var(--m3-toolbar-container-color);
+      --_content: var(--m3-toolbar-content-color);
+      --_offset: var(--m3-toolbar-fixed-offset);
+      --m3-icon-btn-color: currentColor;
+      --m3-icon-btn-outlined-color: currentColor;
+      --m3-btn-text-label-color: currentColor;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--m3-toolbar-gap);
+      height: calc(var(--m3-toolbar-height) + var(--m3-density) * var(--m3-density-step));
+      padding-inline: var(--m3-toolbar-padding);
+      border-radius: var(--m3-toolbar-shape);
+      color: var(--_content);
+      background-color: var(--_container);
+      vertical-align: middle;
+      box-shadow: var(--md-sys-elevation-3);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .m3-toolbar {
+        transition-property: background-color, color, box-shadow;
+        transition-duration: var(--md-sys-motion-duration-short4);
+        transition-timing-function: var(--md-sys-motion-easing-standard);
+      }
+    }
+    .m3-toolbar--floating {
+      border-radius: var(--m3-toolbar-shape);
+      box-shadow: var(--md-sys-elevation-3);
+    }
+    .m3-toolbar--docked {
+      --_offset: var(--m3-space-none);
+      display: flex;
+      inline-size: 100%;
+      height: auto;
+      min-height: calc(var(--m3-toolbar-height) + var(--m3-density) * var(--m3-density-step));
+      padding-inline: var(--m3-toolbar-docked-padding-inline);
+      padding-block: var(--m3-toolbar-padding);
+      border-start-start-radius: var(--m3-toolbar-docked-shape);
+      border-start-end-radius: var(--m3-toolbar-docked-shape);
+      border-end-start-radius: var(--md-sys-shape-corner-none);
+      border-end-end-radius: var(--md-sys-shape-corner-none);
+      box-shadow: var(--md-sys-elevation-0);
+    }
+    .m3-toolbar--standard {
+      --_container: var(--m3-toolbar-container-color);
+      --_content: var(--m3-toolbar-content-color);
+    }
+    .m3-toolbar--vibrant {
+      --_container: var(--m3-toolbar-vibrant-container-color);
+      --_content: var(--m3-toolbar-vibrant-content-color);
+    }
+    .m3-toolbar--vertical {
+      flex-direction: column;
+      height: auto;
+      width: calc(var(--m3-toolbar-height) + var(--m3-density) * var(--m3-density-step));
+      padding-inline: var(--m3-space-none);
+      padding-block: var(--m3-toolbar-padding);
+    }
+    .m3-toolbar--fixed {
+      position: fixed;
+      inset-block-end: var(--_offset);
+      inset-inline-start: 50%;
+      translate: -50% 0;
+      z-index: var(--m3-z-raised);
+    }
+    .m3-button-group {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--m3-button-group-gap);
+      vertical-align: middle;
+    }
+    .m3-button-group > :is(.m3-btn, .m3-icon-btn):is([aria-pressed=true], .active),
+    .m3-button-group > .m3-btn-check:checked + :is(.m3-btn, .m3-icon-btn) {
+      --_container: var(--m3-button-group-selected-container-color);
+      --_content: var(--m3-button-group-selected-label-color);
+      border-color: transparent;
+    }
+    .m3-button-group--connected {
+      gap: var(--m3-button-group-connected-gap);
+    }
+    .m3-button-group--connected > :is(.m3-btn, .m3-icon-btn) {
+      border-radius: var(--m3-button-group-shape);
+    }
+    .m3-button-group--connected > :is(.m3-btn, .m3-icon-btn) ~ :is(.m3-btn, .m3-icon-btn) {
+      border-start-start-radius: var(--m3-button-group-inner-shape);
+      border-end-start-radius: var(--m3-button-group-inner-shape);
+    }
+    .m3-button-group--connected > :is(.m3-btn, .m3-icon-btn):not(:last-child) {
+      border-start-end-radius: var(--m3-button-group-inner-shape);
+      border-end-end-radius: var(--m3-button-group-inner-shape);
+    }
+    .m3-button-group--connected > :is(.m3-btn, .m3-icon-btn):is([aria-pressed=true], .active),
+    .m3-button-group--connected > .m3-btn-check:checked + :is(.m3-btn, .m3-icon-btn) {
+      border-radius: var(--m3-button-group-selected-shape);
+    }
+    .m3-button-group--xs {
+      --m3-btn-height: var(--m3-btn-height-xs);
+      --m3-btn-padding-inline: var(--m3-btn-padding-inline-xs);
+      --m3-btn-icon-size: var(--m3-btn-icon-size-xs);
+      --m3-icon-btn-size: var(--m3-btn-height-xs);
+      --m3-icon-btn-icon-size: var(--m3-icon-btn-icon-size-xs);
+    }
+    .m3-button-group--small {
+      --m3-btn-height: var(--m3-btn-height-small);
+      --m3-btn-padding-inline: var(--m3-btn-padding-inline-small);
+      --m3-icon-btn-size: var(--m3-btn-height-small);
+      --m3-icon-btn-icon-size: var(--m3-icon-size-small);
+    }
+    .m3-button-group--small > .m3-btn {
+      font-family: var(--md-sys-typescale-label-medium-font);
+      font-size: var(--md-sys-typescale-label-medium-size);
+      line-height: var(--md-sys-typescale-label-medium-line-height);
+      font-weight: var(--md-sys-typescale-label-medium-weight);
+      letter-spacing: var(--md-sys-typescale-label-medium-tracking);
+    }
+    .m3-button-group--medium {
+      --m3-btn-height: var(--m3-btn-height-medium);
+      --m3-btn-padding-inline: var(--m3-btn-padding-inline-medium);
+      --m3-btn-icon-size: var(--m3-btn-icon-size-medium);
+      --m3-icon-btn-size: var(--m3-btn-height-medium);
+    }
+    .m3-button-group--medium > .m3-btn {
+      font-family: var(--md-sys-typescale-title-medium-font);
+      font-size: var(--md-sys-typescale-title-medium-size);
+      line-height: var(--md-sys-typescale-title-medium-line-height);
+      font-weight: var(--md-sys-typescale-title-medium-weight);
+      letter-spacing: var(--md-sys-typescale-title-medium-tracking);
+    }
+    .m3-button-group--large {
+      --m3-btn-height: var(--m3-btn-height-large);
+      --m3-btn-padding-inline: var(--m3-btn-padding-inline-large);
+      --m3-icon-btn-size: var(--m3-btn-height-large);
+    }
+    .m3-button-group--xl {
+      --m3-btn-height: var(--m3-btn-height-xl);
+      --m3-btn-padding-inline: var(--m3-btn-padding-inline-xl);
+      --m3-btn-icon-size: var(--m3-btn-icon-size-xl);
+      --m3-icon-btn-size: var(--m3-btn-height-xl);
+      --m3-icon-btn-icon-size: var(--m3-icon-btn-icon-size-large);
+    }
+    .m3-button-group--xl > .m3-btn {
+      font-family: var(--md-sys-typescale-headline-small-font);
+      font-size: var(--md-sys-typescale-headline-small-size);
+      line-height: var(--md-sys-typescale-headline-small-line-height);
+      font-weight: var(--md-sys-typescale-headline-small-weight);
+      letter-spacing: var(--md-sys-typescale-headline-small-tracking);
+    }
+    .m3-btn-check {
+      display: block;
+      position: absolute;
+      opacity: var(--m3-opacity-hidden);
+      pointer-events: none;
+    }
+    .m3-btn-check:focus-visible + :is(.m3-btn, .m3-icon-btn) {
+      outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
+      outline-offset: var(--md-sys-state-focus-indicator-offset);
+    }
+    .m3-btn-check:disabled + :is(.m3-btn, .m3-icon-btn) {
+      --_container: color-mix(
+        in srgb,
+        var(--md-sys-color-on-surface) var(--md-sys-state-disabled-container-opacity),
+        transparent
+      );
+      --_content: color-mix(
+        in srgb,
+        var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity),
+        transparent
+      );
+      --_state-opacity: var(--md-sys-state-none);
+      box-shadow: none;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .m3-split-button {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--m3-split-button-gap);
+      vertical-align: middle;
+    }
+    .m3-split-button__action {
+      display: inline-flex;
+      border-start-end-radius: var(--m3-split-button-inner-shape);
+      border-end-end-radius: var(--m3-split-button-inner-shape);
+    }
+    .m3-split-button__toggle {
+      display: inline-flex;
+      min-inline-size: calc(var(--m3-btn-height) + var(--m3-density) * var(--m3-density-step));
+      padding-inline: var(--m3-split-button-toggle-padding-inline);
+      border-start-start-radius: var(--m3-split-button-inner-shape);
+      border-end-start-radius: var(--m3-split-button-inner-shape);
+    }
+    .m3-split-button__toggle::after {
+      content: "";
+      display: block;
+      flex: none;
+      width: var(--m3-split-button-chevron-size);
+      height: var(--m3-split-button-chevron-size);
+      border-right: var(--m3-stroke-thick) solid currentColor;
+      border-bottom: var(--m3-stroke-thick) solid currentColor;
+      rotate: 45deg;
+      translate: 0 -25%;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .m3-split-button__toggle::after {
+        transition-property: rotate;
+        transition-duration: var(--md-sys-motion-duration-short4);
+        transition-timing-function: var(--md-sys-motion-easing-standard);
+      }
+    }
+    .m3-split-button__toggle:has(+ .m3-menu:popover-open)::after {
+      rotate: 225deg;
+    }
+    .m3-split-button--tonal {
+      --m3-btn-container-color: var(--m3-btn-tonal-container-color);
+      --m3-btn-label-color: var(--m3-btn-tonal-label-color);
+    }
+    .m3-split-button--outlined {
+      --m3-btn-container-color: transparent;
+      --m3-btn-label-color: var(--m3-btn-outlined-label-color);
+    }
+    .m3-split-button--outlined > .m3-split-button__action,
+    .m3-split-button--outlined > .m3-split-button__toggle {
+      border: var(--m3-btn-outline-width) solid var(--m3-btn-outlined-outline-color);
+    }
+    .m3-split-button--outlined > .m3-split-button__action:disabled, .m3-split-button--outlined > .m3-split-button__action.disabled,
+    .m3-split-button--outlined > .m3-split-button__toggle:disabled,
+    .m3-split-button--outlined > .m3-split-button__toggle.disabled {
+      --_container: transparent;
+      --_content: color-mix(
+        in srgb,
+        var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity),
+        transparent
+      );
+      --_state-opacity: var(--md-sys-state-none);
+      box-shadow: none;
+      cursor: not-allowed;
+      pointer-events: none;
+      border-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--md-sys-state-disabled-container-opacity), transparent);
+    }
+    .m3-split-button--elevated {
+      --m3-btn-container-color: var(--m3-btn-elevated-container-color);
+      --m3-btn-label-color: var(--m3-btn-elevated-label-color);
+    }
+    .m3-split-button--elevated > .m3-split-button__action,
+    .m3-split-button--elevated > .m3-split-button__toggle {
+      box-shadow: var(--md-sys-elevation-1);
+    }
+    .m3-split-button--elevated > .m3-split-button__action:hover,
+    .m3-split-button--elevated > .m3-split-button__toggle:hover {
+      box-shadow: var(--md-sys-elevation-2);
+    }
+    .m3-split-button--elevated > .m3-split-button__action:disabled, .m3-split-button--elevated > .m3-split-button__action.disabled,
+    .m3-split-button--elevated > .m3-split-button__toggle:disabled,
+    .m3-split-button--elevated > .m3-split-button__toggle.disabled {
+      --_container: color-mix(
+        in srgb,
+        var(--md-sys-color-on-surface) var(--md-sys-state-disabled-container-opacity),
+        transparent
+      );
+      --_content: color-mix(
+        in srgb,
+        var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity),
+        transparent
+      );
+      --_state-opacity: var(--md-sys-state-none);
+      box-shadow: none;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    @supports (position-area: block-end) {
+      .m3-split-button > .m3-split-button__toggle + .m3-menu[popover] {
+        inset: auto;
+        margin: var(--m3-space-none);
+        margin-block-start: var(--m3-split-button-menu-offset);
+        position-area: block-end span-inline-start;
+        position-try-fallbacks: flip-block;
+      }
+    }
+    .m3-fab-menu {
+      position: relative;
+      display: inline-flex;
+      vertical-align: middle;
+      anchor-name: --m3-fab-menu-anchor;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .m3-fab-menu__fab > svg,
+      .m3-fab-menu__fab > img {
+        transition-property: rotate;
+        transition-duration: var(--md-sys-motion-duration-short4);
+        transition-timing-function: var(--md-sys-motion-easing-standard);
+      }
+    }
+    .m3-fab-menu__fab:has(+ .m3-fab-menu__items:popover-open) {
+      --_container: var(--m3-fab-menu-open-container-color);
+      --_content: var(--m3-fab-menu-open-content-color);
+    }
+    .m3-fab-menu__fab:has(+ .m3-fab-menu__items:popover-open) > svg,
+    .m3-fab-menu__fab:has(+ .m3-fab-menu__items:popover-open) > img {
+      rotate: 45deg;
+    }
+    .m3-fab-menu__items {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: var(--m3-fab-menu-gap);
+      color: var(--m3-fab-menu-item-content-color);
+    }
+    .m3-fab-menu__items[popover] {
+      display: none;
+      position: fixed;
+      inset: var(--m3-space-none);
+      inline-size: fit-content;
+      block-size: fit-content;
+      overflow: visible;
+      margin: auto;
+    }
+    .m3-fab-menu__items[popover]:popover-open {
+      display: flex;
+    }
+    @supports (anchor-name: --m3-t) {
+      .m3-fab-menu__items[popover] {
+        position-anchor: --m3-fab-menu-anchor;
+        position-area: block-start span-inline-start;
+        position-try-fallbacks: flip-block;
+        inset: auto;
+        margin: var(--m3-space-none);
+        margin-block: var(--m3-fab-menu-offset);
+      }
+    }
+    @supports not selector(:popover-open) {
+      .m3-fab-menu__items[popover] {
+        display: none;
+      }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .m3-fab-menu__items[popover]:popover-open {
+        opacity: var(--m3-opacity-full);
+        translate: 0 0;
+        transition-property: opacity, translate;
+        transition-duration: var(--md-sys-motion-duration-short4);
+        transition-timing-function: var(--md-sys-motion-easing-emphasized-decelerate);
+        transition-behavior: allow-discrete;
+      }
+      @starting-style {
+        .m3-fab-menu__items[popover]:popover-open {
+          opacity: var(--m3-opacity-hidden);
+          translate: 0 var(--m3-space-1);
+        }
+      }
+    }
+    .m3-fab-menu__item {
+      --_container: var(--m3-fab-menu-item-container-color);
+      --_content: var(--m3-fab-menu-item-content-color);
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--m3-fab-menu-item-icon-gap);
+      height: calc(var(--m3-fab-menu-item-height) + var(--m3-density) * var(--m3-density-step));
+      padding-inline: var(--m3-fab-menu-item-padding-inline);
+      border: none;
+      border-radius: var(--m3-fab-menu-item-shape);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      text-align: center;
+      text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
+      font-family: var(--md-sys-typescale-label-large-font);
+      font-size: var(--md-sys-typescale-label-large-size);
+      line-height: var(--md-sys-typescale-label-large-line-height);
+      font-weight: var(--md-sys-typescale-label-large-weight);
+      letter-spacing: var(--md-sys-typescale-label-large-tracking);
+      box-shadow: var(--md-sys-elevation-1);
+      --_state-color: var(--_content);
+      --_state-opacity: var(--md-sys-state-none);
+      color: var(--_content);
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+    }
+    .m3-fab-menu__item:hover {
+      --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
+    }
+    .m3-fab-menu__item:focus-visible {
+      --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
+    }
+    .m3-fab-menu__item:active {
+      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+    }
+    .m3-fab-menu__item:focus-visible {
+      outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
+      outline-offset: var(--md-sys-state-focus-indicator-offset);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .m3-fab-menu__item {
+        transition-property: background-color, color, box-shadow;
+        transition-duration: var(--md-sys-motion-duration-short4);
+        transition-timing-function: var(--md-sys-motion-easing-standard);
+      }
+    }
+    @media (forced-colors: active) {
+      .m3-fab-menu__item {
+        border: var(--m3-stroke-hairline) solid ButtonBorder;
+      }
+    }
+    .m3-fab-menu__item:hover {
+      box-shadow: var(--md-sys-elevation-2);
+    }
+    .m3-fab-menu__item > svg,
+    .m3-fab-menu__item > img {
+      inline-size: var(--m3-fab-menu-item-icon-size);
+      block-size: var(--m3-fab-menu-item-icon-size);
+    }
+    .m3-fab-menu__item:disabled, .m3-fab-menu__item.disabled {
+      --_container: color-mix(
+        in srgb,
+        var(--md-sys-color-on-surface) var(--md-sys-state-disabled-container-opacity),
+        transparent
+      );
+      --_content: color-mix(
+        in srgb,
+        var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity),
+        transparent
+      );
+      --_state-opacity: var(--md-sys-state-none);
+      box-shadow: none;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .m3-fab-menu__label {
+      display: inline;
+      font-family: var(--md-sys-typescale-label-large-font);
+      font-size: var(--md-sys-typescale-label-large-size);
+      line-height: var(--md-sys-typescale-label-large-line-height);
+      font-weight: var(--md-sys-typescale-label-large-weight);
+      letter-spacing: var(--md-sys-typescale-label-large-tracking);
+      color: inherit;
+      white-space: nowrap;
+    }
+    .m3-loading-indicator {
+      font-family: var(--md-sys-typescale-body-medium-font);
+      font-size: var(--md-sys-typescale-body-medium-size);
+      line-height: var(--md-sys-typescale-body-medium-line-height);
+      font-weight: var(--md-sys-typescale-body-medium-weight);
+      letter-spacing: var(--md-sys-typescale-body-medium-tracking);
+      --_container: transparent;
+      --_content: var(--m3-loading-indicator-color);
+      --_padding: var(--m3-space-none);
+      display: inline-block;
+      inline-size: var(--m3-loading-indicator-size);
+      block-size: var(--m3-loading-indicator-size);
+      padding: var(--_padding);
+      border-radius: var(--m3-loading-indicator-container-shape);
+      background-color: var(--_container);
+      color: var(--_content);
+      vertical-align: middle;
+    }
+    .m3-loading-indicator::before {
+      content: "";
+      display: block;
+      inline-size: 100%;
+      block-size: 100%;
+      background: currentColor;
+      clip-path: polygon(92% 50%, 91.95% 61.24%, 90.91% 73.62%, 85.32% 85.32%, 73.62% 90.91%, 61.24% 91.95%, 50% 92%, 38.76% 91.95%, 26.38% 90.91%, 14.68% 85.32%, 9.09% 73.62%, 8.05% 61.24%, 8% 50%, 8.05% 38.76%, 9.09% 26.38%, 14.68% 14.68%, 26.38% 9.09%, 38.76% 8.05%, 50% 8%, 61.24% 8.05%, 73.62% 9.09%, 85.32% 14.68%, 90.91% 26.38%, 91.95% 38.76%);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      @keyframes m3-loading-indicator-morph {
+        0% {
+          clip-path: polygon(92% 50%, 91.95% 61.24%, 90.91% 73.62%, 85.32% 85.32%, 73.62% 90.91%, 61.24% 91.95%, 50% 92%, 38.76% 91.95%, 26.38% 90.91%, 14.68% 85.32%, 9.09% 73.62%, 8.05% 61.24%, 8% 50%, 8.05% 38.76%, 9.09% 26.38%, 14.68% 14.68%, 26.38% 9.09%, 38.76% 8.05%, 50% 8%, 61.24% 8.05%, 73.62% 9.09%, 85.32% 14.68%, 90.91% 26.38%, 91.95% 38.76%);
+        }
+        25% {
+          clip-path: polygon(98% 50%, 91.05% 61%, 77.28% 65.75%, 68.38% 68.38%, 65.75% 77.28%, 61% 91.05%, 50% 98%, 39% 91.05%, 34.25% 77.28%, 31.62% 68.38%, 22.72% 65.75%, 8.95% 61%, 2% 50%, 8.95% 39%, 22.72% 34.25%, 31.62% 31.62%, 34.25% 22.72%, 39% 8.95%, 50% 2%, 61% 8.95%, 65.75% 22.72%, 68.38% 31.62%, 77.28% 34.25%, 91.05% 39%);
+        }
+        50% {
+          clip-path: polygon(96% 50%, 94.43% 61.91%, 89.84% 73%, 82.53% 82.53%, 73% 89.84%, 61.91% 94.43%, 50% 96%, 38.09% 94.43%, 27% 89.84%, 17.47% 82.53%, 10.16% 73%, 5.57% 61.91%, 4% 50%, 5.57% 38.09%, 10.16% 27%, 17.47% 17.47%, 27% 10.16%, 38.09% 5.57%, 50% 4%, 61.91% 5.57%, 73% 10.16%, 82.53% 17.47%, 89.84% 27%, 94.43% 38.09%);
+        }
+        75% {
+          clip-path: polygon(98% 50%, 93.25% 61.59%, 82.04% 68.5%, 70.66% 70.66%, 63% 72.52%, 57.56% 78.23%, 50% 87%, 38.41% 93.25%, 26% 91.57%, 18.34% 81.66%, 17.96% 68.5%, 21.77% 57.56%, 24% 50%, 21.77% 42.44%, 17.96% 31.5%, 18.34% 18.34%, 26% 8.43%, 38.41% 6.75%, 50% 13%, 57.56% 21.77%, 63% 27.48%, 70.66% 29.34%, 82.04% 31.5%, 93.25% 38.41%);
+        }
+        100% {
+          clip-path: polygon(92% 50%, 91.95% 61.24%, 90.91% 73.62%, 85.32% 85.32%, 73.62% 90.91%, 61.24% 91.95%, 50% 92%, 38.76% 91.95%, 26.38% 90.91%, 14.68% 85.32%, 9.09% 73.62%, 8.05% 61.24%, 8% 50%, 8.05% 38.76%, 9.09% 26.38%, 14.68% 14.68%, 26.38% 9.09%, 38.76% 8.05%, 50% 8%, 61.24% 8.05%, 73.62% 9.09%, 85.32% 14.68%, 90.91% 26.38%, 91.95% 38.76%);
+        }
+      }
+      @keyframes m3-loading-indicator-turn {
+        to {
+          rotate: 1turn;
+        }
+      }
+      .m3-loading-indicator::before {
+        animation: m3-loading-indicator-morph var(--m3-loading-indicator-cycle) var(--md-sys-motion-easing-emphasized) infinite, m3-loading-indicator-turn var(--m3-loading-indicator-cycle) var(--md-sys-motion-easing-linear) infinite;
+      }
+    }
+    .m3-loading-indicator--contained {
+      --_container: var(--m3-loading-indicator-container-color);
+      --_content: var(--m3-loading-indicator-contained-color);
+      --_padding: var(--m3-loading-indicator-container-padding);
+    }
+    .m3-loading-indicator--small {
+      --m3-loading-indicator-size: var(--m3-loading-indicator-size-small);
+    }
+    .m3-loading-indicator--large {
+      --m3-loading-indicator-size: var(--m3-loading-indicator-size-large);
+    }
+    .m3-date-picker {
+      display: flex;
+      flex-direction: column;
+      inline-size: var(--m3-date-picker-width);
+      max-inline-size: 100%;
+      background-color: var(--m3-date-picker-container-color);
+      color: var(--m3-date-picker-content-color);
+      border-radius: var(--m3-date-picker-shape);
+      box-shadow: var(--md-sys-elevation-3);
+    }
+    .m3-date-picker--docked {
+      --m3-date-picker-width: 22.5rem;
+      --m3-date-picker-padding: var(--m3-space-3);
+      --m3-date-picker-cell-size: 3rem;
+      background-color: var(--m3-date-picker-container-color);
+      border-radius: var(--m3-date-picker-shape);
+      box-shadow: var(--md-sys-elevation-3);
+    }
+    .m3-date-picker--modal {
+      --m3-date-picker-width: var(--m3-date-picker-modal-width);
+      --m3-date-picker-padding: var(--m3-space-5);
+      --m3-date-picker-cell-size: var(--m3-date-picker-day-size);
+      background-color: transparent;
+      border-radius: var(--md-sys-shape-corner-none);
+      box-shadow: none;
+    }
+    .m3-date-picker__header {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-block-size: var(--m3-date-picker-header-height);
+      padding-block: var(--m3-space-4) var(--m3-space-3);
+      padding-inline: var(--m3-space-5);
+      border-block-end: var(--m3-stroke-hairline) solid var(--m3-date-picker-divider-color);
+    }
+    .m3-date-picker__supporting {
+      display: block;
+      color: var(--m3-date-picker-supporting-color);
+      font-family: var(--md-sys-typescale-label-medium-font);
+      font-size: var(--md-sys-typescale-label-medium-size);
+      line-height: var(--md-sys-typescale-label-medium-line-height);
+      font-weight: var(--md-sys-typescale-label-medium-weight);
+      letter-spacing: var(--md-sys-typescale-label-medium-tracking);
+    }
+    .m3-date-picker__headline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--m3-space-2);
+      color: var(--m3-date-picker-headline-color);
+      font-family: var(--md-sys-typescale-headline-large-font);
+      font-size: var(--md-sys-typescale-headline-large-size);
+      line-height: var(--md-sys-typescale-headline-large-line-height);
+      font-weight: var(--md-sys-typescale-headline-large-weight);
+      letter-spacing: var(--md-sys-typescale-headline-large-tracking);
+    }
+    .m3-date-picker__nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--m3-space-2);
+      padding-block: var(--m3-space-2) var(--m3-space-1);
+      padding-inline: var(--m3-date-picker-padding);
+    }
+    .m3-date-picker__menu {
+      --_container: var(--m3-btn-container-color);
+      --_content: var(--m3-btn-label-color);
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--m3-btn-icon-gap);
+      height: calc(var(--m3-btn-height) + var(--m3-density) * var(--m3-density-step));
+      padding-inline: var(--m3-btn-padding-inline);
+      border: none;
+      border-radius: var(--m3-btn-shape);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      text-align: center;
+      text-decoration: none;
+      vertical-align: middle;
+      -webkit-tap-highlight-color: transparent;
+      font-family: var(--md-sys-typescale-label-large-font);
+      font-size: var(--md-sys-typescale-label-large-size);
+      line-height: var(--md-sys-typescale-label-large-line-height);
+      font-weight: var(--md-sys-typescale-label-large-weight);
+      letter-spacing: var(--md-sys-typescale-label-large-tracking);
+      --_state-color: var(--_content);
+      --_state-opacity: var(--md-sys-state-none);
+      color: var(--_content);
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+    }
+    .m3-date-picker__menu:hover {
+      --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
+    }
+    .m3-date-picker__menu:focus-visible {
+      --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
+    }
+    .m3-date-picker__menu:active {
+      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+    }
+    .m3-date-picker__menu:focus-visible {
+      outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
+      outline-offset: var(--md-sys-state-focus-indicator-offset);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .m3-date-picker__menu {
+        transition-property: background-color, color, box-shadow, border-color;
+        transition-duration: var(--md-sys-motion-duration-short4);
+        transition-timing-function: var(--md-sys-motion-easing-standard);
+      }
+    }
+    @media (forced-colors: active) {
+      .m3-date-picker__menu {
+        border: var(--m3-stroke-hairline) solid ButtonBorder;
+      }
+    }
+    .m3-date-picker__menu > svg,
+    .m3-date-picker__menu > img {
+      inline-size: var(--m3-btn-icon-size);
+      block-size: var(--m3-btn-icon-size);
+    }
+    .m3-date-picker__menu:disabled, .m3-date-picker__menu.disabled {
+      --_container: color-mix(
+        in srgb,
+        var(--md-sys-color-on-surface) var(--md-sys-state-disabled-container-opacity),
+        transparent
+      );
+      --_content: color-mix(
+        in srgb,
+        var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity),
+        transparent
+      );
+      --_state-opacity: var(--md-sys-state-none);
+      box-shadow: none;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .m3-date-picker__menu {
+      --_container: transparent;
+      --_content: var(--m3-btn-text-label-color);
+      padding-inline: var(--m3-space-3);
+    }
+    .m3-date-picker__menu:disabled, .m3-date-picker__menu.disabled {
+      --_container: transparent;
+      --_content: color-mix(
+        in srgb,
+        var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity),
+        transparent
+      );
+      --_state-opacity: var(--md-sys-state-none);
+      box-shadow: none;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .m3-date-picker__menu {
+      --_content: var(--m3-date-picker-menu-color);
+      gap: var(--m3-space-2);
+    }
+    .m3-date-picker__menu::after {
+      content: "";
+      display: inline-block;
+      flex: none;
+      width: calc(var(--m3-chevron-size) / 2 + var(--m3-stroke-thick));
+      height: calc(var(--m3-chevron-size) / 2 + var(--m3-stroke-thick));
+      border-right: var(--m3-stroke-thick) solid currentColor;
+      border-bottom: var(--m3-stroke-thick) solid currentColor;
+      rotate: 45deg;
+      translate: 0 -25%;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .m3-date-picker__menu::after {
+        transition-property: rotate;
+        transition-duration: var(--md-sys-motion-duration-short4);
+        transition-timing-function: var(--md-sys-motion-easing-standard);
+      }
+    }
+    .m3-date-picker__menu[aria-expanded=true]::after {
+      rotate: 225deg;
+      translate: 0 25%;
+    }
+    .m3-date-picker__arrows {
+      display: inline-flex;
+      align-items: center;
+      flex: none;
+    }
+    .m3-date-picker__grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(var(--m3-date-picker-day-size), 1fr));
+      grid-auto-rows: var(--m3-date-picker-cell-size);
+      justify-items: center;
+      align-items: center;
+      padding-inline: var(--m3-date-picker-padding);
+    }
+    .m3-date-picker__weekday {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: 100%;
+      block-size: 100%;
+      color: var(--m3-date-picker-weekday-color);
+      user-select: none;
+      font-family: var(--md-sys-typescale-body-large-font);
+      font-size: var(--md-sys-typescale-body-large-size);
+      line-height: var(--md-sys-typescale-body-large-line-height);
+      font-weight: var(--md-sys-typescale-body-large-weight);
+      letter-spacing: var(--md-sys-typescale-body-large-tracking);
+    }
+    .m3-date-picker__day {
+      --_container: transparent;
+      --_content: var(--m3-date-picker-day-color);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: var(--m3-date-picker-day-size);
+      block-size: var(--m3-date-picker-day-size);
+      padding: var(--m3-space-none);
+      border: none;
+      border-radius: var(--m3-date-picker-day-shape);
+      isolation: isolate;
+      cursor: pointer;
+      user-select: none;
+      text-align: center;
+      -webkit-tap-highlight-color: transparent;
+      font-family: var(--md-sys-typescale-body-large-font);
+      font-size: var(--md-sys-typescale-body-large-size);
+      line-height: var(--md-sys-typescale-body-large-line-height);
+      font-weight: var(--md-sys-typescale-body-large-weight);
+      letter-spacing: var(--md-sys-typescale-body-large-tracking);
+      --_state-color: var(--_content);
+      --_state-opacity: var(--md-sys-state-none);
+      color: var(--_content);
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+    }
+    .m3-date-picker__day:hover {
+      --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
+    }
+    .m3-date-picker__day:focus-visible {
+      --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
+    }
+    .m3-date-picker__day:active {
+      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+    }
+    .m3-date-picker__day:focus-visible {
+      outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
+      outline-offset: var(--md-sys-state-focus-indicator-offset);
+    }
+    .m3-date-picker__day {
+      position: relative;
+    }
+    .m3-date-picker__day::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      translate: -50% -50%;
+      width: max(100%, var(--m3-target-size));
+      height: max(100%, var(--m3-target-size));
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .m3-date-picker__day {
+        transition-property: background-color, color, box-shadow;
+        transition-duration: var(--md-sys-motion-duration-short4);
+        transition-timing-function: var(--md-sys-motion-easing-standard);
+      }
+    }
+    @media (forced-colors: active) {
+      .m3-date-picker__day {
+        border: var(--m3-stroke-hairline) solid ButtonBorder;
+      }
+    }
+    .m3-date-picker__day::before {
+      content: "";
+      display: none;
+      position: absolute;
+      z-index: -1;
+      inset-block: var(--m3-space-none);
+      inset-inline: calc((var(--m3-date-picker-day-size) - var(--m3-date-picker-cell-size)) / 2);
+      background-color: var(--m3-date-picker-range-container-color);
+    }
+    .m3-date-picker__day--outside {
+      --_content: var(--m3-date-picker-outside-color);
+    }
+    .m3-date-picker__day--today {
+      --_content: var(--m3-date-picker-today-color);
+      box-shadow: inset 0 0 0 var(--m3-stroke-hairline) var(--m3-date-picker-today-color);
+    }
+    .m3-date-picker__day:where([aria-selected=true]) {
+      --_container: var(--m3-date-picker-selected-container-color);
+      --_content: var(--m3-date-picker-selected-color);
+    }
+    .m3-date-picker__day--selected {
+      --_container: var(--m3-date-picker-selected-container-color);
+      --_content: var(--m3-date-picker-selected-color);
+    }
+    :where(.m3-date-picker--range) .m3-date-picker__day:where([aria-selected=true]) {
+      --_container: transparent;
+      --_content: var(--m3-date-picker-range-color);
+    }
+    :where(.m3-date-picker--range) .m3-date-picker__day:where([aria-selected=true])::before {
+      display: block;
+    }
+    .m3-date-picker__day--range {
+      --_container: transparent;
+      --_content: var(--m3-date-picker-range-color);
+    }
+    .m3-date-picker__day--range::before {
+      display: block;
+    }
+    .m3-date-picker__day--range-start {
+      --_container: var(--m3-date-picker-selected-container-color);
+      --_content: var(--m3-date-picker-selected-color);
+    }
+    .m3-date-picker__day--range-start::before {
+      display: block;
+      inset-inline-start: 50%;
+    }
+    .m3-date-picker__day--range-end {
+      --_container: var(--m3-date-picker-selected-container-color);
+      --_content: var(--m3-date-picker-selected-color);
+    }
+    .m3-date-picker__day--range-end::before {
+      display: block;
+      inset-inline-end: 50%;
+    }
+    .m3-date-picker__day:disabled {
+      --_container: transparent;
+      --_content: color-mix(
+        in srgb,
+        var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity),
+        transparent
+      );
+      --_state-opacity: var(--md-sys-state-none);
+      box-shadow: none;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .m3-date-picker__input {
+      display: block;
+      padding-inline: var(--m3-date-picker-padding);
+      padding-block: var(--m3-space-2);
+    }
+    .m3-date-picker__actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--m3-space-2);
+      padding-inline: var(--m3-date-picker-padding);
+      padding-block: var(--m3-space-2) var(--m3-date-picker-padding);
+    }
+    .m3-time-picker {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: stretch;
+      max-inline-size: 100%;
+      padding: var(--m3-time-picker-padding);
+      background-color: var(--m3-time-picker-container-color);
+      color: var(--m3-time-picker-content-color);
+      border-radius: var(--m3-time-picker-shape);
+      box-shadow: var(--md-sys-elevation-3);
+    }
+    .m3-time-picker--modal {
+      padding: var(--m3-space-none);
+      background-color: transparent;
+      border-radius: var(--md-sys-shape-corner-none);
+      box-shadow: none;
+    }
+    .m3-time-picker__label {
+      display: block;
+      margin-block-end: var(--m3-space-5);
+      color: var(--m3-time-picker-label-color);
+      font-family: var(--md-sys-typescale-label-medium-font);
+      font-size: var(--md-sys-typescale-label-medium-size);
+      line-height: var(--md-sys-typescale-label-medium-line-height);
+      font-weight: var(--md-sys-typescale-label-medium-weight);
+      letter-spacing: var(--md-sys-typescale-label-medium-tracking);
+    }
+    .m3-time-picker__fields {
+      display: flex;
+      align-items: flex-start;
+    }
+    .m3-time-picker__field {
+      display: flex;
+      flex-direction: column;
+      flex: none;
+      gap: var(--m3-space-2);
+      inline-size: var(--m3-time-picker-field-width);
+      cursor: text;
+    }
+    .m3-time-picker__field--selected {
+      --m3-time-picker-field-container-color: var(
+        --m3-time-picker-field-selected-container-color
+      );
+      --m3-time-picker-field-color: var(
+        --m3-time-picker-field-selected-color
+      );
+    }
+    .m3-time-picker__input {
+      --_container: var(--m3-time-picker-field-container-color);
+      --_content: var(--m3-time-picker-field-color);
+      display: block;
+      inline-size: 100%;
+      block-size: var(--m3-time-picker-field-height);
+      padding: var(--m3-space-none);
+      border: none;
+      border-radius: var(--m3-time-picker-field-shape);
+      text-align: center;
+      caret-color: var(--m3-time-picker-field-selected-color);
+      cursor: text;
+      appearance: none;
+      font-family: var(--md-sys-typescale-display-large-font);
+      font-size: var(--md-sys-typescale-display-large-size);
+      line-height: var(--md-sys-typescale-display-large-line-height);
+      font-weight: var(--md-sys-typescale-display-large-weight);
+      letter-spacing: var(--md-sys-typescale-display-large-tracking);
+      --_state-color: var(--_content);
+      --_state-opacity: var(--md-sys-state-none);
+      color: var(--_content);
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+    }
+    .m3-time-picker__input:hover {
+      --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
+    }
+    .m3-time-picker__input:focus-visible {
+      --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
+    }
+    .m3-time-picker__input:active {
+      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+    }
+    .m3-time-picker__input:focus-visible {
+      outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
+      outline-offset: var(--md-sys-state-focus-indicator-offset);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .m3-time-picker__input {
+        transition-property: background-color, color;
+        transition-duration: var(--md-sys-motion-duration-short4);
+        transition-timing-function: var(--md-sys-motion-easing-standard);
+      }
+    }
+    .m3-time-picker__input:where(input) {
+      overflow: clip;
+    }
+    .m3-time-picker__input::placeholder {
+      color: var(--m3-time-picker-hint-color);
+      opacity: var(--m3-opacity-full);
+    }
+    .m3-time-picker__input::-webkit-inner-spin-button {
+      appearance: none;
+      margin: var(--m3-space-none);
+    }
+    .m3-time-picker__input::-webkit-outer-spin-button {
+      appearance: none;
+      margin: var(--m3-space-none);
+    }
+    .m3-time-picker__input:where([type=number]) {
+      appearance: textfield;
+    }
+    .m3-time-picker__input:focus {
+      --_container: var(--m3-time-picker-field-selected-container-color);
+      --_content: var(--m3-time-picker-field-selected-color);
+    }
+    .m3-time-picker__input:user-invalid {
+      --_content: var(--md-sys-color-error);
+      caret-color: var(--md-sys-color-error);
+    }
+    .m3-time-picker__input:disabled {
+      --_container: color-mix(
+        in srgb,
+        var(--md-sys-color-on-surface) var(--md-sys-state-disabled-container-opacity),
+        transparent
+      );
+      --_content: color-mix(
+        in srgb,
+        var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity),
+        transparent
+      );
+      --_state-opacity: var(--md-sys-state-none);
+      box-shadow: none;
+      cursor: not-allowed;
+      pointer-events: none;
+      cursor: not-allowed;
+    }
+    .m3-time-picker__hint {
+      display: block;
+      color: var(--m3-time-picker-hint-color);
+      font-family: var(--md-sys-typescale-body-small-font);
+      font-size: var(--md-sys-typescale-body-small-size);
+      line-height: var(--md-sys-typescale-body-small-line-height);
+      font-weight: var(--md-sys-typescale-body-small-weight);
+      letter-spacing: var(--md-sys-typescale-body-small-tracking);
+    }
+    .m3-time-picker__input:user-invalid + .m3-time-picker__hint {
+      color: var(--md-sys-color-error);
+    }
+    .m3-time-picker__separator {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+      inline-size: var(--m3-space-5);
+      block-size: var(--m3-time-picker-field-height);
+      color: var(--m3-time-picker-separator-color);
+      user-select: none;
+      font-family: var(--md-sys-typescale-display-large-font);
+      font-size: var(--md-sys-typescale-display-large-size);
+      line-height: var(--md-sys-typescale-display-large-line-height);
+      font-weight: var(--md-sys-typescale-display-large-weight);
+      letter-spacing: var(--md-sys-typescale-display-large-tracking);
+    }
+    .m3-time-picker__period {
+      display: flex;
+      flex-direction: column;
+      flex: none;
+      inline-size: var(--m3-time-picker-period-width);
+      block-size: var(--m3-time-picker-field-height);
+      margin-inline-start: var(--m3-space-3);
+      border: var(--m3-time-picker-period-outline-width) solid var(--m3-time-picker-period-outline-color);
+      border-radius: var(--m3-time-picker-period-shape);
+    }
+    .m3-time-picker__period-option {
+      --_container: transparent;
+      --_content: var(--m3-time-picker-period-label-color);
+      position: relative;
+      display: flex;
+      flex: 1 1 0;
+      align-items: center;
+      justify-content: center;
+      min-block-size: var(--m3-space-none);
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      font-family: var(--md-sys-typescale-title-medium-font);
+      font-size: var(--md-sys-typescale-title-medium-size);
+      line-height: var(--md-sys-typescale-title-medium-line-height);
+      font-weight: var(--md-sys-typescale-title-medium-weight);
+      letter-spacing: var(--md-sys-typescale-title-medium-tracking);
+    }
+    .m3-time-picker__period-option:has(.m3-time-picker__period-input:focus-visible) {
+      outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
+      outline-offset: var(--md-sys-state-focus-indicator-offset);
+    }
+    .m3-time-picker__period-option:focus-within {
+      outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
+      outline-offset: var(--md-sys-state-focus-indicator-offset);
+    }
+    .m3-time-picker__period-option + .m3-time-picker__period-option {
+      border-block-start: var(--m3-time-picker-period-outline-width) solid var(--m3-time-picker-period-outline-color);
+    }
+    .m3-time-picker__period-option:first-of-type {
+      border-start-start-radius: var(--m3-time-picker-period-shape);
+      border-start-end-radius: var(--m3-time-picker-period-shape);
+    }
+    .m3-time-picker__period-option:last-of-type {
+      border-end-start-radius: var(--m3-time-picker-period-shape);
+      border-end-end-radius: var(--m3-time-picker-period-shape);
+    }
+    .m3-time-picker__period-option .m3-time-picker__period-input {
+      display: block;
+      position: absolute;
+      inset-block-start: var(--m3-space-none);
+      inset-inline-start: var(--m3-space-none);
+      inline-size: 100%;
+      block-size: 100%;
+      box-sizing: border-box;
+      opacity: var(--m3-opacity-hidden);
+      cursor: pointer;
+      appearance: none;
+    }
+    .m3-time-picker__period-option .m3-time-picker__period-input:disabled {
+      cursor: not-allowed;
+    }
+    .m3-time-picker__period-option .m3-time-picker__period-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1 1 auto;
+      align-self: stretch;
+      border-radius: inherit;
+      text-align: center;
+      white-space: nowrap;
+      pointer-events: none;
+      font-family: var(--md-sys-typescale-title-medium-font);
+      font-size: var(--md-sys-typescale-title-medium-size);
+      line-height: var(--md-sys-typescale-title-medium-line-height);
+      font-weight: var(--md-sys-typescale-title-medium-weight);
+      letter-spacing: var(--md-sys-typescale-title-medium-tracking);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .m3-time-picker__period-option .m3-time-picker__period-label {
+        transition-property: background-color, color;
+        transition-duration: var(--md-sys-motion-duration-short4);
+        transition-timing-function: var(--md-sys-motion-easing-standard);
+      }
+    }
+    .m3-time-picker__period-option .m3-time-picker__period-label {
+      --_state-color: var(--_content);
+      --_state-opacity: var(--md-sys-state-none);
+      color: var(--_content);
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+    }
+    .m3-time-picker__period-option:hover .m3-time-picker__period-label {
+      --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
+    }
+    .m3-time-picker__period-option:focus-within .m3-time-picker__period-label {
+      --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
+    }
+    .m3-time-picker__period-option:active .m3-time-picker__period-label {
+      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+    }
+    .m3-time-picker__period-option .m3-time-picker__period-input:checked + .m3-time-picker__period-label {
+      --_container: var(--m3-time-picker-period-selected-container-color);
+      --_content: var(--m3-time-picker-period-selected-label-color);
+    }
+    .m3-time-picker__period-option .m3-time-picker__period-input:disabled + .m3-time-picker__period-label {
+      --_container: transparent;
+      --_content: color-mix(
+        in srgb,
+        var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity),
+        transparent
+      );
+      --_state-opacity: var(--md-sys-state-none);
+      box-shadow: none;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .m3-time-picker__actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--m3-space-2);
+      margin-block-start: var(--m3-space-5);
+    }
   }
   @layer own {
-    .m3-btn, .m3-btn-group, .m3-icon-btn, .m3-fab, .m3-fab--extended .m3-fab__label, .m3-segmented, .m3-segmented__segment, .m3-segmented__segment .m3-segmented__input, .m3-segmented__segment .m3-segmented__label, .m3-badge, .m3-progress, .m3-progress__bar, .m3-progress-circle, .m3-spinner, .m3-snackbar, .m3-snackbar__text, .m3-snackbar__action, .m3-snackbar__close, .m3-tooltip, .m3-tooltip__title, .m3-card, .m3-carousel, .m3-carousel__item, .m3-carousel__indicators, .m3-carousel__indicator, .m3-dialog, .m3-dialog__title, .m3-dialog__content, .m3-dialog__actions, .m3-divider, .m3-list, .m3-list-item, .m3-list-item__body, .m3-list-item__headline, .m3-list-item__supporting, .m3-list-item__leading, .m3-list-item__trailing, .m3-sheet--bottom, .m3-sheet--side, .m3-sheet--side-standard, .m3-sheet__handle, .m3-nav-bar, .m3-nav-bar__item, .m3-nav-bar__icon, .m3-drawer, .m3-drawer--modal, .m3-drawer__item, .m3-drawer__headline, .m3-drawer__badge, .m3-rail, .m3-rail__item, .m3-rail__icon, .m3-tabs, .m3-tabs__tab, .m3-tabs__input, .m3-top-app-bar, .m3-top-app-bar__title, .m3-bottom-app-bar, .m3-bottom-app-bar__trailing, input[type=checkbox].m3-checkbox, input[type=radio].m3-radio, input[type=checkbox].m3-switch, .m3-chip, .m3-chip--filter .m3-chip__input, .m3-chip--filter .m3-chip__label, .m3-chip--input .m3-chip__input, .m3-chip--input .m3-chip__label, .m3-chip__remove, .m3-menu, .m3-menu__item, .m3-menu__header, input[type=range].m3-slider, input[type=date].m3-datetime, input[type=time].m3-datetime, input[type=datetime-local].m3-datetime, input[type=month].m3-datetime, input[type=week].m3-datetime, .m3-field, .m3-field__input, .m3-field__label, .m3-field__supporting, .m3-search, .m3-search__input, .m3-search__panel, select.m3-select {
+    .m3-btn, .m3-btn-group, .m3-icon-btn, .m3-fab, .m3-fab--extended .m3-fab__label, .m3-segmented, .m3-segmented__segment, .m3-segmented__segment .m3-segmented__input, .m3-segmented__segment .m3-segmented__label, .m3-badge, .m3-progress, .m3-progress__bar, .m3-progress-circle, .m3-spinner, .m3-snackbar, .m3-snackbar__text, .m3-snackbar__action, .m3-snackbar__close, .m3-tooltip, .m3-tooltip__title, .m3-card, .m3-carousel, .m3-carousel__item, .m3-carousel__indicators, .m3-carousel__indicator, .m3-dialog, .m3-dialog__title, .m3-dialog__content, .m3-dialog__actions, .m3-divider, .m3-list, .m3-list-item, .m3-list-item__body, .m3-list-item__headline, .m3-list-item__supporting, .m3-list-item__leading, .m3-list-item__trailing, .m3-sheet--bottom, .m3-sheet--side, .m3-sheet--side-standard, .m3-sheet__handle, .m3-nav-bar, .m3-nav-bar__item, .m3-nav-bar__icon, .m3-drawer, .m3-drawer--modal, .m3-drawer__item, .m3-drawer__headline, .m3-drawer__badge, .m3-rail, .m3-rail__item, .m3-rail__icon, .m3-tabs, .m3-tabs__tab, .m3-tabs__input, .m3-top-app-bar, .m3-top-app-bar__title, .m3-bottom-app-bar, .m3-bottom-app-bar__trailing, input[type=checkbox].m3-checkbox, input[type=radio].m3-radio, input[type=checkbox].m3-switch, .m3-chip, .m3-chip--filter .m3-chip__input, .m3-chip--filter .m3-chip__label, .m3-chip--input .m3-chip__input, .m3-chip--input .m3-chip__label, .m3-chip__remove, .m3-menu, .m3-menu__item, .m3-menu__header, input[type=range].m3-slider, input[type=date].m3-datetime, input[type=time].m3-datetime, input[type=datetime-local].m3-datetime, input[type=month].m3-datetime, input[type=week].m3-datetime, .m3-field, .m3-field__input, .m3-field__label, .m3-field__supporting, .m3-search, .m3-search__input, .m3-search__panel, select.m3-select, .m3-toolbar, .m3-button-group, .m3-btn-check, .m3-split-button, .m3-split-button__action, .m3-split-button__toggle, .m3-fab-menu, .m3-fab-menu__items, .m3-fab-menu__item, .m3-fab-menu__label, .m3-loading-indicator, .m3-date-picker, .m3-date-picker__header, .m3-date-picker__supporting, .m3-date-picker__headline, .m3-date-picker__nav, .m3-date-picker__menu, .m3-date-picker__arrows, .m3-date-picker__grid, .m3-date-picker__weekday, .m3-date-picker__day, .m3-date-picker__actions, .m3-time-picker, .m3-time-picker__label, .m3-time-picker__fields, .m3-time-picker__field, .m3-time-picker__input, .m3-time-picker__hint, .m3-time-picker__separator, .m3-time-picker__period, .m3-time-picker__period-option, .m3-time-picker__period-option .m3-time-picker__period-input, .m3-time-picker__period-option .m3-time-picker__period-label, .m3-time-picker__actions {
       box-sizing: border-box;
       position: static;
       inset: auto;
@@ -11359,7 +12669,7 @@
       color-scheme: inherit;
       image-rendering: inherit;
     }
-    .m3-snackbar__slot, .m3-card__media, .m3-card__slot, .m3-card__actions, .m3-list-item__slot, .m3-sheet__slot {
+    .m3-snackbar__slot, .m3-card__media, .m3-card__slot, .m3-card__actions, .m3-list-item__slot, .m3-sheet__slot, .m3-date-picker__input {
       box-sizing: border-box;
       position: static;
       inset: auto;
@@ -11438,7 +12748,7 @@
       color-scheme: inherit;
       image-rendering: inherit;
     }
-    .m3-icon-btn::after, .m3-fab--small::after, .m3-snackbar__action::after, .m3-snackbar__close::after, .m3-carousel__indicator::before, .m3-tabs__tab.active::after, .m3-tabs__tab[aria-current=page]::after, .m3-tabs__tab[aria-selected=true]::after, .m3-tabs__input:checked + .m3-tabs__tab::after, input[type=checkbox].m3-checkbox::before, input[type=checkbox].m3-checkbox::after, input[type=radio].m3-radio::before, input[type=radio].m3-radio::after, input[type=checkbox].m3-switch::after, input[type=checkbox].m3-switch::before, .m3-chip--filter .m3-chip__label::before, .m3-chip--input .m3-chip__label::before, .m3-btn::before, .m3-btn::after, .m3-btn-group::before, .m3-btn-group::after, .m3-icon-btn::before, .m3-fab::before, .m3-fab::after, .m3-fab--extended .m3-fab__label::before, .m3-fab--extended .m3-fab__label::after, .m3-segmented::before, .m3-segmented::after, .m3-segmented__segment::before, .m3-segmented__segment::after, .m3-segmented__segment .m3-segmented__input::before, .m3-segmented__segment .m3-segmented__input::after, .m3-segmented__segment .m3-segmented__label::before, .m3-segmented__segment .m3-segmented__label::after, .m3-badge::before, .m3-badge::after, .m3-progress::before, .m3-progress::after, .m3-progress__bar::before, .m3-progress__bar::after, .m3-progress-circle::before, .m3-progress-circle::after, .m3-spinner::before, .m3-spinner::after, .m3-snackbar::before, .m3-snackbar::after, .m3-snackbar__text::before, .m3-snackbar__text::after, .m3-snackbar__action::before, .m3-snackbar__close::before, .m3-tooltip::before, .m3-tooltip::after, .m3-tooltip__title::before, .m3-tooltip__title::after, .m3-card::before, .m3-card::after, .m3-carousel::before, .m3-carousel::after, .m3-carousel__item::before, .m3-carousel__item::after, .m3-carousel__indicators::before, .m3-carousel__indicators::after, .m3-carousel__indicator::after, .m3-dialog::before, .m3-dialog::after, .m3-dialog__title::before, .m3-dialog__title::after, .m3-dialog__content::before, .m3-dialog__content::after, .m3-dialog__actions::before, .m3-dialog__actions::after, .m3-divider::before, .m3-divider::after, .m3-list::before, .m3-list::after, .m3-list-item::before, .m3-list-item::after, .m3-list-item__body::before, .m3-list-item__body::after, .m3-list-item__headline::before, .m3-list-item__headline::after, .m3-list-item__supporting::before, .m3-list-item__supporting::after, .m3-list-item__leading::before, .m3-list-item__leading::after, .m3-list-item__trailing::before, .m3-list-item__trailing::after, .m3-sheet--bottom::before, .m3-sheet--bottom::after, .m3-sheet--side::before, .m3-sheet--side::after, .m3-sheet--side-standard::before, .m3-sheet--side-standard::after, .m3-sheet__handle::before, .m3-sheet__handle::after, .m3-nav-bar::before, .m3-nav-bar::after, .m3-nav-bar__item::before, .m3-nav-bar__item::after, .m3-nav-bar__icon::before, .m3-nav-bar__icon::after, .m3-drawer::before, .m3-drawer::after, .m3-drawer--modal::before, .m3-drawer--modal::after, .m3-drawer__item::before, .m3-drawer__item::after, .m3-drawer__headline::before, .m3-drawer__headline::after, .m3-drawer__badge::before, .m3-drawer__badge::after, .m3-rail::before, .m3-rail::after, .m3-rail__item::before, .m3-rail__item::after, .m3-rail__icon::before, .m3-rail__icon::after, .m3-tabs::before, .m3-tabs::after, .m3-tabs__tab::before, .m3-tabs__tab::after, .m3-tabs__input::before, .m3-tabs__input::after, .m3-top-app-bar::before, .m3-top-app-bar::after, .m3-top-app-bar__title::before, .m3-top-app-bar__title::after, .m3-bottom-app-bar::before, .m3-bottom-app-bar::after, .m3-bottom-app-bar__trailing::before, .m3-bottom-app-bar__trailing::after, .m3-chip::before, .m3-chip::after, .m3-chip--filter .m3-chip__input::before, .m3-chip--filter .m3-chip__input::after, .m3-chip--filter .m3-chip__label::after, .m3-chip--input .m3-chip__input::before, .m3-chip--input .m3-chip__input::after, .m3-chip--input .m3-chip__label::after, .m3-chip__remove::before, .m3-chip__remove::after, .m3-menu::before, .m3-menu::after, .m3-menu__item::before, .m3-menu__item::after, .m3-menu__header::before, .m3-menu__header::after, input[type=range].m3-slider::before, input[type=range].m3-slider::after, input[type=date].m3-datetime::before, input[type=date].m3-datetime::after, input[type=time].m3-datetime::before, input[type=time].m3-datetime::after, input[type=datetime-local].m3-datetime::before, input[type=datetime-local].m3-datetime::after, input[type=month].m3-datetime::before, input[type=month].m3-datetime::after, input[type=week].m3-datetime::before, input[type=week].m3-datetime::after, .m3-field::before, .m3-field::after, .m3-field__input::before, .m3-field__input::after, .m3-field__label::before, .m3-field__label::after, .m3-field__supporting::before, .m3-field__supporting::after, .m3-search::before, .m3-search::after, .m3-search__input::before, .m3-search__input::after, .m3-search__panel::before, .m3-search__panel::after, select.m3-select::before, select.m3-select::after, .m3-snackbar__slot::before, .m3-snackbar__slot::after, .m3-card__media::before, .m3-card__media::after, .m3-card__slot::before, .m3-card__slot::after, .m3-card__actions::before, .m3-card__actions::after, .m3-list-item__slot::before, .m3-list-item__slot::after, .m3-sheet__slot::before, .m3-sheet__slot::after {
+    .m3-icon-btn::after, .m3-fab--small::after, .m3-snackbar__action::after, .m3-snackbar__close::after, .m3-carousel__indicator::before, .m3-tabs__tab.active::after, .m3-tabs__tab[aria-current=page]::after, .m3-tabs__tab[aria-selected=true]::after, .m3-tabs__input:checked + .m3-tabs__tab::after, input[type=checkbox].m3-checkbox::before, input[type=checkbox].m3-checkbox::after, input[type=radio].m3-radio::before, input[type=radio].m3-radio::after, input[type=checkbox].m3-switch::after, input[type=checkbox].m3-switch::before, .m3-chip--filter .m3-chip__label::before, .m3-chip--input .m3-chip__label::before, .m3-split-button__toggle::after, .m3-loading-indicator::before, .m3-date-picker__menu::after, .m3-date-picker__day::after, .m3-date-picker__day::before, .m3-btn::before, .m3-btn::after, .m3-btn-group::before, .m3-btn-group::after, .m3-icon-btn::before, .m3-fab::before, .m3-fab::after, .m3-fab--extended .m3-fab__label::before, .m3-fab--extended .m3-fab__label::after, .m3-segmented::before, .m3-segmented::after, .m3-segmented__segment::before, .m3-segmented__segment::after, .m3-segmented__segment .m3-segmented__input::before, .m3-segmented__segment .m3-segmented__input::after, .m3-segmented__segment .m3-segmented__label::before, .m3-segmented__segment .m3-segmented__label::after, .m3-badge::before, .m3-badge::after, .m3-progress::before, .m3-progress::after, .m3-progress__bar::before, .m3-progress__bar::after, .m3-progress-circle::before, .m3-progress-circle::after, .m3-spinner::before, .m3-spinner::after, .m3-snackbar::before, .m3-snackbar::after, .m3-snackbar__text::before, .m3-snackbar__text::after, .m3-snackbar__action::before, .m3-snackbar__close::before, .m3-tooltip::before, .m3-tooltip::after, .m3-tooltip__title::before, .m3-tooltip__title::after, .m3-card::before, .m3-card::after, .m3-carousel::before, .m3-carousel::after, .m3-carousel__item::before, .m3-carousel__item::after, .m3-carousel__indicators::before, .m3-carousel__indicators::after, .m3-carousel__indicator::after, .m3-dialog::before, .m3-dialog::after, .m3-dialog__title::before, .m3-dialog__title::after, .m3-dialog__content::before, .m3-dialog__content::after, .m3-dialog__actions::before, .m3-dialog__actions::after, .m3-divider::before, .m3-divider::after, .m3-list::before, .m3-list::after, .m3-list-item::before, .m3-list-item::after, .m3-list-item__body::before, .m3-list-item__body::after, .m3-list-item__headline::before, .m3-list-item__headline::after, .m3-list-item__supporting::before, .m3-list-item__supporting::after, .m3-list-item__leading::before, .m3-list-item__leading::after, .m3-list-item__trailing::before, .m3-list-item__trailing::after, .m3-sheet--bottom::before, .m3-sheet--bottom::after, .m3-sheet--side::before, .m3-sheet--side::after, .m3-sheet--side-standard::before, .m3-sheet--side-standard::after, .m3-sheet__handle::before, .m3-sheet__handle::after, .m3-nav-bar::before, .m3-nav-bar::after, .m3-nav-bar__item::before, .m3-nav-bar__item::after, .m3-nav-bar__icon::before, .m3-nav-bar__icon::after, .m3-drawer::before, .m3-drawer::after, .m3-drawer--modal::before, .m3-drawer--modal::after, .m3-drawer__item::before, .m3-drawer__item::after, .m3-drawer__headline::before, .m3-drawer__headline::after, .m3-drawer__badge::before, .m3-drawer__badge::after, .m3-rail::before, .m3-rail::after, .m3-rail__item::before, .m3-rail__item::after, .m3-rail__icon::before, .m3-rail__icon::after, .m3-tabs::before, .m3-tabs::after, .m3-tabs__tab::before, .m3-tabs__tab::after, .m3-tabs__input::before, .m3-tabs__input::after, .m3-top-app-bar::before, .m3-top-app-bar::after, .m3-top-app-bar__title::before, .m3-top-app-bar__title::after, .m3-bottom-app-bar::before, .m3-bottom-app-bar::after, .m3-bottom-app-bar__trailing::before, .m3-bottom-app-bar__trailing::after, .m3-chip::before, .m3-chip::after, .m3-chip--filter .m3-chip__input::before, .m3-chip--filter .m3-chip__input::after, .m3-chip--filter .m3-chip__label::after, .m3-chip--input .m3-chip__input::before, .m3-chip--input .m3-chip__input::after, .m3-chip--input .m3-chip__label::after, .m3-chip__remove::before, .m3-chip__remove::after, .m3-menu::before, .m3-menu::after, .m3-menu__item::before, .m3-menu__item::after, .m3-menu__header::before, .m3-menu__header::after, input[type=range].m3-slider::before, input[type=range].m3-slider::after, input[type=date].m3-datetime::before, input[type=date].m3-datetime::after, input[type=time].m3-datetime::before, input[type=time].m3-datetime::after, input[type=datetime-local].m3-datetime::before, input[type=datetime-local].m3-datetime::after, input[type=month].m3-datetime::before, input[type=month].m3-datetime::after, input[type=week].m3-datetime::before, input[type=week].m3-datetime::after, .m3-field::before, .m3-field::after, .m3-field__input::before, .m3-field__input::after, .m3-field__label::before, .m3-field__label::after, .m3-field__supporting::before, .m3-field__supporting::after, .m3-search::before, .m3-search::after, .m3-search__input::before, .m3-search__input::after, .m3-search__panel::before, .m3-search__panel::after, select.m3-select::before, select.m3-select::after, .m3-toolbar::before, .m3-toolbar::after, .m3-button-group::before, .m3-button-group::after, .m3-btn-check::before, .m3-btn-check::after, .m3-split-button::before, .m3-split-button::after, .m3-split-button__action::before, .m3-split-button__action::after, .m3-split-button__toggle::before, .m3-fab-menu::before, .m3-fab-menu::after, .m3-fab-menu__items::before, .m3-fab-menu__items::after, .m3-fab-menu__item::before, .m3-fab-menu__item::after, .m3-fab-menu__label::before, .m3-fab-menu__label::after, .m3-loading-indicator::after, .m3-date-picker::before, .m3-date-picker::after, .m3-date-picker__header::before, .m3-date-picker__header::after, .m3-date-picker__supporting::before, .m3-date-picker__supporting::after, .m3-date-picker__headline::before, .m3-date-picker__headline::after, .m3-date-picker__nav::before, .m3-date-picker__nav::after, .m3-date-picker__menu::before, .m3-date-picker__arrows::before, .m3-date-picker__arrows::after, .m3-date-picker__grid::before, .m3-date-picker__grid::after, .m3-date-picker__weekday::before, .m3-date-picker__weekday::after, .m3-date-picker__actions::before, .m3-date-picker__actions::after, .m3-time-picker::before, .m3-time-picker::after, .m3-time-picker__label::before, .m3-time-picker__label::after, .m3-time-picker__fields::before, .m3-time-picker__fields::after, .m3-time-picker__field::before, .m3-time-picker__field::after, .m3-time-picker__input::before, .m3-time-picker__input::after, .m3-time-picker__hint::before, .m3-time-picker__hint::after, .m3-time-picker__separator::before, .m3-time-picker__separator::after, .m3-time-picker__period::before, .m3-time-picker__period::after, .m3-time-picker__period-option::before, .m3-time-picker__period-option::after, .m3-time-picker__period-option .m3-time-picker__period-input::before, .m3-time-picker__period-option .m3-time-picker__period-input::after, .m3-time-picker__period-option .m3-time-picker__period-label::before, .m3-time-picker__period-option .m3-time-picker__period-label::after, .m3-time-picker__actions::before, .m3-time-picker__actions::after, .m3-snackbar__slot::before, .m3-snackbar__slot::after, .m3-card__media::before, .m3-card__media::after, .m3-card__slot::before, .m3-card__slot::after, .m3-card__actions::before, .m3-card__actions::after, .m3-list-item__slot::before, .m3-list-item__slot::after, .m3-sheet__slot::before, .m3-sheet__slot::after, .m3-date-picker__input::before, .m3-date-picker__input::after {
       box-sizing: border-box;
       position: static;
       inset: auto;
