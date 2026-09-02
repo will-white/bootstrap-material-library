@@ -598,9 +598,15 @@ Sub-elements: `__group` (adjacent groups draw the hairline themselves),
 the menu is open, or drive `aria-expanded`), `__select` on a native `<select>`,
 `__stepper` around two icon buttons and a `__stepper-input`, `__swatch` on an
 icon button (the color bar under the icon reads `--m3-toolbar-swatch-color`
-set on the element), `__spacer`, and `__more`. A `.m3-menu[popover]` invoked
-from inside the bar hangs below its invoker, start-aligned, where anchor
-positioning exists.
+set on the element), `__spacer`, and `__more`. A `.m3-split-button` inside
+the bar compacts through its own tokens into the list-button shape of an
+editor bar: an icon-button leading half that applies the action (a toggle
+when it carries `aria-pressed`) and a 14px trailing sliver that opens the
+style menu, both uncontained like the bar's icon buttons, with the menu
+hanging under the whole control. A `.m3-menu[popover]` invoked from inside the bar hangs below its
+invoker, start-aligned, where anchor positioning exists. Select chevrons
+(`__select`, `.m3-select`, `.form-select`) point up while the native picker
+is showing, in browsers with `:open`.
 
 Priority collapse is CSS-only: the bar is a container-query context, groups
 marked `__group--priority-low` hide below the `"low"` width and

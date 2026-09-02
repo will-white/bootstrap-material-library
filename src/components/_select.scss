@@ -59,6 +59,13 @@
     var(--#{c.$prefix}-select-chevron-size);
   background-repeat: no-repeat;
 
+  // While the native picker is showing, the chevron points up (browsers
+  // without :open keep it pointing down).
+  &:open {
+    background-image: linear-gradient(135deg, transparent 50%, currentColor 50%),
+      linear-gradient(45deg, currentColor 50%, transparent 50%);
+  }
+
   // List boxes: no chevron, natural height, breathing room around options.
   &[multiple],
   &[size]:not([size="1"]) {

@@ -1126,6 +1126,8 @@
     --m3-toolbar-dense-field-outline-color: var(--md-sys-color-outline);
     --m3-toolbar-dense-swatch-height: 0.1875rem;
     --m3-toolbar-dense-menu-offset: var(--m3-space-1);
+    --m3-toolbar-dense-split-toggle-width: 0.875rem;
+    --m3-toolbar-dense-split-chevron-size: 0.3125rem;
     --m3-button-group-gap: var(--m3-space-2);
     --m3-button-group-connected-gap: 0.125rem;
     --m3-button-group-shape: var(--md-sys-shape-corner-full);
@@ -2988,6 +2990,9 @@
       background-position: calc(100% - var(--m3-space-2) - var(--m3-toolbar-dense-chevron-size)) 50%, calc(100% - var(--m3-space-2)) 50%;
       background-size: var(--m3-toolbar-dense-chevron-size) var(--m3-toolbar-dense-chevron-size);
       background-repeat: no-repeat;
+    }
+    .m3-toolbar--dense select.form-select:open {
+      background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%);
     }
     .m3-toolbar--dense select.form-select:focus {
       box-shadow: none;
@@ -5439,6 +5444,9 @@
       background-position: calc(100% - var(--m3-space-5)) 50%, calc(100% - var(--m3-space-5) + var(--m3-select-chevron-size)) 50%;
       background-size: var(--m3-select-chevron-size) var(--m3-select-chevron-size);
       background-repeat: no-repeat;
+    }
+    .form-select:open {
+      background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%);
     }
     .form-select[multiple], .form-select[size]:not([size="1"]) {
       block-size: auto;
@@ -12218,6 +12226,9 @@
       background-size: var(--m3-select-chevron-size) var(--m3-select-chevron-size);
       background-repeat: no-repeat;
     }
+    select.m3-select:open {
+      background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%);
+    }
     select.m3-select[multiple], select.m3-select[size]:not([size="1"]) {
       block-size: auto;
       padding-block: var(--m3-space-2);
@@ -12350,6 +12361,17 @@
       --m3-btn-icon-gap: var(--m3-space-1);
       --m3-btn-icon-size: var(--m3-toolbar-dense-icon-size);
       --m3-btn-shape: var(--m3-toolbar-dense-control-shape);
+      --m3-split-button-height: var(--m3-toolbar-dense-control-size);
+      --m3-split-button-min-width: var(--m3-space-none);
+      --m3-split-button-inner-shape: var(--m3-toolbar-dense-control-shape);
+      --m3-split-button-inner-shape-active: var(
+        --m3-toolbar-dense-control-shape
+      );
+      --m3-split-button-action-padding-start: var(--m3-space-2);
+      --m3-split-button-action-padding-end: var(--m3-space-2);
+      --m3-split-button-toggle-width: var(--m3-toolbar-dense-split-toggle-width);
+      --m3-split-button-toggle-padding-inline: var(--m3-space-none);
+      --m3-split-button-chevron-size: var(--m3-toolbar-dense-split-chevron-size);
       container-type: inline-size;
       container-name: m3-toolbar;
       font-family: var(--md-sys-typescale-label-large-font);
@@ -12368,17 +12390,31 @@
       overflow: clip visible;
       box-shadow: var(--md-sys-elevation-0);
     }
+    .m3-toolbar--dense .m3-split-button {
+      --m3-btn-container-color: transparent;
+      --m3-btn-label-color: currentColor;
+      anchor-name: --m3-toolbar-split;
+      anchor-scope: --m3-toolbar-split;
+    }
+    .m3-toolbar--dense .m3-icon-btn.m3-split-button__action {
+      padding-inline: var(--m3-space-none);
+    }
     .m3-toolbar--dense .m3-btn-check:checked + .m3-icon-btn {
       --_container: var(--m3-toolbar-dense-selected-container-color);
       --_content: var(--m3-toolbar-dense-selected-color);
     }
     @supports (position-area: block-end) {
-      .m3-toolbar--dense .m3-menu[popover]:not(.m3-menu--static) {
+      .m3-toolbar--dense.m3-toolbar .m3-menu[popover]:not(.m3-menu--static) {
         inset: auto;
         margin: var(--m3-space-none);
         margin-block-start: var(--m3-toolbar-dense-menu-offset);
         position-area: block-end span-inline-end;
         position-try-fallbacks: flip-block, flip-inline;
+      }
+    }
+    @supports (position-area: block-end) {
+      .m3-toolbar--dense .m3-split-button > .m3-menu[popover] {
+        position-anchor: --m3-toolbar-split;
       }
     }
     .m3-toolbar__group {
@@ -12570,6 +12606,9 @@
       background-position: calc(100% - var(--m3-space-2) - var(--m3-toolbar-dense-chevron-size)) 50%, calc(100% - var(--m3-space-2)) 50%;
       background-size: var(--m3-toolbar-dense-chevron-size) var(--m3-toolbar-dense-chevron-size);
       background-repeat: no-repeat;
+    }
+    select.m3-toolbar__select:open {
+      background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%);
     }
     select.m3-toolbar__select:focus {
       box-shadow: none;

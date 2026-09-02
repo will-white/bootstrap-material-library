@@ -46,6 +46,8 @@
 //   --m3-toolbar-dense-field-outline-color      outline
 //   --m3-toolbar-dense-swatch-height            3px    the __swatch color bar
 //   --m3-toolbar-dense-menu-offset              space-1  gap to a popover menu
+//   --m3-toolbar-dense-split-toggle-width       14px   a split control's sliver
+//   --m3-toolbar-dense-split-chevron-size       5px    its chevron
 //   --m3-toolbar-swatch-color                   set per __swatch element; the
 //                                               bar color (currentColor if unset)
 //
@@ -97,6 +99,15 @@
 //       <button class="m3-icon-btn m3-toolbar__swatch" aria-label="Text color"
 //               style="--m3-toolbar-swatch-color: #b3261e"><svg ...></svg></button>
 //     </div>
+//     <div class="m3-toolbar__group">
+//       <div class="m3-split-button">
+//         <button class="m3-icon-btn m3-split-button__action" aria-label="Bulleted list"
+//                 aria-pressed="false"><svg ...></svg></button>
+//         <button class="m3-btn m3-split-button__toggle" popovertarget="bullets"
+//                 aria-label="Bulleted list styles"></button>
+//         <div class="m3-menu" id="bullets" popover>...</div>
+//       </div>
+//     </div>
 //     <div class="m3-toolbar__group m3-toolbar__group--priority-low">
 //       <button class="m3-toolbar__dropdown" popovertarget="align-menu"
 //               aria-label="Align"><svg ...></svg></button>
@@ -126,7 +137,11 @@
 // .dropdown-toggle -- compact automatically; Bootstrap's .form-select inside
 // it takes the __select look (compat layer). Toggled controls
 // (aria-pressed="true", or a checked .m3-btn-check before its label) get the
-// selected-container rectangle. Adjacent groups separate themselves with a
+// selected-container rectangle. A .m3-split-button inside the bar compacts
+// through its own tokens: an icon-button leading half that applies the
+// action (a toggle when it carries aria-pressed) and a 14px trailing sliver
+// that opens the style menu, the list-button shape of an editor bar.
+// Adjacent groups separate themselves with a
 // hairline. A popover .m3-menu invoked from inside the bar hangs below its
 // invoker where anchor positioning exists (centered otherwise). Groups marked
 // --priority-low / --priority-medium hide as the bar narrows and __more
@@ -167,6 +182,8 @@
   --#{c.$prefix}-toolbar-dense-field-outline-color: var(--md-sys-color-outline);
   --#{c.$prefix}-toolbar-dense-swatch-height: #{fn.rem(3)};
   --#{c.$prefix}-toolbar-dense-menu-offset: var(--m3-space-1);
+  --#{c.$prefix}-toolbar-dense-split-toggle-width: #{fn.rem(14)};
+  --#{c.$prefix}-toolbar-dense-split-chevron-size: #{fn.rem(5)};
 }
 
 // Structure + color machinery. The look with no modifier is the floating
@@ -276,6 +293,20 @@
   --#{c.$prefix}-btn-icon-gap: var(--m3-space-1);
   --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-toolbar-dense-icon-size);
   --#{c.$prefix}-btn-shape: var(--#{c.$prefix}-toolbar-dense-control-shape);
+  // Split controls: the halves take the control size, the seam corners the
+  // control shape (no hover morph at this size), and the trailing sliver
+  // narrows to a small chevron.
+  --#{c.$prefix}-split-button-height: var(--#{c.$prefix}-toolbar-dense-control-size);
+  --#{c.$prefix}-split-button-min-width: var(--m3-space-none);
+  --#{c.$prefix}-split-button-inner-shape: var(--#{c.$prefix}-toolbar-dense-control-shape);
+  --#{c.$prefix}-split-button-inner-shape-active: var(
+    --#{c.$prefix}-toolbar-dense-control-shape
+  );
+  --#{c.$prefix}-split-button-action-padding-start: var(--m3-space-2);
+  --#{c.$prefix}-split-button-action-padding-end: var(--m3-space-2);
+  --#{c.$prefix}-split-button-toggle-width: var(--#{c.$prefix}-toolbar-dense-split-toggle-width);
+  --#{c.$prefix}-split-button-toggle-padding-inline: var(--m3-space-none);
+  --#{c.$prefix}-split-button-chevron-size: var(--#{c.$prefix}-toolbar-dense-split-chevron-size);
 
   container-type: inline-size;
   container-name: #{c.$prefix}-toolbar;
@@ -295,6 +326,23 @@
   overflow: clip visible;
   @include m.elevation(0);
 
+  // Split controls in the bar are uncontained like its icon buttons: both
+  // halves ride the bar's content color on a transparent container, and the
+  // control as a whole anchors its style menu.
+  .#{c.$prefix}-split-button {
+    --#{c.$prefix}-btn-container-color: transparent;
+    --#{c.$prefix}-btn-label-color: currentColor;
+    anchor-name: --#{c.$prefix}-toolbar-split;
+    // Scoped, so each control's menu finds its own root (a top-layer popover
+    // would otherwise resolve the name to the last such control in the bar).
+    anchor-scope: --#{c.$prefix}-toolbar-split;
+  }
+
+  // An icon button as a split control's leading half keeps its square box.
+  .#{c.$prefix}-icon-btn.#{c.$prefix}-split-button__action {
+    padding-inline: var(--m3-space-none);
+  }
+
   // A checked hidden input toggles its label like aria-pressed="true" does.
   .#{c.$prefix}-btn-check:checked + .#{c.$prefix}-icon-btn {
     --_container: var(--#{c.$prefix}-toolbar-dense-selected-container-color);
@@ -303,14 +351,23 @@
 
   // Popover menus invoked from inside the bar hang below their invoker (the
   // invoker is the popover's implicit anchor), start-aligned, flipping when
-  // the viewport runs out.
-  .#{c.$prefix}-menu[popover]:not(.#{c.$prefix}-menu--static) {
+  // the viewport runs out. Written at a specificity that beats the split
+  // button's own end-aligned placement, so every menu in the bar hangs the
+  // same way.
+  &.#{c.$prefix}-toolbar .#{c.$prefix}-menu[popover]:not(.#{c.$prefix}-menu--static) {
     @supports (position-area: block-end) {
       inset: auto;
       margin: var(--m3-space-none);
       margin-block-start: var(--#{c.$prefix}-toolbar-dense-menu-offset);
       position-area: block-end span-inline-end;
       position-try-fallbacks: flip-block, flip-inline;
+    }
+  }
+
+  // A split control's menu hangs under the whole control, not its sliver.
+  .#{c.$prefix}-split-button > .#{c.$prefix}-menu[popover] {
+    @supports (position-area: block-end) {
+      position-anchor: --#{c.$prefix}-toolbar-split;
     }
   }
 }
@@ -407,6 +464,13 @@
   background-size: var(--#{c.$prefix}-toolbar-dense-chevron-size)
     var(--#{c.$prefix}-toolbar-dense-chevron-size);
   background-repeat: no-repeat;
+
+  // While the native picker is showing, the chevron points up (browsers
+  // without :open keep it pointing down).
+  &:open {
+    background-image: linear-gradient(135deg, transparent 50%, currentColor 50%),
+      linear-gradient(45deg, currentColor 50%, transparent 50%);
+  }
 
   // The focus indicator is the outline; no field-style inset ring.
   &:focus {
