@@ -49,6 +49,14 @@ $-subtle-map: (
     "--md-extended-color-info-container",
     "--md-extended-color-on-info-container",
   ),
+  "light": (
+    "--md-sys-color-surface-container-lowest",
+    "--md-sys-color-on-surface-variant",
+  ),
+  "dark": (
+    "--md-sys-color-surface-container-highest",
+    "--md-sys-color-on-surface",
+  ),
 );
 
 // Extra RGB triplets beyond the 8 theme colors: bs-name -> role.
@@ -79,6 +87,28 @@ $-extra-triplets: (
 // component `tokens` mixins): Bootstrap's own var names, so existing
 // per-instance overrides keep working.
 @mixin tokens {
+  // Absolute black/white (the neutral palette's end tones).
+  --bs-black: var(--md-ref-palette-neutral0);
+  --bs-white: var(--md-ref-palette-neutral100);
+  --bs-gradient: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bs-white) 15%, transparent),
+    transparent
+  );
+
+  // Breakpoints + container widths (from $grid-breakpoints /
+  // $container-max-widths; media queries read the Sass values directly).
+  @each $bp, $w in c.$grid-breakpoints {
+    --bs-breakpoint-#{$bp}: #{$w};
+  }
+  @each $bp, $w in c.$container-max-widths {
+    --bs-container-#{$bp}: #{$w};
+  }
+
+  // Grid gutters (the .row/.container/.g-* contract re-points these).
+  --bs-gutter-x: var(--m3-space-5);
+  --bs-gutter-y: var(--m3-space-none);
+
   --bs-modal-width: #{fn.rem(500)};
   --bs-modal-width-sm: #{fn.rem(300)};
   --bs-modal-width-lg: #{fn.rem(800)};

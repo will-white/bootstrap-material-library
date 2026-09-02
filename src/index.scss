@@ -64,7 +64,9 @@
 @use "utilities/utilities";
 @use "compat/bootstrap-vars";
 @use "compat/bootstrap-components";
+@use "compat/bootstrap-grid";
 @use "compat/bootstrap-utilities";
+@use "compat/bootstrap-helpers";
 @use "components/button";
 @use "components/icon-button";
 @use "components/fab";
@@ -263,8 +265,8 @@
       @include bootstrap-components.reskin;
     }
 
-    @if c.$enable-bootstrap-utilities {
-      @include bootstrap-utilities.emit;
+    @if c.$enable-bootstrap-grid {
+      @include bootstrap-grid.emit;
     }
   }
 }
@@ -371,6 +373,16 @@
 // --- 7. utilities ------------------------------------------------------------
 @layer utilities {
   @include utilities.styles;
+
+  // Bootstrap's utility API and helpers must beat every component layer
+  // (.d-none on a .m3-card, .visually-hidden on a .btn), so they live here,
+  // not in bootstrap-compat.
+  @if c.$enable-bootstrap-compat and c.$enable-bootstrap-utilities {
+    @include bootstrap-utilities.emit;
+  }
+  @if c.$enable-bootstrap-compat and c.$enable-bootstrap-helpers {
+    @include bootstrap-helpers.emit;
+  }
 }
 
 // --- 8. overrides: declared by the layer statement, never written to --------

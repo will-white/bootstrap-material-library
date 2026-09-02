@@ -88,14 +88,6 @@ $-themes: (
   ),
 );
 
-// Bootstrap responsive-expand breakpoints (structural plumbing).
-$-breakpoints: (
-  "sm": 36rem,
-  "md": 48rem,
-  "lg": 62rem,
-  "xl": 75rem,
-  "xxl": 87.5rem,
-);
 
 @mixin reskin {
   @if c.$bootstrap-reskin-scope {
@@ -219,6 +211,14 @@ $-breakpoints: (
       margin-inline-start: var(--m3-space-none);
       margin-block-start: var(--m3-stroke-hairline);
     }
+  }
+
+  .btn-group-sm > .btn {
+    @include button.small;
+  }
+
+  .btn-group-lg > .btn {
+    @include button.large;
   }
 
   .btn-toolbar {
@@ -600,6 +600,40 @@ $-breakpoints: (
     }
   }
 
+  .dropdown-menu-start {
+    --bs-position: start;
+    inset-inline-start: var(--m3-space-none);
+    inset-inline-end: auto;
+  }
+
+  .dropdown-menu-end {
+    --bs-position: end;
+    inset-inline-start: auto;
+    inset-inline-end: var(--m3-space-none);
+  }
+
+  .dropup .dropdown-menu {
+    inset-block-start: auto;
+    inset-block-end: 100%;
+    margin-block-start: var(--m3-space-none);
+    margin-block-end: var(--m3-space-1);
+  }
+
+  .dropend .dropdown-menu {
+    inset-block-start: var(--m3-space-none);
+    inset-inline-start: 100%;
+    margin-block-start: var(--m3-space-none);
+    margin-inline-start: var(--m3-space-1);
+  }
+
+  .dropstart .dropdown-menu {
+    inset-block-start: var(--m3-space-none);
+    inset-inline-start: auto;
+    inset-inline-end: 100%;
+    margin-block-start: var(--m3-space-none);
+    margin-inline-end: var(--m3-space-1);
+  }
+
   .dropdown-item {
     @include menu.item;
 
@@ -787,10 +821,12 @@ $-breakpoints: (
     @include -navbar-expand;
   }
 
-  @each $bp, $width in $-breakpoints {
-    @media (min-width: #{$width}) {
-      .navbar-expand-#{$bp} {
-        @include -navbar-expand;
+  @each $bp, $width in c.$grid-breakpoints {
+    @if $width != 0 {
+      @media (min-width: #{$width}) {
+        .navbar-expand-#{$bp} {
+          @include -navbar-expand;
+        }
       }
     }
   }
@@ -1409,8 +1445,55 @@ $-breakpoints: (
     );
   }
 
+  .form-control[type="file"] {
+    overflow: hidden;
+    cursor: pointer;
+
+    &::file-selector-button {
+      margin-inline-end: var(--m3-space-3);
+      padding-block: var(--m3-space-1);
+      padding-inline: var(--m3-space-3);
+      border: none;
+      border-radius: var(--md-sys-shape-corner-full);
+      background-color: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
+      @include m.typescale("label-large");
+      cursor: pointer;
+    }
+  }
+
+  .form-control-color {
+    inline-size: var(--m3-space-7);
+    padding: var(--m3-space-1);
+    cursor: pointer;
+
+    &::-webkit-color-swatch {
+      border: none;
+      border-radius: var(--md-sys-shape-corner-extra-small);
+    }
+
+    &::-moz-color-swatch {
+      border: none;
+      border-radius: var(--md-sys-shape-corner-extra-small);
+    }
+  }
+
   .form-select {
     @include select.control;
+  }
+
+  .form-select-sm {
+    min-block-size: calc(
+      var(--#{c.$prefix}-field-height) + var(--m3-density) *
+        var(--m3-density-step) - var(--m3-space-2)
+    );
+  }
+
+  .form-select-lg {
+    min-block-size: calc(
+      var(--#{c.$prefix}-field-height) + var(--m3-density) *
+        var(--m3-density-step) + var(--m3-space-2)
+    );
   }
 
   .form-check {
@@ -1438,6 +1521,12 @@ $-breakpoints: (
   .form-check-inline {
     display: inline-flex;
     margin-inline-end: var(--m3-space-4);
+  }
+
+  .form-check-reverse {
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    text-align: end;
   }
 
   // The switch fully replaces the checkbox pseudo-element chrome, so it

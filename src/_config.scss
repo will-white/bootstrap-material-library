@@ -12,9 +12,37 @@ $prefix: "m3" !default;
 $seed: #6750a4 !default;
 
 // Bootstrap interop switches (see README section "Bootstrap interop").
+// With all of these on (the default) a Bootstrap 5.3 codebase needs nothing
+// from bootstrap.css: components, grid, utilities, helpers, and reboot-level
+// element defaults all ship from m3x.
 $enable-bootstrap-compat: true !default; // --bs-* variable remap (9a)
 $enable-bootstrap-reskin: true !default; // full component re-skin (9b)
-$enable-bootstrap-utilities: false !default; // spacing/display/flex utils (9c)
+$enable-bootstrap-grid: true !default; // containers, row/col grid, gutters
+$enable-bootstrap-utilities: true !default; // the full utility API (9c)
+$enable-bootstrap-helpers: true !default; // helpers + content/type classes
+
+// Bootstrap's responsive breakpoints and container widths (the grid,
+// responsive utilities, and .navbar-expand-* read these). Media queries
+// cannot consume custom properties, so these are the one place viewport
+// widths live as Sass values; they are also exported as --bs-breakpoint-*.
+$grid-breakpoints: (
+  "xs": 0,
+  "sm": 576px,
+  "md": 768px,
+  "lg": 992px,
+  "xl": 1200px,
+  "xxl": 1400px
+) !default;
+
+$container-max-widths: (
+  "sm": 540px,
+  "md": 720px,
+  "lg": 960px,
+  "xl": 1140px,
+  "xxl": 1320px
+) !default;
+
+$grid-columns: 12 !default;
 
 // When set to a selector string (e.g. "[data-m3]") the Bootstrap component
 // re-skin is wrapped in @scope on that selector, so a legacy page can be

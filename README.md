@@ -14,6 +14,10 @@ primitives, with a complete Bootstrap 5.3 interop surface.**
   spacing, durations, easings, z-indices, and opacities all resolve through a
   four-tier token chain -- retheme anything at `:root`, per region, or per
   instance without touching a selector.
+- Self-sufficient for Bootstrap apps. Components, the grid, the full utility
+  API, helpers, and reboot-level element defaults all ship from m3x, so a
+  Bootstrap 5.3 codebase needs **nothing from `bootstrap.css`** -- only its
+  JS, if you still want Bootstrap-driven behavior.
 
 ```bash
 npm i && npm run build
@@ -255,13 +259,45 @@ Three pieces:
   visuals from the same mixins as the `.m3-*` classes (see the table below).
   The re-skin styles Bootstrap's existing class + state contract and never
   alters markup expectations.
-- **Utilities interop (9c, opt-in).** `$enable-bootstrap-utilities: true`
-  generates Bootstrap's spacing utilities (`m*`/`p*` 0-5 mapped onto
-  `--m3-space-*`: 0, 4, 8, 16, 24, 48px), display, flex, gap, and
-  text-alignment groups from tokens. Off by default -- it costs roughly
-  8-10 KB of compressed output.
+- **Grid (on by default, `$enable-bootstrap-grid`).** Containers
+  (`.container`, `-fluid`, `-{sm..xxl}`), the `.row`/`.col-*` flex grid with
+  the `--bs-gutter-x/y` contract, `.row-cols-*`, offsets, orders, `.g-*`
+  gutters, and the CSS-grid opt-in (`.grid`, `.g-col-*`, `.g-start-*`), all
+  responsive across `$grid-breakpoints` (576/768/992/1200/1400px) and driven
+  by the spacing scale. Emitted in the `bootstrap-compat` layer.
+- **Utility API (on by default, `$enable-bootstrap-utilities`).** The full
+  Bootstrap 5.3 utility set generated from tokens: spacing, gap, display
+  (incl. print), flex, float, object-fit, order, and text-alignment with
+  responsive variants; plus align, opacity, overflow, shadow, focus-ring,
+  position, border, sizing, font, text, color, link, background,
+  interaction, rounded, visibility, and z-index utilities. Emitted in the
+  `utilities` layer so they beat every component layer. Two deliberate
+  differences from Bootstrap: no `!important` (utilities beat all library
+  layers but never your own unlayered CSS -- that is the layer contract),
+  and the `--bs-text-opacity`/`--bs-bg-opacity`/`--bs-border-opacity`/
+  `--bs-link-opacity` contracts are honored through `color-mix()` instead of
+  `rgba(var(--bs-*-rgb))`.
+- **Helpers + content classes (on by default, `$enable-bootstrap-helpers`).**
+  `.visually-hidden(-focusable)`, `.stretched-link`, `.ratio-*`,
+  `.fixed-*`/`.sticky-*`, `.vstack`/`.hstack`, `.vr`, `.clearfix`,
+  `.icon-link`, and the type/content classes (`.lead`, `.display-*`,
+  `.blockquote(-footer)`, `.mark`, `.small`, `.initialism`,
+  `.list-unstyled`/`.list-inline`, `.img-fluid`/`.img-thumbnail`,
+  `.figure*`). Reboot-level element defaults (lists, `blockquote`, `mark`,
+  `sub`/`sup`, `abbr`, `kbd`, `pre`, `fieldset`/`legend`, `[hidden]`) live in
+  the `base` layer.
 
-### Running alongside real Bootstrap
+Together these cover what a typical Bootstrap app consumes from
+`bootstrap.css`; the components table below lists what still needs
+Bootstrap's *JavaScript*. Size: the full default build is about 470 KB
+expanded / 385 KB minified (about 42 KB gzipped); turn off the grid,
+utilities, or helpers flags to trim it.
+
+### Running alongside real Bootstrap (optional)
+
+You do not need `bootstrap.css` at all. If you keep it during a migration
+(for example for a Bootstrap plugin's own styles), import it into the
+reserved layer so every m3x layer beats it:
 
 ```css
 @layer reset, bootstrap, tokens, bootstrap-compat, base, components, utilities, overrides;
@@ -269,8 +305,8 @@ Three pieces:
 @import url("m3x.css");
 ```
 
-Everything m3x defines beats the `bootstrap` layer; anything m3x doesn't cover
-(e.g. the grid system) falls through to Bootstrap untouched.
+Everything m3x defines beats the `bootstrap` layer; anything m3x doesn't
+define falls through to Bootstrap untouched.
 
 ### Migration zones
 
@@ -326,6 +362,11 @@ have an M3 counterpart that needs no JS at all.
 | `.input-group` | -- (field-aware joining) | No | |
 | `.form-floating` | `.m3-field` floating label | No | identical markup shape (input then label) |
 | validation (`.is-invalid`/`.was-validated`) | `:user-invalid` | No | **pixel-identical error treatment by construction** |
+
+| grid (`.container`, `.row`, `.col-*`, `.g-*`, `.grid`) | -- (token-driven, same contract) | No | responsive across `$grid-breakpoints` |
+| utilities (`.d-*`, `.m-*`, `.text-*`, `.bg-*`, `.rounded-*`, ...) | -- (generated from tokens) | No | no `!important`; opacity contracts via `color-mix()` |
+| helpers (`.visually-hidden`, `.stretched-link`, `.ratio`, `.sticky-top`, ...) | -- | No | in the `utilities` layer |
+| content (`.lead`, `.display-*`, `.blockquote`, `.img-fluid`, ...) | typescale utilities | No | |
 
 **Additive M3 components with no Bootstrap ancestor:** icon buttons, FABs,
 segmented buttons, chips, navigation bar / rail / drawer, bottom app bar,
@@ -409,7 +450,12 @@ no `@import`).
   $prefix: "m3",                   // class + tier-3 token prefix
   $enable-bootstrap-compat: true,  // --bs-* remap (9a)
   $enable-bootstrap-reskin: true,  // component re-skin (9b)
-  $enable-bootstrap-utilities: false, // utilities interop (9c)
+  $enable-bootstrap-grid: true,    // containers + .row/.col grid
+  $enable-bootstrap-utilities: true, // full utility API (9c)
+  $enable-bootstrap-helpers: true, // helpers + content classes
+  $grid-breakpoints: (...),        // xs 0 / sm 576px / ... / xxl 1400px
+  $container-max-widths: (...),    // sm 540px / ... / xxl 1320px
+  $grid-columns: 12,
   $bootstrap-reskin-scope: null,   // e.g. "[data-m3]" for migration zones
   $emit-layer-statement: true,     // suppress if you own the layer order
   $components: (...)               // prune the catalog; default: all
