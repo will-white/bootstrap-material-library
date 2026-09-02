@@ -672,7 +672,7 @@
         </div>
 
         <div class="demo-pair">
-          <small class="m3-label-medium">.btn-group + .btn-check (Bootstrap markup) / split dropdown markup</small>
+          <small class="m3-label-medium">.btn-group + .btn-check (Bootstrap markup) / Bootstrap's split dropdown markup renders as the M3 split button</small>
           <div class="btn-group" role="group" aria-label="Text style">
             <input type="checkbox" class="btn-check" id="bs-bold" checked>
             <label class="btn btn-outline-primary" for="bs-bold">Bold</label>
@@ -688,21 +688,33 @@
         </div>
 
         <div class="demo-pair">
-          <small class="m3-label-medium">.m3-split-button (tonal) with a native popover menu / filled</small>
+          <small class="m3-label-medium">.m3-split-button: two buttons on one pill. Tonal with related actions in the menu / filled where the menu chooses the leading action (radio options, no JS) / outlined with the leading half disabled on its own</small>
           <div class="demo-row">
             <div class="m3-split-button m3-split-button--tonal">
               <button class="m3-btn m3-split-button__action" type="button">Save</button>
               <button class="m3-btn m3-split-button__toggle" type="button" popovertarget="save-menu" aria-label="More save options"></button>
               <div class="m3-menu" id="save-menu" popover>
-                <button class="m3-menu__item" type="button" popovertarget="save-menu" popovertargetaction="hide">Save as draft</button>
-                <button class="m3-menu__item" type="button" popovertarget="save-menu" popovertargetaction="hide">Save and close</button>
+                <button class="m3-menu__item" type="button" popovertarget="save-menu" popovertargetaction="hide">Save as draft</button><button class="m3-menu__item" type="button" popovertarget="save-menu" popovertargetaction="hide">Save and close</button>
               </div>
             </div>
             <div class="m3-split-button">
-              <button class="m3-btn m3-split-button__action" type="button">Send</button>
-              <button class="m3-btn m3-split-button__toggle" type="button" popovertarget="send-menu" aria-label="More send options"></button>
+              <button class="m3-btn m3-split-button__action" type="button">
+                <span class="m3-split-button__label">Send</span>
+                <span class="m3-split-button__label">Schedule send</span>
+                <span class="m3-split-button__label">Send and archive</span>
+              </button>
+              <button class="m3-btn m3-split-button__toggle" type="button" popovertarget="send-menu" aria-label="Choose send action"></button>
               <div class="m3-menu" id="send-menu" popover>
-                <button class="m3-menu__item" type="button" popovertarget="send-menu" popovertargetaction="hide">Schedule send</button>
+                <label class="m3-menu__item"><input class="m3-split-button__option" type="radio" name="send-action" checked>Send</label>
+                <label class="m3-menu__item"><input class="m3-split-button__option" type="radio" name="send-action">Schedule send</label>
+                <label class="m3-menu__item"><input class="m3-split-button__option" type="radio" name="send-action">Send and archive</label>
+              </div>
+            </div>
+            <div class="m3-split-button m3-split-button--outlined">
+              <button class="m3-btn m3-split-button__action" type="button" disabled>Publish</button>
+              <button class="m3-btn m3-split-button__toggle" type="button" popovertarget="publish-menu" aria-label="More publish options"></button>
+              <div class="m3-menu" id="publish-menu" popover>
+                <button class="m3-menu__item" type="button" popovertarget="publish-menu" popovertargetaction="hide">Preview</button><button class="m3-menu__item" type="button" popovertarget="publish-menu" popovertargetaction="hide">Schedule</button>
               </div>
             </div>
           </div>

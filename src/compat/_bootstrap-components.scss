@@ -30,6 +30,7 @@
 @use "../components/tabs";
 @use "../components/top-app-bar";
 @use "../components/toolbar";
+@use "../components/split-button";
 @use "../components/checkbox";
 @use "../components/radio";
 @use "../components/switch";
@@ -350,6 +351,20 @@ $-themes: (
     display: flex;
     flex-wrap: wrap;
     gap: var(--m3-space-2);
+  }
+
+  // Bootstrap's split dropdown (.btn + .dropdown-toggle-split inside a
+  // .btn-group) is the M3 split button: the leading half's spec paddings and
+  // seam corners, the trailing half's width, chevron, and open morph
+  // (Bootstrap's JS sets aria-expanded on the toggle).
+  .btn-group > .btn:has(+ .dropdown-toggle-split) {
+    @include split-button.action;
+  }
+
+  .btn-group > .btn.dropdown-toggle-split {
+    @include split-button.toggle;
+    border-start-end-radius: var(--#{c.$prefix}-btn-shape);
+    border-end-end-radius: var(--#{c.$prefix}-btn-shape);
   }
 
   // Bootstrap controls inside a dense m3x toolbar: .btn / .btn-group /

@@ -474,6 +474,7 @@ have an M3 counterpart that needs no JS at all.
 | `.card` + parts | `.m3-card--outlined` + parts | No | `.card-body` acts as the donut slot |
 | `.carousel` | `.m3-carousel` (scroll-snap) | Yes (autoplay/controls) | M3 counterpart needs no JS at all |
 | `.dropdown-menu`/`.dropdown-item` | `.m3-menu`/`.m3-menu__item` | Yes (open/position) | M3 menu uses the Popover API, no JS |
+| `.btn-group` > `.btn` + `.dropdown-toggle-split` | `.m3-split-button` | Yes (dropdown) | the pair renders as the M3 split button; Bootstrap's `aria-expanded` on the toggle drives the open morph |
 | `.list-group` | `.m3-list`/`.m3-list-item` | No | `.active` maps to the selected state |
 | `.modal` + parts | `.m3-dialog` on `<dialog>` | Yes (open/close) | native `<dialog>.showModal()` replaces it in one line |
 | `.navbar` + `.navbar-toggler` | `.m3-top-app-bar` | Yes (collapse toggling) | toggler icon is CSS-drawn |
@@ -535,8 +536,8 @@ pure-CSS equivalent -- divergences are listed.
 |---|---|---|
 | Buttons | `.m3-btn` + `--filled/--tonal/--elevated/--outlined/--text`, sizes `--xs/--small/--medium/--large/--xl`, `--square` | -- |
 | Icon buttons | `.m3-icon-btn` + variants, sizes `--xs/--small/--medium/--large/--xl`, `--square` | toggle state via `aria-pressed` |
-| Button groups | `.m3-button-group` + `--connected`, sizes `--xs..--xl`, `.m3-btn-check` hidden inputs | selected via `aria-pressed`, `.active`, or a checked `.m3-btn-check` |
-| Split button | `.m3-split-button` (`__action` + `__toggle` on `.m3-btn`) + `--tonal/--outlined/--elevated` | the toggle is the `popovertarget` of a `.m3-menu[popover]`; the chevron flips through `:has()` |
+| Button groups | `.m3-button-group` + `--connected`, sizes `--xs..--xl`, `.m3-btn-check` hidden inputs | selected via `aria-pressed`, `.active`, or a checked `.m3-btn-check`; in a connected group an icon button's 48dp hit area keeps its block-axis overhang but stops at the seam |
+| Split button | `.m3-split-button` (`__action` + `__toggle` on `.m3-btn`) + `--tonal/--outlined/--elevated`, sizes `--xs/--medium/--large/--xl`; `__option` radios in `<label>` menu items + `__label` spans let the menu choose the leading action | two independently enabled buttons on one pill (spec paddings, seam corners, 48dp trailing half); the toggle is the `popovertarget` of a `.m3-menu[popover]`, and while it is open (or `aria-expanded="true"`) it morphs to a circle with a pressed state layer and its chevron flips |
 | Toolbar | `.m3-toolbar` + `--floating/--docked/--standard/--vibrant/--vertical/--fixed`; `--dense` editor bar with `__group` (+ `--priority-low/--priority-medium`), `__dropdown`, `__select`, `__stepper` + `__stepper-input`, `__swatch`, `__spacer`, `__more` | dense groups collapse through container queries on the bar; what the overflow menu lists is yours |
 | FAB / extended FAB | `.m3-fab` + `--small/--medium/--large/--extended/--fixed`, colors `--primary/--secondary/--tertiary/--surface` | -- |
 | FAB menu | `.m3-fab-menu` (`__fab` + `__items[popover]` of `__item`s) | opens through `popovertarget`; the FAB flips to its open look through `:has()`; anchored above the FAB where anchor positioning exists |

@@ -92,6 +92,27 @@
     outline-offset: calc(-1 * var(--md-sys-state-focus-indicator-offset));
   }
 
+  // A chosen item (a selected option, a checked radio inside a label item):
+  // secondary container, as M3's selected menu item.
+  &.active,
+  &[aria-checked="true"],
+  &[aria-selected="true"] {
+    --_container: var(--md-sys-color-secondary-container);
+    --_content: var(--md-sys-color-on-secondary-container);
+  }
+
+  &:has(> input:checked) {
+    --_container: var(--md-sys-color-secondary-container);
+    --_content: var(--md-sys-color-on-secondary-container);
+  }
+
+  // Keyboard focus on a hidden input inside a label item shows on the item.
+  &:has(> input:focus-visible) {
+    outline: var(--md-sys-state-focus-indicator-thickness) solid
+      var(--md-sys-color-secondary);
+    outline-offset: calc(-1 * var(--md-sys-state-focus-indicator-offset));
+  }
+
   &:disabled,
   &.disabled {
     @include m.disabled-bare;

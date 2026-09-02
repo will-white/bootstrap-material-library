@@ -107,6 +107,13 @@ $members: ".#{c.$prefix}-btn, .#{c.$prefix}-icon-btn";
   > #{$check}:checked + :is(#{$members}) {
     border-radius: var(--#{c.$prefix}-button-group-selected-shape);
   }
+
+  // Hit areas keep their 48dp block-axis overhang but never cross the seam:
+  // an icon button's 48dp target would otherwise cover the outer pixels of
+  // both neighbors, and the later sibling would take the click.
+  > .#{c.$prefix}-icon-btn::after {
+    width: 100%;
+  }
 }
 
 // The hidden input of the .m3-btn-check + label pattern: invisible, out of

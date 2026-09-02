@@ -14,7 +14,9 @@ $corners: (
   "small": 8,
   "medium": 12,
   "large": 16,
+  "large-increased": 20,
   "extra-large": 28,
+  "extra-large-increased": 32,
 );
 
 @mixin properties {
