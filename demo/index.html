@@ -171,6 +171,12 @@
               <label class="demo-row" style="gap: var(--m3-space-2);">
                 <input type="checkbox" class="m3-checkbox"> Include spam
               </label>
+              <label class="demo-row" style="gap: var(--m3-space-2);">
+                <input type="checkbox" class="m3-checkbox" data-indeterminate aria-label="Labels, some selected"> Labels (2 of 5)
+              </label>
+              <label class="demo-row" style="gap: var(--m3-space-2);">
+                <input type="checkbox" class="m3-checkbox" checked disabled> Archive on read
+              </label>
             </div>
             <div class="demo-row" role="radiogroup" aria-label="Sound" style="margin-block-start: var(--m3-space-3);">
               <label class="demo-row" style="gap: var(--m3-space-2);"><input type="radio" name="snd" class="m3-radio" checked> Chime</label>
@@ -395,6 +401,38 @@
             <input type="text" class="form-control" id="float-demo" placeholder=" " value="Aurora">
             <label for="float-demo">Workspace name</label>
           </div>
+          <div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="bs-cb1" checked>
+              <label class="form-check-label" for="bs-cb1">Mute threads I leave</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="bs-cb2">
+              <label class="form-check-label" for="bs-cb2">Include spam</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="bs-cb3" data-indeterminate>
+              <label class="form-check-label" for="bs-cb3">Labels (2 of 5)</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="bs-cb4" checked disabled>
+              <label class="form-check-label" for="bs-cb4">Archive on read</label>
+            </div>
+          </div>
+          <div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="bs-snd" id="bs-r1" checked>
+              <label class="form-check-label" for="bs-r1">Chime</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="bs-snd" id="bs-r2">
+              <label class="form-check-label" for="bs-r2">Pop</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="bs-snd" id="bs-r3" disabled>
+              <label class="form-check-label" for="bs-r3">Silent</label>
+            </div>
+          </div>
           <div class="form-check form-switch">
             <input class="form-check-input" type="checkbox" role="switch" id="bs-switch" checked>
             <label class="form-check-label" for="bs-switch">Bootstrap switch markup</label>
@@ -582,6 +620,8 @@
   document.getElementById("seed").addEventListener("input", function (e) {
     root.style.setProperty("--md-seed", e.target.value);
   });
+  // Indeterminate is a DOM property, not an attribute.
+  document.querySelectorAll("[data-indeterminate]").forEach(function (i) { i.indeterminate = true; });
   // Browsers without Invoker Commands (command="show-modal"): open the modal from a click.
   if (!("commandForElement" in HTMLButtonElement.prototype)) {
     document.querySelectorAll("[commandfor]").forEach(function (b) {
