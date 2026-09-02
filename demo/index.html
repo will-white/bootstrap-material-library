@@ -8,7 +8,7 @@
   <style>
     /* Demo shell scaffolding only -- everything visual comes from m3x.css. */
     .demo-shell { display: grid; grid-template-columns: auto 1fr; min-height: 100dvh; }
-    .demo-main { padding: var(--m3-space-5); max-width: 68rem; margin-inline: auto; width: 100%; display: grid; gap: var(--m3-space-6); }
+    .demo-main { padding: var(--m3-space-5); max-width: 72rem; margin-inline: auto; width: 100%; display: grid; gap: var(--m3-space-6); }
     .demo-grid { display: grid; gap: var(--m3-space-4); grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); align-items: start; }
     .demo-row { display: flex; flex-wrap: wrap; gap: var(--m3-space-3); align-items: center; }
     .demo-pair { display: grid; gap: var(--m3-space-2); }
@@ -536,7 +536,101 @@
     <!-- ================================================================ -->
     <section id="expressive" aria-labelledby="expressive-h">
       <h2 id="expressive-h" class="m3-headline-small">Toolbars, button groups, split buttons</h2>
-      <p class="m3-body-medium">The M3 Expressive additions. Groups mark their selected member with <code>aria-pressed</code> or a hidden <code>.m3-btn-check</code>; the split button's toggle opens a native popover menu. Bootstrap <code>.btn-group</code> markup renders as a connected group.</p>
+      <p class="m3-body-medium">The M3 Expressive additions. Groups mark their selected member with <code>aria-pressed</code> or a hidden <code>.m3-btn-check</code>; the split button's toggle opens a native popover menu. Bootstrap <code>.btn-group</code> markup renders as a connected group. The dense bar below is the editor-toolbar shape (a slide or document editor's formatting row): one 40px row, 28px controls two pixels apart, hairlines between groups, compact native selects and popover menus, a stepper, and color swatches. Narrow the window and the low-priority groups fold away from the right while the overflow button appears.</p>
+
+      <div class="demo-pair" style="margin-block-end: var(--m3-space-4);">
+        <small class="m3-label-medium">.m3-toolbar--dense with __group, __select, __stepper, __swatch, __dropdown (popover menus), __spacer, __more; groups marked --priority-low / --priority-medium collapse first</small>
+        <div class="m3-toolbar m3-toolbar--dense" role="toolbar" aria-label="Slide formatting">
+          <div class="m3-toolbar__group">
+            <span class="m3-tooltip-anchor"><button class="m3-icon-btn" type="button" aria-label="Undo"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg></button><span class="m3-tooltip" role="tooltip">Undo (Ctrl+Z)</span></span>
+            <button class="m3-icon-btn" type="button" aria-label="Redo" disabled><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg></button>
+            <button class="m3-icon-btn" type="button" aria-label="Print"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
+            <button class="m3-icon-btn" type="button" aria-label="Paint format" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M18 4V3c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1h12c.55 0 1-.45 1-1V6h1v4H9v11c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-9h8V4h-3z"/></svg></button>
+          </div>
+          <div class="m3-toolbar__group">
+            <select class="m3-toolbar__select" aria-label="Zoom">
+              <option>50%</option><option>75%</option><option selected>100%</option><option>125%</option><option>150%</option><option>Fit</option>
+            </select>
+          </div>
+          <div class="m3-toolbar__group m3-toolbar__group--priority-medium">
+            <button class="m3-icon-btn" type="button" aria-label="Select" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M12 2 4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg></button>
+            <button class="m3-icon-btn" type="button" aria-label="Text box"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M2.5 4v3h5v12h3V7h5V4h-13zm19 5h-9v3h3v7h3v-7h3V9z"/></svg></button>
+            <button class="m3-icon-btn" type="button" aria-label="Insert image"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></button>
+            <button class="m3-toolbar__dropdown" type="button" popovertarget="tb-shapes" aria-label="Shapes"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M11 13.5v8H3v-8h8zm-2 2H5v4h4v-4zM12 2l5.5 9h-11L12 2zm0 3.86L10.08 9h3.84L12 5.86zM17.5 13c2.49 0 4.5 2.01 4.5 4.5S19.99 22 17.5 22 13 19.99 13 17.5s2.01-4.5 4.5-4.5zm0 2a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"/></svg></button>
+            <div class="m3-menu" id="tb-shapes" popover>
+              <button class="m3-menu__item" type="button" popovertarget="tb-shapes" popovertargetaction="hide">Rectangle</button><button class="m3-menu__item" type="button" popovertarget="tb-shapes" popovertargetaction="hide">Rounded rectangle</button><button class="m3-menu__item" type="button" popovertarget="tb-shapes" popovertargetaction="hide">Ellipse</button><button class="m3-menu__item" type="button" popovertarget="tb-shapes" popovertargetaction="hide">Arrow</button><button class="m3-menu__item" type="button" popovertarget="tb-shapes" popovertargetaction="hide">Callout</button>
+            </div>
+          </div>
+          <div class="m3-toolbar__group m3-toolbar__group--priority-medium">
+            <select class="m3-toolbar__select" aria-label="Font">
+              <option>Arial</option><option>Georgia</option><option>Inter</option><option selected>Roboto</option><option>Source Serif</option>
+            </select>
+            <div class="m3-toolbar__stepper" role="group" aria-label="Font size">
+              <button class="m3-icon-btn" type="button" aria-label="Decrease font size"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M19 13H5v-2h14v2z"/></svg></button>
+              <input class="m3-toolbar__stepper-input" type="number" value="18" min="1" max="400" aria-label="Font size">
+              <button class="m3-icon-btn" type="button" aria-label="Increase font size"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg></button>
+            </div>
+          </div>
+          <div class="m3-toolbar__group">
+            <input class="m3-btn-check" type="checkbox" id="tb-bold" checked>
+            <label class="m3-icon-btn" for="tb-bold"><svg viewBox="0 0 24 24" width="24" height="24" role="img"><title>Bold</title><path fill="currentColor" d="M15.6 10.8c1-.7 1.6-1.8 1.6-2.8 0-2.2-1.8-4-4-4H7v14h7c2.2 0 4-1.8 4-4 0-1.5-.9-2.7-2.4-3.2zM10 7h3a1.5 1.5 0 0 1 0 3h-3V7zm3.5 8H10v-3h3.5a1.5 1.5 0 0 1 0 3z"/></svg></label>
+            <button class="m3-icon-btn" type="button" aria-label="Italic" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M10 4v3h2.2l-3.4 8H6v3h8v-3h-2.2l3.4-8H18V4z"/></svg></button>
+            <button class="m3-icon-btn" type="button" aria-label="Underline" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M12 17a6 6 0 0 0 6-6V3h-2.5v8a3.5 3.5 0 0 1-7 0V3H6v8a6 6 0 0 0 6 6zM5 19v2h14v-2z"/></svg></button>
+            <button class="m3-icon-btn m3-toolbar__swatch" type="button" aria-label="Text color" style="--m3-toolbar-swatch-color: #b3261e;"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M5.49 17h2.42l1.27-3.58h5.65L16.09 17h2.42L13.25 3h-2.5L5.49 17zm4.42-5.61 2.03-5.79h.12l2.03 5.79H9.91z"/></svg></button>
+            <button class="m3-icon-btn m3-toolbar__swatch" type="button" aria-label="Highlight color" style="--m3-toolbar-swatch-color: #ffde9b;"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M17.75 7 14 3.25l-10 10V17h3.75l10-10zm2.96-2.96a.996.996 0 0 0 0-1.41L18.37.29a.996.996 0 0 0-1.41 0L15 2.25 18.75 6l1.96-1.96z"/></svg></button>
+          </div>
+          <div class="m3-toolbar__group m3-toolbar__group--priority-low">
+            <button class="m3-toolbar__dropdown" type="button" popovertarget="tb-align" aria-label="Align"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"/></svg></button>
+            <div class="m3-menu" id="tb-align" popover>
+              <button class="m3-menu__item" type="button" popovertarget="tb-align" popovertargetaction="hide">Left</button><button class="m3-menu__item" type="button" popovertarget="tb-align" popovertargetaction="hide">Center</button><button class="m3-menu__item" type="button" popovertarget="tb-align" popovertargetaction="hide">Right</button><button class="m3-menu__item" type="button" popovertarget="tb-align" popovertargetaction="hide">Justify</button>
+            </div>
+            <button class="m3-toolbar__dropdown" type="button" popovertarget="tb-spacing" aria-label="Line and paragraph spacing"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M6 7h2.5L5 3.5 1.5 7H4v10H1.5L5 20.5 8.5 17H6V7zm4-2v2h12V5H10zm0 14h12v-2H10v2zm0-6h12v-2H10v2z"/></svg></button>
+            <div class="m3-menu" id="tb-spacing" popover>
+              <button class="m3-menu__item" type="button" popovertarget="tb-spacing" popovertargetaction="hide">Single</button><button class="m3-menu__item" type="button" popovertarget="tb-spacing" popovertargetaction="hide">1.15</button><button class="m3-menu__item" type="button" popovertarget="tb-spacing" popovertargetaction="hide">1.5</button><button class="m3-menu__item" type="button" popovertarget="tb-spacing" popovertargetaction="hide">Double</button>
+            </div>
+            <button class="m3-icon-btn" type="button" aria-label="Bulleted list"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M4 10.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zm0-6c-.83 0-1.5.67-1.5 1.5S3.17 7.5 4 7.5 5.5 6.83 5.5 6 4.83 4.5 4 4.5zm0 12c-.83 0-1.5.68-1.5 1.5s.68 1.5 1.5 1.5 1.5-.68 1.5-1.5-.67-1.5-1.5-1.5zM7 19h14v-2H7v2zm0-6h14v-2H7v2zm0-8v2h14V5H7z"/></svg></button>
+            <button class="m3-icon-btn" type="button" aria-label="Numbered list"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M2 17h2v.5H3v1h1v.5H2v1h3v-4H2v1zm1-9h1V4H2v1h1v3zm-1 3h1.8L2 13.1v.9h3v-1H3.2L5 10.9V10H2v1zm5-6v2h14V5H7zm0 14h14v-2H7v2zm0-6h14v-2H7v2z"/></svg></button>
+            <button class="m3-icon-btn" type="button" aria-label="Clear formatting"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M3.27 5 2 6.27l6.97 6.97L6.5 19h3l1.57-3.66L16.73 21 18 19.73 3.55 5.27 3.27 5zM6 5v.18L8.82 8h2.4l-.72 1.68 2.1 2.1L14.21 8H20V5H6z"/></svg></button>
+          </div>
+          <div class="m3-toolbar__spacer"></div>
+          <div class="m3-toolbar__group">
+            <button class="m3-toolbar__dropdown" type="button" popovertarget="tb-mode"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Editing</button>
+            <div class="m3-menu" id="tb-mode" popover>
+              <button class="m3-menu__item" type="button" popovertarget="tb-mode" popovertargetaction="hide">Editing</button><button class="m3-menu__item" type="button" popovertarget="tb-mode" popovertargetaction="hide">Suggesting</button><button class="m3-menu__item" type="button" popovertarget="tb-mode" popovertargetaction="hide">Viewing</button>
+            </div>
+            <button class="m3-icon-btn m3-toolbar__more" type="button" popovertarget="tb-more" aria-label="More options"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button>
+            <div class="m3-menu" id="tb-more" popover>
+              <button class="m3-menu__item" type="button" popovertarget="tb-more" popovertargetaction="hide">Align</button><button class="m3-menu__item" type="button" popovertarget="tb-more" popovertargetaction="hide">Line spacing</button><button class="m3-menu__item" type="button" popovertarget="tb-more" popovertargetaction="hide">Bulleted list</button><button class="m3-menu__item" type="button" popovertarget="tb-more" popovertargetaction="hide">Numbered list</button><button class="m3-menu__item" type="button" popovertarget="tb-more" popovertargetaction="hide">Increase indent</button><button class="m3-menu__item" type="button" popovertarget="tb-more" popovertargetaction="hide">Clear formatting</button>
+            </div>
+          </div>
+        </div>
+        <small class="m3-label-medium">The same bar hosting Bootstrap markup: .btn-group + .btn-check, .form-select, .btn, .dropdown-toggle all compact through the tokens the bar re-points</small>
+        <div class="m3-toolbar m3-toolbar--dense" role="toolbar" aria-label="Bootstrap controls in a dense bar">
+          <div class="m3-toolbar__group">
+            <div class="btn-group" role="group" aria-label="Text style">
+              <input type="checkbox" class="btn-check" id="tbbs-b" checked>
+              <label class="btn btn-outline-primary" for="tbbs-b">Bold</label>
+              <input type="checkbox" class="btn-check" id="tbbs-i">
+              <label class="btn btn-outline-primary" for="tbbs-i">Italic</label>
+              <input type="checkbox" class="btn-check" id="tbbs-u">
+              <label class="btn btn-outline-primary" for="tbbs-u">Underline</label>
+            </div>
+          </div>
+          <div class="m3-toolbar__group">
+            <select class="form-select" aria-label="Zoom">
+              <option>75%</option><option selected>100%</option><option>150%</option>
+            </select>
+          </div>
+          <div class="m3-toolbar__group">
+            <button class="btn btn-secondary dropdown-toggle" type="button">Insert</button>
+            <button class="m3-icon-btn" type="button" aria-label="Add comment"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M22 4c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4zm-5 7h-4v4h-2v-4H7V9h4V5h2v4h4v2z"/></svg></button>
+          </div>
+          <div class="m3-toolbar__spacer"></div>
+          <div class="m3-toolbar__group">
+            <button class="btn btn-primary" type="button">Share</button>
+          </div>
+        </div>
+      </div>
 
       <div class="demo-grid">
         <div class="demo-pair">

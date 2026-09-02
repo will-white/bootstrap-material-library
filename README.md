@@ -499,6 +499,7 @@ have an M3 counterpart that needs no JS at all.
 | utilities (`.d-*`, `.m-*`, `.text-*`, `.bg-*`, `.rounded-*`, ...) | -- (generated from tokens) | No | no `!important`; opacity contracts via `color-mix()` |
 | helpers (`.visually-hidden`, `.stretched-link`, `.ratio`, `.sticky-top`, ...) | -- | No | in the `utilities` layer |
 | content (`.lead`, `.display-*`, `.blockquote`, `.img-fluid`, ...) | typescale utilities | No | |
+| `.btn-toolbar` | `.m3-toolbar` / `.m3-toolbar--dense` | No | `.btn-toolbar` stays a wrapping flex row; drop Bootstrap groups, selects, and buttons into a dense m3x bar and they compact through its tokens |
 
 **Additive M3 components with no Bootstrap ancestor:** icon buttons, FABs,
 segmented buttons, chips, navigation bar / rail / drawer, bottom app bar,
@@ -536,7 +537,7 @@ pure-CSS equivalent -- divergences are listed.
 | Icon buttons | `.m3-icon-btn` + variants, sizes `--xs/--small/--medium/--large/--xl`, `--square` | toggle state via `aria-pressed` |
 | Button groups | `.m3-button-group` + `--connected`, sizes `--xs..--xl`, `.m3-btn-check` hidden inputs | selected via `aria-pressed`, `.active`, or a checked `.m3-btn-check` |
 | Split button | `.m3-split-button` (`__action` + `__toggle` on `.m3-btn`) + `--tonal/--outlined/--elevated` | the toggle is the `popovertarget` of a `.m3-menu[popover]`; the chevron flips through `:has()` |
-| Toolbar | `.m3-toolbar` + `--floating/--docked/--standard/--vibrant/--vertical/--fixed` | -- |
+| Toolbar | `.m3-toolbar` + `--floating/--docked/--standard/--vibrant/--vertical/--fixed`; `--dense` editor bar with `__group` (+ `--priority-low/--priority-medium`), `__dropdown`, `__select`, `__stepper` + `__stepper-input`, `__swatch`, `__spacer`, `__more` | dense groups collapse through container queries on the bar; what the overflow menu lists is yours |
 | FAB / extended FAB | `.m3-fab` + `--small/--medium/--large/--extended/--fixed`, colors `--primary/--secondary/--tertiary/--surface` | -- |
 | FAB menu | `.m3-fab-menu` (`__fab` + `__items[popover]` of `__item`s) | opens through `popovertarget`; the FAB flips to its open look through `:has()`; anchored above the FAB where anchor positioning exists |
 | Loading indicator | `.m3-loading-indicator` + `--contained/--small/--large` | shape-morphing loader (build-time polygons, `clip-path`); static under reduced motion |
@@ -567,6 +568,47 @@ pure-CSS equivalent -- divergences are listed.
 
 ---
 
+### Dense toolbar (editor bar)
+
+`.m3-toolbar--dense` is the formatting-bar shape of a slide or document
+editor: one 40px pill, 28px controls two pixels apart, hairlines between
+groups, compact native selects and popover menus, a stepper, color swatches,
+and an overflow button. It is not an M3 component of its own; it is the M3
+toolbar at maximum density, so the bar pins `--m3-density` to `0` inside
+itself and re-points the tokens every control reads:
+
+- `--m3-target-size` becomes the control size. Two pixels apart, a 48dp hit
+  area would sit over the neighbors and take their clicks; desktop editor bars
+  are the one place M3 accepts the smaller target.
+- `--m3-icon-btn-*` and `--m3-btn-*` sizes, icon sizes, and shapes become the
+  dense tokens (`--m3-toolbar-dense-control-size` 28px, `-icon-size` 20px,
+  `-control-shape` corner-extra-small), so `.m3-icon-btn`, `.m3-btn`,
+  `.m3-btn-check` and Bootstrap's `.btn`, `.btn-group`, `.btn-check`,
+  `.dropdown-toggle` compact with no extra classes. Bootstrap's `.form-select`
+  inside the bar takes the `__select` look (compat layer).
+- Toggled controls (`aria-pressed="true"`, or a checked `.m3-btn-check` before
+  its `label.m3-icon-btn`) get the `--m3-toolbar-dense-selected-*` rectangle
+  (secondary-container by default) through the icon button's
+  `--m3-icon-btn-selected-container-color` token.
+
+Sub-elements: `__group` (adjacent groups draw the hairline themselves),
+`__dropdown` (a text button with a trailing chevron; make it the
+`popovertarget` of a following `.m3-menu[popover]` and the chevron flips while
+the menu is open, or drive `aria-expanded`), `__select` on a native `<select>`,
+`__stepper` around two icon buttons and a `__stepper-input`, `__swatch` on an
+icon button (the color bar under the icon reads `--m3-toolbar-swatch-color`
+set on the element), `__spacer`, and `__more`. A `.m3-menu[popover]` invoked
+from inside the bar hangs below its invoker, start-aligned, where anchor
+positioning exists.
+
+Priority collapse is CSS-only: the bar is a container-query context, groups
+marked `__group--priority-low` hide below the `"low"` width and
+`__group--priority-medium` below `"medium"`, and `__more` shows once the first
+tier is hidden. The widths are Sass config (`$toolbar-dense-collapse`, default
+68rem / 56rem, sized for a full formatting bar; tune them to your content),
+since container queries cannot read custom properties. The overflow menu's
+contents are yours to author.
+
 ## Accessibility floor
 
 `:focus-visible` indicators on every interactive element (outlines are never
@@ -596,6 +638,7 @@ no `@import`).
   $grid-breakpoints: (...),        // xs 0 / sm 576px / ... / xxl 1400px
   $container-max-widths: (...),    // sm 540px / ... / xxl 1320px
   $grid-columns: 12,
+  $toolbar-dense-collapse: ("low": 68rem, "medium": 56rem), // dense toolbar collapse widths
   $bootstrap-reskin-scope: null,   // e.g. "[data-m3]" for migration zones
   $emit-layer-statement: true,     // suppress if you own the layer order
   $components: (...)               // prune the catalog; default: all

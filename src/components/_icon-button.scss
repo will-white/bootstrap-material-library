@@ -22,6 +22,8 @@
 //   --m3-icon-btn-icon-size-xl                40px   .m3-icon-btn--xl
 //   --m3-icon-btn-color                       on-surface-variant (standard)
 //   --m3-icon-btn-selected-color              primary (standard, selected)
+//   --m3-icon-btn-selected-container-color    transparent (standard, selected;
+//                                                    a dense toolbar re-points it)
 //   --m3-icon-btn-filled-container-color      primary
 //   --m3-icon-btn-filled-color                on-primary
 //   --m3-icon-btn-tonal-container-color       secondary-container
@@ -63,6 +65,7 @@
   --#{c.$prefix}-icon-btn-icon-size-xl: #{fn.rem(40)};
   --#{c.$prefix}-icon-btn-color: var(--md-sys-color-on-surface-variant);
   --#{c.$prefix}-icon-btn-selected-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-icon-btn-selected-container-color: transparent;
   --#{c.$prefix}-icon-btn-filled-container-color: var(--md-sys-color-primary);
   --#{c.$prefix}-icon-btn-filled-color: var(--md-sys-color-on-primary);
   --#{c.$prefix}-icon-btn-tonal-container-color: var(--md-sys-color-secondary-container);
@@ -116,6 +119,7 @@
   }
 
   &[aria-pressed="true"] {
+    --_container: var(--#{c.$prefix}-icon-btn-selected-container-color);
     --_content: var(--#{c.$prefix}-icon-btn-selected-color);
   }
 
@@ -131,6 +135,7 @@
   --_content: var(--#{c.$prefix}-icon-btn-color);
 
   &[aria-pressed="true"] {
+    --_container: var(--#{c.$prefix}-icon-btn-selected-container-color);
     --_content: var(--#{c.$prefix}-icon-btn-selected-color);
   }
 
@@ -144,9 +149,10 @@
   --_container: var(--#{c.$prefix}-icon-btn-filled-container-color);
   --_content: var(--#{c.$prefix}-icon-btn-filled-color);
 
-  // Re-assert content so base's standard selected color cannot win by
-  // specificity on toggle (aria-pressed) filled icon buttons.
+  // Re-assert container and content so base's standard selected treatment
+  // cannot win by specificity on toggle (aria-pressed) filled icon buttons.
   &[aria-pressed="true"] {
+    --_container: var(--#{c.$prefix}-icon-btn-filled-container-color);
     --_content: var(--#{c.$prefix}-icon-btn-filled-color);
   }
 
@@ -161,6 +167,7 @@
   --_content: var(--#{c.$prefix}-icon-btn-tonal-color);
 
   &[aria-pressed="true"] {
+    --_container: var(--#{c.$prefix}-icon-btn-tonal-container-color);
     --_content: var(--#{c.$prefix}-icon-btn-tonal-color);
   }
 

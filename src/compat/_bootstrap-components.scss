@@ -29,6 +29,7 @@
 @use "../components/sheet";
 @use "../components/tabs";
 @use "../components/top-app-bar";
+@use "../components/toolbar";
 @use "../components/checkbox";
 @use "../components/radio";
 @use "../components/switch";
@@ -349,6 +350,13 @@ $-themes: (
     display: flex;
     flex-wrap: wrap;
     gap: var(--m3-space-2);
+  }
+
+  // Bootstrap controls inside a dense m3x toolbar: .btn / .btn-group /
+  // .btn-check / .dropdown-toggle compact through the tokens the bar
+  // re-points; .form-select takes the bar's compact select look.
+  .#{c.$prefix}-toolbar--dense select.form-select {
+    @include toolbar.dense-select;
   }
 
   // Hidden-input button contract (.btn-check + label.btn): the group's

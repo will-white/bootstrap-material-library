@@ -51,6 +51,15 @@ $container-max-widths: (
 
 $grid-columns: 12 !default;
 
+// Dense (editor-style) toolbar collapse points, as container-query widths of
+// the bar itself: .m3-toolbar__group--priority-low hides below "low" (and the
+// __more overflow button appears), --priority-medium hides below "medium".
+// Container queries cannot consume custom properties, so these are Sass values.
+$toolbar-dense-collapse: (
+  "low": 68rem,
+  "medium": 56rem
+) !default;
+
 // When set to a selector string (e.g. "[data-m3]") the Bootstrap component
 // re-skin is wrapped in @scope on that selector, so a legacy page can be
 // migrated region by region.

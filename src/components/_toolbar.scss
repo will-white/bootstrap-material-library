@@ -1,5 +1,8 @@
 // ============================================================================
-// m3x toolbar (M3 Expressive: floating | docked; standard | vibrant)
+// m3x toolbar (M3 Expressive: floating | docked; standard | vibrant) plus a
+// dense, editor-style bar (the Google Slides / Docs formatting bar shape:
+// one 40px row, 28px controls two pixels apart, groups split by hairlines,
+// compact dropdowns and selects, a stepper, color swatches, overflow).
 //
 // PUBLIC VARIABLE API (tier-3 tokens)
 //   --m3-toolbar-container-color          surface-container     standard
@@ -21,6 +24,35 @@
 //                                                         from the viewport
 //                                                         edge (docked: 0)
 //
+//   Dense (--dense) -- fixed sizes; the dense bar is already at maximum
+//   density and pins --m3-density to 0 inside itself:
+//   --m3-toolbar-dense-height                   40px   the bar
+//   --m3-toolbar-dense-control-size             28px   icon buttons, text
+//                                                      buttons, dropdowns,
+//                                                      selects, stepper input
+//   --m3-toolbar-dense-icon-size                20px
+//   --m3-toolbar-dense-gap                      2px    between controls
+//   --m3-toolbar-dense-padding-inline           space-2 (8px)
+//   --m3-toolbar-dense-shape                    corner-full   the bar
+//   --m3-toolbar-dense-control-shape            corner-extra-small (4px)
+//                                                      hover / toggled rects
+//   --m3-toolbar-dense-selected-container-color secondary-container   toggled
+//   --m3-toolbar-dense-selected-color           on-secondary-container
+//   --m3-toolbar-dense-separator-color          outline-variant  between groups
+//   --m3-toolbar-dense-separator-height         20px
+//   --m3-toolbar-dense-chevron-size             5px    __select's chevron
+//                                                      (two 5px triangles)
+//   --m3-toolbar-dense-field-width              40px   __stepper-input
+//   --m3-toolbar-dense-field-outline-color      outline
+//   --m3-toolbar-dense-swatch-height            3px    the __swatch color bar
+//   --m3-toolbar-dense-menu-offset              space-1  gap to a popover menu
+//   --m3-toolbar-swatch-color                   set per __swatch element; the
+//                                               bar color (currentColor if unset)
+//
+// Sass: $toolbar-dense-collapse ("low": 68rem, "medium": 56rem) -- widths of
+// the bar (container queries) below which __group--priority-low and
+// __group--priority-medium hide; __more shows below "low".
+//
 // Markup (floating pill, bottom-center of the viewport):
 //   <div class="m3-toolbar m3-toolbar--fixed" role="toolbar" aria-label="Format">
 //     <button class="m3-icon-btn" aria-label="Bold"><svg ...></svg></button>
@@ -34,16 +66,78 @@
 //   <div class="m3-toolbar m3-toolbar--vertical" role="toolbar"
 //        aria-orientation="vertical">...</div>
 //
+// Markup (dense editor bar):
+//   <div class="m3-toolbar m3-toolbar--dense" role="toolbar" aria-label="Format">
+//     <div class="m3-toolbar__group">
+//       <button class="m3-icon-btn" aria-label="Undo"><svg ...></svg></button>
+//       <button class="m3-icon-btn" aria-label="Redo"><svg ...></svg></button>
+//     </div>
+//     <div class="m3-toolbar__group">
+//       <select class="m3-toolbar__select" aria-label="Zoom">
+//         <option>100%</option>
+//       </select>
+//     </div>
+//     <div class="m3-toolbar__group">
+//       <select class="m3-toolbar__select" aria-label="Font">
+//         <option>Arial</option>
+//       </select>
+//       <div class="m3-toolbar__stepper" role="group" aria-label="Font size">
+//         <button class="m3-icon-btn" aria-label="Decrease"><svg ...></svg></button>
+//         <input class="m3-toolbar__stepper-input" type="number" value="11"
+//                aria-label="Font size">
+//         <button class="m3-icon-btn" aria-label="Increase"><svg ...></svg></button>
+//       </div>
+//     </div>
+//     <div class="m3-toolbar__group">
+//       <input class="m3-btn-check" type="checkbox" id="bold" checked>
+//       <label class="m3-icon-btn" for="bold"><svg ...><title>Bold</title></svg></label>
+//       <button class="m3-icon-btn" aria-label="Italic" aria-pressed="false">
+//         <svg ...></svg>
+//       </button>
+//       <button class="m3-icon-btn m3-toolbar__swatch" aria-label="Text color"
+//               style="--m3-toolbar-swatch-color: #b3261e"><svg ...></svg></button>
+//     </div>
+//     <div class="m3-toolbar__group m3-toolbar__group--priority-low">
+//       <button class="m3-toolbar__dropdown" popovertarget="align-menu"
+//               aria-label="Align"><svg ...></svg></button>
+//       <div class="m3-menu" id="align-menu" popover>...</div>
+//     </div>
+//     <div class="m3-toolbar__spacer"></div>
+//     <div class="m3-toolbar__group">
+//       <button class="m3-toolbar__dropdown" popovertarget="mode-menu">
+//         <svg ...></svg>Editing
+//       </button>
+//       <div class="m3-menu" id="mode-menu" popover>...</div>
+//       <button class="m3-icon-btn m3-toolbar__more" aria-label="More"
+//               popovertarget="more-menu"><svg ...></svg></button>
+//       <div class="m3-menu" id="more-menu" popover>...</div>
+//     </div>
+//   </div>
+//
 // Controls inside follow the toolbar's content color: the toolbar re-points
 // the standard / outlined icon-button and text-button color tokens to
 // currentColor within itself, so those controls (and their state layers)
 // read the toolbar's --_content. Contained variants (filled, tonal, the FAB)
 // keep their own container colors.
+//
+// The dense bar additionally re-points the button, icon-button, and
+// --m3-target-size tokens inside itself, so .m3-btn / .m3-icon-btn /
+// .m3-btn-check -- and Bootstrap's .btn / .btn-group / .btn-check /
+// .dropdown-toggle -- compact automatically; Bootstrap's .form-select inside
+// it takes the __select look (compat layer). Toggled controls
+// (aria-pressed="true", or a checked .m3-btn-check before its label) get the
+// selected-container rectangle. Adjacent groups separate themselves with a
+// hairline. A popover .m3-menu invoked from inside the bar hangs below its
+// invoker where anchor positioning exists (centered otherwise). Groups marked
+// --priority-low / --priority-medium hide as the bar narrows and __more
+// appears; what the overflow menu lists is yours.
 // ============================================================================
 
+@use "sass:map";
 @use "../config" as c;
 @use "../functions" as fn;
 @use "../mixins" as m;
+@use "button";
 
 @mixin tokens {
   --#{c.$prefix}-toolbar-container-color: var(--md-sys-color-surface-container);
@@ -57,6 +151,22 @@
   --#{c.$prefix}-toolbar-padding: var(--m3-space-2);
   --#{c.$prefix}-toolbar-docked-padding-inline: var(--m3-space-4);
   --#{c.$prefix}-toolbar-fixed-offset: var(--m3-space-4);
+  --#{c.$prefix}-toolbar-dense-height: #{fn.rem(40)};
+  --#{c.$prefix}-toolbar-dense-control-size: #{fn.rem(28)};
+  --#{c.$prefix}-toolbar-dense-icon-size: #{fn.rem(20)};
+  --#{c.$prefix}-toolbar-dense-gap: #{fn.rem(2)};
+  --#{c.$prefix}-toolbar-dense-padding-inline: var(--m3-space-2);
+  --#{c.$prefix}-toolbar-dense-shape: var(--md-sys-shape-corner-full);
+  --#{c.$prefix}-toolbar-dense-control-shape: var(--md-sys-shape-corner-extra-small);
+  --#{c.$prefix}-toolbar-dense-selected-container-color: var(--md-sys-color-secondary-container);
+  --#{c.$prefix}-toolbar-dense-selected-color: var(--md-sys-color-on-secondary-container);
+  --#{c.$prefix}-toolbar-dense-separator-color: var(--md-sys-color-outline-variant);
+  --#{c.$prefix}-toolbar-dense-separator-height: #{fn.rem(20)};
+  --#{c.$prefix}-toolbar-dense-chevron-size: #{fn.rem(5)};
+  --#{c.$prefix}-toolbar-dense-field-width: #{fn.rem(40)};
+  --#{c.$prefix}-toolbar-dense-field-outline-color: var(--md-sys-color-outline);
+  --#{c.$prefix}-toolbar-dense-swatch-height: #{fn.rem(3)};
+  --#{c.$prefix}-toolbar-dense-menu-offset: var(--m3-space-1);
 }
 
 // Structure + color machinery. The look with no modifier is the floating
@@ -142,6 +252,290 @@
   z-index: var(--m3-z-raised);
 }
 
+// --- dense (editor bar) -----------------------------------------------------
+
+// The bar: a full-width, flat pill that is its own container-query context.
+// Composes with --standard / --vibrant; it replaces the floating, docked, and
+// vertical layouts rather than composing with them.
+@mixin dense {
+  // Already at maximum density: fixed control heights, and no 48dp target
+  // overhang (controls sit 2px apart; a 48dp hit area would sit over the
+  // neighbors and steal their clicks).
+  --m3-density: 0;
+  --m3-target-size: 100%;
+  // Every button vocabulary compacts through the tokens it reads.
+  --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-toolbar-dense-control-size);
+  --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-toolbar-dense-icon-size);
+  --#{c.$prefix}-icon-btn-shape: var(--#{c.$prefix}-toolbar-dense-control-shape);
+  --#{c.$prefix}-icon-btn-selected-container-color: var(
+    --#{c.$prefix}-toolbar-dense-selected-container-color
+  );
+  --#{c.$prefix}-icon-btn-selected-color: var(--#{c.$prefix}-toolbar-dense-selected-color);
+  --#{c.$prefix}-btn-height: var(--#{c.$prefix}-toolbar-dense-control-size);
+  --#{c.$prefix}-btn-padding-inline: var(--m3-space-2);
+  --#{c.$prefix}-btn-icon-gap: var(--m3-space-1);
+  --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-toolbar-dense-icon-size);
+  --#{c.$prefix}-btn-shape: var(--#{c.$prefix}-toolbar-dense-control-shape);
+
+  container-type: inline-size;
+  container-name: #{c.$prefix}-toolbar;
+  // The bar owns the face of anything inside it that carries no typescale of
+  // its own (group separators, stray labels).
+  @include m.typescale("label-large");
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  inline-size: 100%;
+  height: var(--#{c.$prefix}-toolbar-dense-height);
+  gap: var(--#{c.$prefix}-toolbar-dense-gap);
+  padding-inline: var(--#{c.$prefix}-toolbar-dense-padding-inline);
+  border-radius: var(--#{c.$prefix}-toolbar-dense-shape);
+  // Clip along the row (an unmarked overflow never spills past the pill's
+  // ends); stay open across it so tooltips and focus rings can rise above.
+  overflow: clip visible;
+  @include m.elevation(0);
+
+  // A checked hidden input toggles its label like aria-pressed="true" does.
+  .#{c.$prefix}-btn-check:checked + .#{c.$prefix}-icon-btn {
+    --_container: var(--#{c.$prefix}-toolbar-dense-selected-container-color);
+    --_content: var(--#{c.$prefix}-toolbar-dense-selected-color);
+  }
+
+  // Popover menus invoked from inside the bar hang below their invoker (the
+  // invoker is the popover's implicit anchor), start-aligned, flipping when
+  // the viewport runs out.
+  .#{c.$prefix}-menu[popover]:not(.#{c.$prefix}-menu--static) {
+    @supports (position-area: block-end) {
+      inset: auto;
+      margin: var(--m3-space-none);
+      margin-block-start: var(--#{c.$prefix}-toolbar-dense-menu-offset);
+      position-area: block-end span-inline-end;
+      position-try-fallbacks: flip-block, flip-inline;
+    }
+  }
+}
+
+// A cluster of controls. Adjacent groups draw a hairline between them.
+@mixin dense-group {
+  @include m.own-box;
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  gap: var(--#{c.$prefix}-toolbar-dense-gap);
+
+  & + &::before {
+    @include m.own-pseudo;
+    content: "";
+    display: block;
+    flex: none;
+    inline-size: var(--m3-stroke-hairline);
+    block-size: var(--#{c.$prefix}-toolbar-dense-separator-height);
+    margin-inline: var(--m3-space-1);
+    background-color: var(--#{c.$prefix}-toolbar-dense-separator-color);
+  }
+}
+
+// Compact menu button: a text button (label, an icon, or both) with a
+// trailing chevron that flips while its popover menu is open (next sibling)
+// or while aria-expanded="true".
+@mixin dense-dropdown {
+  @include button.base;
+  @include button.text-variant;
+  gap: var(--m3-space-1);
+  padding-inline: var(--m3-space-2);
+
+  &::after {
+    @include m.own-pseudo;
+    content: "";
+    display: block;
+    flex: none;
+    @include m.chevron-icon(
+      calc(var(--m3-chevron-size) / 2 + var(--m3-stroke-thick)),
+      var(--m3-stroke-thick)
+    );
+    margin-inline-start: var(--m3-space-1);
+    translate: 0 -25%;
+    @include m.transition((rotate, translate));
+  }
+
+  &[aria-expanded="true"]::after {
+    rotate: 225deg;
+    translate: 0 25%;
+  }
+
+  // Stands alone: :popover-open must never share a selector list.
+  &:has(+ .#{c.$prefix}-menu:popover-open)::after {
+    rotate: 225deg;
+    translate: 0 25%;
+  }
+}
+
+// Compact native <select>: a text-button silhouette with a CSS-drawn
+// chevron, riding the bar's content color. Also the look of Bootstrap's
+// .form-select inside a dense bar (compat layer).
+@mixin dense-select {
+  @include m.own-box;
+  @include m.typescale("label-large");
+  --_container: transparent;
+  --_content: currentColor;
+  display: inline-block;
+  inline-size: auto;
+  max-inline-size: 100%;
+  block-size: var(--#{c.$prefix}-toolbar-dense-control-size);
+  min-block-size: var(--m3-space-none);
+  padding-block: var(--m3-space-none);
+  padding-inline: var(--m3-space-2)
+    calc(
+      var(--m3-space-2) + 2 * var(--#{c.$prefix}-toolbar-dense-chevron-size) +
+        var(--m3-space-1)
+    );
+  border: none;
+  border-radius: var(--#{c.$prefix}-toolbar-dense-control-shape);
+  appearance: none;
+  cursor: pointer;
+  white-space: pre;
+  vertical-align: middle;
+  @include m.state-layer;
+  @include m.focus-ring;
+  @include m.transition((background-color, color));
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position:
+    calc(100% - var(--m3-space-2) - var(--#{c.$prefix}-toolbar-dense-chevron-size))
+      50%,
+    calc(100% - var(--m3-space-2)) 50%;
+  background-size: var(--#{c.$prefix}-toolbar-dense-chevron-size)
+    var(--#{c.$prefix}-toolbar-dense-chevron-size);
+  background-repeat: no-repeat;
+
+  // The focus indicator is the outline; no field-style inset ring.
+  &:focus {
+    box-shadow: none;
+  }
+
+  &:disabled {
+    @include m.disabled-bare;
+  }
+}
+
+// Stepper: decrement icon button, a narrow centered field, increment.
+@mixin dense-stepper {
+  @include m.own-box;
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  gap: var(--#{c.$prefix}-toolbar-dense-gap);
+}
+
+@mixin dense-stepper-input {
+  @include m.own-box;
+  @include m.typescale("label-large");
+  display: inline-block;
+  inline-size: var(--#{c.$prefix}-toolbar-dense-field-width);
+  block-size: var(--#{c.$prefix}-toolbar-dense-control-size);
+  padding-inline: var(--m3-space-1);
+  border: var(--m3-stroke-hairline) solid
+    var(--#{c.$prefix}-toolbar-dense-field-outline-color);
+  border-radius: var(--#{c.$prefix}-toolbar-dense-control-shape);
+  background-color: transparent;
+  color: inherit;
+  caret-color: var(--md-sys-color-primary);
+  text-align: center;
+  cursor: text;
+  appearance: textfield;
+  @include m.transition((border-color, box-shadow));
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    appearance: none;
+    margin: var(--m3-space-none);
+  }
+
+  &:hover {
+    border-color: var(--md-sys-color-on-surface);
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: var(--md-sys-color-primary);
+    box-shadow: inset 0 0 0 var(--m3-stroke-hairline) var(--md-sys-color-primary);
+  }
+
+  &:disabled {
+    color: color-mix(
+      in srgb,
+      var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity),
+      transparent
+    );
+    border-color: color-mix(
+      in srgb,
+      var(--md-sys-color-on-surface) var(--md-sys-state-disabled-container-opacity),
+      transparent
+    );
+    cursor: not-allowed;
+  }
+}
+
+// Color swatch: an icon button with a color bar under its icon (text color,
+// highlight, fill, border). The bar reads --m3-toolbar-swatch-color, set on
+// the element; unset, it follows the icon color.
+@mixin dense-swatch {
+  &::before {
+    @include m.own-pseudo;
+    content: "";
+    display: block;
+    position: absolute;
+    inset-block-end: calc(
+      (
+          var(--#{c.$prefix}-toolbar-dense-control-size) -
+            var(--#{c.$prefix}-toolbar-dense-icon-size)
+        ) / 2
+    );
+    inset-inline-start: 50%;
+    translate: -50% 0;
+    inline-size: calc(var(--#{c.$prefix}-toolbar-dense-icon-size) - var(--m3-space-1));
+    block-size: var(--#{c.$prefix}-toolbar-dense-swatch-height);
+    border-radius: var(--m3-stroke-hairline);
+    background-color: var(--#{c.$prefix}-toolbar-swatch-color, currentColor);
+  }
+}
+
+// Pushes what follows to the far end of the bar.
+@mixin dense-spacer {
+  @include m.own-box;
+  display: block;
+  flex: 1 1 0;
+  align-self: stretch;
+}
+
+// Priority collapse: container queries on the bar itself. The overflow
+// button is hidden while every group fits.
+@mixin dense-collapse {
+  $p: c.$prefix;
+  $low: map.get(c.$toolbar-dense-collapse, "low");
+  $medium: map.get(c.$toolbar-dense-collapse, "medium");
+
+  .#{$p}-toolbar--dense .#{$p}-toolbar__more {
+    display: none;
+  }
+
+  @container #{$p}-toolbar (width < #{$low}) {
+    .#{$p}-toolbar__group--priority-low {
+      display: none;
+    }
+
+    .#{$p}-toolbar--dense .#{$p}-toolbar__more {
+      display: inline-flex;
+    }
+  }
+
+  @container #{$p}-toolbar (width < #{$medium}) {
+    .#{$p}-toolbar__group--priority-medium {
+      display: none;
+    }
+  }
+}
+
 @mixin classes {
   $p: c.$prefix;
 
@@ -172,4 +566,38 @@
   .#{$p}-toolbar--fixed {
     @include fixed;
   }
+
+  .#{$p}-toolbar--dense {
+    @include dense;
+  }
+
+  .#{$p}-toolbar__group {
+    @include dense-group;
+  }
+
+  .#{$p}-toolbar__dropdown {
+    @include dense-dropdown;
+  }
+
+  select.#{$p}-toolbar__select {
+    @include dense-select;
+  }
+
+  .#{$p}-toolbar__stepper {
+    @include dense-stepper;
+  }
+
+  .#{$p}-toolbar__stepper-input {
+    @include dense-stepper-input;
+  }
+
+  .#{$p}-toolbar__swatch {
+    @include dense-swatch;
+  }
+
+  .#{$p}-toolbar__spacer {
+    @include dense-spacer;
+  }
+
+  @include dense-collapse;
 }

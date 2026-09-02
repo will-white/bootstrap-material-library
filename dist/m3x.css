@@ -844,6 +844,7 @@
     --m3-icon-btn-icon-size-xl: 2.5rem;
     --m3-icon-btn-color: var(--md-sys-color-on-surface-variant);
     --m3-icon-btn-selected-color: var(--md-sys-color-primary);
+    --m3-icon-btn-selected-container-color: transparent;
     --m3-icon-btn-filled-container-color: var(--md-sys-color-primary);
     --m3-icon-btn-filled-color: var(--md-sys-color-on-primary);
     --m3-icon-btn-tonal-container-color: var(--md-sys-color-secondary-container);
@@ -1097,6 +1098,22 @@
     --m3-toolbar-padding: var(--m3-space-2);
     --m3-toolbar-docked-padding-inline: var(--m3-space-4);
     --m3-toolbar-fixed-offset: var(--m3-space-4);
+    --m3-toolbar-dense-height: 2.5rem;
+    --m3-toolbar-dense-control-size: 1.75rem;
+    --m3-toolbar-dense-icon-size: 1.25rem;
+    --m3-toolbar-dense-gap: 0.125rem;
+    --m3-toolbar-dense-padding-inline: var(--m3-space-2);
+    --m3-toolbar-dense-shape: var(--md-sys-shape-corner-full);
+    --m3-toolbar-dense-control-shape: var(--md-sys-shape-corner-extra-small);
+    --m3-toolbar-dense-selected-container-color: var(--md-sys-color-secondary-container);
+    --m3-toolbar-dense-selected-color: var(--md-sys-color-on-secondary-container);
+    --m3-toolbar-dense-separator-color: var(--md-sys-color-outline-variant);
+    --m3-toolbar-dense-separator-height: 1.25rem;
+    --m3-toolbar-dense-chevron-size: 0.3125rem;
+    --m3-toolbar-dense-field-width: 2.5rem;
+    --m3-toolbar-dense-field-outline-color: var(--md-sys-color-outline);
+    --m3-toolbar-dense-swatch-height: 0.1875rem;
+    --m3-toolbar-dense-menu-offset: var(--m3-space-1);
     --m3-button-group-gap: var(--m3-space-2);
     --m3-button-group-connected-gap: 0.125rem;
     --m3-button-group-shape: var(--md-sys-shape-corner-full);
@@ -2791,6 +2808,73 @@
       flex-wrap: wrap;
       gap: var(--m3-space-2);
     }
+    .m3-toolbar--dense select.form-select {
+      font-family: var(--md-sys-typescale-label-large-font);
+      font-size: var(--md-sys-typescale-label-large-size);
+      line-height: var(--md-sys-typescale-label-large-line-height);
+      font-weight: var(--md-sys-typescale-label-large-weight);
+      letter-spacing: var(--md-sys-typescale-label-large-tracking);
+      --_container: transparent;
+      --_content: currentColor;
+      display: inline-block;
+      inline-size: auto;
+      max-inline-size: 100%;
+      block-size: var(--m3-toolbar-dense-control-size);
+      min-block-size: var(--m3-space-none);
+      padding-block: var(--m3-space-none);
+      padding-inline: var(--m3-space-2) calc(var(--m3-space-2) + 2 * var(--m3-toolbar-dense-chevron-size) + var(--m3-space-1));
+      border: none;
+      border-radius: var(--m3-toolbar-dense-control-shape);
+      appearance: none;
+      cursor: pointer;
+      white-space: pre;
+      vertical-align: middle;
+      --_state-color: var(--_content);
+      --_state-opacity: var(--md-sys-state-none);
+      color: var(--_content);
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+    }
+    .m3-toolbar--dense select.form-select:hover {
+      --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
+    }
+    .m3-toolbar--dense select.form-select:focus-visible {
+      --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
+    }
+    .m3-toolbar--dense select.form-select:active {
+      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+    }
+    .m3-toolbar--dense select.form-select:focus-visible {
+      outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
+      outline-offset: var(--md-sys-state-focus-indicator-offset);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .m3-toolbar--dense select.form-select {
+        transition-property: background-color, color;
+        transition-duration: var(--md-sys-motion-duration-short4);
+        transition-timing-function: var(--md-sys-motion-easing-standard);
+      }
+    }
+    .m3-toolbar--dense select.form-select {
+      background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+      background-position: calc(100% - var(--m3-space-2) - var(--m3-toolbar-dense-chevron-size)) 50%, calc(100% - var(--m3-space-2)) 50%;
+      background-size: var(--m3-toolbar-dense-chevron-size) var(--m3-toolbar-dense-chevron-size);
+      background-repeat: no-repeat;
+    }
+    .m3-toolbar--dense select.form-select:focus {
+      box-shadow: none;
+    }
+    .m3-toolbar--dense select.form-select:disabled {
+      --_container: transparent;
+      --_content: color-mix(
+        in srgb,
+        var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity),
+        transparent
+      );
+      --_state-opacity: var(--md-sys-state-none);
+      box-shadow: none;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
     .btn-check {
       display: block;
       position: absolute;
@@ -2893,6 +2977,7 @@
       block-size: var(--m3-icon-btn-icon-size);
     }
     .btn-close[aria-pressed=true] {
+      --_container: var(--m3-icon-btn-selected-container-color);
       --_content: var(--m3-icon-btn-selected-color);
     }
     .btn-close:disabled, .btn-close.disabled {
@@ -2912,6 +2997,7 @@
       --_content: var(--m3-icon-btn-color);
     }
     .btn-close[aria-pressed=true] {
+      --_container: var(--m3-icon-btn-selected-container-color);
       --_content: var(--m3-icon-btn-selected-color);
     }
     .btn-close:disabled, .btn-close.disabled {
@@ -3976,6 +4062,7 @@
       block-size: var(--m3-icon-btn-icon-size);
     }
     .navbar-toggler[aria-pressed=true] {
+      --_container: var(--m3-icon-btn-selected-container-color);
       --_content: var(--m3-icon-btn-selected-color);
     }
     .navbar-toggler:disabled, .navbar-toggler.disabled {
@@ -3995,6 +4082,7 @@
       --_content: var(--m3-icon-btn-color);
     }
     .navbar-toggler[aria-pressed=true] {
+      --_container: var(--m3-icon-btn-selected-container-color);
       --_content: var(--m3-icon-btn-selected-color);
     }
     .navbar-toggler:disabled, .navbar-toggler.disabled {
@@ -7710,7 +7798,7 @@
     }
   }
   @layer own {
-    .fade, .accordion-collapse, .collapsing, .btn, .btn-group, .btn-group-vertical, .btn-toolbar, .btn-check, .btn-close, .badge, .alert, .alert-heading, .alert-link, .alert-dismissible, .breadcrumb, .breadcrumb-item, .card, .card-body, .card-title, .card-subtitle, .card-text, .card-header, .card-footer, .card-img-top, .card-img, .card-img-bottom, .accordion, .accordion-item, .accordion-header, .accordion-button, .accordion-body, .list-group, .list-group-item, .dropdown, .dropdown-center, .dropup, .dropup-center, .dropend, .dropstart, .dropdown-menu, .dropdown-item, .dropdown-header, .dropdown-item-text, .dropdown-divider, .nav, .nav-link, .nav-tabs, .nav-tabs .nav-link, .nav-item, .nav-pills .nav-link, .tab-content > .tab-pane, .navbar, .navbar > .container, .navbar > .container-fluid, .navbar > [class*=container-], .navbar-brand, .navbar-text, .navbar-toggler, .navbar-toggler-icon, .navbar-expand .navbar-nav, .navbar-expand .navbar-collapse, .navbar-expand-sm .navbar-nav, .navbar-expand-sm .navbar-collapse, .navbar-expand-md .navbar-nav, .navbar-expand-md .navbar-collapse, .navbar-expand-lg .navbar-nav, .navbar-expand-lg .navbar-collapse, .navbar-expand-xl .navbar-nav, .navbar-expand-xl .navbar-collapse, .navbar-expand-xxl .navbar-nav, .navbar-expand-xxl .navbar-collapse, .modal, .modal-dialog, .modal-content, .modal-header, .modal-title, .modal-body, .modal-footer, .modal-backdrop, .offcanvas, .offcanvas-header, .offcanvas-title, .offcanvas-body, .offcanvas-backdrop, .pagination, .page-link, .page-item, .placeholder, .placeholder-glow, .placeholder-wave, .tooltip, .tooltip .tooltip-arrow, .tooltip-inner, .popover, .popover .popover-arrow, .popover-header, .popover-body, .progress, .progress-stacked, .progress-bar, .spinner-border, .spinner-grow, .toast, .toast-container, .toast-header, .toast-body, .table, .table > :not(caption) > * > *, .table > thead th, .table-responsive, .form-label, .form-text, .form-control, .form-control-plaintext, .form-select, .form-check, .form-check-label, .form-check-input[type=checkbox], .form-check-input[type=radio], .form-switch .form-check-input, .form-range, .input-group, .input-group-text, .form-floating, .form-floating > label, .invalid-feedback, .valid-feedback, .carousel, .carousel-inner, .carousel-item, .carousel-control-prev, .carousel-control-next, .carousel-control-prev-icon, .carousel-control-next-icon, .carousel-indicators, .carousel-indicators [data-bs-target], .carousel-caption {
+    .fade, .accordion-collapse, .collapsing, .btn, .btn-group, .btn-group-vertical, .btn-toolbar, .m3-toolbar--dense select.form-select, .btn-check, .btn-close, .badge, .alert, .alert-heading, .alert-link, .alert-dismissible, .breadcrumb, .breadcrumb-item, .card, .card-body, .card-title, .card-subtitle, .card-text, .card-header, .card-footer, .card-img-top, .card-img, .card-img-bottom, .accordion, .accordion-item, .accordion-header, .accordion-button, .accordion-body, .list-group, .list-group-item, .dropdown, .dropdown-center, .dropup, .dropup-center, .dropend, .dropstart, .dropdown-menu, .dropdown-item, .dropdown-header, .dropdown-item-text, .dropdown-divider, .nav, .nav-link, .nav-tabs, .nav-tabs .nav-link, .nav-item, .nav-pills .nav-link, .tab-content > .tab-pane, .navbar, .navbar > .container, .navbar > .container-fluid, .navbar > [class*=container-], .navbar-brand, .navbar-text, .navbar-toggler, .navbar-toggler-icon, .navbar-expand .navbar-nav, .navbar-expand .navbar-collapse, .navbar-expand-sm .navbar-nav, .navbar-expand-sm .navbar-collapse, .navbar-expand-md .navbar-nav, .navbar-expand-md .navbar-collapse, .navbar-expand-lg .navbar-nav, .navbar-expand-lg .navbar-collapse, .navbar-expand-xl .navbar-nav, .navbar-expand-xl .navbar-collapse, .navbar-expand-xxl .navbar-nav, .navbar-expand-xxl .navbar-collapse, .modal, .modal-dialog, .modal-content, .modal-header, .modal-title, .modal-body, .modal-footer, .modal-backdrop, .offcanvas, .offcanvas-header, .offcanvas-title, .offcanvas-body, .offcanvas-backdrop, .pagination, .page-link, .page-item, .placeholder, .placeholder-glow, .placeholder-wave, .tooltip, .tooltip .tooltip-arrow, .tooltip-inner, .popover, .popover .popover-arrow, .popover-header, .popover-body, .progress, .progress-stacked, .progress-bar, .spinner-border, .spinner-grow, .toast, .toast-container, .toast-header, .toast-body, .table, .table > :not(caption) > * > *, .table > thead th, .table-responsive, .form-label, .form-text, .form-control, .form-control-plaintext, .form-select, .form-check, .form-check-label, .form-check-input[type=checkbox], .form-check-input[type=radio], .form-switch .form-check-input, .form-range, .input-group, .input-group-text, .form-floating, .form-floating > label, .invalid-feedback, .valid-feedback, .carousel, .carousel-inner, .carousel-item, .carousel-control-prev, .carousel-control-next, .carousel-control-prev-icon, .carousel-control-next-icon, .carousel-indicators, .carousel-indicators [data-bs-target], .carousel-caption {
       box-sizing: border-box;
       position: static;
       inset: auto;
@@ -7794,7 +7882,7 @@
       color-scheme: inherit;
       image-rendering: inherit;
     }
-    .btn-close::after, .breadcrumb-item + .breadcrumb-item::before, .accordion-button::after, .dropdown-toggle::after, .nav-tabs .nav-link.active::after, .nav-tabs .nav-item.show .nav-link::after, .navbar-toggler::after, .form-check-input[type=checkbox]::before, .form-check-input[type=checkbox]::after, .form-check-input[type=radio]::before, .form-check-input[type=radio]::after, .form-switch .form-check-input::after, .form-switch .form-check-input::before, .carousel-indicators [data-bs-target]::before, .fade::before, .fade::after, .accordion-collapse::before, .accordion-collapse::after, .collapsing::before, .collapsing::after, .btn::before, .btn::after, .btn-group::before, .btn-group::after, .btn-group-vertical::before, .btn-group-vertical::after, .btn-toolbar::before, .btn-toolbar::after, .btn-check::before, .btn-check::after, .btn-close::before, .badge::before, .badge::after, .alert::before, .alert::after, .alert-heading::before, .alert-heading::after, .alert-link::before, .alert-link::after, .alert-dismissible::before, .alert-dismissible::after, .breadcrumb::before, .breadcrumb::after, .breadcrumb-item::before, .breadcrumb-item::after, .card::before, .card::after, .card-body::before, .card-body::after, .card-title::before, .card-title::after, .card-subtitle::before, .card-subtitle::after, .card-text::before, .card-text::after, .card-header::before, .card-header::after, .card-footer::before, .card-footer::after, .card-img-top::before, .card-img-top::after, .card-img::before, .card-img::after, .card-img-bottom::before, .card-img-bottom::after, .accordion::before, .accordion::after, .accordion-item::before, .accordion-item::after, .accordion-header::before, .accordion-header::after, .accordion-button::before, .accordion-body::before, .accordion-body::after, .list-group::before, .list-group::after, .list-group-item::before, .list-group-item::after, .dropdown::before, .dropdown::after, .dropdown-center::before, .dropdown-center::after, .dropup::before, .dropup::after, .dropup-center::before, .dropup-center::after, .dropend::before, .dropend::after, .dropstart::before, .dropstart::after, .dropdown-menu::before, .dropdown-menu::after, .dropdown-item::before, .dropdown-item::after, .dropdown-header::before, .dropdown-header::after, .dropdown-item-text::before, .dropdown-item-text::after, .dropdown-divider::before, .dropdown-divider::after, .nav::before, .nav::after, .nav-link::before, .nav-link::after, .nav-tabs::before, .nav-tabs::after, .nav-tabs .nav-link::before, .nav-tabs .nav-link::after, .nav-item::before, .nav-item::after, .nav-pills .nav-link::before, .nav-pills .nav-link::after, .tab-content > .tab-pane::before, .tab-content > .tab-pane::after, .navbar::before, .navbar::after, .navbar > .container::before, .navbar > .container::after, .navbar > .container-fluid::before, .navbar > .container-fluid::after, .navbar > [class*=container-]::before, .navbar > [class*=container-]::after, .navbar-brand::before, .navbar-brand::after, .navbar-text::before, .navbar-text::after, .navbar-toggler::before, .navbar-toggler-icon::before, .navbar-toggler-icon::after, .navbar-expand .navbar-nav::before, .navbar-expand .navbar-nav::after, .navbar-expand .navbar-collapse::before, .navbar-expand .navbar-collapse::after, .navbar-expand-sm .navbar-nav::before, .navbar-expand-sm .navbar-nav::after, .navbar-expand-sm .navbar-collapse::before, .navbar-expand-sm .navbar-collapse::after, .navbar-expand-md .navbar-nav::before, .navbar-expand-md .navbar-nav::after, .navbar-expand-md .navbar-collapse::before, .navbar-expand-md .navbar-collapse::after, .navbar-expand-lg .navbar-nav::before, .navbar-expand-lg .navbar-nav::after, .navbar-expand-lg .navbar-collapse::before, .navbar-expand-lg .navbar-collapse::after, .navbar-expand-xl .navbar-nav::before, .navbar-expand-xl .navbar-nav::after, .navbar-expand-xl .navbar-collapse::before, .navbar-expand-xl .navbar-collapse::after, .navbar-expand-xxl .navbar-nav::before, .navbar-expand-xxl .navbar-nav::after, .navbar-expand-xxl .navbar-collapse::before, .navbar-expand-xxl .navbar-collapse::after, .modal::before, .modal::after, .modal-dialog::before, .modal-dialog::after, .modal-content::before, .modal-content::after, .modal-header::before, .modal-header::after, .modal-title::before, .modal-title::after, .modal-body::before, .modal-body::after, .modal-footer::before, .modal-footer::after, .modal-backdrop::before, .modal-backdrop::after, .offcanvas::before, .offcanvas::after, .offcanvas-header::before, .offcanvas-header::after, .offcanvas-title::before, .offcanvas-title::after, .offcanvas-body::before, .offcanvas-body::after, .offcanvas-backdrop::before, .offcanvas-backdrop::after, .pagination::before, .pagination::after, .page-link::before, .page-link::after, .page-item::before, .page-item::after, .placeholder::before, .placeholder::after, .placeholder-glow::before, .placeholder-glow::after, .placeholder-wave::before, .placeholder-wave::after, .tooltip::before, .tooltip::after, .tooltip .tooltip-arrow::before, .tooltip .tooltip-arrow::after, .tooltip-inner::before, .tooltip-inner::after, .popover::before, .popover::after, .popover .popover-arrow::before, .popover .popover-arrow::after, .popover-header::before, .popover-header::after, .popover-body::before, .popover-body::after, .progress::before, .progress::after, .progress-stacked::before, .progress-stacked::after, .progress-bar::before, .progress-bar::after, .spinner-border::before, .spinner-border::after, .spinner-grow::before, .spinner-grow::after, .toast::before, .toast::after, .toast-container::before, .toast-container::after, .toast-header::before, .toast-header::after, .toast-body::before, .toast-body::after, .table::before, .table::after, .table > :not(caption) > * > *::before, .table > :not(caption) > * > *::after, .table > thead th::before, .table > thead th::after, .table-responsive::before, .table-responsive::after, .form-label::before, .form-label::after, .form-text::before, .form-text::after, .form-control::before, .form-control::after, .form-control-plaintext::before, .form-control-plaintext::after, .form-select::before, .form-select::after, .form-check::before, .form-check::after, .form-check-label::before, .form-check-label::after, .form-range::before, .form-range::after, .input-group::before, .input-group::after, .input-group-text::before, .input-group-text::after, .form-floating::before, .form-floating::after, .form-floating > label::before, .form-floating > label::after, .invalid-feedback::before, .invalid-feedback::after, .valid-feedback::before, .valid-feedback::after, .carousel::before, .carousel::after, .carousel-inner::before, .carousel-inner::after, .carousel-item::before, .carousel-item::after, .carousel-control-prev::before, .carousel-control-prev::after, .carousel-control-next::before, .carousel-control-next::after, .carousel-control-prev-icon::before, .carousel-control-prev-icon::after, .carousel-control-next-icon::before, .carousel-control-next-icon::after, .carousel-indicators::before, .carousel-indicators::after, .carousel-indicators [data-bs-target]::after, .carousel-caption::before, .carousel-caption::after {
+    .btn-close::after, .breadcrumb-item + .breadcrumb-item::before, .accordion-button::after, .dropdown-toggle::after, .nav-tabs .nav-link.active::after, .nav-tabs .nav-item.show .nav-link::after, .navbar-toggler::after, .form-check-input[type=checkbox]::before, .form-check-input[type=checkbox]::after, .form-check-input[type=radio]::before, .form-check-input[type=radio]::after, .form-switch .form-check-input::after, .form-switch .form-check-input::before, .carousel-indicators [data-bs-target]::before, .fade::before, .fade::after, .accordion-collapse::before, .accordion-collapse::after, .collapsing::before, .collapsing::after, .btn::before, .btn::after, .btn-group::before, .btn-group::after, .btn-group-vertical::before, .btn-group-vertical::after, .btn-toolbar::before, .btn-toolbar::after, .m3-toolbar--dense select.form-select::before, .m3-toolbar--dense select.form-select::after, .btn-check::before, .btn-check::after, .btn-close::before, .badge::before, .badge::after, .alert::before, .alert::after, .alert-heading::before, .alert-heading::after, .alert-link::before, .alert-link::after, .alert-dismissible::before, .alert-dismissible::after, .breadcrumb::before, .breadcrumb::after, .breadcrumb-item::before, .breadcrumb-item::after, .card::before, .card::after, .card-body::before, .card-body::after, .card-title::before, .card-title::after, .card-subtitle::before, .card-subtitle::after, .card-text::before, .card-text::after, .card-header::before, .card-header::after, .card-footer::before, .card-footer::after, .card-img-top::before, .card-img-top::after, .card-img::before, .card-img::after, .card-img-bottom::before, .card-img-bottom::after, .accordion::before, .accordion::after, .accordion-item::before, .accordion-item::after, .accordion-header::before, .accordion-header::after, .accordion-button::before, .accordion-body::before, .accordion-body::after, .list-group::before, .list-group::after, .list-group-item::before, .list-group-item::after, .dropdown::before, .dropdown::after, .dropdown-center::before, .dropdown-center::after, .dropup::before, .dropup::after, .dropup-center::before, .dropup-center::after, .dropend::before, .dropend::after, .dropstart::before, .dropstart::after, .dropdown-menu::before, .dropdown-menu::after, .dropdown-item::before, .dropdown-item::after, .dropdown-header::before, .dropdown-header::after, .dropdown-item-text::before, .dropdown-item-text::after, .dropdown-divider::before, .dropdown-divider::after, .nav::before, .nav::after, .nav-link::before, .nav-link::after, .nav-tabs::before, .nav-tabs::after, .nav-tabs .nav-link::before, .nav-tabs .nav-link::after, .nav-item::before, .nav-item::after, .nav-pills .nav-link::before, .nav-pills .nav-link::after, .tab-content > .tab-pane::before, .tab-content > .tab-pane::after, .navbar::before, .navbar::after, .navbar > .container::before, .navbar > .container::after, .navbar > .container-fluid::before, .navbar > .container-fluid::after, .navbar > [class*=container-]::before, .navbar > [class*=container-]::after, .navbar-brand::before, .navbar-brand::after, .navbar-text::before, .navbar-text::after, .navbar-toggler::before, .navbar-toggler-icon::before, .navbar-toggler-icon::after, .navbar-expand .navbar-nav::before, .navbar-expand .navbar-nav::after, .navbar-expand .navbar-collapse::before, .navbar-expand .navbar-collapse::after, .navbar-expand-sm .navbar-nav::before, .navbar-expand-sm .navbar-nav::after, .navbar-expand-sm .navbar-collapse::before, .navbar-expand-sm .navbar-collapse::after, .navbar-expand-md .navbar-nav::before, .navbar-expand-md .navbar-nav::after, .navbar-expand-md .navbar-collapse::before, .navbar-expand-md .navbar-collapse::after, .navbar-expand-lg .navbar-nav::before, .navbar-expand-lg .navbar-nav::after, .navbar-expand-lg .navbar-collapse::before, .navbar-expand-lg .navbar-collapse::after, .navbar-expand-xl .navbar-nav::before, .navbar-expand-xl .navbar-nav::after, .navbar-expand-xl .navbar-collapse::before, .navbar-expand-xl .navbar-collapse::after, .navbar-expand-xxl .navbar-nav::before, .navbar-expand-xxl .navbar-nav::after, .navbar-expand-xxl .navbar-collapse::before, .navbar-expand-xxl .navbar-collapse::after, .modal::before, .modal::after, .modal-dialog::before, .modal-dialog::after, .modal-content::before, .modal-content::after, .modal-header::before, .modal-header::after, .modal-title::before, .modal-title::after, .modal-body::before, .modal-body::after, .modal-footer::before, .modal-footer::after, .modal-backdrop::before, .modal-backdrop::after, .offcanvas::before, .offcanvas::after, .offcanvas-header::before, .offcanvas-header::after, .offcanvas-title::before, .offcanvas-title::after, .offcanvas-body::before, .offcanvas-body::after, .offcanvas-backdrop::before, .offcanvas-backdrop::after, .pagination::before, .pagination::after, .page-link::before, .page-link::after, .page-item::before, .page-item::after, .placeholder::before, .placeholder::after, .placeholder-glow::before, .placeholder-glow::after, .placeholder-wave::before, .placeholder-wave::after, .tooltip::before, .tooltip::after, .tooltip .tooltip-arrow::before, .tooltip .tooltip-arrow::after, .tooltip-inner::before, .tooltip-inner::after, .popover::before, .popover::after, .popover .popover-arrow::before, .popover .popover-arrow::after, .popover-header::before, .popover-header::after, .popover-body::before, .popover-body::after, .progress::before, .progress::after, .progress-stacked::before, .progress-stacked::after, .progress-bar::before, .progress-bar::after, .spinner-border::before, .spinner-border::after, .spinner-grow::before, .spinner-grow::after, .toast::before, .toast::after, .toast-container::before, .toast-container::after, .toast-header::before, .toast-header::after, .toast-body::before, .toast-body::after, .table::before, .table::after, .table > :not(caption) > * > *::before, .table > :not(caption) > * > *::after, .table > thead th::before, .table > thead th::after, .table-responsive::before, .table-responsive::after, .form-label::before, .form-label::after, .form-text::before, .form-text::after, .form-control::before, .form-control::after, .form-control-plaintext::before, .form-control-plaintext::after, .form-select::before, .form-select::after, .form-check::before, .form-check::after, .form-check-label::before, .form-check-label::after, .form-range::before, .form-range::after, .input-group::before, .input-group::after, .input-group-text::before, .input-group-text::after, .form-floating::before, .form-floating::after, .form-floating > label::before, .form-floating > label::after, .invalid-feedback::before, .invalid-feedback::after, .valid-feedback::before, .valid-feedback::after, .carousel::before, .carousel::after, .carousel-inner::before, .carousel-inner::after, .carousel-item::before, .carousel-item::after, .carousel-control-prev::before, .carousel-control-prev::after, .carousel-control-next::before, .carousel-control-next::after, .carousel-control-prev-icon::before, .carousel-control-prev-icon::after, .carousel-control-next-icon::before, .carousel-control-next-icon::after, .carousel-indicators::before, .carousel-indicators::after, .carousel-indicators [data-bs-target]::after, .carousel-caption::before, .carousel-caption::after {
       box-sizing: border-box;
       position: static;
       inset: auto;
@@ -8385,6 +8473,7 @@
       block-size: var(--m3-icon-btn-icon-size);
     }
     .m3-icon-btn[aria-pressed=true] {
+      --_container: var(--m3-icon-btn-selected-container-color);
       --_content: var(--m3-icon-btn-selected-color);
     }
     .m3-icon-btn:disabled, .m3-icon-btn.disabled {
@@ -8404,6 +8493,7 @@
       --_content: var(--m3-icon-btn-filled-color);
     }
     .m3-icon-btn--filled[aria-pressed=true] {
+      --_container: var(--m3-icon-btn-filled-container-color);
       --_content: var(--m3-icon-btn-filled-color);
     }
     .m3-icon-btn--filled:disabled, .m3-icon-btn--filled.disabled {
@@ -8427,6 +8517,7 @@
       --_content: var(--m3-icon-btn-tonal-color);
     }
     .m3-icon-btn--tonal[aria-pressed=true] {
+      --_container: var(--m3-icon-btn-tonal-container-color);
       --_content: var(--m3-icon-btn-tonal-color);
     }
     .m3-icon-btn--tonal:disabled, .m3-icon-btn--tonal.disabled {
@@ -12091,6 +12182,339 @@
       translate: -50% 0;
       z-index: var(--m3-z-raised);
     }
+    .m3-toolbar--dense {
+      --m3-density: 0;
+      --m3-target-size: 100%;
+      --m3-icon-btn-size: var(--m3-toolbar-dense-control-size);
+      --m3-icon-btn-icon-size: var(--m3-toolbar-dense-icon-size);
+      --m3-icon-btn-shape: var(--m3-toolbar-dense-control-shape);
+      --m3-icon-btn-selected-container-color: var(
+        --m3-toolbar-dense-selected-container-color
+      );
+      --m3-icon-btn-selected-color: var(--m3-toolbar-dense-selected-color);
+      --m3-btn-height: var(--m3-toolbar-dense-control-size);
+      --m3-btn-padding-inline: var(--m3-space-2);
+      --m3-btn-icon-gap: var(--m3-space-1);
+      --m3-btn-icon-size: var(--m3-toolbar-dense-icon-size);
+      --m3-btn-shape: var(--m3-toolbar-dense-control-shape);
+      container-type: inline-size;
+      container-name: m3-toolbar;
+      font-family: var(--md-sys-typescale-label-large-font);
+      font-size: var(--md-sys-typescale-label-large-size);
+      line-height: var(--md-sys-typescale-label-large-line-height);
+      font-weight: var(--md-sys-typescale-label-large-weight);
+      letter-spacing: var(--md-sys-typescale-label-large-tracking);
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      inline-size: 100%;
+      height: var(--m3-toolbar-dense-height);
+      gap: var(--m3-toolbar-dense-gap);
+      padding-inline: var(--m3-toolbar-dense-padding-inline);
+      border-radius: var(--m3-toolbar-dense-shape);
+      overflow: clip visible;
+      box-shadow: var(--md-sys-elevation-0);
+    }
+    .m3-toolbar--dense .m3-btn-check:checked + .m3-icon-btn {
+      --_container: var(--m3-toolbar-dense-selected-container-color);
+      --_content: var(--m3-toolbar-dense-selected-color);
+    }
+    @supports (position-area: block-end) {
+      .m3-toolbar--dense .m3-menu[popover]:not(.m3-menu--static) {
+        inset: auto;
+        margin: var(--m3-space-none);
+        margin-block-start: var(--m3-toolbar-dense-menu-offset);
+        position-area: block-end span-inline-end;
+        position-try-fallbacks: flip-block, flip-inline;
+      }
+    }
+    .m3-toolbar__group {
+      display: inline-flex;
+      align-items: center;
+      flex: none;
+      gap: var(--m3-toolbar-dense-gap);
+    }
+    .m3-toolbar__group + .m3-toolbar__group::before {
+      content: "";
+      display: block;
+      flex: none;
+      inline-size: var(--m3-stroke-hairline);
+      block-size: var(--m3-toolbar-dense-separator-height);
+      margin-inline: var(--m3-space-1);
+      background-color: var(--m3-toolbar-dense-separator-color);
+    }
+    .m3-toolbar__dropdown {
+      --_container: var(--m3-btn-container-color);
+      --_content: var(--m3-btn-label-color);
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--m3-btn-icon-gap);
+      height: calc(var(--m3-btn-height) + var(--m3-density) * var(--m3-density-step));
+      padding-inline: var(--m3-btn-padding-inline);
+      border: none;
+      border-radius: var(--m3-btn-shape);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      text-align: center;
+      text-decoration: none;
+      vertical-align: middle;
+      -webkit-tap-highlight-color: transparent;
+      font-family: var(--md-sys-typescale-label-large-font);
+      font-size: var(--md-sys-typescale-label-large-size);
+      line-height: var(--md-sys-typescale-label-large-line-height);
+      font-weight: var(--md-sys-typescale-label-large-weight);
+      letter-spacing: var(--md-sys-typescale-label-large-tracking);
+      --_state-color: var(--_content);
+      --_state-opacity: var(--md-sys-state-none);
+      color: var(--_content);
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+    }
+    .m3-toolbar__dropdown:hover {
+      --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
+    }
+    .m3-toolbar__dropdown:focus-visible {
+      --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
+    }
+    .m3-toolbar__dropdown:active {
+      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+    }
+    .m3-toolbar__dropdown:focus-visible {
+      outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
+      outline-offset: var(--md-sys-state-focus-indicator-offset);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .m3-toolbar__dropdown {
+        transition-property: background-color, color, box-shadow, border-color;
+        transition-duration: var(--md-sys-motion-duration-short4);
+        transition-timing-function: var(--md-sys-motion-easing-standard);
+      }
+    }
+    @media (forced-colors: active) {
+      .m3-toolbar__dropdown {
+        border: var(--m3-stroke-hairline) solid ButtonBorder;
+      }
+    }
+    .m3-toolbar__dropdown > svg,
+    .m3-toolbar__dropdown > img {
+      inline-size: var(--m3-btn-icon-size);
+      block-size: var(--m3-btn-icon-size);
+    }
+    .m3-toolbar__dropdown:disabled, .m3-toolbar__dropdown.disabled {
+      --_container: color-mix(
+        in srgb,
+        var(--md-sys-color-on-surface) var(--md-sys-state-disabled-container-opacity),
+        transparent
+      );
+      --_content: color-mix(
+        in srgb,
+        var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity),
+        transparent
+      );
+      --_state-opacity: var(--md-sys-state-none);
+      box-shadow: none;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .m3-toolbar__dropdown {
+      --_container: transparent;
+      --_content: var(--m3-btn-text-label-color);
+      padding-inline: var(--m3-space-3);
+    }
+    .m3-toolbar__dropdown:disabled, .m3-toolbar__dropdown.disabled {
+      --_container: transparent;
+      --_content: color-mix(
+        in srgb,
+        var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity),
+        transparent
+      );
+      --_state-opacity: var(--md-sys-state-none);
+      box-shadow: none;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .m3-toolbar__dropdown {
+      gap: var(--m3-space-1);
+      padding-inline: var(--m3-space-2);
+    }
+    .m3-toolbar__dropdown::after {
+      content: "";
+      display: block;
+      flex: none;
+      width: calc(var(--m3-chevron-size) / 2 + var(--m3-stroke-thick));
+      height: calc(var(--m3-chevron-size) / 2 + var(--m3-stroke-thick));
+      border-right: var(--m3-stroke-thick) solid currentColor;
+      border-bottom: var(--m3-stroke-thick) solid currentColor;
+      rotate: 45deg;
+      margin-inline-start: var(--m3-space-1);
+      translate: 0 -25%;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .m3-toolbar__dropdown::after {
+        transition-property: rotate, translate;
+        transition-duration: var(--md-sys-motion-duration-short4);
+        transition-timing-function: var(--md-sys-motion-easing-standard);
+      }
+    }
+    .m3-toolbar__dropdown[aria-expanded=true]::after {
+      rotate: 225deg;
+      translate: 0 25%;
+    }
+    .m3-toolbar__dropdown:has(+ .m3-menu:popover-open)::after {
+      rotate: 225deg;
+      translate: 0 25%;
+    }
+    select.m3-toolbar__select {
+      font-family: var(--md-sys-typescale-label-large-font);
+      font-size: var(--md-sys-typescale-label-large-size);
+      line-height: var(--md-sys-typescale-label-large-line-height);
+      font-weight: var(--md-sys-typescale-label-large-weight);
+      letter-spacing: var(--md-sys-typescale-label-large-tracking);
+      --_container: transparent;
+      --_content: currentColor;
+      display: inline-block;
+      inline-size: auto;
+      max-inline-size: 100%;
+      block-size: var(--m3-toolbar-dense-control-size);
+      min-block-size: var(--m3-space-none);
+      padding-block: var(--m3-space-none);
+      padding-inline: var(--m3-space-2) calc(var(--m3-space-2) + 2 * var(--m3-toolbar-dense-chevron-size) + var(--m3-space-1));
+      border: none;
+      border-radius: var(--m3-toolbar-dense-control-shape);
+      appearance: none;
+      cursor: pointer;
+      white-space: pre;
+      vertical-align: middle;
+      --_state-color: var(--_content);
+      --_state-opacity: var(--md-sys-state-none);
+      color: var(--_content);
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+    }
+    select.m3-toolbar__select:hover {
+      --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
+    }
+    select.m3-toolbar__select:focus-visible {
+      --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
+    }
+    select.m3-toolbar__select:active {
+      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+    }
+    select.m3-toolbar__select:focus-visible {
+      outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
+      outline-offset: var(--md-sys-state-focus-indicator-offset);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      select.m3-toolbar__select {
+        transition-property: background-color, color;
+        transition-duration: var(--md-sys-motion-duration-short4);
+        transition-timing-function: var(--md-sys-motion-easing-standard);
+      }
+    }
+    select.m3-toolbar__select {
+      background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+      background-position: calc(100% - var(--m3-space-2) - var(--m3-toolbar-dense-chevron-size)) 50%, calc(100% - var(--m3-space-2)) 50%;
+      background-size: var(--m3-toolbar-dense-chevron-size) var(--m3-toolbar-dense-chevron-size);
+      background-repeat: no-repeat;
+    }
+    select.m3-toolbar__select:focus {
+      box-shadow: none;
+    }
+    select.m3-toolbar__select:disabled {
+      --_container: transparent;
+      --_content: color-mix(
+        in srgb,
+        var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity),
+        transparent
+      );
+      --_state-opacity: var(--md-sys-state-none);
+      box-shadow: none;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .m3-toolbar__stepper {
+      display: inline-flex;
+      align-items: center;
+      flex: none;
+      gap: var(--m3-toolbar-dense-gap);
+    }
+    .m3-toolbar__stepper-input {
+      font-family: var(--md-sys-typescale-label-large-font);
+      font-size: var(--md-sys-typescale-label-large-size);
+      line-height: var(--md-sys-typescale-label-large-line-height);
+      font-weight: var(--md-sys-typescale-label-large-weight);
+      letter-spacing: var(--md-sys-typescale-label-large-tracking);
+      display: inline-block;
+      inline-size: var(--m3-toolbar-dense-field-width);
+      block-size: var(--m3-toolbar-dense-control-size);
+      padding-inline: var(--m3-space-1);
+      border: var(--m3-stroke-hairline) solid var(--m3-toolbar-dense-field-outline-color);
+      border-radius: var(--m3-toolbar-dense-control-shape);
+      background-color: transparent;
+      color: inherit;
+      caret-color: var(--md-sys-color-primary);
+      text-align: center;
+      cursor: text;
+      appearance: textfield;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .m3-toolbar__stepper-input {
+        transition-property: border-color, box-shadow;
+        transition-duration: var(--md-sys-motion-duration-short4);
+        transition-timing-function: var(--md-sys-motion-easing-standard);
+      }
+    }
+    .m3-toolbar__stepper-input::-webkit-inner-spin-button, .m3-toolbar__stepper-input::-webkit-outer-spin-button {
+      appearance: none;
+      margin: var(--m3-space-none);
+    }
+    .m3-toolbar__stepper-input:hover {
+      border-color: var(--md-sys-color-on-surface);
+    }
+    .m3-toolbar__stepper-input:focus-visible {
+      outline: none;
+      border-color: var(--md-sys-color-primary);
+      box-shadow: inset 0 0 0 var(--m3-stroke-hairline) var(--md-sys-color-primary);
+    }
+    .m3-toolbar__stepper-input:disabled {
+      color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity), transparent);
+      border-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--md-sys-state-disabled-container-opacity), transparent);
+      cursor: not-allowed;
+    }
+    .m3-toolbar__swatch::before {
+      content: "";
+      display: block;
+      position: absolute;
+      inset-block-end: calc((var(--m3-toolbar-dense-control-size) - var(--m3-toolbar-dense-icon-size)) / 2);
+      inset-inline-start: 50%;
+      translate: -50% 0;
+      inline-size: calc(var(--m3-toolbar-dense-icon-size) - var(--m3-space-1));
+      block-size: var(--m3-toolbar-dense-swatch-height);
+      border-radius: var(--m3-stroke-hairline);
+      background-color: var(--m3-toolbar-swatch-color, currentColor);
+    }
+    .m3-toolbar__spacer {
+      display: block;
+      flex: 1 1 0;
+      align-self: stretch;
+    }
+    .m3-toolbar--dense .m3-toolbar__more {
+      display: none;
+    }
+    @container m3-toolbar (width < 68rem) {
+      .m3-toolbar__group--priority-low {
+        display: none;
+      }
+      .m3-toolbar--dense .m3-toolbar__more {
+        display: inline-flex;
+      }
+    }
+    @container m3-toolbar (width < 56rem) {
+      .m3-toolbar__group--priority-medium {
+        display: none;
+      }
+    }
     .m3-button-group {
       display: inline-flex;
       align-items: center;
@@ -13162,7 +13586,7 @@
     }
   }
   @layer own {
-    .m3-btn, .m3-btn-group, .m3-icon-btn, .m3-fab, .m3-fab--extended .m3-fab__label, .m3-segmented, .m3-segmented__segment, .m3-segmented__segment .m3-segmented__input, .m3-segmented__segment .m3-segmented__label, .m3-badge, .m3-progress, .m3-progress__bar, .m3-progress-circle, .m3-spinner, .m3-snackbar, .m3-snackbar__text, .m3-snackbar__action, .m3-snackbar__close, .m3-tooltip, .m3-tooltip__title, .m3-card, .m3-carousel, .m3-carousel__item, .m3-carousel__indicators, .m3-carousel__indicator, .m3-dialog, .m3-dialog__title, .m3-dialog__content, .m3-dialog__actions, .m3-divider, .m3-list, .m3-list__subheader, .m3-list-item, .m3-list-item__body, .m3-list-item__overline, .m3-list-item__headline, .m3-list-item__supporting, .m3-list-item__leading, .m3-list-item__trailing, .m3-sheet--bottom, .m3-sheet--side, .m3-sheet--side-standard, .m3-sheet__handle, .m3-nav-bar, .m3-nav-bar__item, .m3-nav-bar__icon, .m3-drawer, .m3-drawer--modal, .m3-drawer__item, .m3-drawer__headline, .m3-drawer__badge, .m3-rail, .m3-rail__item, .m3-rail__icon, .m3-tabs, .m3-tabs__tab, .m3-tabs__input, .m3-top-app-bar, .m3-top-app-bar__title, .m3-bottom-app-bar, .m3-bottom-app-bar__trailing, input[type=checkbox].m3-checkbox, input[type=radio].m3-radio, input[type=checkbox].m3-switch, .m3-chip, .m3-chip--filter .m3-chip__input, .m3-chip--filter .m3-chip__label, .m3-chip--input .m3-chip__input, .m3-chip--input .m3-chip__label, .m3-chip__remove, .m3-menu, .m3-menu__item, .m3-menu__header, input[type=range].m3-slider, input[type=date].m3-datetime, input[type=time].m3-datetime, input[type=datetime-local].m3-datetime, input[type=month].m3-datetime, input[type=week].m3-datetime, .m3-field, .m3-field__input, .m3-field__label, .m3-field__supporting, .m3-search, .m3-search__input, .m3-search__panel, select.m3-select, .m3-toolbar, .m3-button-group, .m3-btn-check, .m3-split-button, .m3-split-button__action, .m3-split-button__toggle, .m3-fab-menu, .m3-fab-menu__items, .m3-fab-menu__item, .m3-fab-menu__label, .m3-loading-indicator, .m3-date-picker, .m3-date-picker__header, .m3-date-picker__supporting, .m3-date-picker__headline, .m3-date-picker__nav, .m3-date-picker__menu, .m3-date-picker__arrows, .m3-date-picker__grid, .m3-date-picker__weekday, .m3-date-picker__day, .m3-date-picker__actions, .m3-time-picker, .m3-time-picker__label, .m3-time-picker__fields, .m3-time-picker__field, .m3-time-picker__input, .m3-time-picker__hint, .m3-time-picker__separator, .m3-time-picker__period, .m3-time-picker__period-option, .m3-time-picker__period-option .m3-time-picker__period-input, .m3-time-picker__period-option .m3-time-picker__period-label, .m3-time-picker__actions {
+    .m3-btn, .m3-btn-group, .m3-icon-btn, .m3-fab, .m3-fab--extended .m3-fab__label, .m3-segmented, .m3-segmented__segment, .m3-segmented__segment .m3-segmented__input, .m3-segmented__segment .m3-segmented__label, .m3-badge, .m3-progress, .m3-progress__bar, .m3-progress-circle, .m3-spinner, .m3-snackbar, .m3-snackbar__text, .m3-snackbar__action, .m3-snackbar__close, .m3-tooltip, .m3-tooltip__title, .m3-card, .m3-carousel, .m3-carousel__item, .m3-carousel__indicators, .m3-carousel__indicator, .m3-dialog, .m3-dialog__title, .m3-dialog__content, .m3-dialog__actions, .m3-divider, .m3-list, .m3-list__subheader, .m3-list-item, .m3-list-item__body, .m3-list-item__overline, .m3-list-item__headline, .m3-list-item__supporting, .m3-list-item__leading, .m3-list-item__trailing, .m3-sheet--bottom, .m3-sheet--side, .m3-sheet--side-standard, .m3-sheet__handle, .m3-nav-bar, .m3-nav-bar__item, .m3-nav-bar__icon, .m3-drawer, .m3-drawer--modal, .m3-drawer__item, .m3-drawer__headline, .m3-drawer__badge, .m3-rail, .m3-rail__item, .m3-rail__icon, .m3-tabs, .m3-tabs__tab, .m3-tabs__input, .m3-top-app-bar, .m3-top-app-bar__title, .m3-bottom-app-bar, .m3-bottom-app-bar__trailing, input[type=checkbox].m3-checkbox, input[type=radio].m3-radio, input[type=checkbox].m3-switch, .m3-chip, .m3-chip--filter .m3-chip__input, .m3-chip--filter .m3-chip__label, .m3-chip--input .m3-chip__input, .m3-chip--input .m3-chip__label, .m3-chip__remove, .m3-menu, .m3-menu__item, .m3-menu__header, input[type=range].m3-slider, input[type=date].m3-datetime, input[type=time].m3-datetime, input[type=datetime-local].m3-datetime, input[type=month].m3-datetime, input[type=week].m3-datetime, .m3-field, .m3-field__input, .m3-field__label, .m3-field__supporting, .m3-search, .m3-search__input, .m3-search__panel, select.m3-select, .m3-toolbar, .m3-toolbar__group, .m3-toolbar__dropdown, select.m3-toolbar__select, .m3-toolbar__stepper, .m3-toolbar__stepper-input, .m3-toolbar__spacer, .m3-button-group, .m3-btn-check, .m3-split-button, .m3-split-button__action, .m3-split-button__toggle, .m3-fab-menu, .m3-fab-menu__items, .m3-fab-menu__item, .m3-fab-menu__label, .m3-loading-indicator, .m3-date-picker, .m3-date-picker__header, .m3-date-picker__supporting, .m3-date-picker__headline, .m3-date-picker__nav, .m3-date-picker__menu, .m3-date-picker__arrows, .m3-date-picker__grid, .m3-date-picker__weekday, .m3-date-picker__day, .m3-date-picker__actions, .m3-time-picker, .m3-time-picker__label, .m3-time-picker__fields, .m3-time-picker__field, .m3-time-picker__input, .m3-time-picker__hint, .m3-time-picker__separator, .m3-time-picker__period, .m3-time-picker__period-option, .m3-time-picker__period-option .m3-time-picker__period-input, .m3-time-picker__period-option .m3-time-picker__period-label, .m3-time-picker__actions {
       box-sizing: border-box;
       position: static;
       inset: auto;
@@ -13325,7 +13749,7 @@
       color-scheme: inherit;
       image-rendering: inherit;
     }
-    .m3-icon-btn::after, .m3-fab--small::after, .m3-segmented__segment .m3-segmented__label::before, .m3-snackbar__action::after, .m3-snackbar__close::after, .m3-carousel__indicator::before, .m3-list--dividers > .m3-list-item:not(:last-child)::after, .m3-tabs__tab.active::after, .m3-tabs__tab[aria-current=page]::after, .m3-tabs__tab[aria-selected=true]::after, .m3-tabs__input:checked + .m3-tabs__tab::after, input[type=checkbox].m3-checkbox::before, input[type=checkbox].m3-checkbox::after, input[type=radio].m3-radio::before, input[type=radio].m3-radio::after, input[type=checkbox].m3-switch::after, input[type=checkbox].m3-switch::before, .m3-chip--filter .m3-chip__label::before, .m3-chip--input .m3-chip__label::before, .m3-split-button__toggle::after, .m3-loading-indicator::before, .m3-date-picker__menu::after, .m3-date-picker__day::after, .m3-date-picker__day::before, .m3-btn::before, .m3-btn::after, .m3-btn-group::before, .m3-btn-group::after, .m3-icon-btn::before, .m3-fab::before, .m3-fab::after, .m3-fab--extended .m3-fab__label::before, .m3-fab--extended .m3-fab__label::after, .m3-segmented::before, .m3-segmented::after, .m3-segmented__segment::before, .m3-segmented__segment::after, .m3-segmented__segment .m3-segmented__input::before, .m3-segmented__segment .m3-segmented__input::after, .m3-segmented__segment .m3-segmented__label::after, .m3-badge::before, .m3-badge::after, .m3-progress::before, .m3-progress::after, .m3-progress__bar::before, .m3-progress__bar::after, .m3-progress-circle::before, .m3-progress-circle::after, .m3-spinner::before, .m3-spinner::after, .m3-snackbar::before, .m3-snackbar::after, .m3-snackbar__text::before, .m3-snackbar__text::after, .m3-snackbar__action::before, .m3-snackbar__close::before, .m3-tooltip::before, .m3-tooltip::after, .m3-tooltip__title::before, .m3-tooltip__title::after, .m3-card::before, .m3-card::after, .m3-carousel::before, .m3-carousel::after, .m3-carousel__item::before, .m3-carousel__item::after, .m3-carousel__indicators::before, .m3-carousel__indicators::after, .m3-carousel__indicator::after, .m3-dialog::before, .m3-dialog::after, .m3-dialog__title::before, .m3-dialog__title::after, .m3-dialog__content::before, .m3-dialog__content::after, .m3-dialog__actions::before, .m3-dialog__actions::after, .m3-divider::before, .m3-divider::after, .m3-list::before, .m3-list::after, .m3-list__subheader::before, .m3-list__subheader::after, .m3-list-item::before, .m3-list-item::after, .m3-list-item__body::before, .m3-list-item__body::after, .m3-list-item__overline::before, .m3-list-item__overline::after, .m3-list-item__headline::before, .m3-list-item__headline::after, .m3-list-item__supporting::before, .m3-list-item__supporting::after, .m3-list-item__leading::before, .m3-list-item__leading::after, .m3-list-item__trailing::before, .m3-list-item__trailing::after, .m3-sheet--bottom::before, .m3-sheet--bottom::after, .m3-sheet--side::before, .m3-sheet--side::after, .m3-sheet--side-standard::before, .m3-sheet--side-standard::after, .m3-sheet__handle::before, .m3-sheet__handle::after, .m3-nav-bar::before, .m3-nav-bar::after, .m3-nav-bar__item::before, .m3-nav-bar__item::after, .m3-nav-bar__icon::before, .m3-nav-bar__icon::after, .m3-drawer::before, .m3-drawer::after, .m3-drawer--modal::before, .m3-drawer--modal::after, .m3-drawer__item::before, .m3-drawer__item::after, .m3-drawer__headline::before, .m3-drawer__headline::after, .m3-drawer__badge::before, .m3-drawer__badge::after, .m3-rail::before, .m3-rail::after, .m3-rail__item::before, .m3-rail__item::after, .m3-rail__icon::before, .m3-rail__icon::after, .m3-tabs::before, .m3-tabs::after, .m3-tabs__tab::before, .m3-tabs__tab::after, .m3-tabs__input::before, .m3-tabs__input::after, .m3-top-app-bar::before, .m3-top-app-bar::after, .m3-top-app-bar__title::before, .m3-top-app-bar__title::after, .m3-bottom-app-bar::before, .m3-bottom-app-bar::after, .m3-bottom-app-bar__trailing::before, .m3-bottom-app-bar__trailing::after, .m3-chip::before, .m3-chip::after, .m3-chip--filter .m3-chip__input::before, .m3-chip--filter .m3-chip__input::after, .m3-chip--filter .m3-chip__label::after, .m3-chip--input .m3-chip__input::before, .m3-chip--input .m3-chip__input::after, .m3-chip--input .m3-chip__label::after, .m3-chip__remove::before, .m3-chip__remove::after, .m3-menu::before, .m3-menu::after, .m3-menu__item::before, .m3-menu__item::after, .m3-menu__header::before, .m3-menu__header::after, input[type=range].m3-slider::before, input[type=range].m3-slider::after, input[type=date].m3-datetime::before, input[type=date].m3-datetime::after, input[type=time].m3-datetime::before, input[type=time].m3-datetime::after, input[type=datetime-local].m3-datetime::before, input[type=datetime-local].m3-datetime::after, input[type=month].m3-datetime::before, input[type=month].m3-datetime::after, input[type=week].m3-datetime::before, input[type=week].m3-datetime::after, .m3-field::before, .m3-field::after, .m3-field__input::before, .m3-field__input::after, .m3-field__label::before, .m3-field__label::after, .m3-field__supporting::before, .m3-field__supporting::after, .m3-search::before, .m3-search::after, .m3-search__input::before, .m3-search__input::after, .m3-search__panel::before, .m3-search__panel::after, select.m3-select::before, select.m3-select::after, .m3-toolbar::before, .m3-toolbar::after, .m3-button-group::before, .m3-button-group::after, .m3-btn-check::before, .m3-btn-check::after, .m3-split-button::before, .m3-split-button::after, .m3-split-button__action::before, .m3-split-button__action::after, .m3-split-button__toggle::before, .m3-fab-menu::before, .m3-fab-menu::after, .m3-fab-menu__items::before, .m3-fab-menu__items::after, .m3-fab-menu__item::before, .m3-fab-menu__item::after, .m3-fab-menu__label::before, .m3-fab-menu__label::after, .m3-loading-indicator::after, .m3-date-picker::before, .m3-date-picker::after, .m3-date-picker__header::before, .m3-date-picker__header::after, .m3-date-picker__supporting::before, .m3-date-picker__supporting::after, .m3-date-picker__headline::before, .m3-date-picker__headline::after, .m3-date-picker__nav::before, .m3-date-picker__nav::after, .m3-date-picker__menu::before, .m3-date-picker__arrows::before, .m3-date-picker__arrows::after, .m3-date-picker__grid::before, .m3-date-picker__grid::after, .m3-date-picker__weekday::before, .m3-date-picker__weekday::after, .m3-date-picker__actions::before, .m3-date-picker__actions::after, .m3-time-picker::before, .m3-time-picker::after, .m3-time-picker__label::before, .m3-time-picker__label::after, .m3-time-picker__fields::before, .m3-time-picker__fields::after, .m3-time-picker__field::before, .m3-time-picker__field::after, .m3-time-picker__input::before, .m3-time-picker__input::after, .m3-time-picker__hint::before, .m3-time-picker__hint::after, .m3-time-picker__separator::before, .m3-time-picker__separator::after, .m3-time-picker__period::before, .m3-time-picker__period::after, .m3-time-picker__period-option::before, .m3-time-picker__period-option::after, .m3-time-picker__period-option .m3-time-picker__period-input::before, .m3-time-picker__period-option .m3-time-picker__period-input::after, .m3-time-picker__period-option .m3-time-picker__period-label::before, .m3-time-picker__period-option .m3-time-picker__period-label::after, .m3-time-picker__actions::before, .m3-time-picker__actions::after, .m3-snackbar__slot::before, .m3-snackbar__slot::after, .m3-card__media::before, .m3-card__media::after, .m3-card__slot::before, .m3-card__slot::after, .m3-card__actions::before, .m3-card__actions::after, .m3-list-item__slot::before, .m3-list-item__slot::after, .m3-sheet__slot::before, .m3-sheet__slot::after, .m3-date-picker__input::before, .m3-date-picker__input::after {
+    .m3-icon-btn::after, .m3-fab--small::after, .m3-segmented__segment .m3-segmented__label::before, .m3-snackbar__action::after, .m3-snackbar__close::after, .m3-carousel__indicator::before, .m3-list--dividers > .m3-list-item:not(:last-child)::after, .m3-tabs__tab.active::after, .m3-tabs__tab[aria-current=page]::after, .m3-tabs__tab[aria-selected=true]::after, .m3-tabs__input:checked + .m3-tabs__tab::after, input[type=checkbox].m3-checkbox::before, input[type=checkbox].m3-checkbox::after, input[type=radio].m3-radio::before, input[type=radio].m3-radio::after, input[type=checkbox].m3-switch::after, input[type=checkbox].m3-switch::before, .m3-chip--filter .m3-chip__label::before, .m3-chip--input .m3-chip__label::before, .m3-toolbar__group + .m3-toolbar__group::before, .m3-toolbar__dropdown::after, .m3-toolbar__swatch::before, .m3-split-button__toggle::after, .m3-loading-indicator::before, .m3-date-picker__menu::after, .m3-date-picker__day::after, .m3-date-picker__day::before, .m3-btn::before, .m3-btn::after, .m3-btn-group::before, .m3-btn-group::after, .m3-icon-btn::before, .m3-fab::before, .m3-fab::after, .m3-fab--extended .m3-fab__label::before, .m3-fab--extended .m3-fab__label::after, .m3-segmented::before, .m3-segmented::after, .m3-segmented__segment::before, .m3-segmented__segment::after, .m3-segmented__segment .m3-segmented__input::before, .m3-segmented__segment .m3-segmented__input::after, .m3-segmented__segment .m3-segmented__label::after, .m3-badge::before, .m3-badge::after, .m3-progress::before, .m3-progress::after, .m3-progress__bar::before, .m3-progress__bar::after, .m3-progress-circle::before, .m3-progress-circle::after, .m3-spinner::before, .m3-spinner::after, .m3-snackbar::before, .m3-snackbar::after, .m3-snackbar__text::before, .m3-snackbar__text::after, .m3-snackbar__action::before, .m3-snackbar__close::before, .m3-tooltip::before, .m3-tooltip::after, .m3-tooltip__title::before, .m3-tooltip__title::after, .m3-card::before, .m3-card::after, .m3-carousel::before, .m3-carousel::after, .m3-carousel__item::before, .m3-carousel__item::after, .m3-carousel__indicators::before, .m3-carousel__indicators::after, .m3-carousel__indicator::after, .m3-dialog::before, .m3-dialog::after, .m3-dialog__title::before, .m3-dialog__title::after, .m3-dialog__content::before, .m3-dialog__content::after, .m3-dialog__actions::before, .m3-dialog__actions::after, .m3-divider::before, .m3-divider::after, .m3-list::before, .m3-list::after, .m3-list__subheader::before, .m3-list__subheader::after, .m3-list-item::before, .m3-list-item::after, .m3-list-item__body::before, .m3-list-item__body::after, .m3-list-item__overline::before, .m3-list-item__overline::after, .m3-list-item__headline::before, .m3-list-item__headline::after, .m3-list-item__supporting::before, .m3-list-item__supporting::after, .m3-list-item__leading::before, .m3-list-item__leading::after, .m3-list-item__trailing::before, .m3-list-item__trailing::after, .m3-sheet--bottom::before, .m3-sheet--bottom::after, .m3-sheet--side::before, .m3-sheet--side::after, .m3-sheet--side-standard::before, .m3-sheet--side-standard::after, .m3-sheet__handle::before, .m3-sheet__handle::after, .m3-nav-bar::before, .m3-nav-bar::after, .m3-nav-bar__item::before, .m3-nav-bar__item::after, .m3-nav-bar__icon::before, .m3-nav-bar__icon::after, .m3-drawer::before, .m3-drawer::after, .m3-drawer--modal::before, .m3-drawer--modal::after, .m3-drawer__item::before, .m3-drawer__item::after, .m3-drawer__headline::before, .m3-drawer__headline::after, .m3-drawer__badge::before, .m3-drawer__badge::after, .m3-rail::before, .m3-rail::after, .m3-rail__item::before, .m3-rail__item::after, .m3-rail__icon::before, .m3-rail__icon::after, .m3-tabs::before, .m3-tabs::after, .m3-tabs__tab::before, .m3-tabs__tab::after, .m3-tabs__input::before, .m3-tabs__input::after, .m3-top-app-bar::before, .m3-top-app-bar::after, .m3-top-app-bar__title::before, .m3-top-app-bar__title::after, .m3-bottom-app-bar::before, .m3-bottom-app-bar::after, .m3-bottom-app-bar__trailing::before, .m3-bottom-app-bar__trailing::after, .m3-chip::before, .m3-chip::after, .m3-chip--filter .m3-chip__input::before, .m3-chip--filter .m3-chip__input::after, .m3-chip--filter .m3-chip__label::after, .m3-chip--input .m3-chip__input::before, .m3-chip--input .m3-chip__input::after, .m3-chip--input .m3-chip__label::after, .m3-chip__remove::before, .m3-chip__remove::after, .m3-menu::before, .m3-menu::after, .m3-menu__item::before, .m3-menu__item::after, .m3-menu__header::before, .m3-menu__header::after, input[type=range].m3-slider::before, input[type=range].m3-slider::after, input[type=date].m3-datetime::before, input[type=date].m3-datetime::after, input[type=time].m3-datetime::before, input[type=time].m3-datetime::after, input[type=datetime-local].m3-datetime::before, input[type=datetime-local].m3-datetime::after, input[type=month].m3-datetime::before, input[type=month].m3-datetime::after, input[type=week].m3-datetime::before, input[type=week].m3-datetime::after, .m3-field::before, .m3-field::after, .m3-field__input::before, .m3-field__input::after, .m3-field__label::before, .m3-field__label::after, .m3-field__supporting::before, .m3-field__supporting::after, .m3-search::before, .m3-search::after, .m3-search__input::before, .m3-search__input::after, .m3-search__panel::before, .m3-search__panel::after, select.m3-select::before, select.m3-select::after, .m3-toolbar::before, .m3-toolbar::after, .m3-toolbar__group::before, .m3-toolbar__group::after, .m3-toolbar__dropdown::before, select.m3-toolbar__select::before, select.m3-toolbar__select::after, .m3-toolbar__stepper::before, .m3-toolbar__stepper::after, .m3-toolbar__stepper-input::before, .m3-toolbar__stepper-input::after, .m3-toolbar__spacer::before, .m3-toolbar__spacer::after, .m3-button-group::before, .m3-button-group::after, .m3-btn-check::before, .m3-btn-check::after, .m3-split-button::before, .m3-split-button::after, .m3-split-button__action::before, .m3-split-button__action::after, .m3-split-button__toggle::before, .m3-fab-menu::before, .m3-fab-menu::after, .m3-fab-menu__items::before, .m3-fab-menu__items::after, .m3-fab-menu__item::before, .m3-fab-menu__item::after, .m3-fab-menu__label::before, .m3-fab-menu__label::after, .m3-loading-indicator::after, .m3-date-picker::before, .m3-date-picker::after, .m3-date-picker__header::before, .m3-date-picker__header::after, .m3-date-picker__supporting::before, .m3-date-picker__supporting::after, .m3-date-picker__headline::before, .m3-date-picker__headline::after, .m3-date-picker__nav::before, .m3-date-picker__nav::after, .m3-date-picker__menu::before, .m3-date-picker__arrows::before, .m3-date-picker__arrows::after, .m3-date-picker__grid::before, .m3-date-picker__grid::after, .m3-date-picker__weekday::before, .m3-date-picker__weekday::after, .m3-date-picker__actions::before, .m3-date-picker__actions::after, .m3-time-picker::before, .m3-time-picker::after, .m3-time-picker__label::before, .m3-time-picker__label::after, .m3-time-picker__fields::before, .m3-time-picker__fields::after, .m3-time-picker__field::before, .m3-time-picker__field::after, .m3-time-picker__input::before, .m3-time-picker__input::after, .m3-time-picker__hint::before, .m3-time-picker__hint::after, .m3-time-picker__separator::before, .m3-time-picker__separator::after, .m3-time-picker__period::before, .m3-time-picker__period::after, .m3-time-picker__period-option::before, .m3-time-picker__period-option::after, .m3-time-picker__period-option .m3-time-picker__period-input::before, .m3-time-picker__period-option .m3-time-picker__period-input::after, .m3-time-picker__period-option .m3-time-picker__period-label::before, .m3-time-picker__period-option .m3-time-picker__period-label::after, .m3-time-picker__actions::before, .m3-time-picker__actions::after, .m3-snackbar__slot::before, .m3-snackbar__slot::after, .m3-card__media::before, .m3-card__media::after, .m3-card__slot::before, .m3-card__slot::after, .m3-card__actions::before, .m3-card__actions::after, .m3-list-item__slot::before, .m3-list-item__slot::after, .m3-sheet__slot::before, .m3-sheet__slot::after, .m3-date-picker__input::before, .m3-date-picker__input::after {
       box-sizing: border-box;
       position: static;
       inset: auto;
