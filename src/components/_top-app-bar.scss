@@ -35,6 +35,7 @@
 
 // Bar container (also emitted for Bootstrap's .navbar).
 @mixin bar {
+  @include m.own-box;
   display: flex;
   align-items: center;
   gap: var(--m3-space-2);
@@ -46,7 +47,9 @@
 
 // Headline slot (also emitted for Bootstrap's .navbar-brand).
 @mixin title {
+  @include m.own-box;
   @include m.typescale("title-large");
+  color: var(--#{c.$prefix}-top-app-bar-content-color);
   flex: 1 1 auto;
   white-space: nowrap;
   overflow: hidden;

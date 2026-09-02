@@ -33,6 +33,7 @@
 // do NOT participate in density; the >=48px touch target overlay keeps the
 // hit area constant regardless.
 @mixin control {
+  @include m.own-box;
   // State-layer tint: outline color unselected, selected color when checked.
   --_layer-color: var(--#{c.$prefix}-radio-outline-color);
 
@@ -41,6 +42,8 @@
   block-size: var(--#{c.$prefix}-radio-size);
   border: var(--m3-stroke-thick) solid var(--#{c.$prefix}-radio-outline-color);
   border-radius: var(--md-sys-shape-corner-full);
+  @include m.typescale("body-medium");
+  color: var(--#{c.$prefix}-radio-outline-color);
   display: inline-grid;
   place-content: center;
   cursor: pointer;
@@ -64,6 +67,7 @@
 
   // Selection dot, scaled in from the center when checked.
   &::after {
+    @include m.own-pseudo;
     content: "";
     grid-area: 1 / 1;
     inline-size: var(--#{c.$prefix}-radio-dot-size);

@@ -33,6 +33,7 @@
 
 // Full numbered-badge structure. Non-interactive: no state layer, no density.
 @mixin base {
+  @include m.own-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;

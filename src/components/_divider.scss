@@ -24,6 +24,7 @@
 
 // Horizontal rule (the default on <hr>).
 @mixin rule {
+  @include m.own-box;
   border: none;
   border-block-start: var(--#{c.$prefix}-divider-thickness) solid
     var(--#{c.$prefix}-divider-color);

@@ -93,6 +93,7 @@
 // do NOT participate in density; the >=48px touch target overlay keeps the
 // hit area constant regardless.
 @mixin control {
+  @include m.own-box;
   -webkit-appearance: none;
   appearance: none;
   inline-size: 100%;

@@ -32,9 +32,11 @@
 // Native popup chrome (calendar grid, clock) is themed by accent-color and
 // color-scheme at :root, not by rules here.
 @mixin control {
+  @include m.own-box;
   @include field.input-base;
   @include field.input-outlined;
   min-inline-size: var(--#{c.$prefix}-datetime-min-width);
+  cursor: default;
 
   // Separate rule: WebKit-only pseudo-element (the whole rule is simply
   // dropped by engines that do not recognize it).

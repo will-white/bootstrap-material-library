@@ -38,6 +38,7 @@
 
 // The dialog surface. Also aliased under Bootstrap's .modal-content.
 @mixin container {
+  @include m.own-box;
   background-color: var(--#{c.$prefix}-dialog-container-color);
   color: var(--#{c.$prefix}-dialog-content-color);
   border: none;
@@ -89,17 +90,20 @@
 }
 
 @mixin title {
+  @include m.own-box;
   @include m.typescale("headline-small");
   color: var(--#{c.$prefix}-dialog-content-color);
   margin-block-end: var(--m3-space-4);
 }
 
 @mixin content {
+  @include m.own-box;
   @include m.typescale("body-medium");
   color: var(--md-sys-color-on-surface-variant);
 }
 
 @mixin actions {
+  @include m.own-box;
   display: flex;
   justify-content: flex-end;
   gap: var(--m3-space-2);

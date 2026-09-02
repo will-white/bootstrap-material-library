@@ -58,6 +58,7 @@
 // Structure + state machinery shared by every variant (and by Bootstrap's
 // .btn). Variants only re-point the tier-4 private variables.
 @mixin base {
+  @include m.own-box;
   // Default look when no variant class is present: filled.
   --_container: var(--#{c.$prefix}-btn-container-color);
   --_content: var(--#{c.$prefix}-btn-label-color);
@@ -74,6 +75,7 @@
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
+  text-align: center;
   text-decoration: none;
   vertical-align: middle;
   -webkit-tap-highlight-color: transparent;
@@ -163,6 +165,7 @@
 // Connected group (also emitted for Bootstrap's .btn-group): outer corners
 // keep the button shape, inner corners flatten to extra-small.
 @mixin group($item: ".#{c.$prefix}-btn") {
+  @include m.own-box;
   display: inline-flex;
   vertical-align: middle;
 

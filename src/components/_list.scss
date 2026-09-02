@@ -41,6 +41,7 @@
 }
 
 @mixin list {
+  @include m.own-box;
   list-style: none;
   padding-inline: var(--m3-space-none);
   padding-block: var(--m3-space-2);
@@ -48,6 +49,7 @@
 }
 
 @mixin item {
+  @include m.own-box;
   --_container: transparent;
   --_content: var(--#{c.$prefix}-list-item-headline-color);
 
@@ -96,6 +98,7 @@
 }
 
 @mixin body {
+  @include m.own-box;
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
@@ -103,16 +106,19 @@
 }
 
 @mixin headline {
+  @include m.own-box;
   @include m.typescale("body-large");
   color: var(--#{c.$prefix}-list-item-headline-color);
 }
 
 @mixin supporting {
+  @include m.own-box;
   @include m.typescale("body-medium");
   color: var(--#{c.$prefix}-list-item-supporting-color);
 }
 
 @mixin leading {
+  @include m.own-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -121,6 +127,7 @@
 }
 
 @mixin trailing {
+  @include m.own-box;
   display: inline-flex;
   align-items: center;
   margin-inline-start: auto;
@@ -198,6 +205,13 @@
 
   .#{$p}-list-item__trailing {
     @include trailing;
+  }
+
+  // Consumer content region: box owned, typography left to the content.
+  .#{$p}-list-item__slot {
+    @include m.own-region;
+    flex: 1 1 auto;
+    min-inline-size: 0;
   }
 
   @include internals;

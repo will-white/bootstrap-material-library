@@ -43,6 +43,7 @@
 
 // The drawer surface, shared by standard and modal.
 @mixin container {
+  @include m.own-box;
   inline-size: var(--#{c.$prefix}-drawer-width);
   max-inline-size: 80%;
   block-size: 100%;
@@ -91,6 +92,7 @@
 // One destination row (<a>). Full state system; the active row re-points
 // only the private container/content variables.
 @mixin item {
+  @include m.own-box;
   --_container: transparent;
   --_content: var(--#{c.$prefix}-drawer-item-color);
 
@@ -101,6 +103,7 @@
   padding-inline: var(--m3-space-4);
   border-radius: var(--md-sys-shape-corner-full);
   text-decoration: none;
+  cursor: pointer;
   @include m.typescale("label-large");
   @include m.state-layer;
   @include m.focus-ring;
@@ -115,6 +118,7 @@
 
 // Section headline above a group of items.
 @mixin headline {
+  @include m.own-box;
   @include m.typescale("title-small");
   color: var(--#{c.$prefix}-drawer-item-color);
   padding-inline: var(--m3-space-4);
@@ -123,6 +127,7 @@
 
 // Trailing badge (label-large count) inside an item.
 @mixin badge {
+  @include m.own-box;
   margin-inline-start: auto;
   @include m.typescale("label-large");
   color: var(--#{c.$prefix}-drawer-item-color);

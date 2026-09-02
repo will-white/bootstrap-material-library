@@ -37,6 +37,7 @@
 
 // The scroll-snap track: a one-row column grid that scrolls inline.
 @mixin track {
+  @include m.own-box;
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: var(--#{c.$prefix}-carousel-item-width);
@@ -58,6 +59,7 @@
 
 // One slide; media fills the rounded frame.
 @mixin item {
+  @include m.own-box;
   scroll-snap-align: center;
   border-radius: var(--#{c.$prefix}-carousel-shape);
   overflow: clip;
@@ -71,6 +73,7 @@
 
 // Dot row (a sibling of the track, never inside it).
 @mixin indicators {
+  @include m.own-box;
   display: flex;
   justify-content: center;
   gap: var(--m3-space-2);
@@ -80,6 +83,10 @@
 // One dot (a real <button>); resting tint is the indicator color at the M3
 // 38% mix, the active dot is solid.
 @mixin indicator {
+  @include m.own-box;
+  text-align: center;
+  @include m.typescale("label-large");
+  color: var(--#{c.$prefix}-carousel-indicator-color);
   inline-size: var(--#{c.$prefix}-carousel-indicator-size);
   block-size: var(--#{c.$prefix}-carousel-indicator-size);
   border-radius: var(--md-sys-shape-corner-full);

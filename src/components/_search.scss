@@ -39,6 +39,7 @@
 // The bar itself: positioning context for the panel, flex row for the input
 // (and any leading/trailing icon slots the consumer adds).
 @mixin bar {
+  @include m.own-box;
   position: relative;
   display: flex;
   align-items: center;
@@ -62,12 +63,14 @@
 
 // The real input[type="search"]; the bar carries the focus ring.
 @mixin input {
+  @include m.own-box;
   flex: 1 1 auto;
   background-color: transparent;
   border: none;
   color: var(--#{c.$prefix}-search-content-color);
   @include m.typescale("body-large");
   min-inline-size: var(--m3-space-none);
+  cursor: text;
 
   &:focus,
   &:focus-visible {
@@ -90,6 +93,9 @@
 
 // Suggestion dropdown, hidden until the form holds focus (see caveat above).
 @mixin panel {
+  @include m.own-box;
+  @include m.typescale("body-medium");
+  color: var(--#{c.$prefix}-search-content-color);
   position: absolute;
   inset-block-start: 100%;
   inset-inline: var(--m3-space-none);

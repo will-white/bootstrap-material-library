@@ -38,12 +38,15 @@
 // do NOT participate in density; the >=48px touch target overlay keeps the
 // hit area constant regardless.
 @mixin control {
+  @include m.own-box;
   appearance: none;
   inline-size: var(--#{c.$prefix}-checkbox-size);
   block-size: var(--#{c.$prefix}-checkbox-size);
   border: var(--m3-stroke-thick) solid var(--#{c.$prefix}-checkbox-outline-color);
   border-radius: var(--#{c.$prefix}-checkbox-shape);
   background-color: transparent;
+  @include m.typescale("body-medium");
+  color: var(--#{c.$prefix}-checkbox-outline-color);
   display: inline-grid;
   place-content: center;
   cursor: pointer;
@@ -79,6 +82,7 @@
 
   // ::after draws the mark; hidden until checked/indeterminate.
   &::after {
+    @include m.own-pseudo;
     content: "";
     grid-area: 1 / 1;
     visibility: hidden;

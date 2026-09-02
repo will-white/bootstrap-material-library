@@ -33,6 +33,7 @@
 
 // Structural container, default = elevated look.
 @mixin container {
+  @include m.own-box;
   --_container: var(--#{c.$prefix}-card-container-color);
   --_content: var(--#{c.$prefix}-card-content-color);
 
@@ -80,16 +81,20 @@
 // Furniture parts (structural; safe without @scope).
 @mixin parts($root: ".#{c.$prefix}-card") {
   #{$root}__media {
+    @include m.own-region;
+    display: block;
     inline-size: 100%;
     object-fit: cover;
   }
 
   #{$root}__slot {
+    @include m.own-region;
     padding: var(--#{c.$prefix}-card-padding);
     flex: 1 1 auto;
   }
 
   #{$root}__actions {
+    @include m.own-region;
     display: flex;
     gap: var(--m3-space-2);
     justify-content: flex-end;

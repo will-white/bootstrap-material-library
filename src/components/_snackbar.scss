@@ -44,6 +44,7 @@
 
 // Inverse-surface container. Reused by the Bootstrap .toast re-skin.
 @mixin container {
+  @include m.own-box;
   display: flex;
   align-items: center;
   gap: var(--m3-space-2);
@@ -59,12 +60,17 @@
 
 // Message slot; padding-block keeps two-line messages breathing.
 @mixin text {
+  @include m.own-box;
+  @include m.typescale("body-medium");
+  color: var(--#{c.$prefix}-snackbar-content-color);
   flex: 1;
   padding-block: var(--m3-space-3);
 }
 
 // Inline text button on the inverse surface (transparent container).
 @mixin action {
+  @include m.own-box;
+  text-align: center;
   --_container: transparent;
   --_content: var(--#{c.$prefix}-snackbar-action-color);
 
@@ -88,6 +94,9 @@
 
 // Square dismiss affordance with a CSS-drawn cross.
 @mixin close {
+  @include m.own-box;
+  text-align: center;
+  @include m.typescale("label-large");
   --_container: transparent;
   --_content: var(--#{c.$prefix}-snackbar-content-color);
 
@@ -155,6 +164,7 @@
   }
 
   .#{c.$prefix}-snackbar__slot {
+    @include m.own-region;
     flex: 1 1 auto;
   }
 

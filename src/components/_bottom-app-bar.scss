@@ -29,6 +29,7 @@
 
 // Structural bar container.
 @mixin bar {
+  @include m.own-box;
   display: flex;
   align-items: center;
   gap: var(--m3-space-2);
@@ -40,6 +41,7 @@
 
 // Trailing slot, pushed to the far inline end (typically holds a .m3-fab).
 @mixin trailing {
+  @include m.own-box;
   margin-inline-start: auto;
 }
 

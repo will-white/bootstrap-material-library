@@ -55,13 +55,16 @@
 
 // Positioning context for the floated label.
 @mixin wrapper {
+  @include m.own-box;
   display: block;
   position: relative;
   inline-size: 100%;
+  cursor: text;
 }
 
 // Shared input rules for both variants.
 @mixin input-base {
+  @include m.own-box;
   --_content: var(--#{c.$prefix}-field-content-color);
 
   display: block;
@@ -70,7 +73,13 @@
   padding-inline: var(--#{c.$prefix}-field-padding-inline);
   color: var(--_content);
   caret-color: var(--#{c.$prefix}-field-focus-color);
+  cursor: text;
   appearance: none;
+
+  // A textarea keeps the UA's whitespace handling for its own content.
+  &:where(textarea) {
+    white-space: pre-wrap;
+  }
   @include m.typescale("body-large");
   @include m.transition((background-color, border-color, box-shadow));
 
@@ -216,6 +225,7 @@
 // --- floating label ---------------------------------------------------------
 
 @mixin label-resting {
+  @include m.own-box;
   position: absolute;
   inset-inline-start: var(--#{c.$prefix}-field-padding-inline);
   inset-block-start: calc(
@@ -256,6 +266,7 @@
 // --- supporting text --------------------------------------------------------
 
 @mixin supporting {
+  @include m.own-box;
   display: block;
   padding-inline: var(--#{c.$prefix}-field-padding-inline);
   padding-block-start: var(--m3-space-1);

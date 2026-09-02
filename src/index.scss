@@ -50,6 +50,7 @@
 @use "sass:list";
 @use "config" as c;
 @use "functions" as fn;
+@use "mixins" as m;
 @use "layers/order";
 @use "tokens/palette";
 @use "tokens/color-scheme";
@@ -256,17 +257,31 @@
   }
 }
 
+// Layers that carry component chrome split into two sub-layers:
+//   <layer>.own    one shared box-ownership rule (see mixins: $ownership)
+//   <layer>.rules  the actual component rules, which beat `own` outright
+// Consumer rules written directly into the parent layer beat both.
+m.$ownership: "collect";
+
 // --- 4. bootstrap-compat -----------------------------------------------------
 @if c.$enable-bootstrap-compat {
   @layer bootstrap-compat {
-    @include bootstrap-vars.remap;
+    @layer own, rules;
 
-    @if c.$enable-bootstrap-reskin {
-      @include bootstrap-components.reskin;
+    @layer rules {
+      @include bootstrap-vars.remap;
+
+      @if c.$enable-bootstrap-reskin {
+        @include bootstrap-components.reskin;
+      }
+
+      @if c.$enable-bootstrap-grid {
+        @include bootstrap-grid.emit;
+      }
     }
 
-    @if c.$enable-bootstrap-grid {
-      @include bootstrap-grid.emit;
+    @layer own {
+      @include m.emit-ownership;
     }
   }
 }
@@ -278,6 +293,9 @@
 
 // --- 6. components -----------------------------------------------------------
 @layer components {
+  @layer own, rules;
+
+  @layer rules {
   @if -on("button") {
     @include button.classes;
   }
@@ -368,21 +386,38 @@
   @if -on("select") {
     @include select.classes;
   }
+  }
+
+  @layer own {
+    @include m.emit-ownership;
+  }
 }
 
 // --- 7. utilities ------------------------------------------------------------
 @layer utilities {
-  @include utilities.styles;
+  @layer own, rules;
 
-  // Bootstrap's utility API and helpers must beat every component layer
-  // (.d-none on a .m3-card, .visually-hidden on a .btn), so they live here,
-  // not in bootstrap-compat.
-  @if c.$enable-bootstrap-compat and c.$enable-bootstrap-utilities {
-    @include bootstrap-utilities.emit;
+  @layer rules {
+    @include utilities.styles;
+
+    // Bootstrap's utility API and helpers must beat every component layer
+    // (.d-none on a .m3-card, .visually-hidden on a .btn), so they live here,
+    // not in bootstrap-compat.
+    @if c.$enable-bootstrap-compat and c.$enable-bootstrap-utilities {
+      @include bootstrap-utilities.emit;
+    }
+    @if c.$enable-bootstrap-compat and c.$enable-bootstrap-helpers {
+      @include bootstrap-helpers.emit;
+    }
   }
-  @if c.$enable-bootstrap-compat and c.$enable-bootstrap-helpers {
-    @include bootstrap-helpers.emit;
+
+  @layer own {
+    @include m.emit-ownership;
   }
 }
+
+// Standalone mixin use after this point (a consumer's own Sass) emits
+// ownership declarations inline.
+m.$ownership: "inline";
 
 // --- 8. overrides: declared by the layer statement, never written to --------

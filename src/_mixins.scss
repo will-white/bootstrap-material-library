@@ -5,6 +5,7 @@
 // live; components re-point custom properties and include these.
 // ============================================================================
 
+@use "sass:list";
 @use "config";
 
 // --- typography -------------------------------------------------------------
@@ -146,6 +147,172 @@
   min-height: calc(var(#{$height-token}) + var(--m3-density) * var(--m3-density-step));
 }
 
+// --- box ownership ----------------------------------------------------------
+//
+// Every piece of component CHROME owns its resting box, so no UA default and
+// no host stylesheet (a reset, a legacy theme, stock Bootstrap in the reserved
+// layer) can influence it. Three ownership mixins exist:
+//   own-box     chrome elements (box + non-typographic text properties)
+//   own-region  content regions / slots (non-inherited box properties only)
+//   own-pseudo  generated content (box reset + explicit inheritance)
+// They are included FIRST in a component's base/root mixin; the component's
+// own declarations follow. Never include them in a modifier mixin: modifiers
+// re-point tokens and privates only. Typography is owned via typescale().
+//
+// Emission modes ($ownership):
+//   "collect"  (the m3x entry point) -- the including selectors are gathered
+//              and emitted as ONE shared rule per layer, in that layer's
+//              `own` sub-layer, which every rule in the layer's `rules`
+//              sub-layer beats regardless of specificity or source order.
+//   "inline"   (default; standalone mixin use in a consumer's Sass) -- the
+//              declarations are emitted where the mixin is included.
+$ownership: "inline" !default;
+$-own-box-selectors: ();
+$-own-region-selectors: ();
+$-own-pseudo-selectors: ();
+
+@mixin own-box {
+  @if $ownership == "collect" and & {
+    $-own-box-selectors: list.join($-own-box-selectors, &, comma) !global;
+  } @else {
+    @include own-box-declarations;
+  }
+}
+
+@mixin own-region {
+  @if $ownership == "collect" and & {
+    $-own-region-selectors: list.join($-own-region-selectors, &, comma) !global;
+  } @else {
+    @include own-region-declarations;
+  }
+}
+
+@mixin own-pseudo {
+  @if $ownership == "collect" and & {
+    $-own-pseudo-selectors: list.join($-own-pseudo-selectors, &, comma) !global;
+  } @else {
+    @include own-pseudo-declarations;
+  }
+}
+
+// Emits the collected ownership rules for the current layer and clears the
+// collectors. The entry point includes this inside each layer's `own`
+// sub-layer, after the layer's `rules` sub-layer has been emitted.
+@mixin emit-ownership {
+  @if list.length($-own-box-selectors) > 0 {
+    #{$-own-box-selectors} {
+      @include own-box-declarations;
+    }
+  }
+  @if list.length($-own-region-selectors) > 0 {
+    #{$-own-region-selectors} {
+      @include own-region-declarations;
+    }
+  }
+  @if list.length($-own-pseudo-selectors) > 0 {
+    #{$-own-pseudo-selectors} {
+      @include own-pseudo-declarations;
+    }
+  }
+  $-own-box-selectors: () !global;
+  $-own-region-selectors: () !global;
+  $-own-pseudo-selectors: () !global;
+}
+
+@mixin own-box-declarations {
+  box-sizing: border-box;
+  margin: var(--m3-space-none);
+  padding: var(--m3-space-none);
+  border: none;
+  border-radius: var(--md-sys-shape-corner-none);
+  background-color: transparent;
+  background-image: none;
+  box-shadow: var(--md-sys-elevation-0);
+  outline: none;
+  outline-offset: var(--m3-space-none);
+  opacity: var(--m3-opacity-full);
+  min-inline-size: var(--m3-space-none);
+  min-block-size: var(--m3-space-none);
+  font-style: normal;
+  text-transform: none;
+  text-decoration: none;
+  text-shadow: none;
+  text-align: start;
+  vertical-align: baseline;
+  white-space: normal;
+  list-style: none;
+  appearance: none;
+  // Cursor is inherited by design: interactive roots set pointer/text and
+  // their parts follow; non-interactive chrome follows the page.
+  cursor: inherit;
+}
+
+// Generated content (touch targets, CSS-drawn marks, chevrons, dividers)
+// must own its box too, or a host `*::before, *::after` rule paints it.
+// Non-inherited properties reset; inherited ones explicitly `inherit`, so
+// the pseudo-element behaves exactly as if the host rule did not exist
+// (marks drawn with currentColor keep the control's color, the hit area
+// keeps the control's cursor).
+@mixin own-pseudo-declarations {
+  box-sizing: border-box;
+  margin: var(--m3-space-none);
+  padding: var(--m3-space-none);
+  border: none;
+  border-radius: var(--md-sys-shape-corner-none);
+  background-color: transparent;
+  background-image: none;
+  box-shadow: var(--md-sys-elevation-0);
+  outline: none;
+  outline-offset: var(--m3-space-none);
+  opacity: var(--m3-opacity-full);
+  min-inline-size: var(--m3-space-none);
+  min-block-size: var(--m3-space-none);
+  text-decoration: none;
+  vertical-align: baseline;
+  transform: none;
+  appearance: none;
+  list-style: none;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  text-align: inherit;
+  text-shadow: inherit;
+  white-space: inherit;
+  color: inherit;
+  cursor: inherit;
+}
+
+// Inline text parts that follow their parent's typography (an .alert-link
+// inside alert text, a breadcrumb item inside its list): assert inheritance
+// so a host rule aimed at the element itself cannot restyle it.
+@mixin inherit-text {
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+}
+
+// Content regions (slots, bodies) hand typography to the consumer's content,
+// so they own only the NON-inherited box properties: nothing here reaches
+// the consumer's markup by inheritance.
+@mixin own-region-declarations {
+  box-sizing: border-box;
+  margin: var(--m3-space-none);
+  padding: var(--m3-space-none);
+  border: none;
+  border-radius: var(--md-sys-shape-corner-none);
+  background-color: transparent;
+  background-image: none;
+  box-shadow: var(--md-sys-elevation-0);
+  outline: none;
+  outline-offset: var(--m3-space-none);
+  opacity: var(--m3-opacity-full);
+  min-inline-size: var(--m3-space-none);
+  min-block-size: var(--m3-space-none);
+  text-decoration: none;
+  vertical-align: baseline;
+  appearance: none;
+}
+
 // --- accessibility ----------------------------------------------------------
 
 // Expand small controls to a >= 48x48px hit target with a pseudo-element.
@@ -154,6 +321,7 @@
   position: relative;
 
   &::after {
+    @include own-pseudo;
     content: "";
     position: absolute;
     top: 50%;
@@ -168,6 +336,7 @@
   position: relative;
 
   &::before {
+    @include own-pseudo;
     content: "";
     position: absolute;
     top: 50%;
@@ -182,12 +351,13 @@
 // filter chips, switch-like patterns built on real inputs). The input stays
 // focusable and clickable; the label draws every visual.
 @mixin hidden-control {
+  @include own-box;
   position: absolute;
   inset-block-start: var(--m3-space-none);
   inset-inline-start: var(--m3-space-none);
   inline-size: 100%;
   block-size: 100%;
-  margin: var(--m3-space-none);
+  box-sizing: border-box;
   opacity: var(--m3-opacity-hidden);
   cursor: pointer;
   appearance: none;

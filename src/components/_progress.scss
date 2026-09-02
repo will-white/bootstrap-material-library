@@ -45,6 +45,7 @@
 
 // Linear track: thin rounded rail that clips the bar.
 @mixin linear-track {
+  @include m.own-box;
   block-size: var(--#{c.$prefix}-progress-thickness);
   border-radius: var(--md-sys-shape-corner-full);
   background: var(--#{c.$prefix}-progress-track-color);
@@ -54,6 +55,7 @@
 // Determinate bar: width driven by the unitless value token (or an inline
 // width, which wins the cascade -- see header).
 @mixin linear-bar {
+  @include m.own-box;
   block-size: 100%;
   border-radius: inherit;
   background: var(--#{c.$prefix}-progress-color);
@@ -89,6 +91,7 @@
 // Determinate circle: conic fill masked to a ring. currentColor is only the
 // opaque mask stop (alpha matters, not hue) -- never a color literal.
 @mixin circular {
+  @include m.own-box;
   --_active: var(--#{c.$prefix}-progress-color);
   --_track: var(--#{c.$prefix}-progress-track-color);
 
@@ -115,6 +118,7 @@
 // Indeterminate spinner: track-colored border with an active top arc,
 // rotated forever. The static arc is the reduced-motion rendering.
 @mixin spinner {
+  @include m.own-box;
   display: inline-block;
   inline-size: var(--#{c.$prefix}-progress-circle-size);
   block-size: var(--#{c.$prefix}-progress-circle-size);
@@ -139,10 +143,12 @@
 // Growing/fading disc (Bootstrap .spinner-grow reskin). The static full
 // disc is the reduced-motion rendering.
 @mixin pulse {
+  @include m.own-box;
   display: inline-block;
   inline-size: var(--#{c.$prefix}-progress-circle-size);
   block-size: var(--#{c.$prefix}-progress-circle-size);
   border-radius: var(--md-sys-shape-corner-full);
+  color: var(--#{c.$prefix}-progress-color);
   background: currentColor;
 
   @keyframes #{c.$prefix}-progress-pulse {

@@ -46,6 +46,7 @@
 
 // The scrollable tab bar with its bottom divider.
 @mixin bar {
+  @include m.own-box;
   display: flex;
   overflow-x: auto;
   border-block-end: var(--m3-stroke-hairline) solid
@@ -67,6 +68,8 @@
 
 // One tab (button, a, or label for the real-input variant).
 @mixin tab {
+  @include m.own-box;
+  text-align: center;
   --_container: transparent;
   --_content: var(--#{c.$prefix}-tabs-label-color);
 
@@ -95,6 +98,7 @@
   --_content: var(--#{c.$prefix}-tabs-active-label-color);
 
   &::after {
+    @include m.own-pseudo;
     content: "";
     position: absolute;
     inset-block-end: var(--m3-space-none);
@@ -121,6 +125,7 @@
 
 // Real input, visually hidden but focusable (preceding sibling of its label).
 @mixin input-hidden {
+  @include m.own-box;
   position: absolute;
   opacity: var(--m3-opacity-hidden);
   pointer-events: none;
@@ -128,6 +133,8 @@
 
 // Standalone pill mixins for Bootstrap .nav-pills reuse.
 @mixin pill {
+  @include m.own-box;
+  text-align: center;
   --_container: transparent;
   --_content: var(--#{c.$prefix}-tabs-label-color);
 

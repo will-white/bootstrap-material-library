@@ -26,6 +26,7 @@
 @mixin emit {
   // --- helpers ---------------------------------------------------------------
   .clearfix::after {
+    @include m.own-pseudo;
     display: block;
     clear: both;
     content: "";
@@ -36,6 +37,7 @@
     inline-size: 100%;
 
     &::before {
+      @include m.own-pseudo;
       display: block;
       padding-block-start: var(--bs-aspect-ratio);
       content: "";
@@ -124,6 +126,7 @@
   }
 
   .stretched-link::after {
+    @include m.own-pseudo;
     position: absolute;
     inset: var(--m3-space-none);
     z-index: var(--m3-z-raised);
@@ -205,6 +208,7 @@
 
     // CSS-drawn dash keeps the output ASCII-only.
     &::before {
+      @include m.own-pseudo;
       content: "";
       display: inline-block;
       inline-size: var(--m3-space-3);

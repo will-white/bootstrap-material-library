@@ -28,6 +28,7 @@
 // ============================================================================
 
 @use "../config" as c;
+@use "../mixins" as m;
 @use "../functions" as fn;
 @use "text-field" as field;
 
@@ -39,6 +40,9 @@
 // Single-line select: outlined field look plus a CSS-drawn chevron made of
 // two right-triangle gradients in currentColor (no images, no fonts).
 @mixin control {
+  @include m.own-box;
+  // UA default for <select>: single line, whitespace preserved.
+  white-space: pre;
   @include field.input-base;
   @include field.input-outlined;
   appearance: none;

@@ -47,6 +47,8 @@
 // Shared shell: outline, shape, height, typography. Variants add the state
 // machinery (on the root for button chips, on the label for checkbox chips).
 @mixin base {
+  @include m.own-box;
+  text-align: center;
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -97,6 +99,8 @@
   }
 
   .#{c.$prefix}-chip__label {
+    @include m.own-box;
+    @include m.typescale("label-large");
     --_container: transparent;
     --_content: var(--#{c.$prefix}-chip-label-color);
     --_state-color: var(--_content);
@@ -120,6 +124,7 @@
 
     // CSS-drawn leading checkmark, revealed when checked.
     &::before {
+      @include m.own-pseudo;
       content: "";
       display: none;
       @include m.check-icon(
@@ -187,6 +192,7 @@
 // Remove affordance: a real <button> after the span. position: relative lifts
 // it above the absolutely positioned hidden checkbox so it stays clickable.
 @mixin remove {
+  @include m.own-box;
   position: relative;
   inline-size: var(--#{c.$prefix}-chip-icon-size);
   block-size: var(--#{c.$prefix}-chip-icon-size);

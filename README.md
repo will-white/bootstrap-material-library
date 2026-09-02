@@ -75,15 +75,17 @@ The **first statement** of the compiled CSS is exactly:
    spacing, elevation, state opacities).
 4. `bootstrap-compat` -- remaps `--bs-*` variables onto M3 tokens and emits the
    full Bootstrap component re-skin. Compiled only when enabled. Sits **after**
-   `bootstrap` so its definitions win.
+   `bootstrap` so its definitions win. Split into `own` and `rules` sub-layers
+   (see *Box ownership* below).
 5. `base` -- element defaults: body typography, headings on the M3 typescale,
    links, `::selection`, scrollbar color, `accent-color`. Element rules
    target *unclassed* elements (`h2:where(:not([class]))`, ...) at zero added
    specificity, so class-carrying markup in the earlier `bootstrap-compat`
    layer keeps control of its own typography and link styling.
-6. `components` -- the full M3 catalog.
+6. `components` -- the full M3 catalog (`own` + `rules` sub-layers).
 7. `utilities` -- typescale classes, color/surface/shape/elevation utilities,
-   token-island context classes.
+   token-island context classes, the Bootstrap utility API and helpers
+   (`own` + `rules` sub-layers).
 8. `overrides` -- **declared, always empty, owned by downstream consumers.**
    The library never writes into it.
 
@@ -103,6 +105,53 @@ unlayered styles.
 
 Advanced consumers who manage the layer order themselves can suppress the
 library's order statement with `$emit-layer-statement: false`.
+
+### Box ownership
+
+Every piece of component chrome -- a button, a card container, a list item's
+headline, a switch's handle, a touch target -- declares its **complete resting
+box**, not only the properties M3 has an opinion about: box-sizing, margin,
+padding, border, radius, background, shadow, outline, opacity, minimum sizes,
+text decoration/transform/shadow, alignment, list style, `appearance`, and the
+typography of anything that carries text. Nothing about a component's resting
+look is left to the UA stylesheet or to whatever the host page declares in a
+lower layer (a reset, a legacy theme, stock Bootstrap in the reserved layer).
+
+Two consequences worth knowing:
+
+- **Density is the only vertical authority.** Controls set `padding-block: 0`
+  and take their height from `calc(token + var(--m3-density) * 4px)`. A host
+  rule such as `.btn { padding: 6px 12px }` in the `bootstrap` layer changes
+  nothing; padding is horizontal only.
+- **Content regions inherit on purpose.** Slots and bodies (`.m3-card__slot`,
+  `.card-body`, `.m3-list-item__slot`, `.offcanvas-body`, ...) own only their
+  non-inherited box properties, so the typography of *your* content inside
+  them stays yours. Cursor inherits by design: interactive roots set
+  `pointer`/`text`, their parts follow, non-interactive chrome follows the page.
+
+Mechanically, each layer that carries chrome (`bootstrap-compat`,
+`components`, `utilities`) is split into two sub-layers:
+
+```css
+@layer components {
+  @layer own, rules;
+  @layer rules { /* every component rule */ }
+  @layer own   { .m3-btn, .m3-card, .m3-list-item__headline, ... { /* one shared reset */ } }
+}
+```
+
+`rules` beats `own` regardless of specificity or source order, so the reset can
+never clobber a library rule, and it costs one rule per layer instead of one
+per component. Rules you write directly into `@layer components { }` beat both
+sub-layers (a layer's own declarations rank above its sub-layers); unlayered
+CSS and `overrides` beat everything, as before.
+
+This is verified by a differential audit: every component and every re-skinned
+Bootstrap class is rendered once cleanly and once under a hostile host (a
+universal `*, *::before, *::after` rule with absurd values for all of the
+above, plus stock Bootstrap 5.3, both in the `bootstrap` layer), and the
+computed style of every chrome element must be identical. Only the documented
+`!important` residuals of stock Bootstrap's utilities differ.
 
 ---
 
@@ -306,7 +355,10 @@ reserved layer so every m3x layer beats it:
 ```
 
 Everything m3x defines beats the `bootstrap` layer; anything m3x doesn't
-define falls through to Bootstrap untouched.
+define falls through to Bootstrap untouched. Because every component owns its
+resting box (see *Box ownership*), a Bootstrap theme in that layer cannot leak
+spacing, borders or typography into re-skinned components either: only the
+theme's own `!important` declarations reach them.
 
 ### Migration zones
 
@@ -465,13 +517,19 @@ no `@import`).
 Functions and mixins are forwarded for building your own components:
 `tone($hue, $chroma, $t)`, `palette()`, `okl()`, `rem()`, `hex()`, plus
 `state-layer()`, `typescale()`, `focus-ring()`, `elevation()`, `transition()`,
-`touch-target()`, and every component's rules mixins under prefixed names
+`touch-target()`, the ownership mixins `own-box()` / `own-region()` /
+`own-pseudo()`, and every component's rules mixins under prefixed names
 (`btn-filled`, `card-container`, `field-input-filled`, ...):
 
 ```scss
 @use "m3x/src" as m3;
 .my-cta { @include m3.btn-base; @include m3.btn-filled; }
 ```
+
+Standalone includes emit their box-ownership declarations inline
+(`$ownership: "inline"`, the default outside the entry point), so a component
+built from the mixins is as host-proof as the shipped classes without needing
+the `own` sub-layer.
 
 ### Build
 
@@ -485,6 +543,9 @@ npm run watch
 
 ## Notes on the built artifacts
 
+- The top-level layer order statement is unchanged; `bootstrap-compat`,
+  `components` and `utilities` additionally declare `own` and `rules`
+  sub-layers (see *Box ownership*).
 - `dist/m3x.css` (expanded) contains zero `rgba()`/`hsla()` anywhere. In
   `dist/m3x.min.css`, Dart Sass's compressed mode re-serializes the
   `transparent` keyword as `rgba(0,0,0,0)` in a handful of structural

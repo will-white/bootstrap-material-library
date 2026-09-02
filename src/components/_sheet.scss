@@ -79,6 +79,7 @@
 
 // Shared sheet surface (also included by the Bootstrap .offcanvas skin).
 @mixin container {
+  @include m.own-box;
   background-color: var(--#{c.$prefix}-sheet-container-color);
   color: var(--#{c.$prefix}-sheet-content-color);
   border: none;
@@ -129,6 +130,7 @@
 
 // Drag handle affordance at the top of a bottom sheet (visual only).
 @mixin handle {
+  @include m.own-box;
   display: block;
   inline-size: var(--#{c.$prefix}-sheet-handle-width);
   block-size: var(--m3-stroke-heavy);
@@ -145,6 +147,7 @@
 // Standard (non-modal) side sheet on <aside>: in-flow, divided from the
 // layout by a hairline instead of a scrim.
 @mixin standard-side {
+  @include m.own-box;
   inline-size: var(--#{c.$prefix}-sheet-side-width);
   background-color: var(--#{c.$prefix}-sheet-container-color);
   color: var(--#{c.$prefix}-sheet-content-color);
@@ -190,6 +193,11 @@
 
   .#{$p}-sheet__handle {
     @include handle;
+  }
+
+  // Consumer content region: box owned, typography left to the content.
+  .#{$p}-sheet__slot {
+    @include m.own-region;
   }
 
   @include internals;

@@ -48,6 +48,7 @@
 // are computed from the height token, so the track height deliberately does
 // NOT participate in density.
 @mixin control {
+  @include m.own-box;
   appearance: none;
   inline-size: var(--#{c.$prefix}-switch-width);
   block-size: var(--#{c.$prefix}-switch-height);
@@ -57,6 +58,8 @@
   border: var(--m3-stroke-thick) solid var(--#{c.$prefix}-switch-outline-color);
   border-radius: var(--md-sys-shape-corner-full);
   background-color: var(--#{c.$prefix}-switch-track-color);
+  @include m.typescale("body-medium");
+  color: var(--#{c.$prefix}-switch-handle-color);
   cursor: pointer;
   @include m.focus-ring;
   @include m.transition((background-color, border-color));
@@ -65,6 +68,7 @@
   // Handle. Resting offset centers it inside the track: (track height -
   // handle size) / 2, pulled back by the border the track just consumed.
   &::before {
+    @include m.own-pseudo;
     content: "";
     position: absolute;
     inline-size: var(--#{c.$prefix}-switch-handle-size);

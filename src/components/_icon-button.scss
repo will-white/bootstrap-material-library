@@ -58,6 +58,9 @@
 // standard selected + disabled treatments; variants re-point the tier-4
 // private variables and override the disabled treatment where needed.
 @mixin base {
+  @include m.own-box;
+  text-align: center;
+  @include m.typescale("label-large");
   --_container: transparent;
   --_content: var(--#{c.$prefix}-icon-btn-color);
 

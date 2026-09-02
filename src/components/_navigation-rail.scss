@@ -44,6 +44,7 @@
 
 // The rail container (an <aside>): a full-height column of destinations.
 @mixin rail {
+  @include m.own-box;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -65,6 +66,8 @@
 // One destination (an <a>). The state layer lives on the child pill and is
 // driven from here, so hovering anywhere on the destination tints the pill.
 @mixin item {
+  @include m.own-box;
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -102,6 +105,7 @@
 // compositing pattern (same color-mix machinery as m.state-layer), but its
 // --_state-opacity is re-pointed by the parent item's states above.
 @mixin icon {
+  @include m.own-box;
   --_container: transparent;
   --_content: var(--#{c.$prefix}-rail-label-color);
   --_state-color: var(--_content);

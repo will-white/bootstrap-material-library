@@ -42,6 +42,7 @@
 
 // The menu surface (also Bootstrap's .dropdown-menu).
 @mixin surface {
+  @include m.own-box;
   background-color: var(--#{c.$prefix}-menu-container-color);
   color: var(--#{c.$prefix}-menu-content-color);
   border: none;
@@ -67,6 +68,7 @@
 
 // One menu item (<button> or <a>), full-width, state-layered.
 @mixin item {
+  @include m.own-box;
   --_container: transparent;
   --_content: var(--#{c.$prefix}-menu-content-color);
 
@@ -98,6 +100,7 @@
 
 // Section header (also Bootstrap's .dropdown-header).
 @mixin header {
+  @include m.own-box;
   display: block;
   padding-inline: var(--m3-space-3);
   padding-block: var(--m3-space-2) var(--m3-space-1);

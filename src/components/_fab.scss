@@ -46,6 +46,9 @@
 // Structure + state machinery. Size modifiers re-include control-height with
 // their own size token and mirror it on width with the same density calc.
 @mixin base {
+  @include m.own-box;
+  text-align: center;
+  @include m.typescale("label-large");
   --_container: var(--#{c.$prefix}-fab-container-color);
   --_content: var(--#{c.$prefix}-fab-content-color);
 
@@ -117,7 +120,10 @@
   gap: var(--#{c.$prefix}-fab-icon-gap);
 
   .#{c.$prefix}-fab__label {
+    @include m.own-box;
     @include m.typescale("label-large");
+    color: inherit;
+    white-space: nowrap;
   }
 }
 

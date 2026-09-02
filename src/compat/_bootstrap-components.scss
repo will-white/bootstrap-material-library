@@ -105,11 +105,13 @@ $-themes: (
   flex-wrap: nowrap;
 
   .navbar-nav {
+    @include m.own-box;
     flex-direction: row;
     align-items: center;
   }
 
   .navbar-collapse {
+    @include m.own-box;
     display: flex;
     flex-basis: auto;
   }
@@ -125,6 +127,7 @@ $-themes: (
   // the class changes; timing re-mapped onto motion tokens).
   // ==========================================================================
   .fade {
+    @include m.own-box;
     @include m.transition((opacity), var(--md-sys-motion-duration-short3));
 
     &:not(.show) {
@@ -136,7 +139,12 @@ $-themes: (
     display: none;
   }
 
+  .accordion-collapse {
+    @include m.own-box;
+  }
+
   .collapsing {
+    @include m.own-box;
     block-size: var(--m3-space-none);
     overflow: hidden;
     @include m.transition((height), var(--md-sys-motion-duration-medium2));
@@ -222,6 +230,7 @@ $-themes: (
   }
 
   .btn-toolbar {
+    @include m.own-box;
     display: flex;
     flex-wrap: wrap;
     gap: var(--m3-space-2);
@@ -229,6 +238,7 @@ $-themes: (
 
   // Hidden-input button contract (.btn-check + label.btn).
   .btn-check {
+    @include m.own-box;
     position: absolute;
     opacity: var(--m3-opacity-hidden);
     pointer-events: none;
@@ -287,6 +297,7 @@ $-themes: (
   // Alerts (no M3 ancestor: styled natively from container roles)
   // ==========================================================================
   .alert {
+    @include m.own-box;
     position: relative;
     padding: var(--m3-space-4);
     margin-block-end: var(--m3-space-4);
@@ -308,16 +319,20 @@ $-themes: (
   }
 
   .alert-heading {
+    @include m.own-box;
     color: inherit;
     @include m.typescale("title-medium");
   }
 
   .alert-link {
-    color: inherit;
+    @include m.own-box;
+    @include m.inherit-text;
     font-weight: var(--md-sys-typescale-label-large-weight);
+    cursor: pointer;
   }
 
   .alert-dismissible {
+    @include m.own-box;
     padding-inline-end: var(--m3-space-8);
 
     .btn-close {
@@ -331,6 +346,7 @@ $-themes: (
   // Breadcrumb (no M3 ancestor)
   // ==========================================================================
   .breadcrumb {
+    @include m.own-box;
     display: flex;
     flex-wrap: wrap;
     gap: var(--m3-space-2);
@@ -342,12 +358,15 @@ $-themes: (
   }
 
   .breadcrumb-item {
+    @include m.own-box;
+    @include m.inherit-text;
     display: flex;
     gap: var(--m3-space-2);
 
     // Single-level var() fallback (not a nested pyramid): Bootstrap's public
     // contract lets consumers change the divider via --bs-breadcrumb-divider.
     + .breadcrumb-item::before {
+      @include m.own-pseudo;
       content: var(--bs-breadcrumb-divider, "/");
       color: var(--md-sys-color-outline);
     }
@@ -366,22 +385,26 @@ $-themes: (
   }
 
   .card-body {
+    @include m.own-box;
     padding: var(--#{c.$prefix}-card-padding);
     flex: 1 1 auto;
   }
 
   .card-title {
+    @include m.own-box;
     @include m.typescale("title-large");
     margin-block-end: var(--m3-space-1);
   }
 
   .card-subtitle {
+    @include m.own-box;
     @include m.typescale("title-small");
     color: var(--md-sys-color-on-surface-variant);
     margin-block-end: var(--m3-space-2);
   }
 
   .card-text {
+    @include m.own-box;
     @include m.typescale("body-medium");
     color: var(--md-sys-color-on-surface-variant);
 
@@ -391,6 +414,7 @@ $-themes: (
   }
 
   .card-header {
+    @include m.own-box;
     padding: var(--m3-space-3) var(--#{c.$prefix}-card-padding);
     background-color: var(--md-sys-color-surface-container-low);
     border-block-end: var(--#{c.$prefix}-card-outline-width) solid
@@ -399,6 +423,7 @@ $-themes: (
   }
 
   .card-footer {
+    @include m.own-box;
     padding: var(--m3-space-3) var(--#{c.$prefix}-card-padding);
     background-color: var(--md-sys-color-surface-container-low);
     border-block-start: var(--#{c.$prefix}-card-outline-width) solid
@@ -407,12 +432,14 @@ $-themes: (
 
   .card-img-top,
   .card-img {
+    @include m.own-box;
     inline-size: 100%;
     border-start-start-radius: inherit;
     border-start-end-radius: inherit;
   }
 
   .card-img-bottom {
+    @include m.own-box;
     inline-size: 100%;
     border-end-start-radius: inherit;
     border-end-end-radius: inherit;
@@ -428,10 +455,12 @@ $-themes: (
   // Accordion (Bootstrap JS toggles .collapse/.collapsing; visuals here)
   // ==========================================================================
   .accordion {
+    @include m.own-box;
     border-radius: var(--md-sys-shape-corner-medium);
   }
 
   .accordion-item {
+    @include m.own-box;
     background-color: var(--md-sys-color-surface);
     border: var(--m3-stroke-hairline) solid var(--md-sys-color-outline-variant);
 
@@ -453,10 +482,12 @@ $-themes: (
   }
 
   .accordion-header {
+    @include m.own-box;
     margin: var(--m3-space-none);
   }
 
   .accordion-button {
+    @include m.own-box;
     --_container: transparent;
     --_content: var(--md-sys-color-on-surface);
 
@@ -474,6 +505,7 @@ $-themes: (
     @include m.transition((background-color, color));
 
     &::after {
+      @include m.own-pseudo;
       content: "";
       flex: none;
       margin-inline-start: auto;
@@ -491,6 +523,7 @@ $-themes: (
   }
 
   .accordion-body {
+    @include m.own-box;
     padding: var(--m3-space-4);
     padding-block-start: var(--m3-space-none);
     @include m.typescale("body-medium");
@@ -510,6 +543,7 @@ $-themes: (
   // List group (renders through the list component mixins)
   // ==========================================================================
   .list-group {
+    @include m.own-box;
     display: flex;
     flex-direction: column;
     list-style: none;
@@ -582,6 +616,7 @@ $-themes: (
   .dropup-center,
   .dropend,
   .dropstart {
+    @include m.own-box;
     position: relative;
   }
 
@@ -648,6 +683,7 @@ $-themes: (
   }
 
   .dropdown-item-text {
+    @include m.own-box;
     display: block;
     padding-inline: var(--m3-space-3);
     padding-block: var(--m3-space-2);
@@ -656,6 +692,7 @@ $-themes: (
   }
 
   .dropdown-divider {
+    @include m.own-box;
     border: none;
     border-block-start: var(--m3-stroke-hairline) solid
       var(--md-sys-color-outline-variant);
@@ -664,6 +701,7 @@ $-themes: (
   }
 
   .dropdown-toggle::after {
+    @include m.own-pseudo;
     content: "";
     display: inline-block;
     flex: none;
@@ -676,6 +714,7 @@ $-themes: (
   // Navs / tabs / pills (render through the tabs mixins)
   // ==========================================================================
   .nav {
+    @include m.own-box;
     display: flex;
     flex-wrap: wrap;
     list-style: none;
@@ -684,6 +723,7 @@ $-themes: (
   }
 
   .nav-link {
+    @include m.own-box;
     display: block;
     padding: var(--m3-space-2) var(--m3-space-4);
     color: var(--#{c.$prefix}-tabs-label-color);
@@ -718,6 +758,10 @@ $-themes: (
     }
   }
 
+  .nav-item {
+    @include m.own-box;
+  }
+
   .nav-pills {
     gap: var(--m3-space-1);
 
@@ -744,6 +788,7 @@ $-themes: (
   }
 
   .tab-content > .tab-pane {
+    @include m.own-box;
     display: none;
   }
 
@@ -766,6 +811,7 @@ $-themes: (
     @include top-app-bar.title;
     flex: none;
     text-decoration: none;
+    cursor: pointer;
     color: var(--#{c.$prefix}-top-app-bar-content-color);
   }
 
@@ -785,6 +831,7 @@ $-themes: (
   }
 
   .navbar-text {
+    @include m.own-box;
     padding-block: var(--m3-space-2);
     color: var(--md-sys-color-on-surface-variant);
   }
@@ -801,6 +848,8 @@ $-themes: (
   }
 
   .navbar-toggler-icon {
+    @include m.own-box;
+    color: inherit;
     display: block;
     inline-size: var(--m3-icon-size);
     block-size: var(--m3-icon-size);
@@ -835,6 +884,7 @@ $-themes: (
   // Modal (Bootstrap JS drives .show; surface from the dialog mixins)
   // ==========================================================================
   .modal {
+    @include m.own-box;
     position: fixed;
     inset: var(--m3-space-none);
     z-index: var(--m3-z-overlay);
@@ -849,6 +899,7 @@ $-themes: (
   }
 
   .modal-dialog {
+    @include m.own-box;
     position: relative;
     margin: var(--m3-space-4) auto;
     max-inline-size: var(--bs-modal-width);
@@ -897,6 +948,7 @@ $-themes: (
   }
 
   .modal-header {
+    @include m.own-box;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -911,12 +963,14 @@ $-themes: (
   }
 
   .modal-body {
+    @include m.own-box;
     @include dialog.content;
     flex: 1 1 auto;
     padding: var(--m3-space-2) var(--#{c.$prefix}-dialog-padding);
   }
 
   .modal-footer {
+    @include m.own-box;
     @include dialog.actions;
     margin-block-start: var(--m3-space-none);
     padding: var(--#{c.$prefix}-dialog-padding);
@@ -925,6 +979,7 @@ $-themes: (
   }
 
   .modal-backdrop {
+    @include m.own-box;
     position: fixed;
     inset: var(--m3-space-none);
     z-index: calc(var(--m3-z-overlay) - 1);
@@ -1028,6 +1083,7 @@ $-themes: (
   }
 
   .offcanvas-header {
+    @include m.own-box;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1037,11 +1093,13 @@ $-themes: (
   }
 
   .offcanvas-title {
+    @include m.own-box;
     @include m.typescale("title-large");
     margin-block: var(--m3-space-none);
   }
 
   .offcanvas-body {
+    @include m.own-box;
     flex: 1 1 auto;
     padding: var(--m3-space-4);
     padding-block-start: var(--m3-space-2);
@@ -1049,6 +1107,7 @@ $-themes: (
   }
 
   .offcanvas-backdrop {
+    @include m.own-box;
     position: fixed;
     inset: var(--m3-space-none);
     z-index: calc(var(--m3-z-overlay) - 1);
@@ -1067,6 +1126,7 @@ $-themes: (
   // Pagination (no M3 ancestor: state-layered circular page links)
   // ==========================================================================
   .pagination {
+    @include m.own-box;
     display: flex;
     list-style: none;
     gap: var(--m3-space-1);
@@ -1075,6 +1135,8 @@ $-themes: (
   }
 
   .page-link {
+    @include m.own-box;
+    text-align: center;
     --_container: transparent;
     --_content: var(--md-sys-color-on-surface-variant);
 
@@ -1094,6 +1156,10 @@ $-themes: (
     @include m.transition((background-color, color));
   }
 
+  .page-item {
+    @include m.own-box;
+  }
+
   .page-item.active .page-link {
     --_container: var(--md-sys-color-primary);
     --_content: var(--md-sys-color-on-primary);
@@ -1107,9 +1173,11 @@ $-themes: (
   // Placeholders (skeletons; no M3 ancestor)
   // ==========================================================================
   .placeholder {
+    @include m.own-box;
     display: inline-block;
     min-block-size: var(--md-sys-typescale-body-medium-size);
     vertical-align: middle;
+    color: inherit;
     background-color: currentColor;
     opacity: var(--md-sys-state-disabled-content-opacity);
     border-radius: var(--md-sys-shape-corner-extra-small);
@@ -1153,6 +1221,7 @@ $-themes: (
   // Tooltips + popovers (styling the elements Bootstrap JS injects)
   // ==========================================================================
   .tooltip {
+    @include m.own-box;
     z-index: var(--m3-z-tooltip);
     opacity: var(--m3-opacity-hidden);
     @include m.typescale("body-small");
@@ -1171,6 +1240,7 @@ $-themes: (
   }
 
   .popover {
+    @include m.own-box;
     @include tooltip.rich;
     z-index: var(--m3-z-tooltip);
 
@@ -1184,6 +1254,7 @@ $-themes: (
   }
 
   .popover-body {
+    @include m.own-box;
     @include m.typescale("body-medium");
   }
 
@@ -1196,6 +1267,7 @@ $-themes: (
   }
 
   .progress-stacked {
+    @include m.own-box;
     display: flex;
     block-size: var(--#{c.$prefix}-progress-thickness);
     border-radius: var(--md-sys-shape-corner-full);
@@ -1280,6 +1352,7 @@ $-themes: (
   }
 
   .toast-container {
+    @include m.own-box;
     display: flex;
     flex-direction: column;
     gap: var(--m3-space-3);
@@ -1290,6 +1363,7 @@ $-themes: (
   }
 
   .toast-header {
+    @include m.own-box;
     display: flex;
     align-items: center;
     gap: var(--m3-space-2);
@@ -1301,6 +1375,7 @@ $-themes: (
         transparent
       );
     @include m.typescale("title-small");
+    color: var(--#{c.$prefix}-snackbar-content-color);
 
     .btn-close {
       margin-inline-start: auto;
@@ -1318,6 +1393,7 @@ $-themes: (
   // hover rows use the state-layer opacities)
   // ==========================================================================
   .table {
+    @include m.own-box;
     inline-size: 100%;
     margin-block-end: var(--m3-space-4);
     border-collapse: collapse;
@@ -1327,12 +1403,17 @@ $-themes: (
     @include m.typescale("body-medium");
 
     > :not(caption) > * > * {
+      @include m.own-box;
+      // M3 data-table rows center their cells (the UA inherits this from
+      // <tr>; owning the box means saying so).
+      vertical-align: middle;
       padding: var(--m3-space-3) var(--m3-space-3);
       border-block-end: var(--m3-stroke-hairline) solid
         var(--md-sys-color-outline-variant);
     }
 
     > thead th {
+      @include m.own-box;
       @include m.typescale("label-large");
       color: var(--md-sys-color-on-surface-variant);
       text-align: start;
@@ -1400,13 +1481,16 @@ $-themes: (
   // select mixins; validation maps onto the exact :user-invalid treatment)
   // ==========================================================================
   .form-label {
+    @include m.own-box;
     display: block;
+    cursor: default;
     margin-block-end: var(--m3-space-1);
     color: var(--md-sys-color-on-surface-variant);
     @include m.typescale("label-large");
   }
 
   .form-text {
+    @include m.own-box;
     @include field.supporting;
     padding-inline: var(--m3-space-none);
   }
@@ -1425,6 +1509,7 @@ $-themes: (
   }
 
   .form-control-plaintext {
+    @include m.own-box;
     @include field.input-base;
     background-color: transparent;
     border: none;
@@ -1497,6 +1582,7 @@ $-themes: (
   }
 
   .form-check {
+    @include m.own-box;
     display: flex;
     align-items: flex-start;
     gap: var(--m3-space-2);
@@ -1505,6 +1591,7 @@ $-themes: (
   }
 
   .form-check-label {
+    @include m.own-box;
     color: var(--md-sys-color-on-surface);
     @include m.typescale("body-medium");
     cursor: pointer;
@@ -1546,6 +1633,7 @@ $-themes: (
   }
 
   .input-group {
+    @include m.own-box;
     position: relative;
     display: flex;
     align-items: stretch;
@@ -1569,6 +1657,7 @@ $-themes: (
   }
 
   .input-group-text {
+    @include m.own-box;
     display: flex;
     align-items: center;
     padding-inline: var(--m3-space-4);
@@ -1583,6 +1672,7 @@ $-themes: (
   // Floating labels: Bootstrap's markup (input then label) matches the m3x
   // field anatomy exactly, so the same label mixins drive it.
   .form-floating {
+    @include m.own-box;
     position: relative;
 
     > .form-control,
@@ -1614,6 +1704,7 @@ $-themes: (
   // and check/radio/select coloring only. Selector lists never mix
   // :user-invalid with class selectors (older-browser safety).
   .invalid-feedback {
+    @include m.own-box;
     display: none;
     @include field.supporting;
     @include field.supporting-invalid;
@@ -1621,6 +1712,7 @@ $-themes: (
   }
 
   .valid-feedback {
+    @include m.own-box;
     display: none;
     @include field.supporting;
     @include field.supporting-valid;
@@ -1672,6 +1764,7 @@ $-themes: (
   // from the carousel component tokens/mixins)
   // ==========================================================================
   .carousel {
+    @include m.own-box;
     position: relative;
   }
 
@@ -1680,6 +1773,7 @@ $-themes: (
   }
 
   .carousel-inner {
+    @include m.own-box;
     position: relative;
     inline-size: 100%;
     overflow: hidden;
@@ -1687,6 +1781,7 @@ $-themes: (
   }
 
   .carousel-item {
+    @include m.own-box;
     position: relative;
     display: none;
     float: inline-start;
@@ -1734,6 +1829,7 @@ $-themes: (
 
   .carousel-control-prev,
   .carousel-control-next {
+    @include m.own-box;
     position: absolute;
     inset-block: var(--m3-space-none);
     z-index: var(--m3-z-raised);
@@ -1758,6 +1854,8 @@ $-themes: (
 
   .carousel-control-prev-icon,
   .carousel-control-next-icon {
+    @include m.own-box;
+    color: inherit;
     display: inline-block;
     @include m.chevron-icon(var(--m3-chevron-size), var(--m3-stroke-heavy));
   }
@@ -1771,6 +1869,7 @@ $-themes: (
   }
 
   .carousel-indicators {
+    @include m.own-box;
     position: absolute;
     inset-inline: var(--m3-space-none);
     inset-block-end: var(--m3-space-none);
@@ -1792,6 +1891,7 @@ $-themes: (
   }
 
   .carousel-caption {
+    @include m.own-box;
     position: absolute;
     inset-inline: 15%;
     inset-block-end: var(--m3-space-6);

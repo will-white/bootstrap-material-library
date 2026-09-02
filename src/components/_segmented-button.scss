@@ -47,6 +47,7 @@
 // The fieldset: reset its native chrome, draw the group outline. Overflow
 // stays visible (never clip) so the focus ring can render outside the box.
 @mixin container {
+  @include m.own-box;
   display: inline-flex;
   vertical-align: middle;
   margin: var(--m3-space-none);
@@ -64,6 +65,7 @@
   $input: ".#{c.$prefix}-segmented__input",
   $label: ".#{c.$prefix}-segmented__label"
 ) {
+  @include m.own-box;
   --_container: transparent;
   --_content: var(--#{c.$prefix}-segmented-label-color);
 
@@ -116,6 +118,10 @@
   // The visible span: fills the segment and carries the state-layer
   // background; padding lives here so the painted area reaches the edges.
   #{$label} {
+    @include m.own-box;
+    @include m.typescale("label-large");
+    text-align: center;
+    white-space: nowrap;
     --_state-color: var(--_content);
     --_state-opacity: var(--md-sys-state-none);
 
