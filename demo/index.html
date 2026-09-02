@@ -124,8 +124,10 @@
       <div class="demo-grid">
 
         <div class="m3-card m3-card--filled">
-          <ul class="m3-list" style="background: none;">
+          <ul class="m3-list m3-list--dividers m3-list--inset" style="background: none;">
+            <li class="m3-list__subheader">Alerts</li>
             <li class="m3-list-item">
+              <span class="m3-list-item__leading m3-list-item__leading--avatar" aria-hidden="true">N</span>
               <span class="m3-list-item__body">
                 <span class="m3-list-item__headline">New mail</span>
                 <span class="m3-list-item__supporting">Banner and sound</span>
@@ -134,8 +136,10 @@
                 <input type="checkbox" role="switch" class="m3-switch" checked aria-label="New mail notifications">
               </span>
             </li>
-            <li class="m3-list-item">
+            <li class="m3-list-item m3-list-item--two-line">
+              <span class="m3-list-item__leading m3-list-item__leading--avatar" aria-hidden="true">C</span>
               <span class="m3-list-item__body">
+                <span class="m3-list-item__overline">Shared calendars</span>
                 <span class="m3-list-item__headline">Calendar invites</span>
                 <span class="m3-list-item__supporting">Badge only</span>
               </span>
@@ -185,7 +189,7 @@
             </div>
             <label style="display: block; margin-block-start: var(--m3-space-4);">
               <span class="m3-label-large">Preview length</span>
-              <input type="range" class="m3-slider" min="0" max="100" value="60" aria-label="Preview length">
+              <input type="range" class="m3-slider m3-slider--ticks" min="0" max="100" step="10" value="60" aria-label="Preview length">
             </label>
           </div>
         </div>

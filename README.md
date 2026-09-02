@@ -540,7 +540,7 @@ pure-CSS equivalent -- divergences are listed.
 | Carousel | `.m3-carousel` | CSS scroll-snap, no autoplay |
 | Dialogs | `.m3-dialog` on native `<dialog>` (+ `--fullscreen`, `--static` for an in-flow surface) | consumer calls `showModal()` |
 | Divider | `.m3-divider` on `<hr>` | -- |
-| Lists | `.m3-list`, `.m3-list-item` (donut) | -- |
+| Lists | `.m3-list` (+ `--dividers`, `--inset`), `.m3-list__subheader`, `.m3-list-item` (one to three lines, donut) with `__overline`, `__leading--avatar/--image/--video`, `__trailing--meta`, trailing controls | -- |
 | Bottom/side sheets | `.m3-sheet--bottom/--side` on `<dialog>`, `--side-standard` on `<aside>` | modal variants via `showModal()` |
 | Navigation bar/rail/drawer | `.m3-nav-bar`, `.m3-rail`, `.m3-drawer` (+ `--modal`) | active via `aria-current` |
 | Tabs | `.m3-tabs` (aria/`.active` or real radio inputs) | pane switching is yours |
@@ -548,7 +548,7 @@ pure-CSS equivalent -- divergences are listed.
 | Checkbox / radio / switch | `.m3-checkbox`, `.m3-radio`, `.m3-switch` | `:indeterminate` styled; set it from your code |
 | Chips | `.m3-chip` + assist/filter/input/suggestion | filter/input ride real checkboxes; remove button styling only |
 | Menus | `.m3-menu` on `[popover]` | positioning via Popover API; hidden gracefully without it |
-| Slider | `.m3-slider` on `<input type=range>` | dual-thumb needs two inputs; WebKit active-track tint needs JS (Firefox gets it free) |
+| Sliders | `.m3-slider` on `input[type="range"]` (current M3 spec: 16px track, bar handle, stop indicator) + `--ticks` | active-track fill is CSS-only in both engines; dual-thumb ranges and value labels need script |
 | Date/time inputs | `.m3-datetime` on native date/time inputs | the native popup calendar/clock is the browser's |
 | Date picker | `.m3-date-picker` (docked; `--modal` inside `.m3-dialog`; `--range`) with `__nav`, `__grid`, `__day` states (`--today`, `[aria-selected]`, `--outside`, `:disabled`, range start/end) | the calendar surface only: month navigation and selection are your script's or a form's |
 | Time picker | `.m3-time-picker` (input mode; `--modal`) with hour/minute fields and the AM/PM selector | the dial mode needs script and is not shipped |

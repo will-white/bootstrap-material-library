@@ -1,26 +1,88 @@
 // ============================================================================
-// m3x slider -- M3 slider on a styled input[type="range"]
+// m3x slider -- M3 slider (the 2024 expressive spec) on a styled
+// input[type="range"]: 16px tracks, a 4x44 bar handle with the track gap,
+// a stop indicator, optional tick marks, and an active-track fill in BOTH
+// engines. Zero JS.
 //
 // PUBLIC VARIABLE API (tier-3 tokens)
-//   --m3-slider-track-height   4px (0.25rem)  inactive track thickness
-//   --m3-slider-thumb-size     20px (1.25rem) thumb (handle) diameter
-//   --m3-slider-track-color    surface-container-highest  inactive track
-//   --m3-slider-active-color   primary   thumb + active track (Firefox)
+//   --m3-slider-track-height          16px (1rem)   track thickness
+//                                     (default changed from 4px)
+//   --m3-slider-track-color           secondary-container   inactive track
+//                                     (default changed from
+//                                     surface-container-highest)
+//   --m3-slider-active-color          primary   active track + handle
+//   --m3-slider-thumb-width           4px    handle width at rest
+//   --m3-slider-thumb-width-pressed   2px    handle width while pressed
+//   --m3-slider-thumb-height          44px   handle height; defaults to
+//                                     --m3-slider-thumb-size
+//   --m3-slider-thumb-size            44px   legacy name, still read: it is
+//                                     the handle height (default changed
+//                                     from the 20px round thumb)
+//   --m3-slider-gap                   6px    gap between handle and tracks
+//   --m3-slider-gap-color             surface   what shows through the gap;
+//                                     re-point on tinted containers
+//   --m3-slider-stop-size             4px    stop indicator / tick diameter
+//   --m3-slider-stop-color            primary   stop indicator / tick color
+//   --m3-slider-ticks                 10     tick INTERVALS drawn by
+//                                     .m3-slider--ticks (see below)
 //
 // Markup:
 //   <input type="range" class="m3-slider" min="0" max="100" value="40">
+//   <input type="range" class="m3-slider m3-slider--ticks"
+//          min="0" max="100" step="10" value="70">
 //
-// Notes:
-//   - Active-track fill: Firefox colors the traveled portion of the track
-//     via ::-moz-range-progress. WebKit has no equivalent pseudo-element, so
-//     the active portion cannot be colored by pure CSS (it would need a
-//     JS-updated gradient stop); WebKit shows a uniform track color with the
-//     active-colored thumb. Documented limitation, zero-JS by design.
-//   - Dual-thumb (start + end) range sliders need two overlapping inputs and
-//     are out of scope for the CSS layer.
-//   - Every vendor pseudo-element gets its OWN rule: a selector list mixing
-//     -webkit- and -moz- pseudos is invalid in both engines and would drop
-//     the whole list. Declarations are shared through local mixins instead.
+// Tick marks are purely visual: .m3-slider--ticks tiles one dot per
+// interval across the track, so --m3-slider-ticks must equal
+// (max - min) / step for the dots to sit on the values the input snaps to.
+// Ticks show on the inactive track; the active fill paints over them.
+//
+// Active-track fill, zero JS:
+//   - Firefox colors the traveled portion via ::-moz-range-progress.
+//   - WebKit has no progress pseudo-element, and its handle lives INSIDE
+//     ::-webkit-slider-runnable-track, so a 16px track with overflow:
+//     hidden would clip the 44px handle along with anything else (the
+//     classic box-shadow-fill trick needs a handle no taller than the
+//     track). The geometry used here instead, with the default tokens and
+//     W = track width:
+//     1. The runnable track is as tall as the handle (44px) and
+//        transparent; the visible 16px band is a background layer centered
+//        in it. Its inline padding equals the gap (6px), so the handle
+//        travels through the content box: handle-left from 6 to W - 10,
+//        handle center from 8 to W - 8.
+//     2. The handle (4x44) carries two box-shadows: on top a 6px-spread
+//        ring in the gap color, beneath it the fill: the active color with
+//        a 100vw spread and an x offset of (6px - 100vw). The fill's right
+//        edge is therefore handle-right + 6px -- exactly the ring's edge,
+//        so the ring hides the seam -- and its left edge is 2 x 100vw away.
+//     3. The handle's clip-path is the union of its own box and a band
+//        16px tall (50% +/- 8px) reaching 100vw to either side. Neither
+//        shadow can paint above or below the track, and the ring only
+//        erases the band right next to the handle (6px each side).
+//     4. The track's mask -- a full-height rect inset 6px from both ends
+//        plus a 16px circle at each end -- clips the fill at the track's
+//        start with the rounded cap and rounds the band's far end. Between
+//        x = 6 and 8 the circle is 0.25px short of the band edge, which is
+//        not visible.
+//     At value = min the handle spans 6..10 and the ring 0..16: no active
+//     track shows. At max the handle spans W-10..W-6 and the ring W-16..W:
+//     the inactive band and the stop indicator (W-10..W-6) are hidden. Stop
+//     indicator and tick marks center on the handle centers,
+//     8 + k * (W - 16) / N. Firefox needs none of this: its track is the
+//     band itself and the handle travels edge to edge, so its stop
+//     indicator sits at the very end of the track.
+//   - The fill shadow reaches 100vw: a slider wider than the viewport
+//     (inside a horizontally scrolling region) would see it end early.
+//
+// Limitations:
+//   - Dual-thumb (start + end) range sliders need two overlapping inputs
+//     and are out of scope for the CSS layer.
+//   - The handle draws the fill, so the fill can carry no tick marks of its
+//     own; ticks are visible on the inactive track only.
+//   - Every vendor pseudo-element gets its OWN rule and, deliberately, no
+//     own-box: a selector list mixing -webkit- and -moz- pseudos is invalid
+//     in both engines and would drop the whole list (the collected
+//     ownership rule included). Declarations are shared through local
+//     mixins instead.
 // ============================================================================
 
 @use "../config" as c;
@@ -28,146 +90,262 @@
 @use "../mixins" as m;
 
 @mixin tokens {
-  --#{c.$prefix}-slider-track-height: #{fn.rem(4)};
-  --#{c.$prefix}-slider-thumb-size: #{fn.rem(20)};
-  --#{c.$prefix}-slider-track-color: var(--md-sys-color-surface-container-highest);
+  --#{c.$prefix}-slider-track-height: #{fn.rem(16)};
+  --#{c.$prefix}-slider-track-color: var(--md-sys-color-secondary-container);
   --#{c.$prefix}-slider-active-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-slider-thumb-width: #{fn.rem(4)};
+  --#{c.$prefix}-slider-thumb-width-pressed: #{fn.rem(2)};
+  --#{c.$prefix}-slider-thumb-size: #{fn.rem(44)};
+  --#{c.$prefix}-slider-thumb-height: var(--#{c.$prefix}-slider-thumb-size);
+  --#{c.$prefix}-slider-gap: #{fn.rem(6)};
+  --#{c.$prefix}-slider-gap-color: var(--md-sys-color-surface);
+  --#{c.$prefix}-slider-stop-size: #{fn.rem(4)};
+  --#{c.$prefix}-slider-stop-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-slider-ticks: 10;
 }
 
-// --- private vendor fragments (shared by the per-vendor rules) --------------
+// --- private drawing helpers -----------------------------------------------
 
-@mixin -track {
-  block-size: var(--#{c.$prefix}-slider-track-height);
-  border-radius: var(--md-sys-shape-corner-full);
-  background-color: var(--#{c.$prefix}-slider-track-color);
-}
-
-@mixin -thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  inline-size: var(--#{c.$prefix}-slider-thumb-size);
-  block-size: var(--#{c.$prefix}-slider-thumb-size);
-  border: none;
-  border-radius: var(--md-sys-shape-corner-full);
-  background-color: var(--#{c.$prefix}-slider-active-color);
-}
-
-// Hover halo: a state-layer ring around the thumb, hover opacity of the
-// active color over transparent (color-mix state pattern from _mixins.scss).
-@mixin -thumb-halo {
-  box-shadow: 0 0 0 var(--m3-space-2)
-    color-mix(
-      in srgb,
-      var(--#{c.$prefix}-slider-active-color)
-        var(--md-sys-state-hover-state-layer-opacity),
-      transparent
-    );
-}
-
-// Disabled treatment (m.disabled color-mix pattern): track is on-surface at
-// the disabled-container opacity; thumb is on-surface at the
-// disabled-content opacity composited over the track color.
-@mixin -track-disabled {
-  background-color: color-mix(
-    in srgb,
-    var(--md-sys-color-on-surface)
-      var(--md-sys-state-disabled-container-opacity),
+// A stop-size dot at $at inside its gradient tile: the stop indicator (one
+// tile, centered) and the tick marks (one tile per interval, dot at the
+// tile's start). Half a hairline of falloff keeps the edge anti-aliased.
+@function -dot($at) {
+  @return radial-gradient(
+    circle calc(var(--#{c.$prefix}-slider-stop-size) / 2) at #{$at},
+    var(--_stop) calc(100% - var(--m3-stroke-hairline) / 2),
     transparent
   );
 }
 
-@mixin -thumb-disabled {
-  background-color: color-mix(
-    in srgb,
-    var(--md-sys-color-on-surface)
-      var(--md-sys-state-disabled-content-opacity),
-    var(--#{c.$prefix}-slider-track-color)
+// One rounded track end for the WebKit track mask: an opaque circle the
+// size of the track height (any opaque color masks; alpha is what counts).
+@function -cap() {
+  @return radial-gradient(
+    circle closest-side,
+    currentColor calc(100% - var(--m3-stroke-hairline) / 2),
+    transparent
   );
-  box-shadow: none;
+}
+
+// --- private vendor fragments (shared by the per-vendor rules) --------------
+
+// Background layers common to both tracks: tick tiles (none unless
+// .m3-slider--ticks re-points --_ticks) and the stop indicator at the far
+// end. Both center on the handle centers, which sit --_inset from each
+// track edge; the including rule sets --_inset for its engine.
+@mixin -track-marks {
+  --_mark-x: calc(var(--_inset) - var(--#{c.$prefix}-slider-stop-size) / 2);
+  --_tick-size: calc((100% - 2 * var(--_inset)) / var(--#{c.$prefix}-slider-ticks));
+}
+
+@mixin -track-webkit {
+  @include -track-marks;
+  --_inset: calc(var(--#{c.$prefix}-slider-gap) + var(--#{c.$prefix}-slider-thumb-width) / 2);
+
+  display: block;
+  box-sizing: border-box;
+  block-size: var(--#{c.$prefix}-slider-thumb-height);
+  padding-inline: var(--#{c.$prefix}-slider-gap);
+  border: none;
+  background-color: transparent;
+  background-image:
+    var(--_ticks),
+    #{-dot(center)},
+    linear-gradient(var(--_track), var(--_track));
+  background-size:
+    var(--_tick-size) 100%,
+    var(--#{c.$prefix}-slider-stop-size) var(--#{c.$prefix}-slider-stop-size),
+    100% var(--#{c.$prefix}-slider-track-height);
+  background-position:
+    var(--_mark-x) 50%,
+    var(--_end) var(--_mark-x) center,
+    center;
+  background-repeat: repeat-x, no-repeat, no-repeat;
+  mask-image: linear-gradient(currentColor, currentColor), #{-cap()}, #{-cap()};
+  mask-size:
+    calc(100% - 2 * var(--#{c.$prefix}-slider-gap)) 100%,
+    var(--#{c.$prefix}-slider-track-height) var(--#{c.$prefix}-slider-track-height),
+    var(--#{c.$prefix}-slider-track-height) var(--#{c.$prefix}-slider-track-height);
+  mask-position: center, left center, right center;
+  mask-repeat: no-repeat;
+  @include m.forced-colors-border;
+
+  // Forced colors drop background images, shadows and the like: hand back
+  // a plain 16px outlined track the handle overhangs.
+  @media (forced-colors: active) {
+    block-size: var(--#{c.$prefix}-slider-track-height);
+    border-radius: var(--md-sys-shape-corner-full);
+    mask: none;
+  }
+}
+
+@mixin -track-moz {
+  @include -track-marks;
+  --_inset: calc(var(--#{c.$prefix}-slider-thumb-width) / 2);
+
+  display: block;
+  box-sizing: border-box;
+  block-size: var(--#{c.$prefix}-slider-track-height);
+  border: none;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--_track);
+  background-image: var(--_ticks), #{-dot(center)};
+  background-size:
+    var(--_tick-size) 100%,
+    var(--#{c.$prefix}-slider-stop-size) var(--#{c.$prefix}-slider-stop-size);
+  background-position:
+    var(--_mark-x) 50%,
+    var(--_end) var(--_mark-x) center;
+  background-repeat: repeat-x, no-repeat;
+  @include m.forced-colors-border;
+}
+
+// The handle bar plus the gap ring around it. The clip-path keeps the ring
+// (and, in WebKit, the fill shadow) inside the handle's own box and the
+// track band -- see the geometry note in the header.
+@mixin -thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  box-sizing: border-box;
+  inline-size: var(--_thumb-width);
+  block-size: var(--#{c.$prefix}-slider-thumb-height);
+  margin: var(--m3-space-none);
+  border: none;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--_active);
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% var(--_band-start),
+    var(--_reach) var(--_band-start),
+    var(--_reach) var(--_band-end),
+    100% var(--_band-end),
+    100% 100%,
+    0 100%,
+    0 var(--_band-end),
+    calc(-1 * var(--_reach)) var(--_band-end),
+    calc(-1 * var(--_reach)) var(--_band-start),
+    0 var(--_band-start)
+  );
+  @include m.transition((inline-size, background-color));
+  @include m.forced-colors-border;
 }
 
 // --- control ----------------------------------------------------------------
 
 // The whole slider, vendor rules included (reused by compat for .form-range).
-// Selection-control glyphs are fixed-size per the M3 spec and deliberately
-// do NOT participate in density; the >=48px touch target overlay keeps the
-// hit area constant regardless.
+// The handle is fixed-size per the M3 spec and does NOT participate in
+// density; the input itself is at least the 48px touch target tall.
 @mixin control {
   @include m.own-box;
+  --_thumb-width: var(--#{c.$prefix}-slider-thumb-width);
+  --_track: var(--#{c.$prefix}-slider-track-color);
+  --_active: var(--#{c.$prefix}-slider-active-color);
+  --_stop: var(--#{c.$prefix}-slider-stop-color);
+  --_ticks: none;
+  // Band edges inside the handle box (the clip-path) and how far the fill
+  // and the clip reach along the track.
+  --_band-start: calc(50% - var(--#{c.$prefix}-slider-track-height) / 2);
+  --_band-end: calc(50% + var(--#{c.$prefix}-slider-track-height) / 2);
+  --_reach: 100vw;
+  // Fill direction and the stop indicator's end, flipped for RTL below.
+  --_fill-x: calc(var(--#{c.$prefix}-slider-gap) - var(--_reach));
+  --_end: right;
+
   display: inline-block;
   -webkit-appearance: none;
   appearance: none;
   inline-size: 100%;
-  block-size: var(--m3-target-size);
+  block-size: max(var(--m3-target-size), var(--#{c.$prefix}-slider-thumb-height));
   background-color: transparent;
   cursor: pointer;
   margin: var(--m3-space-none);
   @include m.focus-ring;
 
+  &:dir(rtl) {
+    --_fill-x: calc(var(--_reach) - var(--#{c.$prefix}-slider-gap));
+    --_end: left;
+  }
+
   // Track: one rule per vendor (never a combined selector list).
   &::-webkit-slider-runnable-track {
-    @include -track;
+    @include -track-webkit;
   }
 
   &::-moz-range-track {
-    @include -track;
+    @include -track-moz;
   }
 
-  // Thumb: WebKit needs the appearance reset and a margin to center the
-  // thumb on the runnable track; Firefox centers it natively.
+  // Handle: WebKit's carries the gap ring and, under it, the active fill;
+  // Firefox's carries the ring only (its fill is ::-moz-range-progress).
   &::-webkit-slider-thumb {
     @include -thumb;
-    margin-block-start: calc(
-      (
-          var(--#{c.$prefix}-slider-track-height) -
-            var(--#{c.$prefix}-slider-thumb-size)
-        ) / 2
-    );
+    box-shadow:
+      0 0 0 var(--#{c.$prefix}-slider-gap) var(--#{c.$prefix}-slider-gap-color),
+      var(--_fill-x) 0 0 var(--_reach) var(--_active);
+
+    @media (forced-colors: active) {
+      margin-block-start: calc(
+        (
+            var(--#{c.$prefix}-slider-track-height) -
+              var(--#{c.$prefix}-slider-thumb-height)
+          ) / 2
+      );
+      clip-path: none;
+    }
   }
 
   &::-moz-range-thumb {
     @include -thumb;
+    box-shadow: 0 0 0 var(--#{c.$prefix}-slider-gap)
+      var(--#{c.$prefix}-slider-gap-color);
   }
 
   // Firefox-only active (traveled) track fill.
   &::-moz-range-progress {
+    display: block;
     block-size: var(--#{c.$prefix}-slider-track-height);
+    border: none;
     border-radius: var(--md-sys-shape-corner-full);
-    background-color: var(--#{c.$prefix}-slider-active-color);
+    background-color: var(--_active);
   }
 
-  // Hover state layer halo around the thumb, per vendor.
-  &:hover::-webkit-slider-thumb {
-    @include -thumb-halo;
+  // Pressed: the handle narrows (the vendor thumb rules read the private).
+  &:active:not(:disabled) {
+    --_thumb-width: var(--#{c.$prefix}-slider-thumb-width-pressed);
   }
 
-  &:hover::-moz-range-thumb {
-    @include -thumb-halo;
-  }
-
+  // Disabled: inactive track at 12% on-surface; handle, fill and marks at
+  // 38%. Handle and fill are composited over the gap color so they stay
+  // opaque above the track they cover.
   &:disabled {
+    --_track: color-mix(
+      in srgb,
+      var(--md-sys-color-on-surface)
+        var(--md-sys-state-disabled-container-opacity),
+      transparent
+    );
+    --_active: color-mix(
+      in srgb,
+      var(--md-sys-color-on-surface)
+        var(--md-sys-state-disabled-content-opacity),
+      var(--#{c.$prefix}-slider-gap-color)
+    );
+    --_stop: color-mix(
+      in srgb,
+      var(--md-sys-color-on-surface)
+        var(--md-sys-state-disabled-content-opacity),
+      transparent
+    );
     cursor: not-allowed;
   }
+}
 
-  &:disabled::-webkit-slider-runnable-track {
-    @include -track-disabled;
-  }
-
-  &:disabled::-moz-range-track {
-    @include -track-disabled;
-  }
-
-  &:disabled::-webkit-slider-thumb {
-    @include -thumb-disabled;
-  }
-
-  &:disabled::-moz-range-thumb {
-    @include -thumb-disabled;
-  }
-
-  &:disabled::-moz-range-progress {
-    @include -thumb-disabled;
-  }
+// Tick marks: one dot per interval on the inactive track (visual only; keep
+// --m3-slider-ticks equal to (max - min) / step).
+@mixin ticks {
+  --_ticks: #{-dot("calc(var(--#{c.$prefix}-slider-stop-size) / 2) 50%")};
 }
 
 // --- class emission ---------------------------------------------------------
@@ -175,5 +353,10 @@
 @mixin classes {
   input[type="range"].#{c.$prefix}-slider {
     @include control;
+  }
+
+  // Same specificity as the base rule (which resets --_ticks), later wins.
+  input[type="range"].#{c.$prefix}-slider--ticks {
+    @include ticks;
   }
 }
