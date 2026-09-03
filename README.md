@@ -1126,7 +1126,7 @@ pure-CSS equivalent -- divergences are listed.
 | Divider | `.m3-divider` on `<hr>` | -- |
 | Lists | `.m3-list` (+ `--dividers`, `--inset`), `.m3-list__subheader`, `.m3-list-item` (one to three lines, donut) with `__overline`, `__leading--avatar/--image/--video`, `__trailing--meta`, trailing controls | -- |
 | Bottom/side sheets | `.m3-sheet--bottom/--side` on `<dialog>`, `--side-standard` on `<aside>` | modal variants via `showModal()` |
-| Navigation bar/rail/drawer | `.m3-nav-bar`, `.m3-rail`, `.m3-drawer` (+ `--modal`) | active via `aria-current`; active icons fill (`--m3-icon-fill: 1`) |
+| Navigation bar/rail/drawer | `.m3-nav-bar`, `.m3-rail` (+ `__header`, `--expanded`, `--modal`, `--fixed`), `.m3-drawer` (+ `--modal`) | active via `aria-current`; active icons fill (`--m3-icon-fill: 1`); the modal rail and drawer open with `showModal()` |
 | Adaptive layout | `.m3-adaptive-layout` + `.m3-adaptive-nav` (`__item`, `__icon`, `__label`: navigation bar / rail / drawer by window size class), `.m3-pane-layout` + `--list-detail/--supporting-pane/--feed`, `.m3-pane`, `.m3-only-*` / `.m3-hide-*` | viewport media queries at M3's window size classes (`$window-size-classes`); which pane a compact window shows is yours |
 | Icon | `.m3-icon` (+ `--filled`) for Material Symbols variable fonts | you load the font (subset it with `icon_names`); `opsz` follows the icon size, selected controls set `--m3-icon-fill: 1` and the FILL axis animates; a missing font is an empty box, not a clipped word |
 | Disclosure | `details.m3-disclosure` (+ `name` for exclusive groups) | animated `::details-content` where supported |
@@ -1142,6 +1142,54 @@ pure-CSS equivalent -- divergences are listed.
 | Text fields | `.m3-field` filled/outlined, floating label, supporting text, leading/trailing icon, prefix/suffix, character counter | the counter's number is your script's; an affix's width is a token (see below) |
 | Search | `.m3-search` (+ `[popover]`/focus panel) | -- |
 | Select | `.m3-select` on native `<select>` | the picker is an M3 menu under `appearance: base-select` (also `.form-select` and the dense toolbar select); native option list elsewhere, CSS chevron either way |
+
+---
+
+### Navigation rail anatomy
+
+M3 Expressive's rail has three forms and an optional header, and the markup
+is the same for all of them — only the class on the container changes, so a
+rail can swap form at a breakpoint without touching its HTML.
+
+| | Class | Width | Item |
+|---|---|---|---|
+| Collapsed | `.m3-rail` | 96px | label under its icon on a 56×32 pill |
+| Expanded | `.m3-rail--expanded` | 220–360px | label beside its icon on a 56px indicator spanning the row |
+| Modal | `.m3-rail--modal` on a `<dialog>` | as expanded | as expanded, over a scrim |
+
+**Header.** `.m3-rail__header` is M3's leading slot: a menu button, a FAB, or
+both, above the destinations with M3's `HeaderSpaceMinimum` (40px) between
+them.
+
+```html
+<aside class="m3-rail m3-rail--expanded" aria-label="Primary">
+  <div class="m3-rail__header">
+    <button class="m3-icon-btn" type="button" aria-label="Menu">…</button>
+    <button class="m3-fab m3-fab--small" type="button" aria-label="Compose">…</button>
+  </div>
+  <a class="m3-rail__item" href="/" aria-current="page">
+    <span class="m3-rail__icon">…</span>Inbox
+  </a>
+  <a class="m3-rail__item" href="/starred"><span class="m3-rail__icon">…</span>Starred</a>
+</aside>
+```
+
+**What moves when it expands.** In the collapsed rail the active indicator is
+the pill around the icon; in the expanded rail M3's horizontal item is one
+56px row carrying icon and label together, so the indicator moves onto the
+item and the icon goes back to being a plain 24px glyph box. Both read the
+same state-layer opacity, which lives on the item, so hover, focus and press
+tint whichever box is currently the indicator.
+
+`--m3-rail-expanded-width` is clamped to M3's published 220px minimum and
+360px maximum, so re-pointing it moves the width *inside* the spec rather
+than past it.
+
+**Modal.** `.m3-rail--modal` goes on a native `<dialog>` and is opened with
+`showModal()` from your own code — the same contract `.m3-drawer--modal` has.
+M3 gives it its own container role (`surface-container`), level 2 and a large
+trailing corner, and it slides in over a scrim under
+`prefers-reduced-motion: no-preference`.
 
 ---
 
@@ -1507,7 +1555,9 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
   the slider's value indicator (its 12dp rise off the track and its travel
   from end to end), that it hides at rest, that a range slider stacks its
   inputs and hands the pointer to its handles, and that a vertical slider's
-  rotated input lands flush on its wrapper;
+  rotated input lands flush on its wrapper; the rail's expanded width, its
+  56px horizontal item, the icon going back to a glyph box, and the 40px
+  header gap;
   the five tonal-elevation opacities and
   the surface each renders as, with the shadow and tint channels proven not to
   touch each other's property; the five-rung Expressive size ramp on

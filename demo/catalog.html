@@ -1725,16 +1725,41 @@
 
     <div class="cat-item">
       <header><h3 class="m3-title-medium">Navigation rail</h3>
-        <span class="cat-api"><code>.m3-rail</code><code>--fixed</code></span></header>
-      <p class="cat-note m3-body-small">96px collapsed, per M3 Expressive &mdash; and the adaptive layout reserves
-        exactly that through the same token.</p>
-      <div class="cat-specimen" style="padding: 0;">
+        <span class="cat-api"><code>.m3-rail</code><code>--fixed</code><code>--expanded</code><code>--modal</code><code>.m3-rail__header</code></span></header>
+      <p class="cat-note m3-body-small">96px collapsed, 220&ndash;360px expanded, per M3 Expressive &mdash; and the
+        adaptive layout reserves exactly the collapsed width through the same token. The header slot takes a menu
+        button, a FAB, or both, 40px above the first destination (M3&rsquo;s <code>HeaderSpaceMinimum</code>). The
+        expanded rail is the <em>same markup</em>, one class: each label moves from under its icon on a
+        56&times;32 pill to beside it on a 56px indicator that spans the row, so a rail can change form at a
+        breakpoint without changing its HTML.</p>
+      <div class="cat-specimen" style="padding: 0; align-items: flex-start;">
         <aside class="m3-rail" style="position: static;" aria-label="Primary">
           <a class="m3-rail__item active" href="#navigation" aria-current="page"><span class="m3-rail__icon"><span class="m3-icon">inbox</span></span>Inbox</a>
           <a class="m3-rail__item" href="#navigation"><span class="m3-rail__icon"><span class="m3-icon">star</span></span>Starred</a>
           <a class="m3-rail__item" href="#navigation"><span class="m3-rail__icon"><span class="m3-icon">archive</span></span>Archive</a>
         </aside>
+        <aside class="m3-rail" style="position: static;" aria-label="Primary with header">
+          <div class="m3-rail__header">
+            <button class="m3-icon-btn" type="button" aria-label="Menu"><span class="m3-icon">menu</span></button>
+            <button class="m3-fab m3-fab--small" type="button" aria-label="Compose"><span class="m3-icon">edit</span></button>
+          </div>
+          <a class="m3-rail__item active" href="#navigation" aria-current="page"><span class="m3-rail__icon"><span class="m3-icon">inbox</span></span>Inbox</a>
+          <a class="m3-rail__item" href="#navigation"><span class="m3-rail__icon"><span class="m3-icon">star</span></span>Starred</a>
+          <a class="m3-rail__item" href="#navigation"><span class="m3-rail__icon"><span class="m3-icon">archive</span></span>Archive</a>
+        </aside>
+        <aside class="m3-rail m3-rail--expanded" style="position: static;" aria-label="Expanded">
+          <div class="m3-rail__header">
+            <button class="m3-icon-btn" type="button" aria-label="Menu"><span class="m3-icon">menu</span></button>
+            <button class="m3-fab m3-fab--small" type="button" aria-label="Compose"><span class="m3-icon">edit</span></button>
+          </div>
+          <a class="m3-rail__item active" href="#navigation" aria-current="page"><span class="m3-rail__icon"><span class="m3-icon">inbox</span></span>Inbox</a>
+          <a class="m3-rail__item" href="#navigation"><span class="m3-rail__icon"><span class="m3-icon">star</span></span>Starred</a>
+          <a class="m3-rail__item" href="#navigation"><span class="m3-rail__icon"><span class="m3-icon">archive</span></span>Archive</a>
+        </aside>
       </div>
+      <p class="cat-note m3-body-small"><code>.m3-rail--modal</code> is that expanded rail on a native
+        <code>&lt;dialog&gt;</code>: surface-container, level&nbsp;2, a large trailing corner and a scrim, opened
+        with <code>showModal()</code> exactly like <code>.m3-drawer--modal</code>.</p>
     </div>
 
     <div class="cat-item">

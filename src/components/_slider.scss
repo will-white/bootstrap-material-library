@@ -437,8 +437,11 @@ $tokens: map.set($tokens, "slider-thumb-height", #{m.token($tokens, "slider-thum
 // instead of the far end.
 @mixin centered {
   @include -band;
-  --_band-from: min(50%, #{-handle-x("--#{c.$prefix}-slider-value", 50)});
-  --_band-to: max(50%, #{-handle-x("--#{c.$prefix}-slider-value", 50)});
+  // The same 0 default every other read site uses, and the right one here:
+  // a centered slider at its minimum shows the band from that minimum to the
+  // origin, which is exactly what value 0 draws.
+  --_band-from: min(50%, #{-handle-x("--#{c.$prefix}-slider-value", 0)});
+  --_band-to: max(50%, #{-handle-x("--#{c.$prefix}-slider-value", 0)});
   --_stop-pos: center;
 }
 

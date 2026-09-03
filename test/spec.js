@@ -102,6 +102,11 @@ ${Object.keys(BUTTON_RAMP).map((s) => `<div class="${mod('m3-split-button', s)}"
   <li class="m3-list-item"><span class="m3-list-item__leading m3-list-item__leading--video" id="video"></span><span class="m3-list-item__body"><span class="m3-list-item__headline">H</span></span></li>
 </ul>
 <nav class="m3-rail" id="rail"><a class="m3-rail__item" href="#">${ICON}<span class="m3-rail__label">A</span></a></nav>
+<aside class="m3-rail" id="rail-header">
+  <div class="m3-rail__header" id="rail-header-slot"><button class="m3-icon-btn" type="button" aria-label="M">${ICON}</button></div>
+  <a class="m3-rail__item" href="#" id="rail-header-item"><span class="m3-rail__icon">${ICON}</span>A</a></aside>
+<aside class="m3-rail m3-rail--expanded" id="rail-expanded">
+  <a class="m3-rail__item" href="#" id="rail-exp-item"><span class="m3-rail__icon" id="rail-exp-icon">${ICON}</span>A</a></aside>
 
 <nav class="m3-tabs" id="tabs"><button class="m3-tabs__tab" id="tab-text">Text</button><button class="m3-tabs__tab">More</button></nav>
 <nav class="m3-tabs" id="tabs-icon"><button class="m3-tabs__tab" id="tab-icon">${ICON}Text</button><button class="m3-tabs__tab">More</button></nav>
@@ -258,6 +263,17 @@ async function run() {
         out.misc.cardRadius = num(cs('card').borderTopLeftRadius);
         out.misc.navBar = num(box('navbar').height);
 
+        // M3 Expressive's navigation rail: a 96dp collapsed rail, a 220dp
+        // expanded one (its published minimum), a 56dp horizontal item, and
+        // HeaderSpaceMinimum between the header and the first destination.
+        out.misc.rail2 = {
+          expandedWidth: num(box('rail-expanded').width),
+          itemHeight: num(box('rail-exp-item').height),
+          // The indicator is the row now, so the icon is back to a glyph box.
+          iconBox: [num(box('rail-exp-icon').width), num(box('rail-exp-icon').height)],
+          headerGap: num(box('rail-header-item').top - box('rail-header-slot').bottom),
+        };
+
         // M3's slider value indicator: 12dp above the track, centred on the
         // handle, which travels the width less one gap-plus-half-handle at
         // each end.
@@ -383,6 +399,12 @@ async function run() {
     expect(Number(got.weight) > Number(got.baseWeight), `.m3-${role}-emphasized weight ${got.weight} should exceed baseline ${got.baseWeight}`);
   }
 
+  // M3 Expressive's navigation rail anatomy.
+  expect(r.misc.rail2.expandedWidth === 220, `expanded rail width ${r.misc.rail2.expandedWidth}, expected 220 (M3's minimum)`);
+  expect(r.misc.rail2.itemHeight === 56, `expanded rail item ${r.misc.rail2.itemHeight}, expected 56`);
+  expect(eq(r.misc.rail2.iconBox, [24, 24]), `expanded rail icon ${JSON.stringify(r.misc.rail2.iconBox)}, expected [24,24]`);
+  expect(r.misc.rail2.headerGap === 40, `rail header gap ${r.misc.rail2.headerGap}, expected 40 (M3's HeaderSpaceMinimum)`);
+
   // M3's slider value indicator sits 12dp above the track (M3's
   // ValueIndicatorActiveBottomSpace) and centres on the handle, whose centre
   // travels from gap + half a handle to the same inset from the other end.
@@ -505,7 +527,7 @@ async function run() {
   expect(r.misc.navBar === 80, `navigation bar height ${r.misc.navBar}, expected 80`);
 
   if (!failures.length) {
-    console.log(`[spec] ${Object.keys(TOKENS).length} tokens, ${Object.keys(BUTTON_RAMP).length}-rung button/icon-button/split ramps, ${Object.keys(EMPHASIZED).length} emphasized typescale styles, 6 tonal-elevation surfaces, field anatomy, slider anatomy, fields, chips, selection, progress (stop indicator + gap), tabs, tooltip, list, rail: ok`);
+    console.log(`[spec] ${Object.keys(TOKENS).length} tokens, ${Object.keys(BUTTON_RAMP).length}-rung button/icon-button/split ramps, ${Object.keys(EMPHASIZED).length} emphasized typescale styles, 6 tonal-elevation surfaces, field anatomy, slider anatomy, fields, chips, selection, progress (stop indicator + gap), tabs, tooltip, list, rail (collapsed + expanded + header): ok`);
   }
   return failures;
 }
