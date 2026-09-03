@@ -54,6 +54,7 @@ via `@supports`:
 | Dense toolbar overflow | `@container` (Baseline 2023) | groups never collapse; `__more` stays hidden |
 | `@scope` refinements | none -- see below | slightly less isolation, identical rendering |
 | Anchor-positioned tooltips/menus, Popover menus, `:has()` selection states | per-feature `@supports`; every `:has()` / `:popover-open` rule stands alone in its selector list | hidden gracefully / static fallback / the non-`:has()` state |
+| Chart readouts computed to absolute values (`.m3-chart`, see *Charts*) | `@property` (Chrome 85, Safari 16.4, Firefox 128); the categorical palette's `light-dark()` pairs sit behind the scheme gate above, static light + media dark below it | the readouts are plain custom properties: a `color-mix()` or `light-dark()` default reaches a script unresolved, so a bridge normalises through the canvas parser (docs/echarts.md) |
 
 `@scope` (Chrome 118, Safari 17.4, Firefox 140) carries **refinement, never
 load-bearing structure**: donut slot protection, low-specificity internals, and
@@ -863,6 +864,7 @@ pure-CSS equivalent -- divergences are listed.
 | Text fields | `.m3-field` filled/outlined, floating label, supporting text | -- |
 | Search | `.m3-search` (+ `[popover]`/focus panel) | -- |
 | Select | `.m3-select` on native `<select>` | the picker is an M3 menu under `appearance: base-select` (also `.form-select` and the dense toolbar select); native option list elsewhere, CSS chevron either way |
+| Chart | `.m3-chart` host (+ `--ordinal/--sequential/--diverging`), `.m3-chart-palette` strip (+ `--ramp` and the same family modifiers) of `__swatch`s | the chart itself is a script's (ECharts is the target): the host resolves the `--m3-chart-*` contract into registered readouts a bridge reads with `getComputedStyle`; see *Charts* and docs/echarts.md |
 
 ---
 
@@ -944,6 +946,98 @@ tier is hidden. The widths are Sass config (`$toolbar-dense-collapse`, default
 since container queries cannot read custom properties. The overflow menu's
 contents are yours to author.
 
+## Charts
+
+A chart library paints on a canvas from a JSON theme, so it cannot read
+`var()`. m3x ships the **token contract** for charts and a pure-CSS palette
+strip; the script that turns the contract into an Apache ECharts theme is
+designed and proven in [docs/echarts.md](docs/echarts.md) but not bundled
+(the library stays zero-JS).
+
+```html
+<div class="m3-chart" id="revenue"></div>   <!-- a script draws into it -->
+```
+
+`.m3-chart` is a sized block (`--m3-chart-block-size`, 320px) that resolves
+every `--m3-chart-*` token into a **registered private readout**,
+`--_chart-<token>`, named exactly like the token it resolves and declared
+via `@property` as `<color>`, `<length>` or `<number>`. Because the readouts
+are registered, `getComputedStyle(host)` hands a script absolute values:
+`light-dark()`, `color-mix()` and relative colors are resolved, a token island
+or a forced `[data-contrast]` above the host is applied, and an invalid
+override falls back to the registered initial value rather than to an
+unparsable string. The readouts are the component's tier-4 privates, so the
+public API is the tokens; `test/chart.js` holds every readout to "computes to
+something the canvas parser accepts" in every theme state.
+
+### Families
+
+| Family | Tokens | What it encodes | Where it comes from |
+|---|---|---|---|
+| Categorical | `--m3-chart-categorical-1..8` | identity (which series) | eight **fixed** hues in a fixed, validated order, one step per scheme and per contrast level (`$chart-categorical`) |
+| Sequential | `--m3-chart-sequential-1..7`, anchors `-low-color` / `-high-color`, hue `--m3-chart-accent-color` | magnitude | the surface tinted 15% toward the accent, up to the accent (primary), mixed in OKLCH |
+| Diverging | `--m3-chart-diverging-1..7`, poles `-low-color` (info) / `-high-color` (error), `-mid-color` (surface-container-highest) | polarity | two arms of three mixes each, meeting at the neutral |
+| Series slots | `--m3-chart-series-1..8` | what a theme's `color` array reads | the categorical family; `.m3-chart--ordinal` (six ordered steps from the accent, the lightest still 2:1 on the surface), `--sequential` and `--diverging` re-point them |
+
+The categorical palette is the one place a seed-derived palette is wrong,
+and the reason is measurable: colour-vision safety is a property of absolute
+hues and of lightness steps that survive a red-green simulation. Rotating the
+data-viz reference order around the seed's hue fails the CVD floor for most
+seeds, and harmonizing fixed hues toward the seed by M3's 15° pulls
+neighbours on the seed's side of the wheel together (docs/echarts.md records
+the searches and their numbers). So the identity palette holds still while
+the seed moves, the way status colors do, and the brand shows in the ramps:
+sequential and ordinal run from the surface to `--m3-chart-accent-color`, so
+they follow the seed, an island's accent and the contrast level. The shipped
+set is the reference order stepped for m3x's own surfaces: worst adjacent
+CVD separation 11.9 (light) / 10.7 (dark) against a target of 8, and one
+light step (yellow, 2.1:1) below 3:1, which is the reference's own relief
+case (direct labels or a table view). `npm test` re-validates whatever
+`$chart-categorical` holds, so a brand set goes in through Sass and the
+suite says whether it holds.
+
+Contrast levels move the categorical steps away from the surface
+(`$chart-contrast-shift`: 4% / 8% of OKLCH lightness at medium / high), under
+`prefers-contrast: more` and `[data-contrast]` on any ancestor or on the host,
+tiered like the scheme itself. The ramps need nothing: their anchors are
+roles, which already carry the levels.
+
+### Chrome tokens
+
+`--m3-chart-text-color` (on-surface), `-label-color` (on-surface-variant),
+`-axis-color` (outline-variant), `-grid-color` (outline-variant at 50%),
+`-hover-color` (on-surface at the hover opacity), `-tooltip-container-color` /
+`-tooltip-content-color` (the plain tooltip's inverse pair), `-tooltip-shape`,
+`-gap-color` (the surface the chart sits on, through
+`--m3-sys-container-color`) and `-gap-width` (2px, the gap between fills),
+`-line-width` (2px), `-marker-size` (8px), `-mark-radius` (4px),
+`-positive-color` / `-negative-color` (success / error), `-zoom-fill-color` /
+`-zoom-handle-color`, `-font`, `-label-size`, `-title-size`, `-title-weight`,
+`-background-color` (transparent), and for the strip `-swatch-size` /
+`-swatch-shape`. Each is a default at the readout that reads it, so a
+`--md-sys-color-*` re-pointed on any ancestor reaches it and a chart token on
+any ancestor beats that.
+
+### Theming charts is CSS
+
+```css
+.finance { --m3-chart-accent-color: var(--md-sys-color-tertiary); }  /* ramps take the tertiary hue */
+.brand-three { --m3-chart-series-1: var(--md-sys-color-primary);      /* a theme of your own */
+               --m3-chart-series-2: var(--md-sys-color-tertiary);
+               --m3-chart-series-3: var(--md-sys-color-secondary); }
+```
+
+A theme is a class that re-points tokens; the bridge never changes. The
+strip shows any of them without a chart library:
+
+```html
+<div class="m3-chart-palette m3-chart-palette--sequential m3-chart-palette--ramp" role="img" aria-label="Sequential steps">
+  <span class="m3-chart-palette__swatch"></span> <!-- x 7, painted by position from the slots -->
+</div>
+```
+
+---
+
 ## Accessibility floor
 
 `:focus-visible` indicators on every interactive element (outlines are never
@@ -983,6 +1077,8 @@ no `@import`).
   $grid-columns: 12,
   $toolbar-dense-collapse: ("low": 68rem, "medium": 56rem), // dense toolbar collapse widths
   $color-palette: ("theme": (...), "standard": (...)), // palette swatches by position
+  $chart-categorical: ("light": (...), "dark": (...)), // eight chart series colors per scheme, OKLCH (see Charts)
+  $chart-contrast-shift: ("medium": 4%, "high": 8%), // how far a series color's lightness moves per contrast level
   $bootstrap-reskin-scope: null,   // e.g. "[data-m3]" for migration zones
   $emit-layer-statement: true,     // suppress if you own the layer order
   $components: (...)               // prune the catalog; default: all
@@ -1020,7 +1116,7 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
 
 ### Tests
 
-`npm test` runs nine suites against the built CSS:
+`npm test` runs ten suites against the built CSS:
 
 - **contrast** (`test/contrast.js`, no browser): reads the static sRGB tier
   and asserts M3's minimum ratios for every accent / on-accent, container /
@@ -1062,6 +1158,17 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
   below it; a component token set on an ancestor still beats all of them; and
   the island utilities and a forced `[data-contrast]` subtree re-tint real
   components, not just inherited text.
+- **chart** (`test/chart.js`): the palette families hold the data-viz gates
+  (the categorical steps sit in their mode's lightness band, above the chroma
+  floor, apart from their neighbours under simulated protanopia and
+  deuteranopia and under normal vision, and never lose contrast at a higher
+  level; the sequential steps are one monotone ramp, the diverging arms meet
+  at the neutral), and in Chromium every registered readout of a `.m3-chart`
+  computes to a value the canvas parser accepts in light, dark, inside an
+  island, under forced contrast and under overrides, the `light-dark()` tier
+  agrees with the static tier to the pixel, the family modifiers and the
+  palette strip paint from the slots, and a token change fires
+  `transitionend` on a readout the host transitions.
 - **spec** (`test/spec.js`): M3's published numbers asserted against what the
   stylesheet computes in a browser, not against what the Sass declares --
   typescale, state-layer opacities, the focus indicator, the shape scale, the
@@ -1085,7 +1192,11 @@ file generated from the built CSS: `md.ref.palette.*` as sRGB hex,
 (dimension, duration, cubicBezier, number, fontFamily); `var()` references
 become `{aliases}`, computed values keep their CSS text alongside
 `$extensions.m3x.css`. Whatever Sass configuration produced the build is what
-gets exported.
+gets exported. A component that resolves its tokens into private readouts on
+its host (the chart) exports through them: a readout that is the resolution of
+a public token stands for that token, and a tiered private default stands for
+its static tier, so `m3.comp.chart.series-1` is an alias of
+`m3.comp.chart.categorical-1` and `categorical-1` is the light hex.
 
 ---
 

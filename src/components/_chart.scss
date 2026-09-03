@@ -1,0 +1,505 @@
+// ============================================================================
+// m3x chart: the token contract for charts a script draws (Apache ECharts is
+// the target), plus a pure-CSS palette strip.
+//
+// A chart library paints on a canvas from a JSON theme, so it cannot read
+// var(). The host element resolves every chart token into a REGISTERED
+// private readout (--_chart-*, @property <color> / <length> / <number>), and
+// getComputedStyle() on the host hands a script absolute values: light-dark(),
+// color-mix() and relative colors are already resolved, a token island or a
+// forced [data-contrast] above the host is already applied, and an invalid
+// override falls back to the registered initial value rather than to an
+// unparsable string. The bridge that turns the readouts into an ECharts theme
+// is described in docs/echarts.md; nothing in this partial needs it.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   Chrome
+//   --m3-chart-block-size             320px   the host's height (a canvas needs a sized box)
+//   --m3-chart-background-color       transparent (the chart sits on its card)
+//   --m3-chart-text-color             on-surface          title, emphasised labels
+//   --m3-chart-label-color            on-surface-variant  axis labels, legend, subtitle
+//   --m3-chart-axis-color             outline-variant     axis lines and ticks
+//   --m3-chart-grid-color             outline-variant at 50%   split lines
+//   --m3-chart-hover-color            on-surface at the hover opacity   axis-pointer band
+//   --m3-chart-tooltip-container-color  inverse-surface
+//   --m3-chart-tooltip-content-color  inverse-on-surface
+//   --m3-chart-tooltip-shape          corner-extra-small
+//   --m3-chart-gap-color              the surface the chart sits on   2px gap between fills
+//   --m3-chart-gap-width              2px
+//   --m3-chart-line-width             2px
+//   --m3-chart-marker-size            8px
+//   --m3-chart-mark-radius            4px     rounded data ends
+//   --m3-chart-positive-color         success  candlestick up, status "good"
+//   --m3-chart-negative-color         error    candlestick down, status "critical"
+//   --m3-chart-zoom-fill-color        primary at 12%   dataZoom window
+//   --m3-chart-zoom-handle-color      primary
+//   --m3-chart-font                   body-small font
+//   --m3-chart-label-size             body-small size (12px)
+//   --m3-chart-title-size             title-medium size (16px)
+//   --m3-chart-title-weight           title-medium weight (500)
+//   --m3-chart-swatch-size            24px    the palette strip's cells
+//   --m3-chart-swatch-shape           corner-extra-small
+//
+//   Families (see README "Charts" for how each was chosen and validated)
+//   --m3-chart-categorical-1 .. -8    identity: eight fixed hues in a fixed
+//                                     order, one step per scheme, one per
+//                                     contrast level ($chart-categorical)
+//   --m3-chart-accent-color           primary   the hue magnitude ramps take
+//   --m3-chart-sequential-low-color   surface tinted 15% toward the accent
+//   --m3-chart-sequential-high-color  the accent
+//   --m3-chart-sequential-1 .. -7     magnitude: low -> high, mixed in OKLCH
+//   --m3-chart-diverging-low-color    info
+//   --m3-chart-diverging-mid-color    surface-container-highest (the neutral)
+//   --m3-chart-diverging-high-color   error
+//   --m3-chart-diverging-1 .. -7      polarity: low -> mid -> high
+//   --m3-chart-series-1 .. -8         what the theme's `color` array reads;
+//                                     categorical by default, a family
+//                                     modifier re-points them (below)
+//
+// Modifiers (on .m3-chart and .m3-chart-palette alike)
+//   --ordinal     series 1-6 take an ordered one-hue ramp from the accent
+//                 (lightest step still >= 2:1 on the surface); 7-8 repeat 6
+//   --sequential  series 1-7 take the sequential steps; 8 repeats 7
+//   --diverging   series 1-7 take the diverging steps; 8 repeats 7
+//
+// Markup
+//   <div class="m3-chart" id="sales"></div>          a script draws into it
+//   <div class="m3-chart-palette" role="img" aria-label="Series colours">
+//     <span class="m3-chart-palette__swatch"></span>  x N, painted by position
+//   </div>
+//   .m3-chart-palette--ramp joins the cells into one bar (sequential /
+//   diverging strips).
+//
+// Readouts a script may rely on (every one registered, all inherit; each is
+// named exactly like the token it resolves):
+//   --_chart-background-color, -text-color, -label-color, -axis-color,
+//   -grid-color, -hover-color, -tooltip-container-color,
+//   -tooltip-content-color, -gap-color, -positive-color, -negative-color,
+//   -zoom-fill-color, -zoom-handle-color, -accent-color,
+//   -sequential-low-color, -sequential-high-color, -diverging-low-color,
+//   -diverging-mid-color, -diverging-high-color                <color>
+//   --_chart-categorical-1..8, -sequential-1..7, -diverging-1..7,
+//   -series-1..8                                               <color>
+//   --_chart-tooltip-shape, -gap-width, -line-width, -marker-size,
+//   -mark-radius, -title-size, -label-size                     <length>
+//   --_chart-title-weight                                      <number>
+// The font family is the host's computed font-family.
+// ============================================================================
+
+@use "sass:color";
+@use "sass:list";
+@use "sass:map";
+@use "sass:math";
+@use "sass:string";
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+@use "../tokens/color-scheme";
+
+// --- build-time colors: @property initial values and the static tiers -------
+
+@function -role($role, $mode: light) {
+  @return color-scheme.role-color($role, $mode);
+}
+
+// CSS color-mix(in oklch, $a, $b <p>%) at build time.
+@function -mix($a, $b, $p) {
+  @return color.mix($a, $b, 100% - $p, $method: oklch);
+}
+
+@function -hex-byte($n) {
+  $digits: "0123456789abcdef";
+  $n: math.clamp(0, math.round($n), 255);
+  $hi: math.floor(math.div($n, 16));
+  $lo: $n - $hi * 16;
+  @return string.slice($digits, $hi + 1, $hi + 1) + string.slice($digits, $lo + 1, $lo + 1);
+}
+
+// #rrggbbaa: the static form of color-mix(in srgb, $c <p>%, transparent).
+@function -hex-alpha($c, $p) {
+  @return fn.raw("#{fn.hex($c)}#{-hex-byte(math.div($p, 1%) * 2.55)}");
+}
+
+// A categorical step: the configured OKLCH color, chroma capped into sRGB
+// at build time exactly as the tonal palettes are, optionally with its
+// lightness moved for a contrast level (down on light, up on dark).
+@function -snap($c, $dl: 0%) {
+  $ok: color.to-space($c, oklch);
+  $l: color.channel($ok, "lightness") + $dl;
+  $l: math.clamp(0%, $l, 100%);
+  $ch: color.channel($ok, "chroma");
+  $h: color.channel($ok, "hue");
+  @if fn.raw("#{$h}") == "none" or $ch == 0 {
+    $h: 0deg;
+  }
+  @return oklch($l fn.cap-chroma($l, $ch, $h) $h);
+}
+
+@function -categorical($mode, $n, $level: "standard") {
+  $list: map.get(c.$chart-categorical, $mode);
+  @if $list == null or list.length($list) != 8 {
+    @error "$chart-categorical needs eight colors for #{$mode}";
+  }
+  $shift: 0%;
+  @if $level != "standard" {
+    $shift: map.get(c.$chart-contrast-shift, $level);
+    @if $shift == null {
+      @error "Unknown chart contrast level #{$level}";
+    }
+    @if $mode == light {
+      $shift: -$shift;
+    }
+  }
+  @return -snap(list.nth($list, $n), $shift);
+}
+
+$-levels: ("standard", "medium", "high");
+
+// Sequential anchors and steps at build time (the default accent, primary).
+@function -seq-low($mode) {
+  @return -mix(-role("surface", $mode), -role("primary", $mode), 15%);
+}
+@function -seq-step($mode, $k) {
+  @return -mix(-seq-low($mode), -role("primary", $mode), math.div(($k - 1) * 100%, 6));
+}
+@function -div-step($mode, $k) {
+  $low: -role("info", $mode);
+  $mid: -role("surface-container-highest", $mode);
+  $high: -role("error", $mode);
+  @if $k <= 4 {
+    @return -mix($low, $mid, math.div(($k - 1) * 100%, 3));
+  }
+  @return -mix($mid, $high, math.div(($k - 4) * 100%, 3));
+}
+
+// --- tokens ------------------------------------------------------------------
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults"). Here
+// the read site is the host's readout declaration.
+$tokens: (
+  "chart-block-size": #{fn.rem(320)},
+  "chart-background-color": transparent,
+  "chart-text-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "chart-label-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "chart-axis-color": var(--#{c.$sys-prefix}-sys-color-outline-variant),
+  "chart-grid-color": color-mix( in srgb, var(--#{c.$sys-prefix}-sys-color-outline-variant) 50%, transparent ),
+  "chart-hover-color": color-mix( in srgb, var(--#{c.$sys-prefix}-sys-color-on-surface) var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity), transparent ),
+  "chart-tooltip-container-color": var(--#{c.$sys-prefix}-sys-color-inverse-surface),
+  "chart-tooltip-content-color": var(--#{c.$sys-prefix}-sys-color-inverse-on-surface),
+  "chart-tooltip-shape": var(--#{c.$sys-prefix}-sys-shape-corner-extra-small),
+  "chart-gap-color": var(--#{c.$prefix}-sys-container-color, var(--#{c.$sys-prefix}-sys-color-surface)),
+  "chart-gap-width": 2px,
+  "chart-line-width": 2px,
+  "chart-marker-size": 8px,
+  "chart-mark-radius": 4px,
+  "chart-positive-color": var(--#{c.$sys-prefix}-extended-color-success),
+  "chart-negative-color": var(--#{c.$sys-prefix}-sys-color-error),
+  "chart-zoom-fill-color": color-mix( in srgb, var(--#{c.$sys-prefix}-sys-color-primary) 12%, transparent ),
+  "chart-zoom-handle-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "chart-font": var(--#{c.$sys-prefix}-sys-typescale-body-small-font),
+  "chart-label-size": var(--#{c.$sys-prefix}-sys-typescale-body-small-size),
+  "chart-title-size": var(--#{c.$sys-prefix}-sys-typescale-title-medium-size),
+  "chart-title-weight": var(--#{c.$sys-prefix}-sys-typescale-title-medium-weight),
+  "chart-swatch-size": #{fn.rem(24)},
+  "chart-swatch-shape": var(--#{c.$sys-prefix}-sys-shape-corner-extra-small),
+  "chart-accent-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "chart-sequential-low-color": color-mix( in oklch, var(--#{c.$sys-prefix}-sys-color-surface) 85%, var(--_chart-accent-color) ),
+  "chart-sequential-high-color": var(--_chart-accent-color),
+  "chart-diverging-low-color": var(--#{c.$sys-prefix}-extended-color-info),
+  "chart-diverging-mid-color": var(--#{c.$sys-prefix}-sys-color-surface-container-highest),
+  "chart-diverging-high-color": var(--#{c.$sys-prefix}-sys-color-error),
+  "chart-categorical-1": var(--_chart-categorical-1-default),
+  "chart-categorical-2": var(--_chart-categorical-2-default),
+  "chart-categorical-3": var(--_chart-categorical-3-default),
+  "chart-categorical-4": var(--_chart-categorical-4-default),
+  "chart-categorical-5": var(--_chart-categorical-5-default),
+  "chart-categorical-6": var(--_chart-categorical-6-default),
+  "chart-categorical-7": var(--_chart-categorical-7-default),
+  "chart-categorical-8": var(--_chart-categorical-8-default),
+  "chart-sequential-1": color-mix( in oklch, var(--_chart-sequential-low-color), var(--_chart-sequential-high-color) 0% ),
+  "chart-sequential-2": color-mix( in oklch, var(--_chart-sequential-low-color), var(--_chart-sequential-high-color) 16.667% ),
+  "chart-sequential-3": color-mix( in oklch, var(--_chart-sequential-low-color), var(--_chart-sequential-high-color) 33.333% ),
+  "chart-sequential-4": color-mix( in oklch, var(--_chart-sequential-low-color), var(--_chart-sequential-high-color) 50% ),
+  "chart-sequential-5": color-mix( in oklch, var(--_chart-sequential-low-color), var(--_chart-sequential-high-color) 66.667% ),
+  "chart-sequential-6": color-mix( in oklch, var(--_chart-sequential-low-color), var(--_chart-sequential-high-color) 83.333% ),
+  "chart-sequential-7": color-mix( in oklch, var(--_chart-sequential-low-color), var(--_chart-sequential-high-color) 100% ),
+  "chart-diverging-1": color-mix( in oklch, var(--_chart-diverging-low-color), var(--_chart-diverging-mid-color) 0% ),
+  "chart-diverging-2": color-mix( in oklch, var(--_chart-diverging-low-color), var(--_chart-diverging-mid-color) 33.333% ),
+  "chart-diverging-3": color-mix( in oklch, var(--_chart-diverging-low-color), var(--_chart-diverging-mid-color) 66.667% ),
+  "chart-diverging-4": color-mix( in oklch, var(--_chart-diverging-low-color), var(--_chart-diverging-mid-color) 100% ),
+  "chart-diverging-5": color-mix( in oklch, var(--_chart-diverging-mid-color), var(--_chart-diverging-high-color) 33.333% ),
+  "chart-diverging-6": color-mix( in oklch, var(--_chart-diverging-mid-color), var(--_chart-diverging-high-color) 66.667% ),
+  "chart-diverging-7": color-mix( in oklch, var(--_chart-diverging-mid-color), var(--_chart-diverging-high-color) 100% ),
+  "chart-series-1": var(--_chart-slot-1),
+  "chart-series-2": var(--_chart-slot-2),
+  "chart-series-3": var(--_chart-slot-3),
+  "chart-series-4": var(--_chart-slot-4),
+  "chart-series-5": var(--_chart-slot-5),
+  "chart-series-6": var(--_chart-slot-6),
+  "chart-series-7": var(--_chart-slot-7),
+  "chart-series-8": var(--_chart-slot-8),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+// --- readouts ---------------------------------------------------------------
+// readout name -> (syntax, initial value). The initial value is the static
+// light default, so a browser that cannot compute a default (or a consumer's
+// invalid override) still hands the script a color.
+
+@function -readouts() {
+  $r: (
+    "background-color": ("<color>", transparent),
+    "text-color": ("<color>", fn.hex(-role("on-surface"))),
+    "label-color": ("<color>", fn.hex(-role("on-surface-variant"))),
+    "axis-color": ("<color>", fn.hex(-role("outline-variant"))),
+    "grid-color": ("<color>", -hex-alpha(-role("outline-variant"), 50%)),
+    "hover-color": ("<color>", -hex-alpha(-role("on-surface"), 8%)),
+    "tooltip-container-color": ("<color>", fn.hex(-role("inverse-surface"))),
+    "tooltip-content-color": ("<color>", fn.hex(-role("inverse-on-surface"))),
+    "gap-color": ("<color>", fn.hex(-role("surface"))),
+    "positive-color": ("<color>", fn.hex(-role("success"))),
+    "negative-color": ("<color>", fn.hex(-role("error"))),
+    "zoom-fill-color": ("<color>", -hex-alpha(-role("primary"), 12%)),
+    "zoom-handle-color": ("<color>", fn.hex(-role("primary"))),
+    "accent-color": ("<color>", fn.hex(-role("primary"))),
+    "sequential-low-color": ("<color>", fn.hex(-seq-low(light))),
+    "sequential-high-color": ("<color>", fn.hex(-role("primary"))),
+    "diverging-low-color": ("<color>", fn.hex(-role("info"))),
+    "diverging-mid-color": ("<color>", fn.hex(-role("surface-container-highest"))),
+    "diverging-high-color": ("<color>", fn.hex(-role("error"))),
+    "tooltip-shape": ("<length>", 4px),
+    "gap-width": ("<length>", 2px),
+    "line-width": ("<length>", 2px),
+    "marker-size": ("<length>", 8px),
+    "mark-radius": ("<length>", 4px),
+    "title-size": ("<length>", fn.rem(16)),
+    "label-size": ("<length>", fn.rem(12)),
+    "title-weight": ("<number>", 500),
+  );
+  @for $n from 1 through 8 {
+    $r: map.set($r, "categorical-#{$n}", ("<color>", fn.hex(-categorical(light, $n))));
+    $r: map.set($r, "series-#{$n}", ("<color>", fn.hex(-categorical(light, $n))));
+  }
+  @for $k from 1 through 7 {
+    $r: map.set($r, "sequential-#{$k}", ("<color>", fn.hex(-seq-step(light, $k))));
+    $r: map.set($r, "diverging-#{$k}", ("<color>", fn.hex(-div-step(light, $k))));
+  }
+  @return $r;
+}
+
+$readouts: -readouts();
+
+@mixin properties {
+  @each $name, $def in $readouts {
+    @property --_chart-#{$name} {
+      syntax: "#{list.nth($def, 1)}";
+      inherits: true;
+      initial-value: #{list.nth($def, 2)};
+    }
+  }
+}
+
+// --- host ---------------------------------------------------------------------
+
+// Every readout, declared once: the token read with its default. Order
+// matters only for readability; the declarations chain by name.
+@mixin readouts {
+  @each $name, $def in $readouts {
+    --_chart-#{$name}: #{v("chart-#{$name}")};
+  }
+
+  // Which family fills the series slots. The modifiers re-point these.
+  @for $n from 1 through 8 {
+    --_chart-slot-#{$n}: var(--_chart-categorical-#{$n});
+  }
+}
+
+// The categorical defaults, tiered like the scheme itself: static light
+// values, a media-query dark pair for browsers without light-dark(), and
+// light-dark() pairs above it. Contrast levels re-point the same privates.
+@mixin -categorical-static($mode, $level) {
+  @for $n from 1 through 8 {
+    --_chart-categorical-#{$n}-default: #{fn.hex(-categorical($mode, $n, $level))};
+  }
+}
+
+@mixin -categorical-paired($level) {
+  @for $n from 1 through 8 {
+    --_chart-categorical-#{$n}-default: light-dark(
+      #{fn.hex(-categorical(light, $n, $level))},
+      #{fn.hex(-categorical(dark, $n, $level))}
+    );
+  }
+}
+
+$-dark-guard: ':where(:root:not([data-theme="light"]):not([data-bs-theme="light"]))';
+
+@mixin -categorical-tiers($selector, $level) {
+  #{$selector} {
+    @include -categorical-static(light, $level);
+  }
+  @media (prefers-color-scheme: dark) {
+    #{$-dark-guard} #{$selector} {
+      @include -categorical-static(dark, $level);
+    }
+  }
+  @supports (color: light-dark(#000, #fff)) {
+    #{$selector} {
+      @include -categorical-paired($level);
+    }
+  }
+}
+
+@mixin host {
+  @include m.own-box;
+  display: block;
+  position: relative;
+  inline-size: 100%;
+  block-size: #{v("chart-block-size")};
+  background-color: #{v("chart-background-color")};
+  color: #{v("chart-label-color")};
+  // The label typescale, then the two tokens the theme also reads.
+  @include m.typescale("body-small");
+  font-family: #{v("chart-font")};
+  font-size: #{v("chart-label-size")};
+  @include readouts;
+}
+
+// --- palette strip ----------------------------------------------------------
+
+@mixin palette {
+  @include m.own-box;
+  display: flex;
+  flex-wrap: wrap;
+  gap: #{v("chart-gap-width")};
+  inline-size: fit-content;
+  @include m.typescale("body-small");
+  font-family: #{v("chart-font")};
+  font-size: #{v("chart-label-size")};
+  color: #{v("chart-label-color")};
+  @include readouts;
+}
+
+@mixin swatch {
+  @include m.own-box;
+  display: block;
+  inline-size: #{v("chart-swatch-size")};
+  block-size: #{v("chart-swatch-size")};
+  border-radius: #{v("chart-swatch-shape")};
+  background-color: var(--_chart-series-1);
+}
+
+@mixin ramp {
+  gap: var(--#{c.$prefix}-sys-space-none);
+
+  > * {
+    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
+  }
+
+  > :first-child {
+    border-start-start-radius: #{v("chart-swatch-shape")};
+    border-end-start-radius: #{v("chart-swatch-shape")};
+  }
+
+  > :last-child {
+    border-start-end-radius: #{v("chart-swatch-shape")};
+    border-end-end-radius: #{v("chart-swatch-shape")};
+  }
+}
+
+// --- family modifiers -------------------------------------------------------
+
+@mixin ordinal {
+  // Six ordered steps from the accent toward the surface: the lightest keeps
+  // 2:1 on the surface (a magnitude ramp's faint low end would not).
+  @for $k from 1 through 6 {
+    --_chart-slot-#{$k}: color-mix(
+      in oklch,
+      var(--_chart-sequential-high-color),
+      var(--#{c.$sys-prefix}-sys-color-surface) #{(6 - $k) * 11%}
+    );
+  }
+  --_chart-slot-7: var(--_chart-slot-6);
+  --_chart-slot-8: var(--_chart-slot-6);
+}
+
+@mixin sequential {
+  @for $k from 1 through 7 {
+    --_chart-slot-#{$k}: var(--_chart-sequential-#{$k});
+  }
+  --_chart-slot-8: var(--_chart-sequential-7);
+}
+
+@mixin diverging {
+  @for $k from 1 through 7 {
+    --_chart-slot-#{$k}: var(--_chart-diverging-#{$k});
+  }
+  --_chart-slot-8: var(--_chart-diverging-7);
+}
+
+@mixin classes {
+  $p: c.$prefix;
+  $hosts: ".#{$p}-chart, .#{$p}-chart-palette";
+  $any-host: ":is(#{$hosts})";
+
+  .#{$p}-chart {
+    @include host;
+  }
+
+  .#{$p}-chart-palette {
+    @include palette;
+  }
+
+  .#{$p}-chart-palette__swatch {
+    @include swatch;
+  }
+
+  @for $n from 1 through 8 {
+    .#{$p}-chart-palette > .#{$p}-chart-palette__swatch:nth-child(#{$n}) {
+      background-color: var(--_chart-series-#{$n});
+    }
+  }
+
+  .#{$p}-chart-palette--ramp {
+    @include ramp;
+  }
+
+  .#{$p}-chart--ordinal,
+  .#{$p}-chart-palette--ordinal {
+    @include ordinal;
+  }
+
+  .#{$p}-chart--sequential,
+  .#{$p}-chart-palette--sequential {
+    @include sequential;
+  }
+
+  .#{$p}-chart--diverging,
+  .#{$p}-chart-palette--diverging {
+    @include diverging;
+  }
+
+  // Categorical defaults at the built contrast level, then the other levels:
+  // prefers-contrast: more raises to high, [data-contrast] forces one on any
+  // subtree (or on the host itself) and beats the media query by specificity.
+  @include -categorical-tiers($any-host, c.$contrast);
+
+  @if c.$contrast != "high" {
+    @media (prefers-contrast: more) {
+      @include -categorical-tiers($any-host, "high");
+    }
+  }
+
+  @each $level in $-levels {
+    @include -categorical-tiers(
+      '[data-contrast="#{$level}"] #{$any-host}, #{$any-host}[data-contrast="#{$level}"]',
+      $level
+    );
+  }
+}

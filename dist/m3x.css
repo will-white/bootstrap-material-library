@@ -446,6 +446,291 @@
     font-family: "m3x-icon-blank";
     src: url("data:font/woff2;base64,d09GMgABAAAAAAFMAAoAAAAAAuwAAAEFAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAABmAAgRQKHDYBNgIkAwgLBgAEIAV1BywbTAIALgps1zQhbophXOP4LI/ioo6GQwTlfu/eJe9zq4gia1mRVBW+WpSVAxpPMsNOex4l2KdEAzk75wHQegAMD1J90bcEDqKop8cBN28BQZRhVsYZ5FnCLaAT+vVk6d+jQTNELyrxExtUogBcfRcAzVdaFyjNDwBoABIFK7DACuIGMxMpNU7w9Y5GCVLv/YU+AhNsAAL3IEFFoGIAVBDU+bBUj26/BQLBPw/Q898J5Rs+783vHQHxnLcoEgQ9GsSPIyaeBQAgqwjYkaoACQCA6gwEYRkB0tiyIupU2MFin5YdXtv4oCnfcvlNVYKR9eBaudlEzgxS7Hml2plLbBBjksjhhAA=") format("woff2");
   }
+  @property --_chart-background-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: transparent;
+  }
+  @property --_chart-text-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #1c1b21;
+  }
+  @property --_chart-label-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #474453;
+  }
+  @property --_chart-axis-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #c7c4d6;
+  }
+  @property --_chart-grid-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #c7c4d67f;
+  }
+  @property --_chart-hover-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #1c1b2114;
+  }
+  @property --_chart-tooltip-container-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #302f36;
+  }
+  @property --_chart-tooltip-content-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #f1eff8;
+  }
+  @property --_chart-gap-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #f9f8fe;
+  }
+  @property --_chart-positive-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #167224;
+  }
+  @property --_chart-negative-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #b1100c;
+  }
+  @property --_chart-zoom-fill-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #634ca01f;
+  }
+  @property --_chart-zoom-handle-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #634ca0;
+  }
+  @property --_chart-accent-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #634ca0;
+  }
+  @property --_chart-sequential-low-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #e1def1;
+  }
+  @property --_chart-sequential-high-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #634ca0;
+  }
+  @property --_chart-diverging-low-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #086789;
+  }
+  @property --_chart-diverging-mid-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #e3e1ea;
+  }
+  @property --_chart-diverging-high-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #b1100c;
+  }
+  @property --_chart-tooltip-shape {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 4px;
+  }
+  @property --_chart-gap-width {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 2px;
+  }
+  @property --_chart-line-width {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 2px;
+  }
+  @property --_chart-marker-size {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 8px;
+  }
+  @property --_chart-mark-radius {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 4px;
+  }
+  @property --_chart-title-size {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 1rem;
+  }
+  @property --_chart-label-size {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 0.75rem;
+  }
+  @property --_chart-title-weight {
+    syntax: "<number>";
+    inherits: true;
+    initial-value: 500;
+  }
+  @property --_chart-categorical-1 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #4089e7;
+  }
+  @property --_chart-series-1 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #4089e7;
+  }
+  @property --_chart-categorical-2 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #ed5703;
+  }
+  @property --_chart-series-2 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #ed5703;
+  }
+  @property --_chart-categorical-3 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #3a9b71;
+  }
+  @property --_chart-series-3 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #3a9b71;
+  }
+  @property --_chart-categorical-4 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #eaa013;
+  }
+  @property --_chart-series-4 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #eaa013;
+  }
+  @property --_chart-categorical-5 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #d06790;
+  }
+  @property --_chart-series-5 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #d06790;
+  }
+  @property --_chart-categorical-6 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #0f7904;
+  }
+  @property --_chart-series-6 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #0f7904;
+  }
+  @property --_chart-categorical-7 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #544f9b;
+  }
+  @property --_chart-series-7 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #544f9b;
+  }
+  @property --_chart-categorical-8 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #c04c48;
+  }
+  @property --_chart-series-8 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #c04c48;
+  }
+  @property --_chart-sequential-1 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #e1def1;
+  }
+  @property --_chart-diverging-1 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #086789;
+  }
+  @property --_chart-sequential-2 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #cac5e4;
+  }
+  @property --_chart-diverging-2 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #6a8bb0;
+  }
+  @property --_chart-sequential-3 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #b4acd7;
+  }
+  @property --_chart-diverging-3 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #abb3ce;
+  }
+  @property --_chart-sequential-4 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #9f94ca;
+  }
+  @property --_chart-diverging-4 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #e3e1ea;
+  }
+  @property --_chart-sequential-5 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #8a7cbc;
+  }
+  @property --_chart-diverging-5 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #cca5cd;
+  }
+  @property --_chart-sequential-6 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #7664ae;
+  }
+  @property --_chart-diverging-6 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #c56389;
+  }
+  @property --_chart-sequential-7 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #634ca0;
+  }
+  @property --_chart-diverging-7 {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #b1100c;
+  }
   :root {
     color-scheme: light dark;
   }
@@ -16145,9 +16430,564 @@
         block-size: auto;
       }
     }
+    .m3-chart {
+      display: block;
+      position: relative;
+      inline-size: 100%;
+      block-size: var(--m3-chart-block-size, 20rem);
+      background-color: var(--m3-chart-background-color, transparent);
+      color: var(--m3-chart-label-color, var(--md-sys-color-on-surface-variant));
+      font-family: var(--md-sys-typescale-body-small-font);
+      font-size: var(--md-sys-typescale-body-small-size);
+      line-height: var(--md-sys-typescale-body-small-line-height);
+      font-weight: var(--md-sys-typescale-body-small-weight);
+      letter-spacing: var(--md-sys-typescale-body-small-tracking);
+      font-family: var(--m3-chart-font, var(--md-sys-typescale-body-small-font));
+      font-size: var(--m3-chart-label-size, var(--md-sys-typescale-body-small-size));
+      --_chart-background-color: var(--m3-chart-background-color, transparent);
+      --_chart-text-color: var(--m3-chart-text-color, var(--md-sys-color-on-surface));
+      --_chart-label-color: var(--m3-chart-label-color, var(--md-sys-color-on-surface-variant));
+      --_chart-axis-color: var(--m3-chart-axis-color, var(--md-sys-color-outline-variant));
+      --_chart-grid-color: var(--m3-chart-grid-color, color-mix(in srgb, var(--md-sys-color-outline-variant) 50%, transparent));
+      --_chart-hover-color: var(--m3-chart-hover-color, color-mix(in srgb, var(--md-sys-color-on-surface) var(--md-sys-state-hover-state-layer-opacity), transparent));
+      --_chart-tooltip-container-color: var(--m3-chart-tooltip-container-color, var(--md-sys-color-inverse-surface));
+      --_chart-tooltip-content-color: var(--m3-chart-tooltip-content-color, var(--md-sys-color-inverse-on-surface));
+      --_chart-gap-color: var(--m3-chart-gap-color, var(--m3-sys-container-color, var(--md-sys-color-surface)));
+      --_chart-positive-color: var(--m3-chart-positive-color, var(--md-extended-color-success));
+      --_chart-negative-color: var(--m3-chart-negative-color, var(--md-sys-color-error));
+      --_chart-zoom-fill-color: var(--m3-chart-zoom-fill-color, color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent));
+      --_chart-zoom-handle-color: var(--m3-chart-zoom-handle-color, var(--md-sys-color-primary));
+      --_chart-accent-color: var(--m3-chart-accent-color, var(--md-sys-color-primary));
+      --_chart-sequential-low-color: var(--m3-chart-sequential-low-color, color-mix(in oklch, var(--md-sys-color-surface) 85%, var(--_chart-accent-color)));
+      --_chart-sequential-high-color: var(--m3-chart-sequential-high-color, var(--_chart-accent-color));
+      --_chart-diverging-low-color: var(--m3-chart-diverging-low-color, var(--md-extended-color-info));
+      --_chart-diverging-mid-color: var(--m3-chart-diverging-mid-color, var(--md-sys-color-surface-container-highest));
+      --_chart-diverging-high-color: var(--m3-chart-diverging-high-color, var(--md-sys-color-error));
+      --_chart-tooltip-shape: var(--m3-chart-tooltip-shape, var(--md-sys-shape-corner-extra-small));
+      --_chart-gap-width: var(--m3-chart-gap-width, 2px);
+      --_chart-line-width: var(--m3-chart-line-width, 2px);
+      --_chart-marker-size: var(--m3-chart-marker-size, 8px);
+      --_chart-mark-radius: var(--m3-chart-mark-radius, 4px);
+      --_chart-title-size: var(--m3-chart-title-size, var(--md-sys-typescale-title-medium-size));
+      --_chart-label-size: var(--m3-chart-label-size, var(--md-sys-typescale-body-small-size));
+      --_chart-title-weight: var(--m3-chart-title-weight, var(--md-sys-typescale-title-medium-weight));
+      --_chart-categorical-1: var(--m3-chart-categorical-1, var(--_chart-categorical-1-default));
+      --_chart-series-1: var(--m3-chart-series-1, var(--_chart-slot-1));
+      --_chart-categorical-2: var(--m3-chart-categorical-2, var(--_chart-categorical-2-default));
+      --_chart-series-2: var(--m3-chart-series-2, var(--_chart-slot-2));
+      --_chart-categorical-3: var(--m3-chart-categorical-3, var(--_chart-categorical-3-default));
+      --_chart-series-3: var(--m3-chart-series-3, var(--_chart-slot-3));
+      --_chart-categorical-4: var(--m3-chart-categorical-4, var(--_chart-categorical-4-default));
+      --_chart-series-4: var(--m3-chart-series-4, var(--_chart-slot-4));
+      --_chart-categorical-5: var(--m3-chart-categorical-5, var(--_chart-categorical-5-default));
+      --_chart-series-5: var(--m3-chart-series-5, var(--_chart-slot-5));
+      --_chart-categorical-6: var(--m3-chart-categorical-6, var(--_chart-categorical-6-default));
+      --_chart-series-6: var(--m3-chart-series-6, var(--_chart-slot-6));
+      --_chart-categorical-7: var(--m3-chart-categorical-7, var(--_chart-categorical-7-default));
+      --_chart-series-7: var(--m3-chart-series-7, var(--_chart-slot-7));
+      --_chart-categorical-8: var(--m3-chart-categorical-8, var(--_chart-categorical-8-default));
+      --_chart-series-8: var(--m3-chart-series-8, var(--_chart-slot-8));
+      --_chart-sequential-1: var(--m3-chart-sequential-1, color-mix(in oklch, var(--_chart-sequential-low-color), var(--_chart-sequential-high-color) 0%));
+      --_chart-diverging-1: var(--m3-chart-diverging-1, color-mix(in oklch, var(--_chart-diverging-low-color), var(--_chart-diverging-mid-color) 0%));
+      --_chart-sequential-2: var(--m3-chart-sequential-2, color-mix(in oklch, var(--_chart-sequential-low-color), var(--_chart-sequential-high-color) 16.667%));
+      --_chart-diverging-2: var(--m3-chart-diverging-2, color-mix(in oklch, var(--_chart-diverging-low-color), var(--_chart-diverging-mid-color) 33.333%));
+      --_chart-sequential-3: var(--m3-chart-sequential-3, color-mix(in oklch, var(--_chart-sequential-low-color), var(--_chart-sequential-high-color) 33.333%));
+      --_chart-diverging-3: var(--m3-chart-diverging-3, color-mix(in oklch, var(--_chart-diverging-low-color), var(--_chart-diverging-mid-color) 66.667%));
+      --_chart-sequential-4: var(--m3-chart-sequential-4, color-mix(in oklch, var(--_chart-sequential-low-color), var(--_chart-sequential-high-color) 50%));
+      --_chart-diverging-4: var(--m3-chart-diverging-4, color-mix(in oklch, var(--_chart-diverging-low-color), var(--_chart-diverging-mid-color) 100%));
+      --_chart-sequential-5: var(--m3-chart-sequential-5, color-mix(in oklch, var(--_chart-sequential-low-color), var(--_chart-sequential-high-color) 66.667%));
+      --_chart-diverging-5: var(--m3-chart-diverging-5, color-mix(in oklch, var(--_chart-diverging-mid-color), var(--_chart-diverging-high-color) 33.333%));
+      --_chart-sequential-6: var(--m3-chart-sequential-6, color-mix(in oklch, var(--_chart-sequential-low-color), var(--_chart-sequential-high-color) 83.333%));
+      --_chart-diverging-6: var(--m3-chart-diverging-6, color-mix(in oklch, var(--_chart-diverging-mid-color), var(--_chart-diverging-high-color) 66.667%));
+      --_chart-sequential-7: var(--m3-chart-sequential-7, color-mix(in oklch, var(--_chart-sequential-low-color), var(--_chart-sequential-high-color) 100%));
+      --_chart-diverging-7: var(--m3-chart-diverging-7, color-mix(in oklch, var(--_chart-diverging-mid-color), var(--_chart-diverging-high-color) 100%));
+      --_chart-slot-1: var(--_chart-categorical-1);
+      --_chart-slot-2: var(--_chart-categorical-2);
+      --_chart-slot-3: var(--_chart-categorical-3);
+      --_chart-slot-4: var(--_chart-categorical-4);
+      --_chart-slot-5: var(--_chart-categorical-5);
+      --_chart-slot-6: var(--_chart-categorical-6);
+      --_chart-slot-7: var(--_chart-categorical-7);
+      --_chart-slot-8: var(--_chart-categorical-8);
+    }
+    .m3-chart-palette {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--m3-chart-gap-width, 2px);
+      inline-size: fit-content;
+      font-family: var(--md-sys-typescale-body-small-font);
+      font-size: var(--md-sys-typescale-body-small-size);
+      line-height: var(--md-sys-typescale-body-small-line-height);
+      font-weight: var(--md-sys-typescale-body-small-weight);
+      letter-spacing: var(--md-sys-typescale-body-small-tracking);
+      font-family: var(--m3-chart-font, var(--md-sys-typescale-body-small-font));
+      font-size: var(--m3-chart-label-size, var(--md-sys-typescale-body-small-size));
+      color: var(--m3-chart-label-color, var(--md-sys-color-on-surface-variant));
+      --_chart-background-color: var(--m3-chart-background-color, transparent);
+      --_chart-text-color: var(--m3-chart-text-color, var(--md-sys-color-on-surface));
+      --_chart-label-color: var(--m3-chart-label-color, var(--md-sys-color-on-surface-variant));
+      --_chart-axis-color: var(--m3-chart-axis-color, var(--md-sys-color-outline-variant));
+      --_chart-grid-color: var(--m3-chart-grid-color, color-mix(in srgb, var(--md-sys-color-outline-variant) 50%, transparent));
+      --_chart-hover-color: var(--m3-chart-hover-color, color-mix(in srgb, var(--md-sys-color-on-surface) var(--md-sys-state-hover-state-layer-opacity), transparent));
+      --_chart-tooltip-container-color: var(--m3-chart-tooltip-container-color, var(--md-sys-color-inverse-surface));
+      --_chart-tooltip-content-color: var(--m3-chart-tooltip-content-color, var(--md-sys-color-inverse-on-surface));
+      --_chart-gap-color: var(--m3-chart-gap-color, var(--m3-sys-container-color, var(--md-sys-color-surface)));
+      --_chart-positive-color: var(--m3-chart-positive-color, var(--md-extended-color-success));
+      --_chart-negative-color: var(--m3-chart-negative-color, var(--md-sys-color-error));
+      --_chart-zoom-fill-color: var(--m3-chart-zoom-fill-color, color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent));
+      --_chart-zoom-handle-color: var(--m3-chart-zoom-handle-color, var(--md-sys-color-primary));
+      --_chart-accent-color: var(--m3-chart-accent-color, var(--md-sys-color-primary));
+      --_chart-sequential-low-color: var(--m3-chart-sequential-low-color, color-mix(in oklch, var(--md-sys-color-surface) 85%, var(--_chart-accent-color)));
+      --_chart-sequential-high-color: var(--m3-chart-sequential-high-color, var(--_chart-accent-color));
+      --_chart-diverging-low-color: var(--m3-chart-diverging-low-color, var(--md-extended-color-info));
+      --_chart-diverging-mid-color: var(--m3-chart-diverging-mid-color, var(--md-sys-color-surface-container-highest));
+      --_chart-diverging-high-color: var(--m3-chart-diverging-high-color, var(--md-sys-color-error));
+      --_chart-tooltip-shape: var(--m3-chart-tooltip-shape, var(--md-sys-shape-corner-extra-small));
+      --_chart-gap-width: var(--m3-chart-gap-width, 2px);
+      --_chart-line-width: var(--m3-chart-line-width, 2px);
+      --_chart-marker-size: var(--m3-chart-marker-size, 8px);
+      --_chart-mark-radius: var(--m3-chart-mark-radius, 4px);
+      --_chart-title-size: var(--m3-chart-title-size, var(--md-sys-typescale-title-medium-size));
+      --_chart-label-size: var(--m3-chart-label-size, var(--md-sys-typescale-body-small-size));
+      --_chart-title-weight: var(--m3-chart-title-weight, var(--md-sys-typescale-title-medium-weight));
+      --_chart-categorical-1: var(--m3-chart-categorical-1, var(--_chart-categorical-1-default));
+      --_chart-series-1: var(--m3-chart-series-1, var(--_chart-slot-1));
+      --_chart-categorical-2: var(--m3-chart-categorical-2, var(--_chart-categorical-2-default));
+      --_chart-series-2: var(--m3-chart-series-2, var(--_chart-slot-2));
+      --_chart-categorical-3: var(--m3-chart-categorical-3, var(--_chart-categorical-3-default));
+      --_chart-series-3: var(--m3-chart-series-3, var(--_chart-slot-3));
+      --_chart-categorical-4: var(--m3-chart-categorical-4, var(--_chart-categorical-4-default));
+      --_chart-series-4: var(--m3-chart-series-4, var(--_chart-slot-4));
+      --_chart-categorical-5: var(--m3-chart-categorical-5, var(--_chart-categorical-5-default));
+      --_chart-series-5: var(--m3-chart-series-5, var(--_chart-slot-5));
+      --_chart-categorical-6: var(--m3-chart-categorical-6, var(--_chart-categorical-6-default));
+      --_chart-series-6: var(--m3-chart-series-6, var(--_chart-slot-6));
+      --_chart-categorical-7: var(--m3-chart-categorical-7, var(--_chart-categorical-7-default));
+      --_chart-series-7: var(--m3-chart-series-7, var(--_chart-slot-7));
+      --_chart-categorical-8: var(--m3-chart-categorical-8, var(--_chart-categorical-8-default));
+      --_chart-series-8: var(--m3-chart-series-8, var(--_chart-slot-8));
+      --_chart-sequential-1: var(--m3-chart-sequential-1, color-mix(in oklch, var(--_chart-sequential-low-color), var(--_chart-sequential-high-color) 0%));
+      --_chart-diverging-1: var(--m3-chart-diverging-1, color-mix(in oklch, var(--_chart-diverging-low-color), var(--_chart-diverging-mid-color) 0%));
+      --_chart-sequential-2: var(--m3-chart-sequential-2, color-mix(in oklch, var(--_chart-sequential-low-color), var(--_chart-sequential-high-color) 16.667%));
+      --_chart-diverging-2: var(--m3-chart-diverging-2, color-mix(in oklch, var(--_chart-diverging-low-color), var(--_chart-diverging-mid-color) 33.333%));
+      --_chart-sequential-3: var(--m3-chart-sequential-3, color-mix(in oklch, var(--_chart-sequential-low-color), var(--_chart-sequential-high-color) 33.333%));
+      --_chart-diverging-3: var(--m3-chart-diverging-3, color-mix(in oklch, var(--_chart-diverging-low-color), var(--_chart-diverging-mid-color) 66.667%));
+      --_chart-sequential-4: var(--m3-chart-sequential-4, color-mix(in oklch, var(--_chart-sequential-low-color), var(--_chart-sequential-high-color) 50%));
+      --_chart-diverging-4: var(--m3-chart-diverging-4, color-mix(in oklch, var(--_chart-diverging-low-color), var(--_chart-diverging-mid-color) 100%));
+      --_chart-sequential-5: var(--m3-chart-sequential-5, color-mix(in oklch, var(--_chart-sequential-low-color), var(--_chart-sequential-high-color) 66.667%));
+      --_chart-diverging-5: var(--m3-chart-diverging-5, color-mix(in oklch, var(--_chart-diverging-mid-color), var(--_chart-diverging-high-color) 33.333%));
+      --_chart-sequential-6: var(--m3-chart-sequential-6, color-mix(in oklch, var(--_chart-sequential-low-color), var(--_chart-sequential-high-color) 83.333%));
+      --_chart-diverging-6: var(--m3-chart-diverging-6, color-mix(in oklch, var(--_chart-diverging-mid-color), var(--_chart-diverging-high-color) 66.667%));
+      --_chart-sequential-7: var(--m3-chart-sequential-7, color-mix(in oklch, var(--_chart-sequential-low-color), var(--_chart-sequential-high-color) 100%));
+      --_chart-diverging-7: var(--m3-chart-diverging-7, color-mix(in oklch, var(--_chart-diverging-mid-color), var(--_chart-diverging-high-color) 100%));
+      --_chart-slot-1: var(--_chart-categorical-1);
+      --_chart-slot-2: var(--_chart-categorical-2);
+      --_chart-slot-3: var(--_chart-categorical-3);
+      --_chart-slot-4: var(--_chart-categorical-4);
+      --_chart-slot-5: var(--_chart-categorical-5);
+      --_chart-slot-6: var(--_chart-categorical-6);
+      --_chart-slot-7: var(--_chart-categorical-7);
+      --_chart-slot-8: var(--_chart-categorical-8);
+    }
+    .m3-chart-palette__swatch {
+      display: block;
+      inline-size: var(--m3-chart-swatch-size, 1.5rem);
+      block-size: var(--m3-chart-swatch-size, 1.5rem);
+      border-radius: var(--m3-chart-swatch-shape, var(--md-sys-shape-corner-extra-small));
+      background-color: var(--_chart-series-1);
+    }
+    .m3-chart-palette > .m3-chart-palette__swatch:nth-child(1) {
+      background-color: var(--_chart-series-1);
+    }
+    .m3-chart-palette > .m3-chart-palette__swatch:nth-child(2) {
+      background-color: var(--_chart-series-2);
+    }
+    .m3-chart-palette > .m3-chart-palette__swatch:nth-child(3) {
+      background-color: var(--_chart-series-3);
+    }
+    .m3-chart-palette > .m3-chart-palette__swatch:nth-child(4) {
+      background-color: var(--_chart-series-4);
+    }
+    .m3-chart-palette > .m3-chart-palette__swatch:nth-child(5) {
+      background-color: var(--_chart-series-5);
+    }
+    .m3-chart-palette > .m3-chart-palette__swatch:nth-child(6) {
+      background-color: var(--_chart-series-6);
+    }
+    .m3-chart-palette > .m3-chart-palette__swatch:nth-child(7) {
+      background-color: var(--_chart-series-7);
+    }
+    .m3-chart-palette > .m3-chart-palette__swatch:nth-child(8) {
+      background-color: var(--_chart-series-8);
+    }
+    .m3-chart-palette--ramp {
+      gap: var(--m3-sys-space-none);
+    }
+    .m3-chart-palette--ramp > * {
+      border-radius: var(--md-sys-shape-corner-none);
+    }
+    .m3-chart-palette--ramp > :first-child {
+      border-start-start-radius: var(--m3-chart-swatch-shape, var(--md-sys-shape-corner-extra-small));
+      border-end-start-radius: var(--m3-chart-swatch-shape, var(--md-sys-shape-corner-extra-small));
+    }
+    .m3-chart-palette--ramp > :last-child {
+      border-start-end-radius: var(--m3-chart-swatch-shape, var(--md-sys-shape-corner-extra-small));
+      border-end-end-radius: var(--m3-chart-swatch-shape, var(--md-sys-shape-corner-extra-small));
+    }
+    .m3-chart--ordinal,
+    .m3-chart-palette--ordinal {
+      --_chart-slot-1: color-mix(
+        in oklch,
+        var(--_chart-sequential-high-color),
+        var(--md-sys-color-surface) 55%
+      );
+      --_chart-slot-2: color-mix(
+        in oklch,
+        var(--_chart-sequential-high-color),
+        var(--md-sys-color-surface) 44%
+      );
+      --_chart-slot-3: color-mix(
+        in oklch,
+        var(--_chart-sequential-high-color),
+        var(--md-sys-color-surface) 33%
+      );
+      --_chart-slot-4: color-mix(
+        in oklch,
+        var(--_chart-sequential-high-color),
+        var(--md-sys-color-surface) 22%
+      );
+      --_chart-slot-5: color-mix(
+        in oklch,
+        var(--_chart-sequential-high-color),
+        var(--md-sys-color-surface) 11%
+      );
+      --_chart-slot-6: color-mix(
+        in oklch,
+        var(--_chart-sequential-high-color),
+        var(--md-sys-color-surface) 0%
+      );
+      --_chart-slot-7: var(--_chart-slot-6);
+      --_chart-slot-8: var(--_chart-slot-6);
+    }
+    .m3-chart--sequential,
+    .m3-chart-palette--sequential {
+      --_chart-slot-1: var(--_chart-sequential-1);
+      --_chart-slot-2: var(--_chart-sequential-2);
+      --_chart-slot-3: var(--_chart-sequential-3);
+      --_chart-slot-4: var(--_chart-sequential-4);
+      --_chart-slot-5: var(--_chart-sequential-5);
+      --_chart-slot-6: var(--_chart-sequential-6);
+      --_chart-slot-7: var(--_chart-sequential-7);
+      --_chart-slot-8: var(--_chart-sequential-7);
+    }
+    .m3-chart--diverging,
+    .m3-chart-palette--diverging {
+      --_chart-slot-1: var(--_chart-diverging-1);
+      --_chart-slot-2: var(--_chart-diverging-2);
+      --_chart-slot-3: var(--_chart-diverging-3);
+      --_chart-slot-4: var(--_chart-diverging-4);
+      --_chart-slot-5: var(--_chart-diverging-5);
+      --_chart-slot-6: var(--_chart-diverging-6);
+      --_chart-slot-7: var(--_chart-diverging-7);
+      --_chart-slot-8: var(--_chart-diverging-7);
+    }
+    :is(.m3-chart, .m3-chart-palette) {
+      --_chart-categorical-1-default: #4089e7;
+      --_chart-categorical-2-default: #ed5703;
+      --_chart-categorical-3-default: #3a9b71;
+      --_chart-categorical-4-default: #eaa013;
+      --_chart-categorical-5-default: #d06790;
+      --_chart-categorical-6-default: #0f7904;
+      --_chart-categorical-7-default: #544f9b;
+      --_chart-categorical-8-default: #c04c48;
+    }
+    @media (prefers-color-scheme: dark) {
+      :where(:root:not([data-theme=light]):not([data-bs-theme=light])) :is(.m3-chart, .m3-chart-palette) {
+        --_chart-categorical-1-default: #3c6fb3;
+        --_chart-categorical-2-default: #c34601;
+        --_chart-categorical-3-default: #40a87c;
+        --_chart-categorical-4-default: #bf8101;
+        --_chart-categorical-5-default: #e74c91;
+        --_chart-categorical-6-default: #338d2b;
+        --_chart-categorical-7-default: #8681e1;
+        --_chart-categorical-8-default: #d1736d;
+      }
+    }
+    @supports (color: light-dark(#000, #fff)) {
+      :is(.m3-chart, .m3-chart-palette) {
+        --_chart-categorical-1-default: light-dark(
+          #4089e7,
+          #3c6fb3
+        );
+        --_chart-categorical-2-default: light-dark(
+          #ed5703,
+          #c34601
+        );
+        --_chart-categorical-3-default: light-dark(
+          #3a9b71,
+          #40a87c
+        );
+        --_chart-categorical-4-default: light-dark(
+          #eaa013,
+          #bf8101
+        );
+        --_chart-categorical-5-default: light-dark(
+          #d06790,
+          #e74c91
+        );
+        --_chart-categorical-6-default: light-dark(
+          #0f7904,
+          #338d2b
+        );
+        --_chart-categorical-7-default: light-dark(
+          #544f9b,
+          #8681e1
+        );
+        --_chart-categorical-8-default: light-dark(
+          #c04c48,
+          #d1736d
+        );
+      }
+    }
+    @media (prefers-contrast: more) {
+      :is(.m3-chart, .m3-chart-palette) {
+        --_chart-categorical-1-default: #2570cc;
+        --_chart-categorical-2-default: #c74801;
+        --_chart-categorical-3-default: #18825a;
+        --_chart-categorical-4-default: #ca890c;
+        --_chart-categorical-5-default: #b54f78;
+        --_chart-categorical-6-default: #0b5e04;
+        --_chart-categorical-7-default: #3f3882;
+        --_chart-categorical-8-default: #a53332;
+      }
+    }
+    @media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+      :where(:root:not([data-theme=light]):not([data-bs-theme=light])) :is(.m3-chart, .m3-chart-palette) {
+        --_chart-categorical-1-default: #5388cd;
+        --_chart-categorical-2-default: #e25c22;
+        --_chart-categorical-3-default: #5cc294;
+        --_chart-categorical-4-default: #df9706;
+        --_chart-categorical-5-default: #fe6ea9;
+        --_chart-categorical-6-default: #4da745;
+        --_chart-categorical-7-default: #9e9afc;
+        --_chart-categorical-8-default: #ed8c84;
+      }
+    }
+    @media (prefers-contrast: more) {
+      @supports (color: light-dark(#000, #fff)) {
+        :is(.m3-chart, .m3-chart-palette) {
+          --_chart-categorical-1-default: light-dark(
+            #2570cc,
+            #5388cd
+          );
+          --_chart-categorical-2-default: light-dark(
+            #c74801,
+            #e25c22
+          );
+          --_chart-categorical-3-default: light-dark(
+            #18825a,
+            #5cc294
+          );
+          --_chart-categorical-4-default: light-dark(
+            #ca890c,
+            #df9706
+          );
+          --_chart-categorical-5-default: light-dark(
+            #b54f78,
+            #fe6ea9
+          );
+          --_chart-categorical-6-default: light-dark(
+            #0b5e04,
+            #4da745
+          );
+          --_chart-categorical-7-default: light-dark(
+            #3f3882,
+            #9e9afc
+          );
+          --_chart-categorical-8-default: light-dark(
+            #a53332,
+            #ed8c84
+          );
+        }
+      }
+    }
+    [data-contrast=standard] :is(.m3-chart, .m3-chart-palette), :is(.m3-chart, .m3-chart-palette)[data-contrast=standard] {
+      --_chart-categorical-1-default: #4089e7;
+      --_chart-categorical-2-default: #ed5703;
+      --_chart-categorical-3-default: #3a9b71;
+      --_chart-categorical-4-default: #eaa013;
+      --_chart-categorical-5-default: #d06790;
+      --_chart-categorical-6-default: #0f7904;
+      --_chart-categorical-7-default: #544f9b;
+      --_chart-categorical-8-default: #c04c48;
+    }
+    @media (prefers-color-scheme: dark) {
+      :where(:root:not([data-theme=light]):not([data-bs-theme=light])) [data-contrast=standard] :is(.m3-chart, .m3-chart-palette), :is(.m3-chart, .m3-chart-palette)[data-contrast=standard] {
+        --_chart-categorical-1-default: #3c6fb3;
+        --_chart-categorical-2-default: #c34601;
+        --_chart-categorical-3-default: #40a87c;
+        --_chart-categorical-4-default: #bf8101;
+        --_chart-categorical-5-default: #e74c91;
+        --_chart-categorical-6-default: #338d2b;
+        --_chart-categorical-7-default: #8681e1;
+        --_chart-categorical-8-default: #d1736d;
+      }
+    }
+    @supports (color: light-dark(#000, #fff)) {
+      [data-contrast=standard] :is(.m3-chart, .m3-chart-palette), :is(.m3-chart, .m3-chart-palette)[data-contrast=standard] {
+        --_chart-categorical-1-default: light-dark(
+          #4089e7,
+          #3c6fb3
+        );
+        --_chart-categorical-2-default: light-dark(
+          #ed5703,
+          #c34601
+        );
+        --_chart-categorical-3-default: light-dark(
+          #3a9b71,
+          #40a87c
+        );
+        --_chart-categorical-4-default: light-dark(
+          #eaa013,
+          #bf8101
+        );
+        --_chart-categorical-5-default: light-dark(
+          #d06790,
+          #e74c91
+        );
+        --_chart-categorical-6-default: light-dark(
+          #0f7904,
+          #338d2b
+        );
+        --_chart-categorical-7-default: light-dark(
+          #544f9b,
+          #8681e1
+        );
+        --_chart-categorical-8-default: light-dark(
+          #c04c48,
+          #d1736d
+        );
+      }
+    }
+    [data-contrast=medium] :is(.m3-chart, .m3-chart-palette), :is(.m3-chart, .m3-chart-palette)[data-contrast=medium] {
+      --_chart-categorical-1-default: #337cda;
+      --_chart-categorical-2-default: #da4f02;
+      --_chart-categorical-3-default: #2b8e66;
+      --_chart-categorical-4-default: #da9510;
+      --_chart-categorical-5-default: #c35b84;
+      --_chart-categorical-6-default: #0a6b01;
+      --_chart-categorical-7-default: #4a438e;
+      --_chart-categorical-8-default: #b2403d;
+    }
+    @media (prefers-color-scheme: dark) {
+      :where(:root:not([data-theme=light]):not([data-bs-theme=light])) [data-contrast=medium] :is(.m3-chart, .m3-chart-palette), :is(.m3-chart, .m3-chart-palette)[data-contrast=medium] {
+        --_chart-categorical-1-default: #487bc0;
+        --_chart-categorical-2-default: #d44f0c;
+        --_chart-categorical-3-default: #4eb588;
+        --_chart-categorical-4-default: #cf8c03;
+        --_chart-categorical-5-default: #f65a9d;
+        --_chart-categorical-6-default: #409a38;
+        --_chart-categorical-7-default: #928eee;
+        --_chart-categorical-8-default: #df7f78;
+      }
+    }
+    @supports (color: light-dark(#000, #fff)) {
+      [data-contrast=medium] :is(.m3-chart, .m3-chart-palette), :is(.m3-chart, .m3-chart-palette)[data-contrast=medium] {
+        --_chart-categorical-1-default: light-dark(
+          #337cda,
+          #487bc0
+        );
+        --_chart-categorical-2-default: light-dark(
+          #da4f02,
+          #d44f0c
+        );
+        --_chart-categorical-3-default: light-dark(
+          #2b8e66,
+          #4eb588
+        );
+        --_chart-categorical-4-default: light-dark(
+          #da9510,
+          #cf8c03
+        );
+        --_chart-categorical-5-default: light-dark(
+          #c35b84,
+          #f65a9d
+        );
+        --_chart-categorical-6-default: light-dark(
+          #0a6b01,
+          #409a38
+        );
+        --_chart-categorical-7-default: light-dark(
+          #4a438e,
+          #928eee
+        );
+        --_chart-categorical-8-default: light-dark(
+          #b2403d,
+          #df7f78
+        );
+      }
+    }
+    [data-contrast=high] :is(.m3-chart, .m3-chart-palette), :is(.m3-chart, .m3-chart-palette)[data-contrast=high] {
+      --_chart-categorical-1-default: #2570cc;
+      --_chart-categorical-2-default: #c74801;
+      --_chart-categorical-3-default: #18825a;
+      --_chart-categorical-4-default: #ca890c;
+      --_chart-categorical-5-default: #b54f78;
+      --_chart-categorical-6-default: #0b5e04;
+      --_chart-categorical-7-default: #3f3882;
+      --_chart-categorical-8-default: #a53332;
+    }
+    @media (prefers-color-scheme: dark) {
+      :where(:root:not([data-theme=light]):not([data-bs-theme=light])) [data-contrast=high] :is(.m3-chart, .m3-chart-palette), :is(.m3-chart, .m3-chart-palette)[data-contrast=high] {
+        --_chart-categorical-1-default: #5388cd;
+        --_chart-categorical-2-default: #e25c22;
+        --_chart-categorical-3-default: #5cc294;
+        --_chart-categorical-4-default: #df9706;
+        --_chart-categorical-5-default: #fe6ea9;
+        --_chart-categorical-6-default: #4da745;
+        --_chart-categorical-7-default: #9e9afc;
+        --_chart-categorical-8-default: #ed8c84;
+      }
+    }
+    @supports (color: light-dark(#000, #fff)) {
+      [data-contrast=high] :is(.m3-chart, .m3-chart-palette), :is(.m3-chart, .m3-chart-palette)[data-contrast=high] {
+        --_chart-categorical-1-default: light-dark(
+          #2570cc,
+          #5388cd
+        );
+        --_chart-categorical-2-default: light-dark(
+          #c74801,
+          #e25c22
+        );
+        --_chart-categorical-3-default: light-dark(
+          #18825a,
+          #5cc294
+        );
+        --_chart-categorical-4-default: light-dark(
+          #ca890c,
+          #df9706
+        );
+        --_chart-categorical-5-default: light-dark(
+          #b54f78,
+          #fe6ea9
+        );
+        --_chart-categorical-6-default: light-dark(
+          #0b5e04,
+          #4da745
+        );
+        --_chart-categorical-7-default: light-dark(
+          #3f3882,
+          #9e9afc
+        );
+        --_chart-categorical-8-default: light-dark(
+          #a53332,
+          #ed8c84
+        );
+      }
+    }
   }
   @layer own {
-    .m3-btn, .m3-btn-group, .m3-icon-btn, .m3-fab, .m3-fab--extended .m3-fab__label, .m3-segmented, .m3-segmented__segment, .m3-segmented__segment .m3-segmented__input, .m3-segmented__segment .m3-segmented__label, .m3-badge, .m3-progress, .m3-progress__bar, .m3-progress-circle, .m3-spinner, .m3-snackbar, .m3-snackbar__text, .m3-snackbar__action, .m3-snackbar__close, .m3-tooltip, .m3-tooltip__title, .m3-card, .m3-carousel, .m3-carousel__item, .m3-carousel__indicators, .m3-carousel__indicator, .m3-dialog, .m3-dialog__title, .m3-dialog__content, .m3-dialog__actions, .m3-divider, .m3-list, .m3-list__subheader, .m3-list-item, .m3-list-item__body, .m3-list-item__overline, .m3-list-item__headline, .m3-list-item__supporting, .m3-list-item__leading, .m3-list-item__trailing, .m3-sheet--bottom, .m3-sheet--side, .m3-sheet--side-standard, .m3-sheet__handle, .m3-nav-bar, .m3-nav-bar__item, .m3-nav-bar__icon, .m3-drawer, .m3-drawer--modal, .m3-drawer__item, .m3-drawer__headline, .m3-drawer__badge, .m3-rail, .m3-rail__item, .m3-rail__icon, .m3-tabs, .m3-tabs__tab, .m3-tabs__input, .m3-top-app-bar, .m3-top-app-bar__title, .m3-bottom-app-bar, .m3-bottom-app-bar__trailing, input[type=checkbox].m3-checkbox, input[type=radio].m3-radio, input[type=checkbox].m3-switch, .m3-chip, .m3-chip--filter .m3-chip__input, .m3-chip--filter .m3-chip__label, .m3-chip--input .m3-chip__input, .m3-chip--input .m3-chip__label, .m3-chip__remove, .m3-menu, .m3-menu__item, .m3-menu__header, input[type=range].m3-slider, input[type=date].m3-datetime, input[type=time].m3-datetime, input[type=datetime-local].m3-datetime, input[type=month].m3-datetime, input[type=week].m3-datetime, .m3-field, .m3-field__input, .m3-field__label, .m3-field__supporting, .m3-search, .m3-search__input, .m3-search__panel, select.m3-select, .m3-toolbar, .m3-toolbar__group, .m3-toolbar__dropdown, select.m3-toolbar__select, .m3-toolbar__stepper, .m3-toolbar__stepper-input, .m3-toolbar__spacer, .m3-toolbar__choice, .m3-toolbar__option, .m3-toolbar__color, .m3-button-group, .m3-btn-check, .m3-split-button, .m3-split-button__action, .m3-split-button__toggle, .m3-split-button__option, .m3-fab-menu, .m3-fab-menu__items, .m3-fab-menu__item, .m3-fab-menu__label, .m3-loading-indicator, .m3-date-picker, .m3-date-picker__header, .m3-date-picker__supporting, .m3-date-picker__headline, .m3-date-picker__nav, .m3-date-picker__menu, .m3-date-picker__arrows, .m3-date-picker__grid, .m3-date-picker__weekday, .m3-date-picker__day, .m3-date-picker__actions, .m3-time-picker, .m3-time-picker__label, .m3-time-picker__fields, .m3-time-picker__field, .m3-time-picker__input, .m3-time-picker__hint, .m3-time-picker__separator, .m3-time-picker__period, .m3-time-picker__period-option, .m3-time-picker__period-option .m3-time-picker__period-input, .m3-time-picker__period-option .m3-time-picker__period-label, .m3-time-picker__actions, .m3-color-palette, .m3-color-palette__label, .m3-color-palette__grid, .m3-color-palette__swatch, .m3-color-palette__swatch > input, .m3-color-palette__custom, .m3-color-palette__custom > input, .m3-color-palette__theme, .m3-color-palette__standard, .m3-pane-layout, .m3-pane, .m3-adaptive-layout, .m3-adaptive-nav, .m3-adaptive-nav .m3-adaptive-nav__item, .m3-adaptive-nav .m3-adaptive-nav__icon, .m3-icon, details.m3-disclosure {
+    .m3-btn, .m3-btn-group, .m3-icon-btn, .m3-fab, .m3-fab--extended .m3-fab__label, .m3-segmented, .m3-segmented__segment, .m3-segmented__segment .m3-segmented__input, .m3-segmented__segment .m3-segmented__label, .m3-badge, .m3-progress, .m3-progress__bar, .m3-progress-circle, .m3-spinner, .m3-snackbar, .m3-snackbar__text, .m3-snackbar__action, .m3-snackbar__close, .m3-tooltip, .m3-tooltip__title, .m3-card, .m3-carousel, .m3-carousel__item, .m3-carousel__indicators, .m3-carousel__indicator, .m3-dialog, .m3-dialog__title, .m3-dialog__content, .m3-dialog__actions, .m3-divider, .m3-list, .m3-list__subheader, .m3-list-item, .m3-list-item__body, .m3-list-item__overline, .m3-list-item__headline, .m3-list-item__supporting, .m3-list-item__leading, .m3-list-item__trailing, .m3-sheet--bottom, .m3-sheet--side, .m3-sheet--side-standard, .m3-sheet__handle, .m3-nav-bar, .m3-nav-bar__item, .m3-nav-bar__icon, .m3-drawer, .m3-drawer--modal, .m3-drawer__item, .m3-drawer__headline, .m3-drawer__badge, .m3-rail, .m3-rail__item, .m3-rail__icon, .m3-tabs, .m3-tabs__tab, .m3-tabs__input, .m3-top-app-bar, .m3-top-app-bar__title, .m3-bottom-app-bar, .m3-bottom-app-bar__trailing, input[type=checkbox].m3-checkbox, input[type=radio].m3-radio, input[type=checkbox].m3-switch, .m3-chip, .m3-chip--filter .m3-chip__input, .m3-chip--filter .m3-chip__label, .m3-chip--input .m3-chip__input, .m3-chip--input .m3-chip__label, .m3-chip__remove, .m3-menu, .m3-menu__item, .m3-menu__header, input[type=range].m3-slider, input[type=date].m3-datetime, input[type=time].m3-datetime, input[type=datetime-local].m3-datetime, input[type=month].m3-datetime, input[type=week].m3-datetime, .m3-field, .m3-field__input, .m3-field__label, .m3-field__supporting, .m3-search, .m3-search__input, .m3-search__panel, select.m3-select, .m3-toolbar, .m3-toolbar__group, .m3-toolbar__dropdown, select.m3-toolbar__select, .m3-toolbar__stepper, .m3-toolbar__stepper-input, .m3-toolbar__spacer, .m3-toolbar__choice, .m3-toolbar__option, .m3-toolbar__color, .m3-button-group, .m3-btn-check, .m3-split-button, .m3-split-button__action, .m3-split-button__toggle, .m3-split-button__option, .m3-fab-menu, .m3-fab-menu__items, .m3-fab-menu__item, .m3-fab-menu__label, .m3-loading-indicator, .m3-date-picker, .m3-date-picker__header, .m3-date-picker__supporting, .m3-date-picker__headline, .m3-date-picker__nav, .m3-date-picker__menu, .m3-date-picker__arrows, .m3-date-picker__grid, .m3-date-picker__weekday, .m3-date-picker__day, .m3-date-picker__actions, .m3-time-picker, .m3-time-picker__label, .m3-time-picker__fields, .m3-time-picker__field, .m3-time-picker__input, .m3-time-picker__hint, .m3-time-picker__separator, .m3-time-picker__period, .m3-time-picker__period-option, .m3-time-picker__period-option .m3-time-picker__period-input, .m3-time-picker__period-option .m3-time-picker__period-label, .m3-time-picker__actions, .m3-color-palette, .m3-color-palette__label, .m3-color-palette__grid, .m3-color-palette__swatch, .m3-color-palette__swatch > input, .m3-color-palette__custom, .m3-color-palette__custom > input, .m3-color-palette__theme, .m3-color-palette__standard, .m3-pane-layout, .m3-pane, .m3-adaptive-layout, .m3-adaptive-nav, .m3-adaptive-nav .m3-adaptive-nav__item, .m3-adaptive-nav .m3-adaptive-nav__icon, .m3-icon, details.m3-disclosure, .m3-chart, .m3-chart-palette, .m3-chart-palette__swatch {
       box-sizing: border-box;
       position: static;
       inset: auto;
@@ -16310,7 +17150,7 @@
       color-scheme: inherit;
       image-rendering: inherit;
     }
-    .m3-icon-btn::after, .m3-fab--small::after, .m3-segmented__segment .m3-segmented__label::before, .m3-progress::before, .m3-progress::after, .m3-snackbar__action::after, .m3-snackbar__close::after, .m3-carousel__indicator::before, .m3-list--dividers > .m3-list-item:not(:last-child)::after, .m3-tabs__tab.active::after, .m3-tabs__tab[aria-current=page]::after, .m3-tabs__tab[aria-selected=true]::after, .m3-tabs__input:checked + .m3-tabs__tab::after, input[type=checkbox].m3-checkbox::before, input[type=checkbox].m3-checkbox::after, input[type=radio].m3-radio::before, input[type=radio].m3-radio::after, input[type=checkbox].m3-switch::after, input[type=checkbox].m3-switch::before, .m3-chip--filter .m3-chip__label::before, .m3-chip--input .m3-chip__label::before, .m3-toolbar__group + .m3-toolbar__group::before, .m3-toolbar__dropdown::after, .m3-toolbar__swatch::before, .m3-split-button__toggle::after, .m3-loading-indicator::before, .m3-date-picker__menu::after, .m3-date-picker__day::after, .m3-date-picker__day::before, .m3-color-palette__swatch::after, .m3-color-palette__custom::after, details.m3-disclosure > summary::after, .m3-btn::before, .m3-btn::after, .m3-btn-group::before, .m3-btn-group::after, .m3-icon-btn::before, .m3-fab::before, .m3-fab::after, .m3-fab--extended .m3-fab__label::before, .m3-fab--extended .m3-fab__label::after, .m3-segmented::before, .m3-segmented::after, .m3-segmented__segment::before, .m3-segmented__segment::after, .m3-segmented__segment .m3-segmented__input::before, .m3-segmented__segment .m3-segmented__input::after, .m3-segmented__segment .m3-segmented__label::after, .m3-badge::before, .m3-badge::after, .m3-progress__bar::before, .m3-progress__bar::after, .m3-progress-circle::before, .m3-progress-circle::after, .m3-spinner::before, .m3-spinner::after, .m3-snackbar::before, .m3-snackbar::after, .m3-snackbar__text::before, .m3-snackbar__text::after, .m3-snackbar__action::before, .m3-snackbar__close::before, .m3-tooltip::before, .m3-tooltip::after, .m3-tooltip__title::before, .m3-tooltip__title::after, .m3-card::before, .m3-card::after, .m3-carousel::before, .m3-carousel::after, .m3-carousel__item::before, .m3-carousel__item::after, .m3-carousel__indicators::before, .m3-carousel__indicators::after, .m3-carousel__indicator::after, .m3-dialog::before, .m3-dialog::after, .m3-dialog__title::before, .m3-dialog__title::after, .m3-dialog__content::before, .m3-dialog__content::after, .m3-dialog__actions::before, .m3-dialog__actions::after, .m3-divider::before, .m3-divider::after, .m3-list::before, .m3-list::after, .m3-list__subheader::before, .m3-list__subheader::after, .m3-list-item::before, .m3-list-item::after, .m3-list-item__body::before, .m3-list-item__body::after, .m3-list-item__overline::before, .m3-list-item__overline::after, .m3-list-item__headline::before, .m3-list-item__headline::after, .m3-list-item__supporting::before, .m3-list-item__supporting::after, .m3-list-item__leading::before, .m3-list-item__leading::after, .m3-list-item__trailing::before, .m3-list-item__trailing::after, .m3-sheet--bottom::before, .m3-sheet--bottom::after, .m3-sheet--side::before, .m3-sheet--side::after, .m3-sheet--side-standard::before, .m3-sheet--side-standard::after, .m3-sheet__handle::before, .m3-sheet__handle::after, .m3-nav-bar::before, .m3-nav-bar::after, .m3-nav-bar__item::before, .m3-nav-bar__item::after, .m3-nav-bar__icon::before, .m3-nav-bar__icon::after, .m3-drawer::before, .m3-drawer::after, .m3-drawer--modal::before, .m3-drawer--modal::after, .m3-drawer__item::before, .m3-drawer__item::after, .m3-drawer__headline::before, .m3-drawer__headline::after, .m3-drawer__badge::before, .m3-drawer__badge::after, .m3-rail::before, .m3-rail::after, .m3-rail__item::before, .m3-rail__item::after, .m3-rail__icon::before, .m3-rail__icon::after, .m3-tabs::before, .m3-tabs::after, .m3-tabs__tab::before, .m3-tabs__tab::after, .m3-tabs__input::before, .m3-tabs__input::after, .m3-top-app-bar::before, .m3-top-app-bar::after, .m3-top-app-bar__title::before, .m3-top-app-bar__title::after, .m3-bottom-app-bar::before, .m3-bottom-app-bar::after, .m3-bottom-app-bar__trailing::before, .m3-bottom-app-bar__trailing::after, .m3-chip::before, .m3-chip::after, .m3-chip--filter .m3-chip__input::before, .m3-chip--filter .m3-chip__input::after, .m3-chip--filter .m3-chip__label::after, .m3-chip--input .m3-chip__input::before, .m3-chip--input .m3-chip__input::after, .m3-chip--input .m3-chip__label::after, .m3-chip__remove::before, .m3-chip__remove::after, .m3-menu::before, .m3-menu::after, .m3-menu__item::before, .m3-menu__item::after, .m3-menu__header::before, .m3-menu__header::after, input[type=range].m3-slider::before, input[type=range].m3-slider::after, input[type=date].m3-datetime::before, input[type=date].m3-datetime::after, input[type=time].m3-datetime::before, input[type=time].m3-datetime::after, input[type=datetime-local].m3-datetime::before, input[type=datetime-local].m3-datetime::after, input[type=month].m3-datetime::before, input[type=month].m3-datetime::after, input[type=week].m3-datetime::before, input[type=week].m3-datetime::after, .m3-field::before, .m3-field::after, .m3-field__input::before, .m3-field__input::after, .m3-field__label::before, .m3-field__label::after, .m3-field__supporting::before, .m3-field__supporting::after, .m3-search::before, .m3-search::after, .m3-search__input::before, .m3-search__input::after, .m3-search__panel::before, .m3-search__panel::after, select.m3-select::before, select.m3-select::after, .m3-toolbar::before, .m3-toolbar::after, .m3-toolbar__group::before, .m3-toolbar__group::after, .m3-toolbar__dropdown::before, select.m3-toolbar__select::before, select.m3-toolbar__select::after, .m3-toolbar__stepper::before, .m3-toolbar__stepper::after, .m3-toolbar__stepper-input::before, .m3-toolbar__stepper-input::after, .m3-toolbar__spacer::before, .m3-toolbar__spacer::after, .m3-toolbar__choice::before, .m3-toolbar__choice::after, .m3-toolbar__option::before, .m3-toolbar__option::after, .m3-toolbar__color::before, .m3-toolbar__color::after, .m3-button-group::before, .m3-button-group::after, .m3-btn-check::before, .m3-btn-check::after, .m3-split-button::before, .m3-split-button::after, .m3-split-button__action::before, .m3-split-button__action::after, .m3-split-button__toggle::before, .m3-split-button__option::before, .m3-split-button__option::after, .m3-fab-menu::before, .m3-fab-menu::after, .m3-fab-menu__items::before, .m3-fab-menu__items::after, .m3-fab-menu__item::before, .m3-fab-menu__item::after, .m3-fab-menu__label::before, .m3-fab-menu__label::after, .m3-loading-indicator::after, .m3-date-picker::before, .m3-date-picker::after, .m3-date-picker__header::before, .m3-date-picker__header::after, .m3-date-picker__supporting::before, .m3-date-picker__supporting::after, .m3-date-picker__headline::before, .m3-date-picker__headline::after, .m3-date-picker__nav::before, .m3-date-picker__nav::after, .m3-date-picker__menu::before, .m3-date-picker__arrows::before, .m3-date-picker__arrows::after, .m3-date-picker__grid::before, .m3-date-picker__grid::after, .m3-date-picker__weekday::before, .m3-date-picker__weekday::after, .m3-date-picker__actions::before, .m3-date-picker__actions::after, .m3-time-picker::before, .m3-time-picker::after, .m3-time-picker__label::before, .m3-time-picker__label::after, .m3-time-picker__fields::before, .m3-time-picker__fields::after, .m3-time-picker__field::before, .m3-time-picker__field::after, .m3-time-picker__input::before, .m3-time-picker__input::after, .m3-time-picker__hint::before, .m3-time-picker__hint::after, .m3-time-picker__separator::before, .m3-time-picker__separator::after, .m3-time-picker__period::before, .m3-time-picker__period::after, .m3-time-picker__period-option::before, .m3-time-picker__period-option::after, .m3-time-picker__period-option .m3-time-picker__period-input::before, .m3-time-picker__period-option .m3-time-picker__period-input::after, .m3-time-picker__period-option .m3-time-picker__period-label::before, .m3-time-picker__period-option .m3-time-picker__period-label::after, .m3-time-picker__actions::before, .m3-time-picker__actions::after, .m3-color-palette::before, .m3-color-palette::after, .m3-color-palette__label::before, .m3-color-palette__label::after, .m3-color-palette__grid::before, .m3-color-palette__grid::after, .m3-color-palette__swatch::before, .m3-color-palette__swatch > input::before, .m3-color-palette__swatch > input::after, .m3-color-palette__custom::before, .m3-color-palette__custom > input::before, .m3-color-palette__custom > input::after, .m3-color-palette__theme::before, .m3-color-palette__theme::after, .m3-color-palette__standard::before, .m3-color-palette__standard::after, .m3-pane-layout::before, .m3-pane-layout::after, .m3-pane::before, .m3-pane::after, .m3-adaptive-layout::before, .m3-adaptive-layout::after, .m3-adaptive-nav::before, .m3-adaptive-nav::after, .m3-adaptive-nav .m3-adaptive-nav__item::before, .m3-adaptive-nav .m3-adaptive-nav__item::after, .m3-adaptive-nav .m3-adaptive-nav__icon::before, .m3-adaptive-nav .m3-adaptive-nav__icon::after, .m3-icon::before, .m3-icon::after, details.m3-disclosure::before, details.m3-disclosure::after, .m3-snackbar__slot::before, .m3-snackbar__slot::after, .m3-card__media::before, .m3-card__media::after, .m3-card__slot::before, .m3-card__slot::after, .m3-card__actions::before, .m3-card__actions::after, .m3-list-item__slot::before, .m3-list-item__slot::after, .m3-sheet__slot::before, .m3-sheet__slot::after, .m3-toolbar__label::before, .m3-toolbar__label::after, .m3-split-button__label::before, .m3-split-button__label::after, .m3-date-picker__input::before, .m3-date-picker__input::after, .m3-adaptive-nav .m3-adaptive-nav__label::before, .m3-adaptive-nav .m3-adaptive-nav__label::after, details.m3-disclosure > summary::before {
+    .m3-icon-btn::after, .m3-fab--small::after, .m3-segmented__segment .m3-segmented__label::before, .m3-progress::before, .m3-progress::after, .m3-snackbar__action::after, .m3-snackbar__close::after, .m3-carousel__indicator::before, .m3-list--dividers > .m3-list-item:not(:last-child)::after, .m3-tabs__tab.active::after, .m3-tabs__tab[aria-current=page]::after, .m3-tabs__tab[aria-selected=true]::after, .m3-tabs__input:checked + .m3-tabs__tab::after, input[type=checkbox].m3-checkbox::before, input[type=checkbox].m3-checkbox::after, input[type=radio].m3-radio::before, input[type=radio].m3-radio::after, input[type=checkbox].m3-switch::after, input[type=checkbox].m3-switch::before, .m3-chip--filter .m3-chip__label::before, .m3-chip--input .m3-chip__label::before, .m3-toolbar__group + .m3-toolbar__group::before, .m3-toolbar__dropdown::after, .m3-toolbar__swatch::before, .m3-split-button__toggle::after, .m3-loading-indicator::before, .m3-date-picker__menu::after, .m3-date-picker__day::after, .m3-date-picker__day::before, .m3-color-palette__swatch::after, .m3-color-palette__custom::after, details.m3-disclosure > summary::after, .m3-btn::before, .m3-btn::after, .m3-btn-group::before, .m3-btn-group::after, .m3-icon-btn::before, .m3-fab::before, .m3-fab::after, .m3-fab--extended .m3-fab__label::before, .m3-fab--extended .m3-fab__label::after, .m3-segmented::before, .m3-segmented::after, .m3-segmented__segment::before, .m3-segmented__segment::after, .m3-segmented__segment .m3-segmented__input::before, .m3-segmented__segment .m3-segmented__input::after, .m3-segmented__segment .m3-segmented__label::after, .m3-badge::before, .m3-badge::after, .m3-progress__bar::before, .m3-progress__bar::after, .m3-progress-circle::before, .m3-progress-circle::after, .m3-spinner::before, .m3-spinner::after, .m3-snackbar::before, .m3-snackbar::after, .m3-snackbar__text::before, .m3-snackbar__text::after, .m3-snackbar__action::before, .m3-snackbar__close::before, .m3-tooltip::before, .m3-tooltip::after, .m3-tooltip__title::before, .m3-tooltip__title::after, .m3-card::before, .m3-card::after, .m3-carousel::before, .m3-carousel::after, .m3-carousel__item::before, .m3-carousel__item::after, .m3-carousel__indicators::before, .m3-carousel__indicators::after, .m3-carousel__indicator::after, .m3-dialog::before, .m3-dialog::after, .m3-dialog__title::before, .m3-dialog__title::after, .m3-dialog__content::before, .m3-dialog__content::after, .m3-dialog__actions::before, .m3-dialog__actions::after, .m3-divider::before, .m3-divider::after, .m3-list::before, .m3-list::after, .m3-list__subheader::before, .m3-list__subheader::after, .m3-list-item::before, .m3-list-item::after, .m3-list-item__body::before, .m3-list-item__body::after, .m3-list-item__overline::before, .m3-list-item__overline::after, .m3-list-item__headline::before, .m3-list-item__headline::after, .m3-list-item__supporting::before, .m3-list-item__supporting::after, .m3-list-item__leading::before, .m3-list-item__leading::after, .m3-list-item__trailing::before, .m3-list-item__trailing::after, .m3-sheet--bottom::before, .m3-sheet--bottom::after, .m3-sheet--side::before, .m3-sheet--side::after, .m3-sheet--side-standard::before, .m3-sheet--side-standard::after, .m3-sheet__handle::before, .m3-sheet__handle::after, .m3-nav-bar::before, .m3-nav-bar::after, .m3-nav-bar__item::before, .m3-nav-bar__item::after, .m3-nav-bar__icon::before, .m3-nav-bar__icon::after, .m3-drawer::before, .m3-drawer::after, .m3-drawer--modal::before, .m3-drawer--modal::after, .m3-drawer__item::before, .m3-drawer__item::after, .m3-drawer__headline::before, .m3-drawer__headline::after, .m3-drawer__badge::before, .m3-drawer__badge::after, .m3-rail::before, .m3-rail::after, .m3-rail__item::before, .m3-rail__item::after, .m3-rail__icon::before, .m3-rail__icon::after, .m3-tabs::before, .m3-tabs::after, .m3-tabs__tab::before, .m3-tabs__tab::after, .m3-tabs__input::before, .m3-tabs__input::after, .m3-top-app-bar::before, .m3-top-app-bar::after, .m3-top-app-bar__title::before, .m3-top-app-bar__title::after, .m3-bottom-app-bar::before, .m3-bottom-app-bar::after, .m3-bottom-app-bar__trailing::before, .m3-bottom-app-bar__trailing::after, .m3-chip::before, .m3-chip::after, .m3-chip--filter .m3-chip__input::before, .m3-chip--filter .m3-chip__input::after, .m3-chip--filter .m3-chip__label::after, .m3-chip--input .m3-chip__input::before, .m3-chip--input .m3-chip__input::after, .m3-chip--input .m3-chip__label::after, .m3-chip__remove::before, .m3-chip__remove::after, .m3-menu::before, .m3-menu::after, .m3-menu__item::before, .m3-menu__item::after, .m3-menu__header::before, .m3-menu__header::after, input[type=range].m3-slider::before, input[type=range].m3-slider::after, input[type=date].m3-datetime::before, input[type=date].m3-datetime::after, input[type=time].m3-datetime::before, input[type=time].m3-datetime::after, input[type=datetime-local].m3-datetime::before, input[type=datetime-local].m3-datetime::after, input[type=month].m3-datetime::before, input[type=month].m3-datetime::after, input[type=week].m3-datetime::before, input[type=week].m3-datetime::after, .m3-field::before, .m3-field::after, .m3-field__input::before, .m3-field__input::after, .m3-field__label::before, .m3-field__label::after, .m3-field__supporting::before, .m3-field__supporting::after, .m3-search::before, .m3-search::after, .m3-search__input::before, .m3-search__input::after, .m3-search__panel::before, .m3-search__panel::after, select.m3-select::before, select.m3-select::after, .m3-toolbar::before, .m3-toolbar::after, .m3-toolbar__group::before, .m3-toolbar__group::after, .m3-toolbar__dropdown::before, select.m3-toolbar__select::before, select.m3-toolbar__select::after, .m3-toolbar__stepper::before, .m3-toolbar__stepper::after, .m3-toolbar__stepper-input::before, .m3-toolbar__stepper-input::after, .m3-toolbar__spacer::before, .m3-toolbar__spacer::after, .m3-toolbar__choice::before, .m3-toolbar__choice::after, .m3-toolbar__option::before, .m3-toolbar__option::after, .m3-toolbar__color::before, .m3-toolbar__color::after, .m3-button-group::before, .m3-button-group::after, .m3-btn-check::before, .m3-btn-check::after, .m3-split-button::before, .m3-split-button::after, .m3-split-button__action::before, .m3-split-button__action::after, .m3-split-button__toggle::before, .m3-split-button__option::before, .m3-split-button__option::after, .m3-fab-menu::before, .m3-fab-menu::after, .m3-fab-menu__items::before, .m3-fab-menu__items::after, .m3-fab-menu__item::before, .m3-fab-menu__item::after, .m3-fab-menu__label::before, .m3-fab-menu__label::after, .m3-loading-indicator::after, .m3-date-picker::before, .m3-date-picker::after, .m3-date-picker__header::before, .m3-date-picker__header::after, .m3-date-picker__supporting::before, .m3-date-picker__supporting::after, .m3-date-picker__headline::before, .m3-date-picker__headline::after, .m3-date-picker__nav::before, .m3-date-picker__nav::after, .m3-date-picker__menu::before, .m3-date-picker__arrows::before, .m3-date-picker__arrows::after, .m3-date-picker__grid::before, .m3-date-picker__grid::after, .m3-date-picker__weekday::before, .m3-date-picker__weekday::after, .m3-date-picker__actions::before, .m3-date-picker__actions::after, .m3-time-picker::before, .m3-time-picker::after, .m3-time-picker__label::before, .m3-time-picker__label::after, .m3-time-picker__fields::before, .m3-time-picker__fields::after, .m3-time-picker__field::before, .m3-time-picker__field::after, .m3-time-picker__input::before, .m3-time-picker__input::after, .m3-time-picker__hint::before, .m3-time-picker__hint::after, .m3-time-picker__separator::before, .m3-time-picker__separator::after, .m3-time-picker__period::before, .m3-time-picker__period::after, .m3-time-picker__period-option::before, .m3-time-picker__period-option::after, .m3-time-picker__period-option .m3-time-picker__period-input::before, .m3-time-picker__period-option .m3-time-picker__period-input::after, .m3-time-picker__period-option .m3-time-picker__period-label::before, .m3-time-picker__period-option .m3-time-picker__period-label::after, .m3-time-picker__actions::before, .m3-time-picker__actions::after, .m3-color-palette::before, .m3-color-palette::after, .m3-color-palette__label::before, .m3-color-palette__label::after, .m3-color-palette__grid::before, .m3-color-palette__grid::after, .m3-color-palette__swatch::before, .m3-color-palette__swatch > input::before, .m3-color-palette__swatch > input::after, .m3-color-palette__custom::before, .m3-color-palette__custom > input::before, .m3-color-palette__custom > input::after, .m3-color-palette__theme::before, .m3-color-palette__theme::after, .m3-color-palette__standard::before, .m3-color-palette__standard::after, .m3-pane-layout::before, .m3-pane-layout::after, .m3-pane::before, .m3-pane::after, .m3-adaptive-layout::before, .m3-adaptive-layout::after, .m3-adaptive-nav::before, .m3-adaptive-nav::after, .m3-adaptive-nav .m3-adaptive-nav__item::before, .m3-adaptive-nav .m3-adaptive-nav__item::after, .m3-adaptive-nav .m3-adaptive-nav__icon::before, .m3-adaptive-nav .m3-adaptive-nav__icon::after, .m3-icon::before, .m3-icon::after, details.m3-disclosure::before, details.m3-disclosure::after, .m3-chart::before, .m3-chart::after, .m3-chart-palette::before, .m3-chart-palette::after, .m3-chart-palette__swatch::before, .m3-chart-palette__swatch::after, .m3-snackbar__slot::before, .m3-snackbar__slot::after, .m3-card__media::before, .m3-card__media::after, .m3-card__slot::before, .m3-card__slot::after, .m3-card__actions::before, .m3-card__actions::after, .m3-list-item__slot::before, .m3-list-item__slot::after, .m3-sheet__slot::before, .m3-sheet__slot::after, .m3-toolbar__label::before, .m3-toolbar__label::after, .m3-split-button__label::before, .m3-split-button__label::after, .m3-date-picker__input::before, .m3-date-picker__input::after, .m3-adaptive-nav .m3-adaptive-nav__label::before, .m3-adaptive-nav .m3-adaptive-nav__label::after, details.m3-disclosure > summary::before {
       box-sizing: border-box;
       position: static;
       inset: auto;

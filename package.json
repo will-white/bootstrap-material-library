@@ -10,6 +10,7 @@
     "src",
     "dist",
     "scripts",
+    "docs",
     "README.md"
   ],
   "scripts": {

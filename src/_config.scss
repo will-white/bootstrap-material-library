@@ -135,6 +135,45 @@ $color-palette: (
   )
 ) !default;
 
+// Chart categorical palette: eight series colors per scheme, in slot order.
+// Identity colors are the one place a seed-derived palette is wrong: a
+// colour-vision-safe set is a property of absolute hues and of lightness
+// steps that survive a red-green simulation, and any rule that rotates or
+// harmonizes hues toward the seed measurably breaks it for some seeds
+// (docs/echarts.md records the search). So these are fixed: the eight hues
+// of the data-viz reference palette in its validated order, each stepped for
+// m3x's own light and dark surfaces. `npm test` re-validates whatever is
+// configured here (lightness band, chroma floor, CVD and normal-vision
+// separation of neighbours, contrast against the surface), so swap in your
+// brand's set and let the suite tell you whether it holds. OKLCH, chroma is
+// capped into sRGB at build time like every palette step.
+$chart-categorical: (
+  "light": (
+    oklch(63% 0.16 256deg),
+    oklch(65% 0.215 41deg),
+    oklch(62% 0.111 162deg),
+    oklch(76% 0.161 75deg),
+    oklch(65% 0.14 357deg),
+    oklch(50% 0.23 142deg),
+    oklch(47% 0.12 284deg),
+    oklch(57% 0.15 25deg)
+  ),
+  "dark": (
+    oklch(54% 0.12 256deg),
+    oklch(56% 0.18 41deg),
+    oklch(66% 0.118 162deg),
+    oklch(65% 0.153 75deg),
+    oklch(65% 0.2 357deg),
+    oklch(57% 0.16 142deg),
+    oklch(65% 0.14 284deg),
+    oklch(66% 0.119 25deg)
+  )
+) !default;
+
+// How far a categorical step's OKLCH lightness moves for the medium and high
+// contrast levels: away from the surface (down on light, up on dark).
+$chart-contrast-shift: ("medium": 4%, "high": 8%) !default;
+
 // When set to a selector string (e.g. "[data-m3]") the Bootstrap component
 // re-skin is wrapped in @scope on that selector, so a legacy page can be
 // migrated region by region.
@@ -201,5 +240,6 @@ $components: (
   "color-palette",
   "layout",
   "icon",
-  "disclosure"
+  "disclosure",
+  "chart"
 ) !default;

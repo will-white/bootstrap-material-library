@@ -56,6 +56,7 @@
 @forward "components/layout" as layout-*;
 @forward "components/icon" as icon-*;
 @forward "components/disclosure" as disclosure-*;
+@forward "components/chart" as chart-*;
 
 // --- internal wiring ---------------------------------------------------------
 @use "sass:list";
@@ -121,6 +122,7 @@
 @use "components/layout";
 @use "components/icon";
 @use "components/disclosure";
+@use "components/chart";
 
 @function -on($name) {
   @return list.index(c.$components, $name) != null;
@@ -158,6 +160,11 @@
   @include state.properties;
   @if -tokens-on("icon") {
     @include icon.properties;
+  }
+  // The chart's readouts: a script reads them, so they are registered to
+  // compute to absolute values (see components/_chart.scss).
+  @if -on("chart") {
+    @include chart.properties;
   }
 
   // Scheme control: color-scheme on :root, [data-theme] switches.
@@ -362,6 +369,9 @@ m.$ownership: "collect";
   }
   @if -on("disclosure") {
     @include disclosure.classes;
+  }
+  @if -on("chart") {
+    @include chart.classes;
   }
   }
 

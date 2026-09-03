@@ -21,7 +21,11 @@ function parse(css) {
     return out;
   };
   const base = pairs(css);
-  const at = css.lastIndexOf('[data-contrast=high] {');
+  // The roles' forced-level block: the selector stands alone on its line.
+  // (Components that tier their own tokens by level, the chart's categorical
+  // palette among them, end selectors with the same attribute.)
+  let at = -1;
+  for (const m of css.matchAll(/\n *\[data-contrast=high\] \{/g)) at = m.index + 1;
   const high = at < 0 ? {} : pairs(css.slice(at, css.indexOf('\n  }', at) + 4));
   return { hex, base, high: { ...base, ...high } };
 }

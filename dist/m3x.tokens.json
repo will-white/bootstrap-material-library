@@ -6069,6 +6069,487 @@
             }
           }
         }
+      },
+      "chart": {
+        "block-size": {
+          "$type": "dimension",
+          "$value": "20rem"
+        },
+        "background-color": {
+          "$type": "color",
+          "$value": "transparent",
+          "$extensions": {
+            "m3x": {
+              "css": "transparent"
+            }
+          }
+        },
+        "label-color": {
+          "$value": "{md.sys.color.on-surface-variant}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-on-surface-variant)"
+            }
+          }
+        },
+        "font": {
+          "$value": "{md.sys.typescale.body-small-font}",
+          "$type": "fontFamily",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-body-small-font)"
+            }
+          }
+        },
+        "label-size": {
+          "$value": "{md.sys.typescale.body-small-size}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-body-small-size)"
+            }
+          }
+        },
+        "text-color": {
+          "$value": "{md.sys.color.on-surface}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-on-surface)"
+            }
+          }
+        },
+        "axis-color": {
+          "$value": "{md.sys.color.outline-variant}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-outline-variant)"
+            }
+          }
+        },
+        "grid-color": {
+          "$type": "color",
+          "$value": "color-mix(in srgb, var(--md-sys-color-outline-variant) 50%, transparent)",
+          "$extensions": {
+            "m3x": {
+              "css": "color-mix(in srgb, var(--md-sys-color-outline-variant) 50%, transparent)"
+            }
+          }
+        },
+        "hover-color": {
+          "$type": "color",
+          "$value": "color-mix(in srgb, var(--md-sys-color-on-surface) var(--md-sys-state-hover-state-layer-opacity), transparent)",
+          "$extensions": {
+            "m3x": {
+              "css": "color-mix(in srgb, var(--md-sys-color-on-surface) var(--md-sys-state-hover-state-layer-opacity), transparent)"
+            }
+          }
+        },
+        "tooltip-container-color": {
+          "$value": "{md.sys.color.inverse-surface}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-inverse-surface)"
+            }
+          }
+        },
+        "tooltip-content-color": {
+          "$value": "{md.sys.color.inverse-on-surface}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-inverse-on-surface)"
+            }
+          }
+        },
+        "gap-color": {
+          "$type": "color",
+          "$value": "var(--m3-sys-container-color, var(--md-sys-color-surface))",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--m3-sys-container-color, var(--md-sys-color-surface))"
+            }
+          }
+        },
+        "positive-color": {
+          "$value": "{md.extended.color.success}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-extended-color-success)"
+            }
+          }
+        },
+        "negative-color": {
+          "$value": "{md.sys.color.error}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-error)"
+            }
+          }
+        },
+        "zoom-fill-color": {
+          "$type": "color",
+          "$value": "color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent)",
+          "$extensions": {
+            "m3x": {
+              "css": "color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent)"
+            }
+          }
+        },
+        "zoom-handle-color": {
+          "$value": "{md.sys.color.primary}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-primary)"
+            }
+          }
+        },
+        "accent-color": {
+          "$value": "{md.sys.color.primary}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-primary)"
+            }
+          }
+        },
+        "sequential-low-color": {
+          "$type": "color",
+          "$value": "color-mix(in oklch, var(--md-sys-color-surface) 85%, var(--m3-chart-accent-color))",
+          "$extensions": {
+            "m3x": {
+              "css": "color-mix(in oklch, var(--md-sys-color-surface) 85%, var(--m3-chart-accent-color))"
+            }
+          }
+        },
+        "sequential-high-color": {
+          "$value": "{m3.comp.chart.accent-color}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--m3-chart-accent-color)"
+            }
+          }
+        },
+        "diverging-low-color": {
+          "$value": "{md.extended.color.info}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-extended-color-info)"
+            }
+          }
+        },
+        "diverging-mid-color": {
+          "$value": "{md.sys.color.surface-container-highest}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-surface-container-highest)"
+            }
+          }
+        },
+        "diverging-high-color": {
+          "$value": "{md.sys.color.error}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-error)"
+            }
+          }
+        },
+        "tooltip-shape": {
+          "$value": "{md.sys.shape.corner-extra-small}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-shape-corner-extra-small)"
+            }
+          }
+        },
+        "gap-width": {
+          "$type": "dimension",
+          "$value": "2px"
+        },
+        "line-width": {
+          "$type": "dimension",
+          "$value": "2px"
+        },
+        "marker-size": {
+          "$type": "dimension",
+          "$value": "8px"
+        },
+        "mark-radius": {
+          "$type": "dimension",
+          "$value": "4px"
+        },
+        "title-size": {
+          "$value": "{md.sys.typescale.title-medium-size}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-title-medium-size)"
+            }
+          }
+        },
+        "title-weight": {
+          "$value": "{md.sys.typescale.title-medium-weight}",
+          "$type": "number",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-title-medium-weight)"
+            }
+          }
+        },
+        "categorical-1": {
+          "$type": "color",
+          "$value": "#4089e7"
+        },
+        "series-1": {
+          "$value": "{m3.comp.chart.categorical-1}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--m3-chart-categorical-1)"
+            }
+          }
+        },
+        "categorical-2": {
+          "$type": "color",
+          "$value": "#ed5703"
+        },
+        "series-2": {
+          "$value": "{m3.comp.chart.categorical-2}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--m3-chart-categorical-2)"
+            }
+          }
+        },
+        "categorical-3": {
+          "$type": "color",
+          "$value": "#3a9b71"
+        },
+        "series-3": {
+          "$value": "{m3.comp.chart.categorical-3}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--m3-chart-categorical-3)"
+            }
+          }
+        },
+        "categorical-4": {
+          "$type": "color",
+          "$value": "#eaa013"
+        },
+        "series-4": {
+          "$value": "{m3.comp.chart.categorical-4}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--m3-chart-categorical-4)"
+            }
+          }
+        },
+        "categorical-5": {
+          "$type": "color",
+          "$value": "#d06790"
+        },
+        "series-5": {
+          "$value": "{m3.comp.chart.categorical-5}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--m3-chart-categorical-5)"
+            }
+          }
+        },
+        "categorical-6": {
+          "$type": "color",
+          "$value": "#0f7904"
+        },
+        "series-6": {
+          "$value": "{m3.comp.chart.categorical-6}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--m3-chart-categorical-6)"
+            }
+          }
+        },
+        "categorical-7": {
+          "$type": "color",
+          "$value": "#544f9b"
+        },
+        "series-7": {
+          "$value": "{m3.comp.chart.categorical-7}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--m3-chart-categorical-7)"
+            }
+          }
+        },
+        "categorical-8": {
+          "$type": "color",
+          "$value": "#c04c48"
+        },
+        "series-8": {
+          "$value": "{m3.comp.chart.categorical-8}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--m3-chart-categorical-8)"
+            }
+          }
+        },
+        "sequential-1": {
+          "$type": "color",
+          "$value": "color-mix(in oklch, var(--m3-chart-sequential-low-color), var(--m3-chart-sequential-high-color) 0%)",
+          "$extensions": {
+            "m3x": {
+              "css": "color-mix(in oklch, var(--m3-chart-sequential-low-color), var(--m3-chart-sequential-high-color) 0%)"
+            }
+          }
+        },
+        "diverging-1": {
+          "$type": "color",
+          "$value": "color-mix(in oklch, var(--m3-chart-diverging-low-color), var(--m3-chart-diverging-mid-color) 0%)",
+          "$extensions": {
+            "m3x": {
+              "css": "color-mix(in oklch, var(--m3-chart-diverging-low-color), var(--m3-chart-diverging-mid-color) 0%)"
+            }
+          }
+        },
+        "sequential-2": {
+          "$type": "color",
+          "$value": "color-mix(in oklch, var(--m3-chart-sequential-low-color), var(--m3-chart-sequential-high-color) 16.667%)",
+          "$extensions": {
+            "m3x": {
+              "css": "color-mix(in oklch, var(--m3-chart-sequential-low-color), var(--m3-chart-sequential-high-color) 16.667%)"
+            }
+          }
+        },
+        "diverging-2": {
+          "$type": "color",
+          "$value": "color-mix(in oklch, var(--m3-chart-diverging-low-color), var(--m3-chart-diverging-mid-color) 33.333%)",
+          "$extensions": {
+            "m3x": {
+              "css": "color-mix(in oklch, var(--m3-chart-diverging-low-color), var(--m3-chart-diverging-mid-color) 33.333%)"
+            }
+          }
+        },
+        "sequential-3": {
+          "$type": "color",
+          "$value": "color-mix(in oklch, var(--m3-chart-sequential-low-color), var(--m3-chart-sequential-high-color) 33.333%)",
+          "$extensions": {
+            "m3x": {
+              "css": "color-mix(in oklch, var(--m3-chart-sequential-low-color), var(--m3-chart-sequential-high-color) 33.333%)"
+            }
+          }
+        },
+        "diverging-3": {
+          "$type": "color",
+          "$value": "color-mix(in oklch, var(--m3-chart-diverging-low-color), var(--m3-chart-diverging-mid-color) 66.667%)",
+          "$extensions": {
+            "m3x": {
+              "css": "color-mix(in oklch, var(--m3-chart-diverging-low-color), var(--m3-chart-diverging-mid-color) 66.667%)"
+            }
+          }
+        },
+        "sequential-4": {
+          "$type": "color",
+          "$value": "color-mix(in oklch, var(--m3-chart-sequential-low-color), var(--m3-chart-sequential-high-color) 50%)",
+          "$extensions": {
+            "m3x": {
+              "css": "color-mix(in oklch, var(--m3-chart-sequential-low-color), var(--m3-chart-sequential-high-color) 50%)"
+            }
+          }
+        },
+        "diverging-4": {
+          "$type": "color",
+          "$value": "color-mix(in oklch, var(--m3-chart-diverging-low-color), var(--m3-chart-diverging-mid-color) 100%)",
+          "$extensions": {
+            "m3x": {
+              "css": "color-mix(in oklch, var(--m3-chart-diverging-low-color), var(--m3-chart-diverging-mid-color) 100%)"
+            }
+          }
+        },
+        "sequential-5": {
+          "$type": "color",
+          "$value": "color-mix(in oklch, var(--m3-chart-sequential-low-color), var(--m3-chart-sequential-high-color) 66.667%)",
+          "$extensions": {
+            "m3x": {
+              "css": "color-mix(in oklch, var(--m3-chart-sequential-low-color), var(--m3-chart-sequential-high-color) 66.667%)"
+            }
+          }
+        },
+        "diverging-5": {
+          "$type": "color",
+          "$value": "color-mix(in oklch, var(--m3-chart-diverging-mid-color), var(--m3-chart-diverging-high-color) 33.333%)",
+          "$extensions": {
+            "m3x": {
+              "css": "color-mix(in oklch, var(--m3-chart-diverging-mid-color), var(--m3-chart-diverging-high-color) 33.333%)"
+            }
+          }
+        },
+        "sequential-6": {
+          "$type": "color",
+          "$value": "color-mix(in oklch, var(--m3-chart-sequential-low-color), var(--m3-chart-sequential-high-color) 83.333%)",
+          "$extensions": {
+            "m3x": {
+              "css": "color-mix(in oklch, var(--m3-chart-sequential-low-color), var(--m3-chart-sequential-high-color) 83.333%)"
+            }
+          }
+        },
+        "diverging-6": {
+          "$type": "color",
+          "$value": "color-mix(in oklch, var(--m3-chart-diverging-mid-color), var(--m3-chart-diverging-high-color) 66.667%)",
+          "$extensions": {
+            "m3x": {
+              "css": "color-mix(in oklch, var(--m3-chart-diverging-mid-color), var(--m3-chart-diverging-high-color) 66.667%)"
+            }
+          }
+        },
+        "sequential-7": {
+          "$type": "color",
+          "$value": "color-mix(in oklch, var(--m3-chart-sequential-low-color), var(--m3-chart-sequential-high-color) 100%)",
+          "$extensions": {
+            "m3x": {
+              "css": "color-mix(in oklch, var(--m3-chart-sequential-low-color), var(--m3-chart-sequential-high-color) 100%)"
+            }
+          }
+        },
+        "diverging-7": {
+          "$type": "color",
+          "$value": "color-mix(in oklch, var(--m3-chart-diverging-mid-color), var(--m3-chart-diverging-high-color) 100%)",
+          "$extensions": {
+            "m3x": {
+              "css": "color-mix(in oklch, var(--m3-chart-diverging-mid-color), var(--m3-chart-diverging-high-color) 100%)"
+            }
+          }
+        },
+        "swatch-size": {
+          "$type": "dimension",
+          "$value": "1.5rem"
+        },
+        "swatch-shape": {
+          "$value": "{md.sys.shape.corner-extra-small}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-shape-corner-extra-small)"
+            }
+          }
+        }
       }
     }
   }

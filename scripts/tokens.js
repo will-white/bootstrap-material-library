@@ -91,7 +91,7 @@ const STEMS = componentStems();
 // has one source in Sass, so every site agrees; a disagreement is a bug and
 // is reported rather than silently picking one.
 {
-  const seen = new Map();
+  const sites = new Map();
   const re = /var\(\s*(--[a-z0-9-]+)\s*,\s*/gi;
   let m;
   while ((m = re.exec(css)) !== null) {
@@ -109,17 +109,36 @@ const STEMS = componentStems();
     }
     const value = out.replace(/\s+/g, ' ').trim();
     if (!value) continue;
-    const prior = seen.get(prop);
-    if (prior === undefined) seen.set(prop, value);
-    else if (prior !== value) seen.set(prop, null); // disagreement
+    if (!sites.has(prop)) sites.set(prop, []);
+    sites.get(prop).push(value);
   }
-  for (const [prop, value] of seen) {
-    // A default that resolves to a private is not a default: this is a
-    // deprecated short name read as the fallback of its namespaced canonical
-    // (--m3-swatch behind --m3-color-palette-swatch-color), so the export
-    // describes the canonical only.
-    if (typeof value === 'string' && /var\(\s*--_/.test(value)) continue;
-    if (value === null) {
+
+  // A component whose consumer is script (the chart) resolves its tokens
+  // into private readouts on its host, --_<stem>-<name>, and its defaults
+  // chain through them. In the export a private that is the resolution of a
+  // public token IS that token (--_chart-accent-color -> --m3-chart-accent-
+  // color), and any other stem-prefixed private stands for its first
+  // declaration, which is the static tier (--_chart-categorical-1-default).
+  // Privates outside a component stem are not defaults: --m3-swatch is a
+  // deprecated short name read behind its namespaced canonical, so the
+  // export describes the canonical only.
+  const privates = new Map();
+  for (const d of css.matchAll(/(--_[a-z0-9-]+)\s*:\s*([^;{}]+);/g)) {
+    if (!privates.has(d[1])) privates.set(d[1], d[2].replace(/\s+/g, ' ').trim());
+  }
+  const stemOf = (name) => STEMS.find((s) => name === s || name.startsWith(`${s}-`));
+  const resolvePrivates = (value, depth = 0) => value.replace(/var\(\s*(--_([a-z0-9-]+))\s*\)/g, (whole, priv, name) => {
+    if (!stemOf(name)) return whole;
+    if (sites.has(`--${LIB}-${name}`) || decls.has(`--${LIB}-${name}`)) return `var(--${LIB}-${name})`;
+    if (privates.has(priv) && depth < 4) return resolvePrivates(privates.get(priv), depth + 1);
+    return whole;
+  });
+
+  for (const [prop, values] of sites) {
+    const unique = [...new Set(values.map((v) => resolvePrivates(v)))];
+    const value = unique[0];
+    if (/var\(\s*--_/.test(value)) continue;
+    if (unique.length > 1) {
       console.warn(`  ! ${prop} has more than one default across its read sites`);
       continue;
     }
@@ -186,7 +205,7 @@ function typed(prop, value) {
   return { $type: inferType(prop, value), $value: value, $extensions: { m3x: ext } };
 }
 function inferType(prop, value) {
-  if (/color|palette|-seed$/.test(prop) || /^(oklch|color-mix|rgb|hsl|light-dark)\(/.test(value)) return 'color';
+  if (/color|palette|-seed$/.test(prop) || /^(oklch|color-mix|rgb|hsl|light-dark)\(/.test(value) || /^#[0-9a-f]{3,8}$/i.test(value)) return 'color';
   if (/duration/.test(prop)) return 'duration';
   if (/easing|spring(?!.*duration)/.test(prop)) return 'cubicBezier';
   if (/shadow|elevation-\d/.test(prop)) return 'shadow';

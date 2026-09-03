@@ -961,6 +961,58 @@
     </section>
 
     <!-- ================================================================ -->
+    <section id="charts" aria-labelledby="charts-h">
+      <h2 id="charts-h" class="m3-headline-small">Chart palettes</h2>
+      <p class="m3-body-medium">The token contract a chart library draws from, with no chart library on this page. A <code>.m3-chart</code> host resolves every <code>--m3-chart-*</code> token into a registered readout a script can read with <code>getComputedStyle</code>; the strips below paint from the same readouts. The identity palette is fixed and colour-vision-validated, so it holds still while you change the seed; the sequential ramp runs from the surface to the accent (primary), so it follows the seed, an island and the contrast level.</p>
+      <div class="demo-grid">
+        <div class="demo-pair">
+          <small class="m3-label-medium">Categorical: eight series slots (.m3-chart-palette)</small>
+          <div class="m3-chart-palette" role="img" aria-label="Eight categorical series colours"><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span></div>
+        </div>
+        <div class="demo-pair">
+          <small class="m3-label-medium">Sequential: surface to accent (--sequential --ramp), follows the seed</small>
+          <div class="m3-chart-palette m3-chart-palette--sequential m3-chart-palette--ramp" role="img" aria-label="Seven sequential steps"><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span></div>
+        </div>
+        <div class="demo-pair">
+          <small class="m3-label-medium">Diverging: info, neutral, error (--diverging --ramp)</small>
+          <div class="m3-chart-palette m3-chart-palette--diverging m3-chart-palette--ramp" role="img" aria-label="Seven diverging steps"><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span></div>
+        </div>
+        <div class="demo-pair">
+          <small class="m3-label-medium">Ordinal: six ordered series from the accent (--ordinal)</small>
+          <div class="m3-chart-palette m3-chart-palette--ordinal" role="img" aria-label="Six ordinal series colours"><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span></div>
+        </div>
+        <div class="demo-pair" style="--m3-chart-accent-color: var(--md-sys-color-tertiary);">
+          <small class="m3-label-medium">One token retunes a ramp: --m3-chart-accent-color: tertiary</small>
+          <div class="m3-chart-palette m3-chart-palette--sequential m3-chart-palette--ramp" role="img" aria-label="Sequential steps on the tertiary hue"><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span></div>
+        </div>
+        <div class="demo-pair" style="--m3-chart-series-1: var(--md-sys-color-primary); --m3-chart-series-2: var(--md-sys-color-tertiary); --m3-chart-series-3: var(--md-sys-color-secondary);">
+          <small class="m3-label-medium">A theme of your own: three series slots re-pointed at scheme roles</small>
+          <div class="m3-chart-palette" role="img" aria-label="Three series colours from the scheme"><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span></div>
+        </div>
+        <div class="demo-pair">
+          <small class="m3-label-medium">Inside a tertiary island: chrome and ramps follow, identity stays</small>
+          <div class="m3-island--tertiary" style="padding: var(--m3-sys-space-3); border-radius: var(--md-sys-shape-corner-medium); display: grid; gap: var(--m3-sys-space-2);">
+            <div class="m3-chart-palette" role="img" aria-label="Categorical colours inside an island"><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span></div>
+            <div class="m3-chart-palette m3-chart-palette--ordinal" role="img" aria-label="Ordinal colours inside an island"><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span></div>
+          </div>
+        </div>
+        <div class="demo-pair">
+          <small class="m3-label-medium">data-contrast="high" on a subtree: steps move away from the surface</small>
+          <div data-contrast="high" style="display: grid; gap: var(--m3-sys-space-2);">
+            <div class="m3-chart-palette" role="img" aria-label="Categorical colours at high contrast"><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span></div>
+            <div class="m3-chart-palette m3-chart-palette--sequential m3-chart-palette--ramp" role="img" aria-label="Sequential steps at high contrast"><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span><span class="m3-chart-palette__swatch"></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="m3-card m3-card--outlined" style="margin-block-start: var(--m3-sys-space-4);">
+        <div class="m3-card__slot">
+          <h3 class="m3-title-medium" style="margin: 0 0 var(--m3-sys-space-2);">Where the chart goes</h3>
+          <div class="m3-chart" style="--m3-chart-block-size: 6rem; display: grid; place-items: center; border: var(--m3-sys-stroke-hairline) dashed var(--md-sys-color-outline-variant); border-radius: var(--md-sys-shape-corner-small);">an ECharts instance mounts on this .m3-chart host and reads its theme from the host's readouts (docs/echarts.md)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
     <section id="layout" aria-labelledby="layout-h">
       <h2 id="layout-h" class="m3-headline-small">Layout, utilities, helpers &mdash; no bootstrap.css</h2>
       <p class="m3-body-medium">Everything below is Bootstrap 5.3 layout and utility markup rendered by m3x alone: the grid, gutters, spacing, display, flex, text and background utilities, and helpers.</p>
