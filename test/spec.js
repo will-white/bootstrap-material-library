@@ -77,6 +77,18 @@ ${Object.keys(BUTTON_RAMP).map((s) => `<div class="${mod('m3-split-button', s)}"
 <input type="radio" class="m3-radio" id="rd">
 <input type="checkbox" class="m3-switch" id="sw">
 <input type="range" class="m3-slider" id="sl">
+<div style="width:400px">
+  <div class="m3-slider-field m3-slider-field--label-persistent" id="sf-0" style="--m3-slider-value: 0">
+    <input type="range" class="m3-slider" min="0" max="100" value="0"><output class="m3-slider__label" id="sl-0">0</output></div>
+  <div class="m3-slider-field m3-slider-field--label-persistent" id="sf-100" style="--m3-slider-value: 100">
+    <input type="range" class="m3-slider" min="0" max="100" value="100"><output class="m3-slider__label" id="sl-100">100</output></div>
+  <div class="m3-slider-field" id="sf-hidden" style="--m3-slider-value: 40">
+    <input type="range" class="m3-slider" min="0" max="100" value="40"><output class="m3-slider__label" id="sl-hidden">40</output></div>
+  <div class="m3-slider-field m3-slider-field--range" id="sf-range" style="--m3-slider-start: 20; --m3-slider-end: 70">
+    <input type="range" class="m3-slider" min="0" max="100" value="20" aria-label="Min" id="sl-r1">
+    <input type="range" class="m3-slider" min="0" max="100" value="70" aria-label="Max" id="sl-r2"></div>
+</div>
+<div class="m3-slider-field m3-slider-field--vertical" id="sf-vert"><input type="range" class="m3-slider" min="0" max="100" value="40" id="sl-vert"></div>
 
 <div style="width:400px"><div class="m3-progress" role="progressbar" style="--m3-progress-value: 60" id="prog"><div class="m3-progress__bar"></div></div></div>
 <div style="width:400px"><div class="m3-progress" role="progressbar" style="--m3-progress-value: 0" id="prog-zero"><div class="m3-progress__bar"></div></div></div>
@@ -246,6 +258,41 @@ async function run() {
         out.misc.cardRadius = num(cs('card').borderTopLeftRadius);
         out.misc.navBar = num(box('navbar').height);
 
+        // M3's slider value indicator: 12dp above the track, centred on the
+        // handle, which travels the width less one gap-plus-half-handle at
+        // each end.
+        const labelCentre = (id) => {
+          const f = box('sf-' + id);
+          const l = box('sl-' + id);
+          const i = el('sf-' + id).querySelector('.m3-slider').getBoundingClientRect();
+          return {
+            centre: num(l.left + l.width / 2 - i.left),
+            gap: num(i.top + (i.height - 16) / 2 - l.bottom),
+            width: num(i.width),
+          };
+        };
+        out.misc.slider = {
+          at0: labelCentre('0'),
+          at100: labelCentre('100'),
+          // Hidden until the handle is being moved.
+          hiddenOpacity: cs('sl-hidden').opacity,
+          shownOpacity: cs('sl-0').opacity,
+          // A range slider stacks two inputs in one cell and lets its
+          // handles, not its inputs, take the pointer.
+          rangeStacked: (() => {
+            const a = box('sl-r1');
+            const b = box('sl-r2');
+            return a.top === b.top && a.left === b.left && a.width === b.width;
+          })(),
+          rangePointer: cs('sl-r1').pointerEvents,
+          // The vertical variant's rotated input lands exactly on its wrapper.
+          vertical: (() => {
+            const w = box('sf-vert');
+            const i = box('sl-vert');
+            return [num(w.width), num(w.height), num(i.left - w.left), num(i.top - w.top), num(i.width), num(i.height)];
+          })(),
+        };
+
         // M3 text field anatomy: a leading icon sits 12dp in from the
         // container edge and the text starts 52dp in (12 + 24 + 16).
         const iconsBox = box('f-icons');
@@ -334,6 +381,24 @@ async function run() {
     expect(eq(got.aliased, [true, true, true]), `.m3-${role}-emphasized [font,size,line-height] ${JSON.stringify(got.aliased)} should match .m3-${role}`);
     // The point of the scale: emphasized is always heavier than baseline.
     expect(Number(got.weight) > Number(got.baseWeight), `.m3-${role}-emphasized weight ${got.weight} should exceed baseline ${got.baseWeight}`);
+  }
+
+  // M3's slider value indicator sits 12dp above the track (M3's
+  // ValueIndicatorActiveBottomSpace) and centres on the handle, whose centre
+  // travels from gap + half a handle to the same inset from the other end.
+  {
+    const sl = r.misc.slider;
+    const inset = 6 + 4 / 2;
+    expect(sl.at0.centre === inset, `value label at 0: ${sl.at0.centre}, expected ${inset}`);
+    expect(sl.at100.centre === sl.at100.width - inset, `value label at 100: ${sl.at100.centre}, expected ${sl.at100.width - inset}`);
+    expect(sl.at0.gap === 12 && sl.at100.gap === 12, `value label gap to track ${sl.at0.gap}/${sl.at100.gap}, expected 12`);
+    expect(sl.hiddenOpacity === '0', `resting value label opacity ${sl.hiddenOpacity}, expected 0`);
+    expect(sl.shownOpacity === '1', `persistent value label opacity ${sl.shownOpacity}, expected 1`);
+    expect(sl.rangeStacked, 'a range slider should stack its two inputs in one grid cell');
+    expect(sl.rangePointer === 'none', `range input pointer-events ${sl.rangePointer}, expected none (the handles take the pointer)`);
+    // 48dp cross axis, the 240px length token, and the rotated input flush
+    // with the wrapper on all four sides.
+    expect(eq(sl.vertical, [48, 240, 0, 0, 48, 240]), `vertical slider [w,h,dx,dy,iw,ih] ${JSON.stringify(sl.vertical)}, expected [48,240,0,0,48,240]`);
   }
 
   // M3 text field anatomy. A leading icon sits 12dp in from the container
@@ -440,7 +505,7 @@ async function run() {
   expect(r.misc.navBar === 80, `navigation bar height ${r.misc.navBar}, expected 80`);
 
   if (!failures.length) {
-    console.log(`[spec] ${Object.keys(TOKENS).length} tokens, ${Object.keys(BUTTON_RAMP).length}-rung button/icon-button/split ramps, ${Object.keys(EMPHASIZED).length} emphasized typescale styles, 6 tonal-elevation surfaces, field anatomy, fields, chips, selection, progress (stop indicator + gap), tabs, tooltip, list, rail: ok`);
+    console.log(`[spec] ${Object.keys(TOKENS).length} tokens, ${Object.keys(BUTTON_RAMP).length}-rung button/icon-button/split ramps, ${Object.keys(EMPHASIZED).length} emphasized typescale styles, 6 tonal-elevation surfaces, field anatomy, slider anatomy, fields, chips, selection, progress (stop indicator + gap), tabs, tooltip, list, rail: ok`);
   }
   return failures;
 }

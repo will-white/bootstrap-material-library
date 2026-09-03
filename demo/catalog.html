@@ -1850,6 +1850,45 @@
     </div>
 
     <div class="cat-item cat-item--wide">
+      <header><h3 class="m3-title-medium">Slider anatomy</h3>
+        <span class="cat-api"><code>.m3-slider-field</code><code>__label</code><code>--range</code><code>--vertical</code><code>--centered</code><code>--label-persistent</code></span></header>
+      <p class="cat-note m3-body-small">The value indicator, and M3&rsquo;s centered, range and vertical sliders.
+        CSS cannot read an input&rsquo;s value, so the label&rsquo;s text and the
+        <code>--m3-slider-value</code> percentage that places it are yours &mdash; the same contract
+        <code>--m3-progress-value</code> already has. (Shown here with <code>--label-persistent</code>; by
+        default the indicator appears while the handle is moving.) The vertical variant rotates the laid-out
+        slider rather than re-deriving its geometry, so dragging and keyboard steps behave exactly as they do
+        horizontally.</p>
+      <div class="cat-specimen cat-specimen--stack" style="justify-items: stretch;">
+        <div class="m3-slider-field m3-slider-field--label-persistent" style="--m3-slider-value: 65">
+          <input class="m3-slider" type="range" value="65" aria-label="With value indicator">
+          <output class="m3-slider__label">65</output>
+        </div>
+        <input class="m3-slider m3-slider--centered" type="range" value="72" style="--m3-slider-value: 72" aria-label="Centered">
+        <div class="m3-slider-field m3-slider-field--range m3-slider-field--label-persistent" style="--m3-slider-start: 25; --m3-slider-end: 70">
+          <input class="m3-slider" type="range" value="25" aria-label="Minimum">
+          <input class="m3-slider" type="range" value="70" aria-label="Maximum">
+          <output class="m3-slider__label" style="--m3-slider-value: 25">25</output>
+          <output class="m3-slider__label" style="--m3-slider-value: 70">70</output>
+        </div>
+      </div>
+      <div class="cat-specimen" style="align-items: flex-end; gap: var(--m3-sys-space-6);">
+        <div class="m3-slider-field m3-slider-field--vertical" style="--m3-slider-length: 10rem">
+          <input class="m3-slider" type="range" value="40" aria-label="Vertical">
+        </div>
+        <div class="m3-slider-field m3-slider-field--vertical" style="--m3-slider-length: 10rem">
+          <input class="m3-slider m3-slider--ticks" type="range" value="60" step="20" style="--m3-slider-ticks: 5;" aria-label="Vertical with ticks">
+        </div>
+        <div class="m3-slider-field m3-slider-field--vertical" style="--m3-slider-length: 10rem">
+          <input class="m3-slider m3-slider--centered" type="range" value="80" style="--m3-slider-value: 80" aria-label="Vertical centered">
+        </div>
+        <div class="m3-slider-field m3-slider-field--vertical" style="--m3-slider-length: 10rem">
+          <input class="m3-slider" type="range" value="40" disabled aria-label="Vertical disabled">
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-item cat-item--wide">
       <header><h3 class="m3-title-medium">Chips</h3>
         <span class="cat-api"><code>.m3-chip</code><code>--assist</code><code>--filter</code><code>--input</code><code>--suggestion</code><code>--elevated</code></span></header>
       <p class="cat-note m3-body-small">16px of label space, narrowing to 8px beside a leading icon or the filter

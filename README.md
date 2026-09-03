@@ -1135,13 +1135,83 @@ pure-CSS equivalent -- divergences are listed.
 | Checkbox / radio / switch | `.m3-checkbox`, `.m3-radio`, `.m3-switch` | `:indeterminate` styled; set it from your code |
 | Chips | `.m3-chip` + assist/filter/input/suggestion | filter/input ride real checkboxes; remove button styling only |
 | Menus | `.m3-menu` on `[popover]` | positioning via Popover API; hidden gracefully without it |
-| Sliders | `.m3-slider` on `input[type="range"]` (current M3 spec: 16px track, bar handle, stop indicator) + `--ticks` | active-track fill is CSS-only in both engines; dual-thumb ranges and value labels need script |
+| Sliders | `.m3-slider` on `input[type="range"]` (current M3 spec: 16px track, bar handle, stop indicator) + `--ticks`, `--centered`; `.m3-slider-field` with `__label`, `--range`, `--vertical` | active-track fill is CSS-only in both engines; the value label's text and the percentage that places it are yours (see below) |
 | Date/time inputs | `.m3-datetime` on native date/time inputs | the native popup calendar/clock is the browser's |
 | Date picker | `.m3-date-picker` (docked; `--modal` inside `.m3-dialog`; `--range`) with `__nav`, `__grid`, `__day` states (`--today`, `[aria-selected]`, `--outside`, `:disabled`, range start/end) | the calendar surface only: month navigation and selection are your script's or a form's |
 | Time picker | `.m3-time-picker` (input mode; `--modal`) with hour/minute fields and the AM/PM selector | the dial mode needs script and is not shipped |
 | Text fields | `.m3-field` filled/outlined, floating label, supporting text, leading/trailing icon, prefix/suffix, character counter | the counter's number is your script's; an affix's width is a token (see below) |
 | Search | `.m3-search` (+ `[popover]`/focus panel) | -- |
 | Select | `.m3-select` on native `<select>` | the picker is an M3 menu under `appearance: base-select` (also `.form-select` and the dense toolbar select); native option list elsewhere, CSS chevron either way |
+
+---
+
+### Slider anatomy
+
+The plain `.m3-slider` is one handle on a horizontal track, and needs no
+JavaScript at all. M3's other three forms — a value indicator, a centered
+track, a two-handle range — all need to know *where the handle is*, and CSS
+cannot read an input's value. So they take a percentage, exactly as
+`.m3-progress` already takes `--m3-progress-value`:
+
+```html
+<div class="m3-slider-field" style="--m3-slider-value: 40">
+  <input type="range" class="m3-slider" min="0" max="100" value="40">
+  <output class="m3-slider__label">40</output>
+</div>
+```
+
+```js
+slider.addEventListener('input', (e) => {
+  field.style.setProperty('--m3-slider-value', e.target.value);
+  label.textContent = e.target.value;
+});
+```
+
+**Value indicator.** `.m3-slider__label` is M3's value indicator: an
+`inverse-surface` pill in `label-large`, centred on the handle and sitting
+12dp above the track (M3's `ValueIndicatorActiveBottomSpace`). It appears
+while the handle is being moved — pressed or keyboard-focused — and the field
+reserves its row so a slider never jumps or overlaps what sits above it. Add
+`.m3-slider-field--label-persistent` to keep it visible.
+
+**Centered.** `.m3-slider--centered` fills from the track's midpoint out to
+the handle in whichever direction it sits, for a value with a natural zero
+(balance, an EQ band, an exposure trim), and moves the stop indicator to that
+origin. Reads `--m3-slider-value`.
+
+**Range.** `.m3-slider-field--range` is M3's two-handle slider. CSS has no
+two-thumb range input, so it is two overlapping inputs in one grid cell: the
+first draws the track and the band between `--m3-slider-start` and
+`--m3-slider-end`, the second contributes only its handle. Both handles are
+draggable — the inputs pass pointer events through to them — at the cost of
+click-to-jump on the track, which would otherwise always land on whichever
+input happens to be on top. Give each handle its own `<output>` with its own
+inline `--m3-slider-value` and both labels track their handles.
+
+```html
+<div class="m3-slider-field m3-slider-field--range"
+     style="--m3-slider-start: 20; --m3-slider-end: 70">
+  <input type="range" class="m3-slider" value="20" aria-label="Minimum">
+  <input type="range" class="m3-slider" value="70" aria-label="Maximum">
+</div>
+```
+
+**Vertical.** `.m3-slider-field--vertical` is M3 Expressive's vertical
+slider, `--m3-slider-length` tall (240px by default), minimum at the bottom
+in LTR and RTL alike. It **rotates the laid-out slider** rather than
+re-deriving its geometry for `writing-mode: vertical-*`: every part of the
+horizontal drawing — the track's gap padding, the handle's `clip-path`, the
+mask's rounded caps, the fill shadow's reach — is expressed along one axis,
+the vendor pseudo-elements do not agree about which way their own boxes turn,
+and rotating means the browser is still driving a plain horizontal range
+input, so dragging, keyboard steps and the value all behave. The value
+indicator is horizontal-only.
+
+```html
+<div class="m3-slider-field m3-slider-field--vertical" style="--m3-slider-length: 10rem">
+  <input type="range" class="m3-slider" value="40" aria-label="Level">
+</div>
+```
 
 ---
 
@@ -1434,6 +1504,10 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
   scale, the easing and duration ramps; the text field's anatomy geometry (the
   icon inset and slot, where the text and the floating label start beside an
   icon, an affix stacking on top of that, and a plain field left untouched);
+  the slider's value indicator (its 12dp rise off the track and its travel
+  from end to end), that it hides at rest, that a range slider stacks its
+  inputs and hands the pointer to its handles, and that a vertical slider's
+  rotated input lands flush on its wrapper;
   the five tonal-elevation opacities and
   the surface each renders as, with the shadow and tint channels proven not to
   touch each other's property; the five-rung Expressive size ramp on

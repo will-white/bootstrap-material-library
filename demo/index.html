@@ -232,6 +232,13 @@
               <span class="m3-label-large">Preview length</span>
               <input type="range" class="m3-slider m3-slider--ticks" min="0" max="100" step="10" value="60" aria-label="Preview length">
             </label>
+            <div style="margin-block-start: var(--m3-sys-space-4);">
+              <span class="m3-label-large">Notification volume</span>
+              <div class="m3-slider-field" id="vol-field" style="--m3-slider-value: 70">
+                <input type="range" class="m3-slider" id="vol" min="0" max="100" value="70" aria-label="Notification volume">
+                <output class="m3-slider__label" id="vol-out" for="vol">70</output>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1225,5 +1232,20 @@
   }
 </script>
 
+<script>
+  // The slider's value indicator: CSS places the pill, the page supplies the
+  // number and the percentage, exactly as the README describes.
+  (function () {
+    var input = document.getElementById("vol");
+    var field = document.getElementById("vol-field");
+    var out = document.getElementById("vol-out");
+    if (!input) return;
+    input.addEventListener("input", function () {
+      var pct = ((input.value - input.min) / (input.max - input.min)) * 100;
+      field.style.setProperty("--m3-slider-value", pct);
+      out.textContent = input.value;
+    });
+  })();
+</script>
 </body>
 </html>
