@@ -59,6 +59,32 @@ $tokens: (
 // handle, ::after is the touch target. Fixed geometry -- the handle offsets
 // are computed from the height token, so the track height deliberately does
 // NOT participate in density.
+// The switch's ::after: the 48dp touch target plus the 40dp state layer that
+// follows the handle. Emitted as its own mixin because Bootstrap's markup puts
+// a switch on `input[type="checkbox"]`, so the checkbox mapping matches it too
+// and its :checked rule -- one specificity step higher than
+// `.form-switch .form-check-input` -- would otherwise reshape this pseudo into
+// the checkbox's tick. The compat layer re-asserts it at that specificity.
+@mixin state-layer-pseudo {
+  @include m.own-pseudo;
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  block-size: max(100%, var(--#{c.$prefix}-sys-target-size));
+  inline-size: max(calc(100% + 2 * var(--_overhang)), var(--#{c.$prefix}-sys-target-size));
+  border: none;
+  rotate: none;
+  visibility: visible;
+  background: radial-gradient(
+    circle at var(--_handle-x) 50%,
+    color-mix(in srgb, var(--_layer-color) var(--_layer-opacity), transparent)
+      calc(var(--#{c.$prefix}-sys-selection-layer-size) / 2),
+    transparent calc(var(--#{c.$prefix}-sys-selection-layer-size) / 2 + var(--#{c.$prefix}-sys-stroke-hairline) / 2)
+  );
+}
+
 @mixin control {
   @include m.own-box;
   display: inline-block;
@@ -113,13 +139,7 @@ $tokens: (
   // The touch target also paints the 40dp state layer centered on the handle
   // (hover / focus / pressed), following the handle to either end.
   &::after {
-    inline-size: max(calc(100% + 2 * var(--_overhang)), var(--#{c.$prefix}-sys-target-size));
-    background: radial-gradient(
-      circle at var(--_handle-x) 50%,
-      color-mix(in srgb, var(--_layer-color) var(--_layer-opacity), transparent)
-        calc(var(--#{c.$prefix}-sys-selection-layer-size) / 2),
-      transparent calc(var(--#{c.$prefix}-sys-selection-layer-size) / 2 + var(--#{c.$prefix}-sys-stroke-hairline) / 2)
-    );
+    @include state-layer-pseudo;
   }
 
   @include m.hover {

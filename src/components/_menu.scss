@@ -53,6 +53,7 @@ $tokens: (
 @mixin surface {
   @include m.own-box;
   background-color: #{v("menu-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("menu-container-color")};
   color: #{v("menu-content-color")};
   border: none;
   border-radius: #{v("menu-shape")};

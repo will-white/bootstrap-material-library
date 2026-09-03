@@ -11,6 +11,9 @@
 //   --m3-progress-wave-amplitude    3px    wavy variants: wave rise above /
 //                                          below the rail (and scallop radius)
 //   --m3-progress-wave-wavelength   24px   wavy linear: one crest + one trough
+//   --m3-progress-bootstrap-height  16px   .progress (Bootstrap's own box)
+//   --m3-progress-bootstrap-shape   corner-full
+//   --m3-progress-bootstrap-label-color  on-primary
 //   --m3-progress-stop-size         4px    M3 stop indicator at the track end
 //   --m3-progress-stop-color        --m3-progress-color
 //   --m3-progress-gap               4px    gap between active indicator and
@@ -73,6 +76,12 @@ $tokens: (
   "progress-circle-thickness": #{fn.rem(4)},
   "progress-wave-amplitude": #{fn.rem(3)},
   "progress-wave-wavelength": #{fn.rem(24)},
+  // The Bootstrap-shaped box: .progress is a 1rem bar that can carry a
+  // centred label, not M3's 4px indicator. Named like the button's
+  // --m3-btn-height-bootstrap-large: a Bootstrap metric, kept as one.
+  "progress-bootstrap-height": #{fn.rem(16)},
+  "progress-bootstrap-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
+  "progress-bootstrap-label-color": var(--#{c.$sys-prefix}-sys-color-on-primary),
   "progress-stop-size": #{fn.rem(4)},
   "progress-gap": #{fn.rem(4)},
   "progress-circle-gap": 6deg,

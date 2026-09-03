@@ -1430,32 +1430,49 @@ $-themes: (
   // ==========================================================================
   // Progress + spinners (render through the progress mixins)
   // ==========================================================================
+  // Bootstrap's progress is its own component, not M3's linear indicator: it
+  // is --bs-progress-height tall (1rem) and its bar carries a label. It takes
+  // M3's colours and full rounding, and none of the 4px indicator's anatomy --
+  // no stop indicator, no active-to-track gap, both of which belong to a
+  // hairline track (.m3-progress has them).
   .progress {
-    @include progress.linear-track;
+    @include m.own-box;
     display: flex;
+    block-size: #{progress.v("progress-bootstrap-height")};
+    overflow: clip;
+    border-radius: #{progress.v("progress-bootstrap-shape")};
+    background-color: #{progress.v("progress-track-color")};
+    @include m.typescale("label-small");
   }
 
   .progress-stacked {
     @include m.own-box;
     display: flex;
-    block-size: #{progress.v("progress-thickness")};
-    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+    block-size: #{progress.v("progress-bootstrap-height")};
+    border-radius: #{progress.v("progress-bootstrap-shape")};
     overflow: clip;
 
+    // Segments do not round themselves: the stacked container clips the ends.
     .progress {
       overflow: visible;
+      border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
+      background-color: transparent;
     }
   }
 
   .progress-bar {
-    @include progress.linear-bar;
+    @include m.own-box;
     display: flex;
     align-items: center;
     justify-content: center;
+    block-size: 100%;
+    inline-size: 0;
     overflow: hidden;
     white-space: nowrap;
-    color: var(--#{c.$sys-prefix}-sys-color-on-primary);
+    background-color: #{progress.v("progress-color")};
+    color: #{progress.v("progress-bootstrap-label-color")};
     @include m.typescale("label-small");
+    @include m.transition((inline-size));
   }
 
   .progress-bar-striped {
@@ -1794,16 +1811,17 @@ $-themes: (
     text-align: end;
   }
 
-  // The switch fully replaces the checkbox pseudo-element chrome, so it
-  // comes later in source order and resets the mark/touch pseudos.
+  // A Bootstrap switch is an input[type="checkbox"], so the checkbox mapping
+  // above matches it too. Source order settles the unchecked rules, but the
+  // checkbox's `:checked::after` tick is one specificity step higher than this
+  // block and would reshape the switch's state layer into a 5x12 rotated
+  // sliver, so the pseudo is re-asserted at that specificity.
   .form-switch .form-check-input {
     @include switch.control;
+  }
 
-    &::after {
-      border: none;
-      rotate: none;
-      visibility: visible;
-    }
+  .form-switch .form-check-input:checked::after {
+    @include switch.state-layer-pseudo;
   }
 
   .form-range {

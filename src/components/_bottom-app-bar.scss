@@ -45,6 +45,7 @@ $tokens: (
   padding-inline: var(--#{c.$prefix}-sys-space-4);
   @include m.control-height(v("bottom-app-bar-height"));
   background-color: #{v("bottom-app-bar-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("bottom-app-bar-container-color")};
   color: #{v("bottom-app-bar-content-color")};
 }
 

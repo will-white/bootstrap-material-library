@@ -97,6 +97,7 @@ $tokens: (
   inline-size: fit-content;
   padding: #{v("color-palette-padding")};
   background-color: #{v("color-palette-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("color-palette-container-color")};
   color: #{v("color-palette-content-color")};
   border: none;
   border-radius: #{v("color-palette-shape")};

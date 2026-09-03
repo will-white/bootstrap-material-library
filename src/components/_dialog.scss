@@ -49,6 +49,7 @@ $tokens: (
 @mixin container {
   @include m.own-box;
   background-color: #{v("dialog-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("dialog-container-color")};
   color: #{v("dialog-content-color")};
   border: none;
   border-radius: #{v("dialog-shape")};

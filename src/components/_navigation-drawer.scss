@@ -59,6 +59,7 @@ $tokens: (
   block-size: 100%;
   padding: var(--#{c.$prefix}-sys-space-3);
   background-color: #{v("drawer-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("drawer-container-color")};
   color: #{v("drawer-content-color")};
   overflow-y: auto;
 }

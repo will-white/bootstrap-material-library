@@ -315,7 +315,14 @@ readable from the name alone:
    `--m3-sys-density-step`, `--m3-sys-stroke-*`, `--m3-sys-z-*`,
    `--m3-sys-opacity-*`, `--m3-sys-icon-size`, `--m3-sys-target-size`,
    `--m3-sys-selection-layer-size`, `--m3-sys-chevron-size` and
-   `--m3-sys-elevation-level`.
+   `--m3-sys-elevation-level`. One of them, `--m3-sys-container-color`, is
+   deliberately not declared at `:root`: it names the surface a component is
+   sitting on, container components (card, dialog, sheet, menu, toolbar, the
+   app bars, the nav surfaces, the pickers) set it to their own background,
+   and anything that has to paint a hole in itself reads it with the page
+   surface as the fallback. The slider's gap around its handle is the case
+   that needs it -- painting the page surface there put a wrong-coloured notch
+   on every slider that sat on anything else.
 3. **Component tokens** -- `--m3-btn-*`, `--m3-card-*`, `--m3-field-*`, ...:
    the public API of each component, each defaulting to a system token.
    **The Bootstrap re-skin consumes these same tier-3 tokens**, so retheming
@@ -764,7 +771,7 @@ have an M3 counterpart that needs no JS at all.
 | `.placeholder` (+ glow/wave) | -- (styled natively) | No | sizes (`.placeholder-lg` etc.) intentionally not shipped |
 | `.popover` | `.m3-tooltip--rich` | Yes (trigger/position) | arrows are dropped (M3 has none) |
 | `.tooltip` | `.m3-tooltip` | Yes (trigger/position) | CSS-only anchor pattern available |
-| `.progress`/`.progress-bar` | `.m3-progress` | No | inline `width` and `--m3-progress-value` both work |
+| `.progress`/`.progress-bar` | `.m3-progress` | No | not the same box: `.progress` keeps Bootstrap's 1rem bar and its centred label (`--m3-progress-bootstrap-*`), `.m3-progress` is M3's 4px indicator with the stop dot and gap. Colour and shape are M3's in both. Inline `width` and `--m3-progress-value` both work |
 | `.spinner-border`/`.spinner-grow` | `.m3-spinner` | No | |
 | `.toast` | `.m3-snackbar` | Yes (show/hide timing) | |
 | `.table` + variants | -- (styled natively) | No | striped/hover ride the state-layer opacities |
@@ -1013,7 +1020,7 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
 
 ### Tests
 
-`npm test` runs eight suites against the built CSS:
+`npm test` runs nine suites against the built CSS:
 
 - **contrast** (`test/contrast.js`, no browser): reads the static sRGB tier
   and asserts M3's minimum ratios for every accent / on-accent, container /
@@ -1043,6 +1050,13 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
   every frame: the pill is half the height, the radius moves through visible
   intermediate values, never clamps toward square, and settles on the target
   shape.
+- **equivalence** (`test/equivalence.js`): every element of the fixture, 83
+  computed longhands each, against a baseline committed in
+  `test/fixtures/baseline.json`. The other suites assert intent; this one
+  asserts that nothing else moved, which is what a behaviour-preserving
+  refactor needs. It refuses to compare a page that rendered unstyled, so a
+  green result means something. When a change is meant to alter rendering,
+  review the reported differences and re-record with `npm run baseline`.
 - **cascade** (`test/cascade.js`): re-pointing a system role, a surface role,
   a shape token or a library global on a plain ancestor reaches the components
   below it; a component token set on an ancestor still beats all of them; and

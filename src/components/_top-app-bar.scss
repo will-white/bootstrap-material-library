@@ -63,6 +63,7 @@ $tokens: (
   gap: var(--#{c.$prefix}-sys-space-2);
   padding-inline: var(--#{c.$prefix}-sys-space-2);
   background-color: #{v("top-app-bar-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("top-app-bar-container-color")};
   color: #{v("top-app-bar-content-color")};
   @include m.control-height(v("top-app-bar-height"));
 }

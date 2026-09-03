@@ -162,6 +162,7 @@ $tokens: (
   inline-size: #{v("date-picker-width")};
   max-inline-size: 100%;
   background-color: #{v("date-picker-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("date-picker-container-color")};
   color: #{v("date-picker-content-color")};
   border-radius: #{v("date-picker-shape")};
   @include m.elevation(3);
@@ -174,6 +175,7 @@ $tokens: (
   --#{c.$prefix}-date-picker-padding: var(--#{c.$prefix}-sys-space-3);
   --#{c.$prefix}-date-picker-cell-size: #{fn.rem(48)};
   background-color: #{v("date-picker-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("date-picker-container-color")};
   border-radius: #{v("date-picker-shape")};
   @include m.elevation(3);
 }

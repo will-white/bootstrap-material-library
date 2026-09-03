@@ -255,6 +255,7 @@ $tokens: (
   border-radius: #{v("toolbar-shape")};
   color: var(--_content);
   background-color: var(--_container);
+  --#{c.$prefix}-sys-container-color: var(--_container);
   vertical-align: middle;
   @include m.elevation(3);
   @include m.transition((background-color, color, box-shadow));

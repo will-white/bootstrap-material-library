@@ -126,6 +126,7 @@ $tokens: (
   max-inline-size: 100%;
   padding: #{v("time-picker-padding")};
   background-color: #{v("time-picker-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("time-picker-container-color")};
   color: #{v("time-picker-content-color")};
   border-radius: #{v("time-picker-shape")};
   @include m.elevation(3);

@@ -45,6 +45,13 @@ $steps: (4, 8, 12, 16, 24, 32, 48, 64);
   @include m.global-token("icon-size-small", fn.rem(18));
   @include m.global-token("chevron-size", fn.rem(10));
 
+  // --<prefix>-sys-container-color, the surface a component is sitting on, is
+  // deliberately NOT declared here. Container components set it to their own
+  // background, and its default is read at the point of use
+  // (var(--m3-sys-container-color, var(--md-sys-color-surface))) so an island
+  // or a themed subtree reaches it -- a :root declaration would freeze it at
+  // the page surface, which is the bug the slider's gap used to show.
+
   // Structural opacities (section 0: even opacities resolve through tokens).
   @include m.global-token("opacity-hidden", 0);
   @include m.global-token("opacity-full", 1);

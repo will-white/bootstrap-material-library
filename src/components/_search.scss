@@ -56,6 +56,7 @@ $tokens: (
   @include m.control-height(v("search-height"));
   border-radius: #{v("search-shape")};
   background-color: #{v("search-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("search-container-color")};
   padding-inline: var(--#{c.$prefix}-sys-space-4);
   @include m.focus-ring-within;
   @include m.transition((background-color));
@@ -111,6 +112,7 @@ $tokens: (
   inset-inline: var(--#{c.$prefix}-sys-space-none);
   margin-block-start: var(--#{c.$prefix}-sys-space-1);
   background-color: #{v("search-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("search-container-color")};
   border-radius: #{v("search-panel-shape")};
   @include m.elevation(2);
   padding-block: var(--#{c.$prefix}-sys-space-2);

@@ -96,6 +96,7 @@ $tokens: map.set($tokens, "list-divider-inset", calc( #{m.token($tokens, "list-i
   padding-inline: var(--#{c.$prefix}-sys-space-none);
   padding-block: var(--#{c.$prefix}-sys-space-2);
   background-color: #{v("list-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("list-container-color")};
 }
 
 // Dividers start at the headline text instead of the list edge.

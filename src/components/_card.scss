@@ -50,6 +50,7 @@ $tokens: (
   flex-direction: column;
   position: relative;
   background-color: var(--_container);
+  --#{c.$prefix}-sys-container-color: var(--_container);
   color: var(--_content);
   border-radius: #{v("card-shape")};
   overflow: clip;

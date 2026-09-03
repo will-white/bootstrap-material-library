@@ -90,6 +90,7 @@ $tokens: (
 @mixin container {
   @include m.own-box;
   background-color: #{v("sheet-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("sheet-container-color")};
   color: #{v("sheet-content-color")};
   border: none;
   padding: var(--#{c.$prefix}-sys-space-4);
@@ -192,6 +193,7 @@ $tokens: (
   display: block;
   inline-size: #{v("sheet-side-width")};
   background-color: #{v("sheet-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("sheet-container-color")};
   color: #{v("sheet-content-color")};
   border-inline-start: var(--#{c.$prefix}-sys-stroke-hairline) solid
     #{v("sheet-outline-color")};

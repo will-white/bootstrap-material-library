@@ -63,6 +63,7 @@ $tokens: (
   block-size: 100%;
   padding-block: var(--#{c.$prefix}-sys-space-4);
   background-color: #{v("rail-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("rail-container-color")};
 }
 
 // Pinned to the inline-start edge of the viewport.

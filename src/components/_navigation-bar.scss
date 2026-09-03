@@ -64,6 +64,7 @@ $tokens: (
   @include m.control-height(v("nav-bar-height"));
   padding-inline: var(--#{c.$prefix}-sys-space-2);
   background-color: #{v("nav-bar-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("nav-bar-container-color")};
 }
 
 // Pinned to the bottom of the viewport.

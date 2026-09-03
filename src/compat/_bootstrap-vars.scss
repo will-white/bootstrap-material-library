@@ -119,6 +119,17 @@ $-extra-triplets: (
   --bs-toast-width: #{fn.rem(350)};
   --bs-pagination-size: #{fn.rem(40)};
   --bs-breadcrumb-divider: "/";
+
+  // Progress keeps Bootstrap's own height contract. M3's linear progress is a
+  // 4px indicator, which .m3-progress is; a Bootstrap .progress is a 1rem bar
+  // that can carry a centred label, so re-skinning one must not collapse it to
+  // a hairline. Colour and shape come from M3, the box from Bootstrap.
+  --bs-progress-height: #{fn.rem(16)};
+  --bs-progress-font-size: var(--#{c.$sys-prefix}-sys-typescale-label-small-size);
+  --bs-progress-bg: var(--#{c.$sys-prefix}-sys-color-secondary-container);
+  --bs-progress-border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  --bs-progress-bar-color: var(--#{c.$sys-prefix}-sys-color-on-primary);
+  --bs-progress-bar-bg: var(--#{c.$sys-prefix}-sys-color-primary);
 }
 
 @mixin remap {

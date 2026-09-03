@@ -2375,6 +2375,15 @@
       "z-tooltip": {
         "$type": "number",
         "$value": 70
+      },
+      "container-color": {
+        "$value": "{md.sys.color.surface}",
+        "$type": "color",
+        "$extensions": {
+          "m3x": {
+            "css": "var(--md-sys-color-surface)"
+          }
+        }
       }
     },
     "comp": {
@@ -4095,6 +4104,54 @@
         }
       },
       "progress": {
+        "bootstrap-height": {
+          "$type": "dimension",
+          "$value": "1rem"
+        },
+        "bootstrap-shape": {
+          "$value": "{md.sys.shape.corner-full}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-shape-corner-full)"
+            }
+          }
+        },
+        "track-color": {
+          "$value": "{md.sys.color.secondary-container}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-secondary-container)"
+            }
+          }
+        },
+        "color": {
+          "$value": "{md.sys.color.primary}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-primary)"
+            }
+          }
+        },
+        "bootstrap-label-color": {
+          "$value": "{md.sys.color.on-primary}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-on-primary)"
+            }
+          }
+        },
+        "circle-size": {
+          "$type": "dimension",
+          "$value": "3rem"
+        },
+        "circle-thickness": {
+          "$type": "dimension",
+          "$value": "0.25rem"
+        },
         "thickness": {
           "$type": "dimension",
           "$value": "0.25rem"
@@ -4106,15 +4163,6 @@
         "gap": {
           "$type": "dimension",
           "$value": "0.25rem"
-        },
-        "track-color": {
-          "$value": "{md.sys.color.secondary-container}",
-          "$type": "color",
-          "$extensions": {
-            "m3x": {
-              "css": "var(--md-sys-color-secondary-container)"
-            }
-          }
         },
         "stop-size": {
           "$type": "dimension",
@@ -4128,23 +4176,6 @@
               "css": "var(--m3-progress-color, var(--md-sys-color-primary))"
             }
           }
-        },
-        "color": {
-          "$value": "{md.sys.color.primary}",
-          "$type": "color",
-          "$extensions": {
-            "m3x": {
-              "css": "var(--md-sys-color-primary)"
-            }
-          }
-        },
-        "circle-size": {
-          "$type": "dimension",
-          "$value": "3rem"
-        },
-        "circle-thickness": {
-          "$type": "dimension",
-          "$value": "0.25rem"
         },
         "wave-amplitude": {
           "$type": "dimension",
@@ -4657,11 +4688,11 @@
           "$value": 10
         },
         "gap-color": {
-          "$value": "{md.sys.color.surface}",
           "$type": "color",
+          "$value": "var(--m3-sys-container-color, var(--md-sys-color-surface))",
           "$extensions": {
             "m3x": {
-              "css": "var(--md-sys-color-surface)"
+              "css": "var(--m3-sys-container-color, var(--md-sys-color-surface))"
             }
           }
         },

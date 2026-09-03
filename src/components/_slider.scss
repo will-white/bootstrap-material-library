@@ -19,8 +19,10 @@
 //                                     the handle height (default changed
 //                                     from the 20px round thumb)
 //   --m3-slider-gap                   6px    gap between handle and tracks
-//   --m3-slider-gap-color             surface   what shows through the gap;
-//                                     re-point on tinted containers
+//   --m3-slider-gap-color             --m3-sys-container-color   the gap is
+//                                     a hole, so it paints whatever surface the
+//                                     slider sits on; container components set
+//                                     that global to their own background
 //   --m3-slider-stop-size             4px    stop indicator / tick diameter
 //   --m3-slider-stop-color            primary   stop indicator / tick color
 //   --m3-slider-ticks                 10     tick INTERVALS drawn by
@@ -102,7 +104,11 @@ $tokens: (
   "slider-thumb-width-pressed": #{fn.rem(2)},
   "slider-thumb-size": #{fn.rem(44)},
   "slider-gap": #{fn.rem(6)},
-  "slider-gap-color": var(--#{c.$sys-prefix}-sys-color-surface),
+  "slider-gap-color":
+    var(
+      --#{c.$prefix}-sys-container-color,
+      var(--#{c.$sys-prefix}-sys-color-surface)
+    ),
   "slider-stop-size": #{fn.rem(4)},
   "slider-stop-color": var(--#{c.$sys-prefix}-sys-color-primary),
   "slider-ticks": 10,

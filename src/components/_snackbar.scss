@@ -61,6 +61,7 @@ $tokens: (
   max-inline-size: #{v("snackbar-max-width")};
   padding-inline: var(--#{c.$prefix}-sys-space-4);
   background-color: #{v("snackbar-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("snackbar-container-color")};
   color: #{v("snackbar-content-color")};
   border-radius: #{v("snackbar-shape")};
   @include m.elevation(3);

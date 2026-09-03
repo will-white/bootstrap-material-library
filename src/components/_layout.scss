@@ -161,6 +161,7 @@ $tokens: (
   padding: #{v("pane-padding")};
   border-radius: #{v("pane-shape")};
   background-color: #{v("pane-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("pane-container-color")};
   color: #{v("pane-content-color")};
 }
 
