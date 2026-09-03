@@ -20,6 +20,17 @@
 //     <button class="m3-tabs__tab" role="tab">Two</button>
 //   </nav>
 //
+// A tab can carry M3's badge. On a label-only tab it sits beside the label,
+// in the tab's own flex row; on an icon tab it belongs at the icon's corner,
+// which is what .m3-badge-anchor is for:
+//
+//   <button class="m3-tabs__tab">Mail <span class="m3-badge">24</span></button>
+//   <button class="m3-tabs__tab">
+//     <span class="m3-badge-anchor"><span class="m3-icon">mail</span>
+//       <span class="m3-badge m3-badge--dot"></span></span>
+//     Mail
+//   </button>
+//
 // Real-input variant (zero-JS tab switching; input precedes its label):
 //   <div class="m3-tabs">
 //     <input type="radio" name="tg" class="m3-tabs__input" id="t1" checked>
@@ -185,6 +196,15 @@ $tokens: (
 
   .#{$p}-tabs--fixed .#{$p}-tabs__tab {
     flex: 1;
+  }
+
+  // A badge inside a tab is part of the tab's own row, so it takes the same
+  // vertical centring the label has rather than baseline-aligning to it. On
+  // an icon-and-label tab (a column) it centres in the column instead.
+  .#{$p}-tabs__tab > .#{$p}-badge,
+  .#{$p}-tabs__tab > .#{$p}-badge-anchor {
+    align-self: center;
+    flex: 0 0 auto;
   }
 
   .#{$p}-tabs__tab {

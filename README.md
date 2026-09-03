@@ -62,6 +62,7 @@ via `@supports`:
 | Dense toolbar overflow | `@container` (Baseline 2023) | groups never collapse; `__more` stays hidden |
 | `@scope` refinements | none -- see below | slightly less isolation, identical rendering |
 | Anchor-positioned tooltips/menus, Popover menus, `:has()` selection states | per-feature `@supports`; every `:has()` / `:popover-open` rule stands alone in its selector list | hidden gracefully / static fallback / the non-`:has()` state |
+| Time picker dial | `@supports (inline-size: calc(sin(30deg) * 1px))` | the dial is not emitted at all; the input mode is unaffected |
 | Container transform | `@supports (view-transition-name: none)`, then `view-transition-name: auto` or `--m3-sys-view-transition-name` | the element does not participate; the navigation is instant |
 | Automatic text-field slot reservation | one `:has()` rule per slot | write the `.m3-field--leading-icon` / `--trailing-icon` / `--prefix` / `--suffix` modifier, which sets exactly the same value |
 
@@ -1206,7 +1207,7 @@ for them in the spec.
 | Tooltips | `.m3-tooltip`, `--rich`, `.m3-tooltip-anchor` | anchor positioning behind `@supports`, hidden gracefully otherwise |
 | Cards | `.m3-card` + variants, donut-scoped chrome | -- |
 | Carousel | `.m3-carousel` + `--multi-browse`, `--hero`, `--uncontained` | CSS scroll-snap, no autoplay; the layouts are M3's resting arrangements, not its scroll-driven size morphing |
-| Dialogs | `.m3-dialog` on native `<dialog>` (+ `--fullscreen`, `--static` for an in-flow surface) | consumer calls `showModal()` |
+| Dialogs | `.m3-dialog` on native `<dialog>` (+ `--fullscreen`, `--static` for an in-flow surface), `__icon` hero slot | consumer calls `showModal()`; a hero icon centres the headline with it, through `:has()` |
 | Divider | `.m3-divider` on `<hr>` | -- |
 | Lists | `.m3-list` (+ `--dividers`, `--inset`), `.m3-list__subheader`, `.m3-list-item` (one to three lines, donut) with `__overline`, `__leading--avatar/--image/--video`, `__trailing--meta`, trailing controls | -- |
 | Bottom/side sheets | `.m3-sheet--bottom/--side` on `<dialog>`, `--side-standard` on `<aside>` | modal variants via `showModal()` |
@@ -1214,17 +1215,17 @@ for them in the spec.
 | Adaptive layout | `.m3-adaptive-layout` + `.m3-adaptive-nav` (`__item`, `__icon`, `__label`: navigation bar / rail / drawer by window size class), `.m3-pane-layout` + `--list-detail/--supporting-pane/--feed`, `.m3-pane`, `.m3-only-*` / `.m3-hide-*` | viewport media queries at M3's window size classes (`$window-size-classes`); which pane a compact window shows is yours |
 | Icon | `.m3-icon` (+ `--filled`) for Material Symbols variable fonts | you load the font (subset it with `icon_names`); `opsz` follows the icon size, selected controls set `--m3-icon-fill: 1` and the FILL axis animates; a missing font is an empty box, not a clipped word |
 | Disclosure | `details.m3-disclosure` (+ `name` for exclusive groups) | **m3x extension** -- M3 has no disclosure component; this is a native `<details>` dressed in M3's tokens, with animated `::details-content` where supported |
-| Tabs | `.m3-tabs` (aria/`.active` or real radio inputs) | pane switching is yours |
+| Tabs | `.m3-tabs` (aria/`.active` or real radio inputs); `.m3-badge` / `.m3-badge-anchor` inside a tab | pane switching is yours |
 | Top/bottom app bars | `.m3-top-app-bar` + size variants + `--sticky` (+ `--scrolled` class), `.m3-bottom-app-bar` | a sticky bar tints on scroll and a sticky medium/large bar collapses to the small height through scroll-driven animations; elsewhere toggle `--scrolled` yourself |
 | Checkbox / radio / switch | `.m3-checkbox`, `.m3-radio`, `.m3-switch` | `:indeterminate` styled; set it from your code |
-| Chips | `.m3-chip` + assist/filter/input/suggestion | filter/input ride real checkboxes; remove button styling only |
-| Menus | `.m3-menu` on `[popover]` | positioning via Popover API; hidden gracefully without it |
+| Chips | `.m3-chip` + assist/filter/input/suggestion, `__avatar` | filter/input ride real checkboxes; remove button styling only |
+| Menus | `.m3-menu` on `[popover]` + `__shortcut`, `__item--submenu`, `--submenu` | positioning via Popover API; hidden gracefully without it; a cascading submenu is a nested popover, and you pair it with its parent through an anchor name |
 | Sliders | `.m3-slider` on `input[type="range"]` (current M3 spec: 16px track, bar handle, stop indicator) + `--ticks`, `--centered`; `.m3-slider-field` with `__label`, `--range`, `--vertical` | active-track fill is CSS-only in both engines; the value label's text and the percentage that places it are yours (see below) |
 | Date/time inputs | `.m3-datetime` on native date/time inputs | the native popup calendar/clock is the browser's |
-| Date picker | `.m3-date-picker` (docked; `--modal` inside `.m3-dialog`; `--range`) with `__nav`, `__grid`, `__day` states (`--today`, `[aria-selected]`, `--outside`, `:disabled`, range start/end) | the calendar surface only: month navigation and selection are your script's or a form's |
-| Time picker | `.m3-time-picker` (input mode; `--modal`) with hour/minute fields and the AM/PM selector | the dial mode needs script and is not shipped |
+| Date picker | `.m3-date-picker` (docked; `--modal` inside `.m3-dialog`; `--range`) with `__nav`, `__grid`, `__day` states (`--today`, `[aria-selected]`, `--outside`, `:disabled`, range start/end), and `__years` / `__year` for the year-selection view | the calendar surface only: month navigation, selection and which view is showing are your script's or a form's |
+| Time picker | `.m3-time-picker` (input and dial modes; `--modal`) with hour/minute fields, the AM/PM selector, and `__dial` / `__dial-number` / `__dial-hand` | the dial is twelve real radios on a circle, so it is click-to-select: M3's drag needs pointer tracking, not styling |
 | Text fields | `.m3-field` filled/outlined, floating label, supporting text, leading/trailing icon, prefix/suffix, character counter | the counter's number is your script's; an affix's width is a token (see below) |
-| Search | `.m3-search` (+ `[popover]`/focus panel) | -- |
+| Search | `.m3-search` (+ `[popover]`/focus panel), `__leading`, `__trailing` | -- |
 | Select | `.m3-select` on native `<select>` | the picker is an M3 menu under `appearance: base-select` (also `.form-select` and the dense toolbar select); native option list elsewhere, CSS chevron either way |
 
 ---
@@ -1371,6 +1372,64 @@ indicator is horizontal-only.
   <input type="range" class="m3-slider" value="40" aria-label="Level">
 </div>
 ```
+
+---
+
+### The other anatomy slots
+
+M3 defines parts of several components that the library was missing. Each is
+an element you add; none changes the markup that was already working.
+
+| Component | Slots |
+|---|---|
+| Menu | `.m3-menu__shortcut` (trailing supporting text), `.m3-menu__item--submenu` + `.m3-menu--submenu` (cascading) |
+| Search | `.m3-search__leading`, `.m3-search__trailing` |
+| Dialog | `.m3-dialog__icon` (hero icon) |
+| Tabs | a `.m3-badge` or `.m3-badge-anchor` inside a tab |
+| Chip | `.m3-chip__avatar` (leading, 24px round) |
+| Date picker | `.m3-date-picker__years` / `__year` (year-selection view) |
+| Time picker | `.m3-time-picker__dial` / `__dial-number` / `__dial-hand` (dial mode) |
+
+**Cascading menus** are the Popover API's, not a script's: the parent item is
+the `popovertarget` of a nested `.m3-menu`. CSS cannot pair an anchor with
+its positioned element on its own, so the anchor name is yours on both ends —
+and without anchor positioning the child opens centred, which is a placement
+rather than a break.
+
+```html
+<button class="m3-menu__item m3-menu__item--submenu"
+        popovertarget="share" style="anchor-name: --share-anchor">
+  Share <span class="m3-menu__shortcut">Ctrl S</span>
+</button>
+<div class="m3-menu m3-menu--submenu" id="share" popover
+     style="--m3-menu-anchor: --share-anchor">…</div>
+```
+
+**The time picker's dial** is twelve real radio inputs laid out on a circle
+with CSS trigonometry, so picking an hour is a click on a form control and a
+plain `<form>` still submits it. The numbers' order in the markup *is* their
+position on the face — the first is one o'clock — so nothing carries an angle
+in the HTML, and the hand follows the checked radio through `:has()`.
+
+```html
+<div class="m3-time-picker__dial">
+  <span class="m3-time-picker__dial-hand"></span>
+  <label class="m3-time-picker__dial-number">
+    <input type="radio" name="hour" value="1"><span>1</span>
+  </label>
+  <!-- twelve of them, in order -->
+</div>
+```
+
+`sin()` and `cos()` arrived after this library's `@layer` support floor and
+without them every number would stack on the dial's centre, so the whole face
+is behind `@supports` rather than degraded. What the CSS dial does **not** do
+is M3's drag: you click a number rather than sweeping the hand round to it.
+Dragging is a pointer-tracking problem, not a styling one.
+
+**The date picker's year view** is the same surface with the calendar swapped
+for a scrolling three-column grid of years. Which view is showing is yours —
+CSS has no notion of which year the calendar is on.
 
 ---
 
@@ -1672,7 +1731,11 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
   rotated input lands flush on its wrapper; the rail's expanded width, its
   56px horizontal item, the icon going back to a glyph box, and the 40px
   header gap; the four carousel layouts on a fixed track; that every
-  transition pattern is inert under reduced motion;
+  transition pattern is inert under reduced motion; the time picker's dial
+  (its face, three numbers' places on the circle, and the hand following the
+  checked hour), the date picker's year cell, the menu shortcut's trailing
+  gap, the search bar's icon insets, the dialog headline centring on its hero
+  icon and not centring without one, and the chip avatar;
   the five tonal-elevation opacities and
   the surface each renders as, with the shadow and tint channels proven not to
   touch each other's property; the five-rung Expressive size ramp on

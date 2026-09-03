@@ -128,6 +128,13 @@ ${Object.keys(BUTTON_RAMP).map((s) => `<div class="${mod('m3-split-button', s)}"
 </div>
 <div class="m3-carousel m3-carousel--uncontained" id="car-unc"><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div></div>
 </div>
+<div class="m3-time-picker"><div class="m3-time-picker__dial" id="dial"><span class="m3-time-picker__dial-hand" id="dial-hand"></span><label class="m3-time-picker__dial-number" id="dn-1"><input type="radio" name="spec-h" value="1"><span>1</span></label><label class="m3-time-picker__dial-number" id="dn-2"><input type="radio" name="spec-h" value="2"><span>2</span></label><label class="m3-time-picker__dial-number" id="dn-3"><input type="radio" name="spec-h" value="3" checked><span>3</span></label><label class="m3-time-picker__dial-number" id="dn-4"><input type="radio" name="spec-h" value="4"><span>4</span></label><label class="m3-time-picker__dial-number" id="dn-5"><input type="radio" name="spec-h" value="5"><span>5</span></label><label class="m3-time-picker__dial-number" id="dn-6"><input type="radio" name="spec-h" value="6"><span>6</span></label><label class="m3-time-picker__dial-number" id="dn-7"><input type="radio" name="spec-h" value="7"><span>7</span></label><label class="m3-time-picker__dial-number" id="dn-8"><input type="radio" name="spec-h" value="8"><span>8</span></label><label class="m3-time-picker__dial-number" id="dn-9"><input type="radio" name="spec-h" value="9"><span>9</span></label><label class="m3-time-picker__dial-number" id="dn-10"><input type="radio" name="spec-h" value="10"><span>10</span></label><label class="m3-time-picker__dial-number" id="dn-11"><input type="radio" name="spec-h" value="11"><span>11</span></label><label class="m3-time-picker__dial-number" id="dn-12"><input type="radio" name="spec-h" value="12"><span>12</span></label></div></div>
+<div class="m3-date-picker m3-date-picker--docked"><div class="m3-date-picker__years"><button class="m3-date-picker__year" id="year-cell" type="button">2026</button></div></div>
+<div class="m3-menu m3-menu--static" id="menu-anat"><button class="m3-menu__item" id="menu-item-sc">Undo <span class="m3-menu__shortcut" id="menu-sc">Ctrl Z</span></button></div>
+<form class="m3-search" role="search" id="search-anat" style="width:360px"><span class="m3-search__leading" id="search-lead">${ICON}</span><input type="search" class="m3-search__input" id="search-in"><button class="m3-search__trailing" id="search-trail" type="reset" aria-label="x">${ICON}</button></form>
+<dialog open class="m3-dialog" id="dlg-icon"><span class="m3-dialog__icon">${ICON}</span><h2 class="m3-dialog__title" id="dlg-icon-title">Hero</h2></dialog>
+<dialog open class="m3-dialog" id="dlg-plain"><h2 class="m3-dialog__title" id="dlg-plain-title">Plain</h2></dialog>
+<span class="m3-chip m3-chip--input" id="chip-av"><span class="m3-chip__avatar" id="chip-avatar">RC</span>Riley</span>
 <div class="m3-nav-bar" id="navbar"><a class="m3-nav-bar__item" href="#">${ICON}<span class="m3-nav-bar__label">A</span></a></div>
 ${Object.keys(EMPHASIZED).map((role) => `<p class="m3-${role}" id="ts-${role}">Aa</p><p class="m3-${role}-emphasized" id="tse-${role}">Aa</p>`).join('\n')}
 <div id="probe-surface" style="background-color: var(--md-sys-color-surface)"></div>
@@ -276,6 +283,39 @@ async function run() {
         out.misc.fab = [num(box('fab').height), num(cs('fab').borderTopLeftRadius)];
         out.misc.cardRadius = num(cs('card').borderTopLeftRadius);
         out.misc.navBar = num(box('navbar').height);
+
+        // The anatomy slots M3 defines but the library was missing.
+        const dialBox = box('dial');
+        const dialCentre = { x: dialBox.left + dialBox.width / 2, y: dialBox.top + dialBox.height / 2 };
+        const numAt = (k) => {
+          const b = box('dn-' + k);
+          return [num(b.left + b.width / 2 - dialCentre.x), num(b.top + b.height / 2 - dialCentre.y)];
+        };
+        const searchBox = box('search-anat');
+        out.misc.anatomy = {
+          // Time picker dial: 256dp face, numbers on a 104dp radius, hand at
+          // the checked hour.
+          dial: [num(dialBox.width), num(dialBox.height)],
+          dialAt3: numAt(3),
+          dialAt6: numAt(6),
+          dialAt12: numAt(12),
+          handRotate: cs('dial-hand').rotate,
+          handOpacity: cs('dial-hand').opacity,
+          // Date picker year cell: M3's 72x36 pill.
+          yearCell: [num(box('year-cell').width), num(box('year-cell').height)],
+          // Menu shortcut: pushed to the trailing edge of the item.
+          shortcutEnd: num(box('menu-item-sc').right - box('menu-sc').right),
+          // Search slots: 16dp from the container edge, 16dp to the text.
+          searchLeadStart: num(box('search-lead').left - searchBox.left),
+          searchLeadGap: num(box('search-in').left - box('search-lead').right),
+          searchTrailEnd: num(searchBox.right - box('search-trail').right),
+          // Dialog: an icon centres the headline; without one it does not.
+          titleWithIcon: cs('dlg-icon-title').textAlign,
+          titleWithout: cs('dlg-plain-title').textAlign,
+          // Chip avatar: 24dp round, 4dp from the leading edge.
+          avatar: [num(box('chip-avatar').width), num(box('chip-avatar').height)],
+          avatarStart: num(box('chip-avatar').left - box('chip-av').left),
+        };
 
         // M3's transition patterns are all behind
         // prefers-reduced-motion: no-preference, and this page runs with
@@ -429,6 +469,31 @@ async function run() {
     expect(eq(got.aliased, [true, true, true]), `.m3-${role}-emphasized [font,size,line-height] ${JSON.stringify(got.aliased)} should match .m3-${role}`);
     // The point of the scale: emphasized is always heavier than baseline.
     expect(Number(got.weight) > Number(got.baseWeight), `.m3-${role}-emphasized weight ${got.weight} should exceed baseline ${got.baseWeight}`);
+  }
+
+  // The anatomy slots M3 defines: the time picker's dial, the date picker's
+  // year cell, the menu shortcut, the search bar's icon slots, the dialog's
+  // hero icon and the chip's avatar.
+  {
+    const a = r.misc.anatomy;
+    expect(eq(a.dial, [256, 256]), `time picker dial ${JSON.stringify(a.dial)}, expected [256,256]`);
+    // (256 - 48) / 2 = 104: three o'clock is due east, six due south, twelve due north.
+    expect(eq(a.dialAt3, [104, 0]), `dial 3 o'clock ${JSON.stringify(a.dialAt3)}, expected [104,0]`);
+    expect(eq(a.dialAt6, [0, 104]), `dial 6 o'clock ${JSON.stringify(a.dialAt6)}, expected [0,104]`);
+    expect(eq(a.dialAt12, [0, -104]), `dial 12 o'clock ${JSON.stringify(a.dialAt12)}, expected [0,-104]`);
+    expect(a.handRotate === '90deg', `dial hand at hour 3 ${a.handRotate}, expected 90deg`);
+    expect(a.handOpacity === '1', `dial hand with an hour checked ${a.handOpacity}, expected 1`);
+    expect(eq(a.yearCell, [72, 36]), `year cell ${JSON.stringify(a.yearCell)}, expected [72,36]`);
+    // The item's own 12dp inline padding is what the shortcut stops at.
+    expect(a.shortcutEnd === 12, `menu shortcut trailing gap ${a.shortcutEnd}, expected 12`);
+    expect(a.searchLeadStart === 16, `search leading icon inset ${a.searchLeadStart}, expected 16`);
+    expect(a.searchLeadGap === 16, `search icon-to-text gap ${a.searchLeadGap}, expected 16`);
+    expect(a.searchTrailEnd === 16, `search trailing icon inset ${a.searchTrailEnd}, expected 16`);
+    expect(a.titleWithIcon === 'center', `dialog title with a hero icon ${a.titleWithIcon}, expected center`);
+    expect(a.titleWithout === 'start', `dialog title without an icon ${a.titleWithout}, expected start`);
+    expect(eq(a.avatar, [24, 24]), `chip avatar ${JSON.stringify(a.avatar)}, expected [24,24]`);
+    // M3's 4dp sits inside the chip's 1dp outline, so 5px from its outer edge.
+    expect(a.avatarStart === 5, `chip avatar inset ${a.avatarStart}, expected 5 (4dp inside the 1dp outline)`);
   }
 
   // Under reduced motion every transition pattern is inert: no animation
@@ -588,7 +653,7 @@ async function run() {
   expect(r.misc.navBar === 80, `navigation bar height ${r.misc.navBar}, expected 80`);
 
   if (!failures.length) {
-    console.log(`[spec] ${Object.keys(TOKENS).length} tokens, ${Object.keys(BUTTON_RAMP).length}-rung button/icon-button/split ramps, ${Object.keys(EMPHASIZED).length} emphasized typescale styles, 6 tonal-elevation surfaces, field anatomy, slider anatomy, fields, chips, selection, progress (stop indicator + gap), tabs, tooltip, list, 4 carousel layouts, motion patterns inert under reduced motion, rail (collapsed + expanded + header): ok`);
+    console.log(`[spec] ${Object.keys(TOKENS).length} tokens, ${Object.keys(BUTTON_RAMP).length}-rung button/icon-button/split ramps, ${Object.keys(EMPHASIZED).length} emphasized typescale styles, 6 tonal-elevation surfaces, field anatomy, slider anatomy, fields, chips, selection, progress (stop indicator + gap), tabs, tooltip, list, 4 carousel layouts, motion patterns inert under reduced motion, dial/year/shortcut/search-slot/hero-icon/avatar anatomy, rail (collapsed + expanded + header): ok`);
   }
   return failures;
 }

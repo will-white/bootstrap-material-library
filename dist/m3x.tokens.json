@@ -3920,6 +3920,15 @@
               "css": "var(--md-sys-color-on-surface-variant)"
             }
           }
+        },
+        "shortcut-color": {
+          "$value": "{md.sys.color.on-surface-variant}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-on-surface-variant)"
+            }
+          }
         }
       },
       "icon-btn": {
@@ -4593,6 +4602,15 @@
         "max-width": {
           "$type": "dimension",
           "$value": "35rem"
+        },
+        "icon-color": {
+          "$value": "{md.sys.color.secondary}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-secondary)"
+            }
+          }
         }
       },
       "sheet": {
@@ -6046,6 +6064,10 @@
             }
           }
         },
+        "avatar-size": {
+          "$type": "dimension",
+          "$value": "1.5rem"
+        },
         "label-color": {
           "$value": "{md.sys.color.on-surface}",
           "$type": "color",
@@ -6131,6 +6153,15 @@
           }
         },
         "placeholder-color": {
+          "$value": "{md.sys.color.on-surface-variant}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-on-surface-variant)"
+            }
+          }
+        },
+        "icon-color": {
           "$value": "{md.sys.color.on-surface-variant}",
           "$type": "color",
           "$extensions": {
@@ -6340,6 +6371,63 @@
             }
           }
         },
+        "padding": {
+          "$value": "{m3.sys.space-3}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--m3-sys-space-3)"
+            }
+          }
+        },
+        "years-height": {
+          "$type": "dimension",
+          "$value": "17.5rem"
+        },
+        "day-color": {
+          "$value": "{md.sys.color.on-surface}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-on-surface)"
+            }
+          }
+        },
+        "year-width": {
+          "$type": "dimension",
+          "$value": "4.5rem"
+        },
+        "year-height": {
+          "$type": "dimension",
+          "$value": "2.25rem"
+        },
+        "selected-container-color": {
+          "$value": "{md.sys.color.primary}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-primary)"
+            }
+          }
+        },
+        "selected-color": {
+          "$value": "{md.sys.color.on-primary}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-on-primary)"
+            }
+          }
+        },
+        "today-color": {
+          "$value": "{md.sys.color.primary}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-primary)"
+            }
+          }
+        },
         "modal-width": {
           "$type": "dimension",
           "$value": "20.5rem"
@@ -6379,15 +6467,6 @@
             }
           }
         },
-        "padding": {
-          "$value": "{m3.sys.space-3}",
-          "$type": "dimension",
-          "$extensions": {
-            "m3x": {
-              "css": "var(--m3-sys-space-3)"
-            }
-          }
-        },
         "menu-color": {
           "$value": "{md.sys.color.on-surface-variant}",
           "$type": "color",
@@ -6402,15 +6481,6 @@
           "$value": "3rem"
         },
         "weekday-color": {
-          "$value": "{md.sys.color.on-surface}",
-          "$type": "color",
-          "$extensions": {
-            "m3x": {
-              "css": "var(--md-sys-color-on-surface)"
-            }
-          }
-        },
-        "day-color": {
           "$value": "{md.sys.color.on-surface}",
           "$type": "color",
           "$extensions": {
@@ -6443,33 +6513,6 @@
           "$extensions": {
             "m3x": {
               "css": "var(--md-sys-color-on-surface-variant)"
-            }
-          }
-        },
-        "today-color": {
-          "$value": "{md.sys.color.primary}",
-          "$type": "color",
-          "$extensions": {
-            "m3x": {
-              "css": "var(--md-sys-color-primary)"
-            }
-          }
-        },
-        "selected-container-color": {
-          "$value": "{md.sys.color.primary}",
-          "$type": "color",
-          "$extensions": {
-            "m3x": {
-              "css": "var(--md-sys-color-primary)"
-            }
-          }
-        },
-        "selected-color": {
-          "$value": "{md.sys.color.on-primary}",
-          "$type": "color",
-          "$extensions": {
-            "m3x": {
-              "css": "var(--md-sys-color-on-primary)"
             }
           }
         },
@@ -6517,6 +6560,41 @@
           "$extensions": {
             "m3x": {
               "css": "var(--md-sys-shape-corner-extra-large)"
+            }
+          }
+        },
+        "dial-size": {
+          "$type": "dimension",
+          "$value": "16rem"
+        },
+        "dial-number-size": {
+          "$type": "dimension",
+          "$value": "3rem"
+        },
+        "dial-container-color": {
+          "$value": "{md.sys.color.surface-container-highest}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-surface-container-highest)"
+            }
+          }
+        },
+        "dial-hand-color": {
+          "$value": "{md.sys.color.primary}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-primary)"
+            }
+          }
+        },
+        "dial-selected-color": {
+          "$value": "{md.sys.color.on-primary}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-on-primary)"
             }
           }
         },

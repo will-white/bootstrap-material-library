@@ -10464,6 +10464,15 @@
       block-size: auto;
       margin: var(--m3-sys-space-none);
     }
+    .m3-dialog__icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: 100%;
+      block-size: var(--m3-sys-icon-size);
+      margin-block-end: var(--m3-sys-space-4);
+      color: var(--m3-dialog-icon-color, var(--md-sys-color-secondary));
+    }
     .m3-dialog__title {
       display: block;
       font-family: var(--md-sys-typescale-headline-small-font);
@@ -10473,6 +10482,9 @@
       letter-spacing: var(--md-sys-typescale-headline-small-tracking);
       color: var(--m3-dialog-content-color, var(--md-sys-color-on-surface));
       margin-block-end: var(--m3-sys-space-4);
+    }
+    .m3-dialog:has(> .m3-dialog__icon) .m3-dialog__title {
+      text-align: center;
     }
     .m3-dialog__content {
       display: block;
@@ -11427,6 +11439,11 @@
     .m3-tabs--fixed .m3-tabs__tab {
       flex: 1;
     }
+    .m3-tabs__tab > .m3-badge,
+    .m3-tabs__tab > .m3-badge-anchor {
+      align-self: center;
+      flex: 0 0 auto;
+    }
     .m3-tabs__tab {
       text-align: center;
       --_container: transparent;
@@ -12064,6 +12081,36 @@
     .m3-chip:has(> :is(svg, img, .m3-icon):first-child) {
       padding-inline-start: var(--m3-chip-padding-inline-icon, var(--m3-sys-space-2));
     }
+    .m3-chip:has(> .m3-chip__avatar:first-child) {
+      padding-inline-start: var(--m3-sys-space-1);
+    }
+    @supports (corner-shape: bevel) {
+      .m3-chip__avatar {
+        corner-shape: round;
+      }
+    }
+    .m3-chip__avatar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      inline-size: var(--m3-chip-avatar-size, 1.5rem);
+      block-size: var(--m3-chip-avatar-size, 1.5rem);
+      border-radius: var(--m3-sys-shape-pill);
+      overflow: clip;
+      background-color: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+      font-family: var(--md-sys-typescale-label-small-font);
+      font-size: var(--md-sys-typescale-label-small-size);
+      line-height: var(--md-sys-typescale-label-small-line-height);
+      font-weight: var(--md-sys-typescale-label-small-weight);
+      letter-spacing: var(--md-sys-typescale-label-small-tracking);
+    }
+    .m3-chip__avatar > img {
+      inline-size: 100%;
+      block-size: 100%;
+      object-fit: cover;
+    }
     .m3-chip--assist {
       --_container: transparent;
       --_content: var(--m3-chip-label-color, var(--md-sys-color-on-surface));
@@ -12505,6 +12552,39 @@
       line-height: var(--md-sys-typescale-label-small-line-height);
       font-weight: var(--md-sys-typescale-label-small-weight);
       letter-spacing: var(--md-sys-typescale-label-small-tracking);
+    }
+    .m3-menu__shortcut {
+      display: block;
+      margin-inline-start: auto;
+      padding-inline-start: var(--m3-sys-space-4);
+      color: var(--m3-menu-shortcut-color, var(--md-sys-color-on-surface-variant));
+      white-space: nowrap;
+      font-family: var(--md-sys-typescale-label-large-font);
+      font-size: var(--md-sys-typescale-label-large-size);
+      line-height: var(--md-sys-typescale-label-large-line-height);
+      font-weight: var(--md-sys-typescale-label-large-weight);
+      letter-spacing: var(--md-sys-typescale-label-large-tracking);
+    }
+    .m3-menu__item--submenu::after {
+      content: "";
+      display: block;
+      margin-inline-start: auto;
+      width: var(--m3-sys-chevron-size);
+      height: var(--m3-sys-chevron-size);
+      border-right: var(--m3-sys-stroke-thick) solid currentColor;
+      border-bottom: var(--m3-sys-stroke-thick) solid currentColor;
+      rotate: 45deg;
+      rotate: -45deg;
+    }
+    .m3-menu__item--submenu:dir(rtl)::after {
+      rotate: 135deg;
+    }
+    @supports (position-anchor: --a) {
+      .m3-menu--submenu[popover] {
+        position-anchor: var(--m3-menu-anchor);
+        position-area: inline-end span-block-end;
+        position-try-fallbacks: flip-inline, flip-block;
+      }
     }
     @supports not selector(:popover-open) {
       .m3-menu[popover]:not(.m3-menu--static) {
@@ -13506,6 +13586,32 @@
       inline-size: var(--m3-sys-icon-size-small);
       block-size: var(--m3-sys-icon-size-small);
       cursor: pointer;
+    }
+    .m3-search__leading,
+    .m3-search__trailing {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      border: none;
+      padding: var(--m3-sys-space-none);
+      background-color: transparent;
+      color: var(--m3-search-icon-color, var(--md-sys-color-on-surface-variant));
+    }
+    .m3-search__leading {
+      margin-inline-end: var(--m3-sys-space-2);
+    }
+    .m3-search__trailing {
+      margin-inline-start: var(--m3-sys-space-2);
+    }
+    button.m3-search__leading,
+    button.m3-search__trailing {
+      cursor: pointer;
+    }
+    button.m3-search__leading:focus-visible,
+    button.m3-search__trailing:focus-visible {
+      outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
+      outline-offset: var(--md-sys-state-focus-indicator-offset);
     }
     .m3-search__panel {
       font-family: var(--md-sys-typescale-body-medium-font);
@@ -15319,6 +15425,74 @@
       border-radius: var(--m3-date-picker-shape, var(--md-sys-shape-corner-large));
       box-shadow: var(--md-sys-elevation-3);
     }
+    .m3-date-picker__years {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      justify-items: center;
+      gap: var(--m3-sys-space-2);
+      padding-inline: var(--m3-date-picker-padding, var(--m3-sys-space-3));
+      padding-block: var(--m3-sys-space-2);
+      max-block-size: var(--m3-date-picker-years-height, 17.5rem);
+      overflow-y: auto;
+      overscroll-behavior-y: contain;
+    }
+    .m3-date-picker__year {
+      --_container: transparent;
+      --_content: var(--m3-date-picker-day-color, var(--md-sys-color-on-surface));
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: var(--m3-date-picker-year-width, 4.5rem);
+      block-size: var(--m3-date-picker-year-height, 2.25rem);
+      padding: var(--m3-sys-space-none);
+      border: none;
+      border-radius: var(--md-sys-shape-corner-full);
+      cursor: pointer;
+      user-select: none;
+      text-align: center;
+      -webkit-tap-highlight-color: transparent;
+      font-family: var(--md-sys-typescale-body-large-font);
+      font-size: var(--md-sys-typescale-body-large-size);
+      line-height: var(--md-sys-typescale-body-large-line-height);
+      font-weight: var(--md-sys-typescale-body-large-weight);
+      letter-spacing: var(--md-sys-typescale-body-large-tracking);
+      --_state-color: var(--_content);
+      --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
+      color: var(--_content);
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
+    }
+    @media (hover: hover) {
+      .m3-date-picker__year:hover {
+        --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
+      }
+    }
+    .m3-date-picker__year:focus-visible {
+      --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
+    }
+    .m3-date-picker__year:active {
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
+    }
+    .m3-date-picker__year:focus-visible {
+      outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
+      outline-offset: var(--md-sys-state-focus-indicator-offset);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .m3-date-picker__year {
+        transition-property: background-color, color;
+        transition-duration: var(--md-sys-motion-duration-short4);
+        transition-timing-function: var(--md-sys-motion-easing-standard);
+      }
+    }
+    .m3-date-picker__year[aria-selected=true] {
+      --_container: var(--m3-date-picker-selected-container-color, var(--md-sys-color-primary));
+      --_content: var(--m3-date-picker-selected-color, var(--md-sys-color-on-primary));
+    }
+    .m3-date-picker__year--today {
+      --_content: var(--m3-date-picker-today-color, var(--md-sys-color-primary));
+      box-shadow: inset 0 0 0 var(--m3-sys-stroke-hairline) var(--m3-date-picker-today-color, var(--md-sys-color-primary));
+    }
     .m3-date-picker--docked {
       --m3-date-picker-width: 22.5rem;
       --m3-date-picker-padding: var(--m3-sys-space-3);
@@ -15696,6 +15870,190 @@
       color: var(--m3-time-picker-content-color, var(--md-sys-color-on-surface));
       border-radius: var(--m3-time-picker-shape, var(--md-sys-shape-corner-extra-large));
       box-shadow: var(--md-sys-elevation-3);
+    }
+    @supports (inline-size: calc(sin(30deg) * 1px)) {
+      @supports (corner-shape: bevel) {
+        .m3-time-picker__dial {
+          corner-shape: round;
+        }
+      }
+      .m3-time-picker__dial {
+        --_radius: calc(
+          (var(--m3-time-picker-dial-size, 16rem) - var(--m3-time-picker-dial-number-size, 3rem)) / 2
+        );
+        --_hand: 0deg;
+        position: relative;
+        display: block;
+        inline-size: var(--m3-time-picker-dial-size, 16rem);
+        block-size: var(--m3-time-picker-dial-size, 16rem);
+        border-radius: var(--m3-sys-shape-pill);
+        background-color: var(--m3-time-picker-dial-container-color, var(--md-sys-color-surface-container-highest));
+        --m3-sys-container-color: var(--m3-time-picker-dial-container-color, var(--md-sys-color-surface-container-highest));
+      }
+      @supports (corner-shape: bevel) {
+        .m3-time-picker__dial-number {
+          corner-shape: round;
+        }
+      }
+      .m3-time-picker__dial-number {
+        --_angle: calc(var(--_k) * 30deg);
+        position: absolute;
+        inset: var(--m3-sys-space-none);
+        margin: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        inline-size: var(--m3-time-picker-dial-number-size, 3rem);
+        block-size: var(--m3-time-picker-dial-number-size, 3rem);
+        border-radius: var(--m3-sys-shape-pill);
+        translate: calc(sin(var(--_angle)) * var(--_radius)) calc(-1 * cos(var(--_angle)) * var(--_radius));
+        color: var(--m3-time-picker-content-color, var(--md-sys-color-on-surface));
+        cursor: pointer;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        font-family: var(--md-sys-typescale-body-large-font);
+        font-size: var(--md-sys-typescale-body-large-size);
+        line-height: var(--md-sys-typescale-body-large-line-height);
+        font-weight: var(--md-sys-typescale-body-large-weight);
+        letter-spacing: var(--md-sys-typescale-body-large-tracking);
+      }
+      .m3-time-picker__dial-number > input {
+        display: block;
+        position: absolute;
+        opacity: var(--m3-sys-opacity-hidden);
+        pointer-events: none;
+      }
+      .m3-time-picker__dial-number:nth-of-type(1) {
+        --_k: 1;
+      }
+      .m3-time-picker__dial-number:nth-of-type(2) {
+        --_k: 2;
+      }
+      .m3-time-picker__dial-number:nth-of-type(3) {
+        --_k: 3;
+      }
+      .m3-time-picker__dial-number:nth-of-type(4) {
+        --_k: 4;
+      }
+      .m3-time-picker__dial-number:nth-of-type(5) {
+        --_k: 5;
+      }
+      .m3-time-picker__dial-number:nth-of-type(6) {
+        --_k: 6;
+      }
+      .m3-time-picker__dial-number:nth-of-type(7) {
+        --_k: 7;
+      }
+      .m3-time-picker__dial-number:nth-of-type(8) {
+        --_k: 8;
+      }
+      .m3-time-picker__dial-number:nth-of-type(9) {
+        --_k: 9;
+      }
+      .m3-time-picker__dial-number:nth-of-type(10) {
+        --_k: 10;
+      }
+      .m3-time-picker__dial-number:nth-of-type(11) {
+        --_k: 11;
+      }
+      .m3-time-picker__dial-number:nth-of-type(12) {
+        --_k: 12;
+      }
+      .m3-time-picker__dial-hand {
+        font-family: var(--md-sys-typescale-body-large-font);
+        font-size: var(--md-sys-typescale-body-large-size);
+        line-height: var(--md-sys-typescale-body-large-line-height);
+        font-weight: var(--md-sys-typescale-body-large-weight);
+        letter-spacing: var(--md-sys-typescale-body-large-tracking);
+        display: block;
+        position: absolute;
+        inset: var(--m3-sys-space-none);
+        margin: auto;
+        inline-size: var(--m3-sys-stroke-thick);
+        block-size: var(--_radius);
+        background-color: var(--m3-time-picker-dial-hand-color, var(--md-sys-color-primary));
+        transform-origin: 50% 100%;
+        translate: 0 calc(-1 * var(--_radius) / 2);
+        rotate: var(--_hand);
+        opacity: var(--m3-sys-opacity-hidden);
+        pointer-events: none;
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .m3-time-picker__dial-hand {
+          transition-property: rotate, opacity;
+          transition-duration: var(--md-sys-motion-duration-short4);
+          transition-timing-function: var(--md-sys-motion-easing-standard);
+        }
+      }
+      .m3-time-picker__dial-hand::before {
+        content: "";
+        display: block;
+        position: absolute;
+        inset-block-end: 0;
+        inset-inline-start: 50%;
+        inline-size: var(--m3-sys-space-2);
+        block-size: var(--m3-sys-space-2);
+        translate: -50% 50%;
+        border-radius: var(--m3-sys-shape-pill);
+        background-color: var(--m3-time-picker-dial-hand-color, var(--md-sys-color-primary));
+      }
+      .m3-time-picker__dial-hand::after {
+        content: "";
+        display: block;
+        position: absolute;
+        inset-block-start: calc(-1 * var(--m3-time-picker-dial-number-size, 3rem) / 2);
+        inset-inline-start: 50%;
+        inline-size: var(--m3-time-picker-dial-number-size, 3rem);
+        block-size: var(--m3-time-picker-dial-number-size, 3rem);
+        translate: -50% 0;
+        border-radius: var(--m3-sys-shape-pill);
+        background-color: var(--m3-time-picker-dial-hand-color, var(--md-sys-color-primary));
+      }
+      .m3-time-picker__dial:has(> .m3-time-picker__dial-number:nth-of-type(1) > input:checked) {
+        --_hand: 30deg;
+      }
+      .m3-time-picker__dial:has(> .m3-time-picker__dial-number:nth-of-type(2) > input:checked) {
+        --_hand: 60deg;
+      }
+      .m3-time-picker__dial:has(> .m3-time-picker__dial-number:nth-of-type(3) > input:checked) {
+        --_hand: 90deg;
+      }
+      .m3-time-picker__dial:has(> .m3-time-picker__dial-number:nth-of-type(4) > input:checked) {
+        --_hand: 120deg;
+      }
+      .m3-time-picker__dial:has(> .m3-time-picker__dial-number:nth-of-type(5) > input:checked) {
+        --_hand: 150deg;
+      }
+      .m3-time-picker__dial:has(> .m3-time-picker__dial-number:nth-of-type(6) > input:checked) {
+        --_hand: 180deg;
+      }
+      .m3-time-picker__dial:has(> .m3-time-picker__dial-number:nth-of-type(7) > input:checked) {
+        --_hand: 210deg;
+      }
+      .m3-time-picker__dial:has(> .m3-time-picker__dial-number:nth-of-type(8) > input:checked) {
+        --_hand: 240deg;
+      }
+      .m3-time-picker__dial:has(> .m3-time-picker__dial-number:nth-of-type(9) > input:checked) {
+        --_hand: 270deg;
+      }
+      .m3-time-picker__dial:has(> .m3-time-picker__dial-number:nth-of-type(10) > input:checked) {
+        --_hand: 300deg;
+      }
+      .m3-time-picker__dial:has(> .m3-time-picker__dial-number:nth-of-type(11) > input:checked) {
+        --_hand: 330deg;
+      }
+      .m3-time-picker__dial:has(> .m3-time-picker__dial-number:nth-of-type(12) > input:checked) {
+        --_hand: 360deg;
+      }
+      .m3-time-picker__dial:has(> .m3-time-picker__dial-number > input:checked) .m3-time-picker__dial-hand {
+        opacity: var(--m3-sys-opacity-full);
+      }
+      .m3-time-picker__dial-number:has(> input:checked) {
+        color: var(--m3-time-picker-dial-selected-color, var(--md-sys-color-on-primary));
+      }
+      .m3-time-picker__dial-number {
+        z-index: var(--m3-sys-z-raised);
+      }
     }
     .m3-time-picker--modal {
       padding: var(--m3-sys-space-none);
@@ -16975,7 +17333,7 @@
     }
   }
   @layer own {
-    .m3-btn, .m3-btn-group, .m3-icon-btn, .m3-fab, .m3-fab--extended .m3-fab__label, .m3-segmented, .m3-segmented__segment, .m3-segmented__segment .m3-segmented__input, .m3-segmented__segment .m3-segmented__label, .m3-badge, .m3-progress, .m3-progress__bar, .m3-progress-circle, .m3-spinner, .m3-snackbar, .m3-snackbar__text, .m3-snackbar__action, .m3-snackbar__close, .m3-tooltip, .m3-tooltip__title, .m3-card, .m3-carousel, .m3-carousel__item, .m3-carousel__indicators, .m3-carousel__indicator, .m3-dialog, .m3-dialog__title, .m3-dialog__content, .m3-dialog__actions, .m3-divider, .m3-list, .m3-list__subheader, .m3-list-item, .m3-list-item__body, .m3-list-item__overline, .m3-list-item__headline, .m3-list-item__supporting, .m3-list-item__leading, .m3-list-item__trailing, .m3-sheet--bottom, .m3-sheet--side, .m3-sheet--side-standard, .m3-sheet__handle, .m3-nav-bar, .m3-nav-bar__item, .m3-nav-bar__icon, .m3-drawer, .m3-drawer--modal, .m3-drawer__item, .m3-drawer__headline, .m3-drawer__badge, .m3-rail, .m3-rail__item, .m3-rail__icon, .m3-rail__header, .m3-rail--modal, .m3-tabs, .m3-tabs__tab, .m3-tabs__input, .m3-top-app-bar, .m3-top-app-bar__title, .m3-bottom-app-bar, .m3-bottom-app-bar__trailing, input[type=checkbox].m3-checkbox, input[type=radio].m3-radio, input[type=checkbox].m3-switch, .m3-chip, .m3-chip--filter .m3-chip__input, .m3-chip--filter .m3-chip__label, .m3-chip--input .m3-chip__input, .m3-chip--input .m3-chip__label, .m3-chip__remove, .m3-menu, .m3-menu__item, .m3-menu__header, input[type=range].m3-slider, .m3-slider-field, .m3-slider__label, .m3-slider-field--vertical, input[type=date].m3-datetime, input[type=time].m3-datetime, input[type=datetime-local].m3-datetime, input[type=month].m3-datetime, input[type=week].m3-datetime, .m3-field, .m3-field__input, .m3-field__label, .m3-field__leading, .m3-field__trailing, .m3-field__prefix, .m3-field__suffix, .m3-field__counter, .m3-field__supporting, .m3-search, .m3-search__input, .m3-search__panel, select.m3-select, .m3-toolbar, .m3-toolbar__group, .m3-toolbar__dropdown, select.m3-toolbar__select, .m3-toolbar__stepper, .m3-toolbar__stepper-input, .m3-toolbar__spacer, .m3-toolbar__choice, .m3-toolbar__option, .m3-toolbar__color, .m3-button-group, .m3-btn-check, .m3-split-button, .m3-split-button__action, .m3-split-button__toggle, .m3-split-button__option, .m3-fab-menu, .m3-fab-menu__items, .m3-fab-menu__item, .m3-fab-menu__label, .m3-loading-indicator, .m3-date-picker, .m3-date-picker__header, .m3-date-picker__supporting, .m3-date-picker__headline, .m3-date-picker__nav, .m3-date-picker__menu, .m3-date-picker__arrows, .m3-date-picker__grid, .m3-date-picker__weekday, .m3-date-picker__day, .m3-date-picker__actions, .m3-time-picker, .m3-time-picker__label, .m3-time-picker__fields, .m3-time-picker__field, .m3-time-picker__input, .m3-time-picker__hint, .m3-time-picker__separator, .m3-time-picker__period, .m3-time-picker__period-option, .m3-time-picker__period-option .m3-time-picker__period-input, .m3-time-picker__period-option .m3-time-picker__period-label, .m3-time-picker__actions, .m3-color-palette, .m3-color-palette__label, .m3-color-palette__grid, .m3-color-palette__swatch, .m3-color-palette__swatch > input, .m3-color-palette__custom, .m3-color-palette__custom > input, .m3-color-palette__theme, .m3-color-palette__standard, .m3-pane-layout, .m3-pane, .m3-adaptive-layout, .m3-adaptive-nav, .m3-adaptive-nav .m3-adaptive-nav__item, .m3-adaptive-nav .m3-adaptive-nav__icon, .m3-icon, details.m3-disclosure {
+    .m3-btn, .m3-btn-group, .m3-icon-btn, .m3-fab, .m3-fab--extended .m3-fab__label, .m3-segmented, .m3-segmented__segment, .m3-segmented__segment .m3-segmented__input, .m3-segmented__segment .m3-segmented__label, .m3-badge, .m3-progress, .m3-progress__bar, .m3-progress-circle, .m3-spinner, .m3-snackbar, .m3-snackbar__text, .m3-snackbar__action, .m3-snackbar__close, .m3-tooltip, .m3-tooltip__title, .m3-card, .m3-carousel, .m3-carousel__item, .m3-carousel__indicators, .m3-carousel__indicator, .m3-dialog, .m3-dialog__icon, .m3-dialog__title, .m3-dialog__content, .m3-dialog__actions, .m3-divider, .m3-list, .m3-list__subheader, .m3-list-item, .m3-list-item__body, .m3-list-item__overline, .m3-list-item__headline, .m3-list-item__supporting, .m3-list-item__leading, .m3-list-item__trailing, .m3-sheet--bottom, .m3-sheet--side, .m3-sheet--side-standard, .m3-sheet__handle, .m3-nav-bar, .m3-nav-bar__item, .m3-nav-bar__icon, .m3-drawer, .m3-drawer--modal, .m3-drawer__item, .m3-drawer__headline, .m3-drawer__badge, .m3-rail, .m3-rail__item, .m3-rail__icon, .m3-rail__header, .m3-rail--modal, .m3-tabs, .m3-tabs__tab, .m3-tabs__input, .m3-top-app-bar, .m3-top-app-bar__title, .m3-bottom-app-bar, .m3-bottom-app-bar__trailing, input[type=checkbox].m3-checkbox, input[type=radio].m3-radio, input[type=checkbox].m3-switch, .m3-chip, .m3-chip__avatar, .m3-chip--filter .m3-chip__input, .m3-chip--filter .m3-chip__label, .m3-chip--input .m3-chip__input, .m3-chip--input .m3-chip__label, .m3-chip__remove, .m3-menu, .m3-menu__item, .m3-menu__header, .m3-menu__shortcut, input[type=range].m3-slider, .m3-slider-field, .m3-slider__label, .m3-slider-field--vertical, input[type=date].m3-datetime, input[type=time].m3-datetime, input[type=datetime-local].m3-datetime, input[type=month].m3-datetime, input[type=week].m3-datetime, .m3-field, .m3-field__input, .m3-field__label, .m3-field__leading, .m3-field__trailing, .m3-field__prefix, .m3-field__suffix, .m3-field__counter, .m3-field__supporting, .m3-search, .m3-search__input, .m3-search__leading, .m3-search__trailing, .m3-search__panel, select.m3-select, .m3-toolbar, .m3-toolbar__group, .m3-toolbar__dropdown, select.m3-toolbar__select, .m3-toolbar__stepper, .m3-toolbar__stepper-input, .m3-toolbar__spacer, .m3-toolbar__choice, .m3-toolbar__option, .m3-toolbar__color, .m3-button-group, .m3-btn-check, .m3-split-button, .m3-split-button__action, .m3-split-button__toggle, .m3-split-button__option, .m3-fab-menu, .m3-fab-menu__items, .m3-fab-menu__item, .m3-fab-menu__label, .m3-loading-indicator, .m3-date-picker, .m3-date-picker__years, .m3-date-picker__year, .m3-date-picker__header, .m3-date-picker__supporting, .m3-date-picker__headline, .m3-date-picker__nav, .m3-date-picker__menu, .m3-date-picker__arrows, .m3-date-picker__grid, .m3-date-picker__weekday, .m3-date-picker__day, .m3-date-picker__actions, .m3-time-picker, .m3-time-picker__dial, .m3-time-picker__dial-number, .m3-time-picker__dial-number > input, .m3-time-picker__dial-hand, .m3-time-picker__label, .m3-time-picker__fields, .m3-time-picker__field, .m3-time-picker__input, .m3-time-picker__hint, .m3-time-picker__separator, .m3-time-picker__period, .m3-time-picker__period-option, .m3-time-picker__period-option .m3-time-picker__period-input, .m3-time-picker__period-option .m3-time-picker__period-label, .m3-time-picker__actions, .m3-color-palette, .m3-color-palette__label, .m3-color-palette__grid, .m3-color-palette__swatch, .m3-color-palette__swatch > input, .m3-color-palette__custom, .m3-color-palette__custom > input, .m3-color-palette__theme, .m3-color-palette__standard, .m3-pane-layout, .m3-pane, .m3-adaptive-layout, .m3-adaptive-nav, .m3-adaptive-nav .m3-adaptive-nav__item, .m3-adaptive-nav .m3-adaptive-nav__icon, .m3-icon, details.m3-disclosure {
       box-sizing: border-box;
       position: static;
       inset: auto;
@@ -17138,7 +17496,7 @@
       color-scheme: inherit;
       image-rendering: inherit;
     }
-    .m3-icon-btn::after, .m3-fab--small::after, .m3-segmented__segment .m3-segmented__label::before, .m3-progress::before, .m3-progress::after, .m3-snackbar__action::after, .m3-snackbar__close::after, .m3-carousel__indicator::before, .m3-list--dividers > .m3-list-item:not(:last-child)::after, .m3-tabs__tab.active::after, .m3-tabs__tab[aria-current=page]::after, .m3-tabs__tab[aria-selected=true]::after, .m3-tabs__input:checked + .m3-tabs__tab::after, input[type=checkbox].m3-checkbox::before, input[type=checkbox].m3-checkbox::after, input[type=radio].m3-radio::before, input[type=radio].m3-radio::after, input[type=checkbox].m3-switch::after, input[type=checkbox].m3-switch::before, .m3-chip--filter .m3-chip__label::before, .m3-chip--input .m3-chip__label::before, .m3-toolbar__group + .m3-toolbar__group::before, .m3-toolbar__dropdown::after, .m3-toolbar__swatch::before, .m3-split-button__toggle::after, .m3-loading-indicator::before, .m3-date-picker__menu::after, .m3-date-picker__day::after, .m3-date-picker__day::before, .m3-color-palette__swatch::after, .m3-color-palette__custom::after, details.m3-disclosure > summary::after, .m3-btn::before, .m3-btn::after, .m3-btn-group::before, .m3-btn-group::after, .m3-icon-btn::before, .m3-fab::before, .m3-fab::after, .m3-fab--extended .m3-fab__label::before, .m3-fab--extended .m3-fab__label::after, .m3-segmented::before, .m3-segmented::after, .m3-segmented__segment::before, .m3-segmented__segment::after, .m3-segmented__segment .m3-segmented__input::before, .m3-segmented__segment .m3-segmented__input::after, .m3-segmented__segment .m3-segmented__label::after, .m3-badge::before, .m3-badge::after, .m3-progress__bar::before, .m3-progress__bar::after, .m3-progress-circle::before, .m3-progress-circle::after, .m3-spinner::before, .m3-spinner::after, .m3-snackbar::before, .m3-snackbar::after, .m3-snackbar__text::before, .m3-snackbar__text::after, .m3-snackbar__action::before, .m3-snackbar__close::before, .m3-tooltip::before, .m3-tooltip::after, .m3-tooltip__title::before, .m3-tooltip__title::after, .m3-card::before, .m3-card::after, .m3-carousel::before, .m3-carousel::after, .m3-carousel__item::before, .m3-carousel__item::after, .m3-carousel__indicators::before, .m3-carousel__indicators::after, .m3-carousel__indicator::after, .m3-dialog::before, .m3-dialog::after, .m3-dialog__title::before, .m3-dialog__title::after, .m3-dialog__content::before, .m3-dialog__content::after, .m3-dialog__actions::before, .m3-dialog__actions::after, .m3-divider::before, .m3-divider::after, .m3-list::before, .m3-list::after, .m3-list__subheader::before, .m3-list__subheader::after, .m3-list-item::before, .m3-list-item::after, .m3-list-item__body::before, .m3-list-item__body::after, .m3-list-item__overline::before, .m3-list-item__overline::after, .m3-list-item__headline::before, .m3-list-item__headline::after, .m3-list-item__supporting::before, .m3-list-item__supporting::after, .m3-list-item__leading::before, .m3-list-item__leading::after, .m3-list-item__trailing::before, .m3-list-item__trailing::after, .m3-sheet--bottom::before, .m3-sheet--bottom::after, .m3-sheet--side::before, .m3-sheet--side::after, .m3-sheet--side-standard::before, .m3-sheet--side-standard::after, .m3-sheet__handle::before, .m3-sheet__handle::after, .m3-nav-bar::before, .m3-nav-bar::after, .m3-nav-bar__item::before, .m3-nav-bar__item::after, .m3-nav-bar__icon::before, .m3-nav-bar__icon::after, .m3-drawer::before, .m3-drawer::after, .m3-drawer--modal::before, .m3-drawer--modal::after, .m3-drawer__item::before, .m3-drawer__item::after, .m3-drawer__headline::before, .m3-drawer__headline::after, .m3-drawer__badge::before, .m3-drawer__badge::after, .m3-rail::before, .m3-rail::after, .m3-rail__item::before, .m3-rail__item::after, .m3-rail__icon::before, .m3-rail__icon::after, .m3-rail__header::before, .m3-rail__header::after, .m3-rail--modal::before, .m3-rail--modal::after, .m3-tabs::before, .m3-tabs::after, .m3-tabs__tab::before, .m3-tabs__tab::after, .m3-tabs__input::before, .m3-tabs__input::after, .m3-top-app-bar::before, .m3-top-app-bar::after, .m3-top-app-bar__title::before, .m3-top-app-bar__title::after, .m3-bottom-app-bar::before, .m3-bottom-app-bar::after, .m3-bottom-app-bar__trailing::before, .m3-bottom-app-bar__trailing::after, .m3-chip::before, .m3-chip::after, .m3-chip--filter .m3-chip__input::before, .m3-chip--filter .m3-chip__input::after, .m3-chip--filter .m3-chip__label::after, .m3-chip--input .m3-chip__input::before, .m3-chip--input .m3-chip__input::after, .m3-chip--input .m3-chip__label::after, .m3-chip__remove::before, .m3-chip__remove::after, .m3-menu::before, .m3-menu::after, .m3-menu__item::before, .m3-menu__item::after, .m3-menu__header::before, .m3-menu__header::after, input[type=range].m3-slider::before, input[type=range].m3-slider::after, .m3-slider-field::before, .m3-slider-field::after, .m3-slider__label::before, .m3-slider__label::after, .m3-slider-field--vertical::before, .m3-slider-field--vertical::after, input[type=date].m3-datetime::before, input[type=date].m3-datetime::after, input[type=time].m3-datetime::before, input[type=time].m3-datetime::after, input[type=datetime-local].m3-datetime::before, input[type=datetime-local].m3-datetime::after, input[type=month].m3-datetime::before, input[type=month].m3-datetime::after, input[type=week].m3-datetime::before, input[type=week].m3-datetime::after, .m3-field::before, .m3-field::after, .m3-field__input::before, .m3-field__input::after, .m3-field__label::before, .m3-field__label::after, .m3-field__leading::before, .m3-field__leading::after, .m3-field__trailing::before, .m3-field__trailing::after, .m3-field__prefix::before, .m3-field__prefix::after, .m3-field__suffix::before, .m3-field__suffix::after, .m3-field__counter::before, .m3-field__counter::after, .m3-field__supporting::before, .m3-field__supporting::after, .m3-search::before, .m3-search::after, .m3-search__input::before, .m3-search__input::after, .m3-search__panel::before, .m3-search__panel::after, select.m3-select::before, select.m3-select::after, .m3-toolbar::before, .m3-toolbar::after, .m3-toolbar__group::before, .m3-toolbar__group::after, .m3-toolbar__dropdown::before, select.m3-toolbar__select::before, select.m3-toolbar__select::after, .m3-toolbar__stepper::before, .m3-toolbar__stepper::after, .m3-toolbar__stepper-input::before, .m3-toolbar__stepper-input::after, .m3-toolbar__spacer::before, .m3-toolbar__spacer::after, .m3-toolbar__choice::before, .m3-toolbar__choice::after, .m3-toolbar__option::before, .m3-toolbar__option::after, .m3-toolbar__color::before, .m3-toolbar__color::after, .m3-button-group::before, .m3-button-group::after, .m3-btn-check::before, .m3-btn-check::after, .m3-split-button::before, .m3-split-button::after, .m3-split-button__action::before, .m3-split-button__action::after, .m3-split-button__toggle::before, .m3-split-button__option::before, .m3-split-button__option::after, .m3-fab-menu::before, .m3-fab-menu::after, .m3-fab-menu__items::before, .m3-fab-menu__items::after, .m3-fab-menu__item::before, .m3-fab-menu__item::after, .m3-fab-menu__label::before, .m3-fab-menu__label::after, .m3-loading-indicator::after, .m3-date-picker::before, .m3-date-picker::after, .m3-date-picker__header::before, .m3-date-picker__header::after, .m3-date-picker__supporting::before, .m3-date-picker__supporting::after, .m3-date-picker__headline::before, .m3-date-picker__headline::after, .m3-date-picker__nav::before, .m3-date-picker__nav::after, .m3-date-picker__menu::before, .m3-date-picker__arrows::before, .m3-date-picker__arrows::after, .m3-date-picker__grid::before, .m3-date-picker__grid::after, .m3-date-picker__weekday::before, .m3-date-picker__weekday::after, .m3-date-picker__actions::before, .m3-date-picker__actions::after, .m3-time-picker::before, .m3-time-picker::after, .m3-time-picker__label::before, .m3-time-picker__label::after, .m3-time-picker__fields::before, .m3-time-picker__fields::after, .m3-time-picker__field::before, .m3-time-picker__field::after, .m3-time-picker__input::before, .m3-time-picker__input::after, .m3-time-picker__hint::before, .m3-time-picker__hint::after, .m3-time-picker__separator::before, .m3-time-picker__separator::after, .m3-time-picker__period::before, .m3-time-picker__period::after, .m3-time-picker__period-option::before, .m3-time-picker__period-option::after, .m3-time-picker__period-option .m3-time-picker__period-input::before, .m3-time-picker__period-option .m3-time-picker__period-input::after, .m3-time-picker__period-option .m3-time-picker__period-label::before, .m3-time-picker__period-option .m3-time-picker__period-label::after, .m3-time-picker__actions::before, .m3-time-picker__actions::after, .m3-color-palette::before, .m3-color-palette::after, .m3-color-palette__label::before, .m3-color-palette__label::after, .m3-color-palette__grid::before, .m3-color-palette__grid::after, .m3-color-palette__swatch::before, .m3-color-palette__swatch > input::before, .m3-color-palette__swatch > input::after, .m3-color-palette__custom::before, .m3-color-palette__custom > input::before, .m3-color-palette__custom > input::after, .m3-color-palette__theme::before, .m3-color-palette__theme::after, .m3-color-palette__standard::before, .m3-color-palette__standard::after, .m3-pane-layout::before, .m3-pane-layout::after, .m3-pane::before, .m3-pane::after, .m3-adaptive-layout::before, .m3-adaptive-layout::after, .m3-adaptive-nav::before, .m3-adaptive-nav::after, .m3-adaptive-nav .m3-adaptive-nav__item::before, .m3-adaptive-nav .m3-adaptive-nav__item::after, .m3-adaptive-nav .m3-adaptive-nav__icon::before, .m3-adaptive-nav .m3-adaptive-nav__icon::after, .m3-icon::before, .m3-icon::after, details.m3-disclosure::before, details.m3-disclosure::after, .m3-snackbar__slot::before, .m3-snackbar__slot::after, .m3-card__media::before, .m3-card__media::after, .m3-card__slot::before, .m3-card__slot::after, .m3-card__actions::before, .m3-card__actions::after, .m3-list-item__slot::before, .m3-list-item__slot::after, .m3-sheet__slot::before, .m3-sheet__slot::after, .m3-toolbar__label::before, .m3-toolbar__label::after, .m3-split-button__label::before, .m3-split-button__label::after, .m3-date-picker__input::before, .m3-date-picker__input::after, .m3-adaptive-nav .m3-adaptive-nav__label::before, .m3-adaptive-nav .m3-adaptive-nav__label::after, details.m3-disclosure > summary::before {
+    .m3-icon-btn::after, .m3-fab--small::after, .m3-segmented__segment .m3-segmented__label::before, .m3-progress::before, .m3-progress::after, .m3-snackbar__action::after, .m3-snackbar__close::after, .m3-carousel__indicator::before, .m3-list--dividers > .m3-list-item:not(:last-child)::after, .m3-tabs__tab.active::after, .m3-tabs__tab[aria-current=page]::after, .m3-tabs__tab[aria-selected=true]::after, .m3-tabs__input:checked + .m3-tabs__tab::after, input[type=checkbox].m3-checkbox::before, input[type=checkbox].m3-checkbox::after, input[type=radio].m3-radio::before, input[type=radio].m3-radio::after, input[type=checkbox].m3-switch::after, input[type=checkbox].m3-switch::before, .m3-chip--filter .m3-chip__label::before, .m3-chip--input .m3-chip__label::before, .m3-toolbar__group + .m3-toolbar__group::before, .m3-toolbar__dropdown::after, .m3-toolbar__swatch::before, .m3-split-button__toggle::after, .m3-loading-indicator::before, .m3-date-picker__menu::after, .m3-date-picker__day::after, .m3-date-picker__day::before, .m3-time-picker__dial-hand::before, .m3-time-picker__dial-hand::after, .m3-color-palette__swatch::after, .m3-color-palette__custom::after, details.m3-disclosure > summary::after, .m3-btn::before, .m3-btn::after, .m3-btn-group::before, .m3-btn-group::after, .m3-icon-btn::before, .m3-fab::before, .m3-fab::after, .m3-fab--extended .m3-fab__label::before, .m3-fab--extended .m3-fab__label::after, .m3-segmented::before, .m3-segmented::after, .m3-segmented__segment::before, .m3-segmented__segment::after, .m3-segmented__segment .m3-segmented__input::before, .m3-segmented__segment .m3-segmented__input::after, .m3-segmented__segment .m3-segmented__label::after, .m3-badge::before, .m3-badge::after, .m3-progress__bar::before, .m3-progress__bar::after, .m3-progress-circle::before, .m3-progress-circle::after, .m3-spinner::before, .m3-spinner::after, .m3-snackbar::before, .m3-snackbar::after, .m3-snackbar__text::before, .m3-snackbar__text::after, .m3-snackbar__action::before, .m3-snackbar__close::before, .m3-tooltip::before, .m3-tooltip::after, .m3-tooltip__title::before, .m3-tooltip__title::after, .m3-card::before, .m3-card::after, .m3-carousel::before, .m3-carousel::after, .m3-carousel__item::before, .m3-carousel__item::after, .m3-carousel__indicators::before, .m3-carousel__indicators::after, .m3-carousel__indicator::after, .m3-dialog::before, .m3-dialog::after, .m3-dialog__icon::before, .m3-dialog__icon::after, .m3-dialog__title::before, .m3-dialog__title::after, .m3-dialog__content::before, .m3-dialog__content::after, .m3-dialog__actions::before, .m3-dialog__actions::after, .m3-divider::before, .m3-divider::after, .m3-list::before, .m3-list::after, .m3-list__subheader::before, .m3-list__subheader::after, .m3-list-item::before, .m3-list-item::after, .m3-list-item__body::before, .m3-list-item__body::after, .m3-list-item__overline::before, .m3-list-item__overline::after, .m3-list-item__headline::before, .m3-list-item__headline::after, .m3-list-item__supporting::before, .m3-list-item__supporting::after, .m3-list-item__leading::before, .m3-list-item__leading::after, .m3-list-item__trailing::before, .m3-list-item__trailing::after, .m3-sheet--bottom::before, .m3-sheet--bottom::after, .m3-sheet--side::before, .m3-sheet--side::after, .m3-sheet--side-standard::before, .m3-sheet--side-standard::after, .m3-sheet__handle::before, .m3-sheet__handle::after, .m3-nav-bar::before, .m3-nav-bar::after, .m3-nav-bar__item::before, .m3-nav-bar__item::after, .m3-nav-bar__icon::before, .m3-nav-bar__icon::after, .m3-drawer::before, .m3-drawer::after, .m3-drawer--modal::before, .m3-drawer--modal::after, .m3-drawer__item::before, .m3-drawer__item::after, .m3-drawer__headline::before, .m3-drawer__headline::after, .m3-drawer__badge::before, .m3-drawer__badge::after, .m3-rail::before, .m3-rail::after, .m3-rail__item::before, .m3-rail__item::after, .m3-rail__icon::before, .m3-rail__icon::after, .m3-rail__header::before, .m3-rail__header::after, .m3-rail--modal::before, .m3-rail--modal::after, .m3-tabs::before, .m3-tabs::after, .m3-tabs__tab::before, .m3-tabs__tab::after, .m3-tabs__input::before, .m3-tabs__input::after, .m3-top-app-bar::before, .m3-top-app-bar::after, .m3-top-app-bar__title::before, .m3-top-app-bar__title::after, .m3-bottom-app-bar::before, .m3-bottom-app-bar::after, .m3-bottom-app-bar__trailing::before, .m3-bottom-app-bar__trailing::after, .m3-chip::before, .m3-chip::after, .m3-chip__avatar::before, .m3-chip__avatar::after, .m3-chip--filter .m3-chip__input::before, .m3-chip--filter .m3-chip__input::after, .m3-chip--filter .m3-chip__label::after, .m3-chip--input .m3-chip__input::before, .m3-chip--input .m3-chip__input::after, .m3-chip--input .m3-chip__label::after, .m3-chip__remove::before, .m3-chip__remove::after, .m3-menu::before, .m3-menu::after, .m3-menu__item::before, .m3-menu__item::after, .m3-menu__header::before, .m3-menu__header::after, .m3-menu__shortcut::before, .m3-menu__shortcut::after, input[type=range].m3-slider::before, input[type=range].m3-slider::after, .m3-slider-field::before, .m3-slider-field::after, .m3-slider__label::before, .m3-slider__label::after, .m3-slider-field--vertical::before, .m3-slider-field--vertical::after, input[type=date].m3-datetime::before, input[type=date].m3-datetime::after, input[type=time].m3-datetime::before, input[type=time].m3-datetime::after, input[type=datetime-local].m3-datetime::before, input[type=datetime-local].m3-datetime::after, input[type=month].m3-datetime::before, input[type=month].m3-datetime::after, input[type=week].m3-datetime::before, input[type=week].m3-datetime::after, .m3-field::before, .m3-field::after, .m3-field__input::before, .m3-field__input::after, .m3-field__label::before, .m3-field__label::after, .m3-field__leading::before, .m3-field__leading::after, .m3-field__trailing::before, .m3-field__trailing::after, .m3-field__prefix::before, .m3-field__prefix::after, .m3-field__suffix::before, .m3-field__suffix::after, .m3-field__counter::before, .m3-field__counter::after, .m3-field__supporting::before, .m3-field__supporting::after, .m3-search::before, .m3-search::after, .m3-search__input::before, .m3-search__input::after, .m3-search__leading::before, .m3-search__leading::after, .m3-search__trailing::before, .m3-search__trailing::after, .m3-search__panel::before, .m3-search__panel::after, select.m3-select::before, select.m3-select::after, .m3-toolbar::before, .m3-toolbar::after, .m3-toolbar__group::before, .m3-toolbar__group::after, .m3-toolbar__dropdown::before, select.m3-toolbar__select::before, select.m3-toolbar__select::after, .m3-toolbar__stepper::before, .m3-toolbar__stepper::after, .m3-toolbar__stepper-input::before, .m3-toolbar__stepper-input::after, .m3-toolbar__spacer::before, .m3-toolbar__spacer::after, .m3-toolbar__choice::before, .m3-toolbar__choice::after, .m3-toolbar__option::before, .m3-toolbar__option::after, .m3-toolbar__color::before, .m3-toolbar__color::after, .m3-button-group::before, .m3-button-group::after, .m3-btn-check::before, .m3-btn-check::after, .m3-split-button::before, .m3-split-button::after, .m3-split-button__action::before, .m3-split-button__action::after, .m3-split-button__toggle::before, .m3-split-button__option::before, .m3-split-button__option::after, .m3-fab-menu::before, .m3-fab-menu::after, .m3-fab-menu__items::before, .m3-fab-menu__items::after, .m3-fab-menu__item::before, .m3-fab-menu__item::after, .m3-fab-menu__label::before, .m3-fab-menu__label::after, .m3-loading-indicator::after, .m3-date-picker::before, .m3-date-picker::after, .m3-date-picker__years::before, .m3-date-picker__years::after, .m3-date-picker__year::before, .m3-date-picker__year::after, .m3-date-picker__header::before, .m3-date-picker__header::after, .m3-date-picker__supporting::before, .m3-date-picker__supporting::after, .m3-date-picker__headline::before, .m3-date-picker__headline::after, .m3-date-picker__nav::before, .m3-date-picker__nav::after, .m3-date-picker__menu::before, .m3-date-picker__arrows::before, .m3-date-picker__arrows::after, .m3-date-picker__grid::before, .m3-date-picker__grid::after, .m3-date-picker__weekday::before, .m3-date-picker__weekday::after, .m3-date-picker__actions::before, .m3-date-picker__actions::after, .m3-time-picker::before, .m3-time-picker::after, .m3-time-picker__dial::before, .m3-time-picker__dial::after, .m3-time-picker__dial-number::before, .m3-time-picker__dial-number::after, .m3-time-picker__dial-number > input::before, .m3-time-picker__dial-number > input::after, .m3-time-picker__label::before, .m3-time-picker__label::after, .m3-time-picker__fields::before, .m3-time-picker__fields::after, .m3-time-picker__field::before, .m3-time-picker__field::after, .m3-time-picker__input::before, .m3-time-picker__input::after, .m3-time-picker__hint::before, .m3-time-picker__hint::after, .m3-time-picker__separator::before, .m3-time-picker__separator::after, .m3-time-picker__period::before, .m3-time-picker__period::after, .m3-time-picker__period-option::before, .m3-time-picker__period-option::after, .m3-time-picker__period-option .m3-time-picker__period-input::before, .m3-time-picker__period-option .m3-time-picker__period-input::after, .m3-time-picker__period-option .m3-time-picker__period-label::before, .m3-time-picker__period-option .m3-time-picker__period-label::after, .m3-time-picker__actions::before, .m3-time-picker__actions::after, .m3-color-palette::before, .m3-color-palette::after, .m3-color-palette__label::before, .m3-color-palette__label::after, .m3-color-palette__grid::before, .m3-color-palette__grid::after, .m3-color-palette__swatch::before, .m3-color-palette__swatch > input::before, .m3-color-palette__swatch > input::after, .m3-color-palette__custom::before, .m3-color-palette__custom > input::before, .m3-color-palette__custom > input::after, .m3-color-palette__theme::before, .m3-color-palette__theme::after, .m3-color-palette__standard::before, .m3-color-palette__standard::after, .m3-pane-layout::before, .m3-pane-layout::after, .m3-pane::before, .m3-pane::after, .m3-adaptive-layout::before, .m3-adaptive-layout::after, .m3-adaptive-nav::before, .m3-adaptive-nav::after, .m3-adaptive-nav .m3-adaptive-nav__item::before, .m3-adaptive-nav .m3-adaptive-nav__item::after, .m3-adaptive-nav .m3-adaptive-nav__icon::before, .m3-adaptive-nav .m3-adaptive-nav__icon::after, .m3-icon::before, .m3-icon::after, details.m3-disclosure::before, details.m3-disclosure::after, .m3-snackbar__slot::before, .m3-snackbar__slot::after, .m3-card__media::before, .m3-card__media::after, .m3-card__slot::before, .m3-card__slot::after, .m3-card__actions::before, .m3-card__actions::after, .m3-list-item__slot::before, .m3-list-item__slot::after, .m3-sheet__slot::before, .m3-sheet__slot::after, .m3-toolbar__label::before, .m3-toolbar__label::after, .m3-split-button__label::before, .m3-split-button__label::after, .m3-date-picker__input::before, .m3-date-picker__input::after, .m3-adaptive-nav .m3-adaptive-nav__label::before, .m3-adaptive-nav .m3-adaptive-nav__label::after, details.m3-disclosure > summary::before {
       box-sizing: border-box;
       position: static;
       inset: auto;
@@ -17220,7 +17578,7 @@
       image-rendering: inherit;
     }
     @supports (corner-shape: bevel) {
-      .m3-btn, .m3-btn-group, .m3-icon-btn, .m3-fab, .m3-fab--extended .m3-fab__label, .m3-segmented, .m3-segmented__segment, .m3-segmented__segment .m3-segmented__input, .m3-segmented__segment .m3-segmented__label, .m3-badge, .m3-progress, .m3-progress__bar, .m3-progress-circle, .m3-spinner, .m3-snackbar, .m3-snackbar__text, .m3-snackbar__action, .m3-snackbar__close, .m3-tooltip, .m3-tooltip__title, .m3-card, .m3-carousel, .m3-carousel__item, .m3-carousel__indicators, .m3-carousel__indicator, .m3-dialog, .m3-dialog__title, .m3-dialog__content, .m3-dialog__actions, .m3-divider, .m3-list, .m3-list__subheader, .m3-list-item, .m3-list-item__body, .m3-list-item__overline, .m3-list-item__headline, .m3-list-item__supporting, .m3-list-item__leading, .m3-list-item__trailing, .m3-sheet--bottom, .m3-sheet--side, .m3-sheet--side-standard, .m3-sheet__handle, .m3-nav-bar, .m3-nav-bar__item, .m3-nav-bar__icon, .m3-drawer, .m3-drawer--modal, .m3-drawer__item, .m3-drawer__headline, .m3-drawer__badge, .m3-rail, .m3-rail__item, .m3-rail__icon, .m3-rail__header, .m3-rail--modal, .m3-tabs, .m3-tabs__tab, .m3-tabs__input, .m3-top-app-bar, .m3-top-app-bar__title, .m3-bottom-app-bar, .m3-bottom-app-bar__trailing, input[type=checkbox].m3-checkbox, input[type=radio].m3-radio, input[type=checkbox].m3-switch, .m3-chip, .m3-chip--filter .m3-chip__input, .m3-chip--filter .m3-chip__label, .m3-chip--input .m3-chip__input, .m3-chip--input .m3-chip__label, .m3-chip__remove, .m3-menu, .m3-menu__item, .m3-menu__header, input[type=range].m3-slider, .m3-slider-field, .m3-slider__label, .m3-slider-field--vertical, input[type=date].m3-datetime, input[type=time].m3-datetime, input[type=datetime-local].m3-datetime, input[type=month].m3-datetime, input[type=week].m3-datetime, .m3-field, .m3-field__input, .m3-field__label, .m3-field__leading, .m3-field__trailing, .m3-field__prefix, .m3-field__suffix, .m3-field__counter, .m3-field__supporting, .m3-search, .m3-search__input, .m3-search__panel, select.m3-select, .m3-toolbar, .m3-toolbar__group, .m3-toolbar__dropdown, select.m3-toolbar__select, .m3-toolbar__stepper, .m3-toolbar__stepper-input, .m3-toolbar__spacer, .m3-toolbar__choice, .m3-toolbar__option, .m3-toolbar__color, .m3-button-group, .m3-btn-check, .m3-split-button, .m3-split-button__action, .m3-split-button__toggle, .m3-split-button__option, .m3-fab-menu, .m3-fab-menu__items, .m3-fab-menu__item, .m3-fab-menu__label, .m3-loading-indicator, .m3-date-picker, .m3-date-picker__header, .m3-date-picker__supporting, .m3-date-picker__headline, .m3-date-picker__nav, .m3-date-picker__menu, .m3-date-picker__arrows, .m3-date-picker__grid, .m3-date-picker__weekday, .m3-date-picker__day, .m3-date-picker__actions, .m3-time-picker, .m3-time-picker__label, .m3-time-picker__fields, .m3-time-picker__field, .m3-time-picker__input, .m3-time-picker__hint, .m3-time-picker__separator, .m3-time-picker__period, .m3-time-picker__period-option, .m3-time-picker__period-option .m3-time-picker__period-input, .m3-time-picker__period-option .m3-time-picker__period-label, .m3-time-picker__actions, .m3-color-palette, .m3-color-palette__label, .m3-color-palette__grid, .m3-color-palette__swatch, .m3-color-palette__swatch > input, .m3-color-palette__custom, .m3-color-palette__custom > input, .m3-color-palette__theme, .m3-color-palette__standard, .m3-pane-layout, .m3-pane, .m3-adaptive-layout, .m3-adaptive-nav, .m3-adaptive-nav .m3-adaptive-nav__item, .m3-adaptive-nav .m3-adaptive-nav__icon, .m3-icon, details.m3-disclosure, .m3-snackbar__slot, .m3-card__media, .m3-card__slot, .m3-card__actions, .m3-list-item__slot, .m3-sheet__slot, .m3-toolbar__label, .m3-split-button__label, .m3-date-picker__input, .m3-adaptive-nav .m3-adaptive-nav__label, details.m3-disclosure > summary {
+      .m3-btn, .m3-btn-group, .m3-icon-btn, .m3-fab, .m3-fab--extended .m3-fab__label, .m3-segmented, .m3-segmented__segment, .m3-segmented__segment .m3-segmented__input, .m3-segmented__segment .m3-segmented__label, .m3-badge, .m3-progress, .m3-progress__bar, .m3-progress-circle, .m3-spinner, .m3-snackbar, .m3-snackbar__text, .m3-snackbar__action, .m3-snackbar__close, .m3-tooltip, .m3-tooltip__title, .m3-card, .m3-carousel, .m3-carousel__item, .m3-carousel__indicators, .m3-carousel__indicator, .m3-dialog, .m3-dialog__icon, .m3-dialog__title, .m3-dialog__content, .m3-dialog__actions, .m3-divider, .m3-list, .m3-list__subheader, .m3-list-item, .m3-list-item__body, .m3-list-item__overline, .m3-list-item__headline, .m3-list-item__supporting, .m3-list-item__leading, .m3-list-item__trailing, .m3-sheet--bottom, .m3-sheet--side, .m3-sheet--side-standard, .m3-sheet__handle, .m3-nav-bar, .m3-nav-bar__item, .m3-nav-bar__icon, .m3-drawer, .m3-drawer--modal, .m3-drawer__item, .m3-drawer__headline, .m3-drawer__badge, .m3-rail, .m3-rail__item, .m3-rail__icon, .m3-rail__header, .m3-rail--modal, .m3-tabs, .m3-tabs__tab, .m3-tabs__input, .m3-top-app-bar, .m3-top-app-bar__title, .m3-bottom-app-bar, .m3-bottom-app-bar__trailing, input[type=checkbox].m3-checkbox, input[type=radio].m3-radio, input[type=checkbox].m3-switch, .m3-chip, .m3-chip__avatar, .m3-chip--filter .m3-chip__input, .m3-chip--filter .m3-chip__label, .m3-chip--input .m3-chip__input, .m3-chip--input .m3-chip__label, .m3-chip__remove, .m3-menu, .m3-menu__item, .m3-menu__header, .m3-menu__shortcut, input[type=range].m3-slider, .m3-slider-field, .m3-slider__label, .m3-slider-field--vertical, input[type=date].m3-datetime, input[type=time].m3-datetime, input[type=datetime-local].m3-datetime, input[type=month].m3-datetime, input[type=week].m3-datetime, .m3-field, .m3-field__input, .m3-field__label, .m3-field__leading, .m3-field__trailing, .m3-field__prefix, .m3-field__suffix, .m3-field__counter, .m3-field__supporting, .m3-search, .m3-search__input, .m3-search__leading, .m3-search__trailing, .m3-search__panel, select.m3-select, .m3-toolbar, .m3-toolbar__group, .m3-toolbar__dropdown, select.m3-toolbar__select, .m3-toolbar__stepper, .m3-toolbar__stepper-input, .m3-toolbar__spacer, .m3-toolbar__choice, .m3-toolbar__option, .m3-toolbar__color, .m3-button-group, .m3-btn-check, .m3-split-button, .m3-split-button__action, .m3-split-button__toggle, .m3-split-button__option, .m3-fab-menu, .m3-fab-menu__items, .m3-fab-menu__item, .m3-fab-menu__label, .m3-loading-indicator, .m3-date-picker, .m3-date-picker__years, .m3-date-picker__year, .m3-date-picker__header, .m3-date-picker__supporting, .m3-date-picker__headline, .m3-date-picker__nav, .m3-date-picker__menu, .m3-date-picker__arrows, .m3-date-picker__grid, .m3-date-picker__weekday, .m3-date-picker__day, .m3-date-picker__actions, .m3-time-picker, .m3-time-picker__dial, .m3-time-picker__dial-number, .m3-time-picker__dial-number > input, .m3-time-picker__dial-hand, .m3-time-picker__label, .m3-time-picker__fields, .m3-time-picker__field, .m3-time-picker__input, .m3-time-picker__hint, .m3-time-picker__separator, .m3-time-picker__period, .m3-time-picker__period-option, .m3-time-picker__period-option .m3-time-picker__period-input, .m3-time-picker__period-option .m3-time-picker__period-label, .m3-time-picker__actions, .m3-color-palette, .m3-color-palette__label, .m3-color-palette__grid, .m3-color-palette__swatch, .m3-color-palette__swatch > input, .m3-color-palette__custom, .m3-color-palette__custom > input, .m3-color-palette__theme, .m3-color-palette__standard, .m3-pane-layout, .m3-pane, .m3-adaptive-layout, .m3-adaptive-nav, .m3-adaptive-nav .m3-adaptive-nav__item, .m3-adaptive-nav .m3-adaptive-nav__icon, .m3-icon, details.m3-disclosure, .m3-snackbar__slot, .m3-card__media, .m3-card__slot, .m3-card__actions, .m3-list-item__slot, .m3-sheet__slot, .m3-toolbar__label, .m3-split-button__label, .m3-date-picker__input, .m3-adaptive-nav .m3-adaptive-nav__label, details.m3-disclosure > summary {
         corner-shape: var(--m3-sys-corner-shape, round);
       }
     }

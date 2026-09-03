@@ -14,6 +14,7 @@
 //   --m3-chip-padding-inline            space-4 (16px) label space
 //   --m3-chip-padding-inline-icon       space-2 (8px)  label space on the side
 //                                       carrying a leading icon or checkmark
+//   --m3-chip-avatar-size               24px   leading avatar diameter
 //
 // Markup:
 //   <button class="m3-chip m3-chip--assist">Assist</button>
@@ -51,6 +52,9 @@ $tokens: (
   "chip-icon-size": var(--#{c.$prefix}-sys-icon-size-small),
   "chip-padding-inline": var(--#{c.$prefix}-sys-space-4),
   "chip-padding-inline-icon": var(--#{c.$prefix}-sys-space-2),
+  // M3's input chip can lead with an avatar instead of an icon: 24dp round,
+  // which is 4dp inside a 32dp chip on every side.
+  "chip-avatar-size": #{fn.rem(24)},
 );
 
 @function v($name) {
@@ -80,6 +84,37 @@ $tokens: (
   // is the spec value for the icon-less chip.
   &:has(> :is(svg, img, .#{c.$prefix}-icon):first-child) {
     padding-inline-start: #{v("chip-padding-inline-icon")};
+  }
+
+  // An avatar is bigger than an icon -- 24dp inside a 32dp chip -- so it sits
+  // 4dp from the leading edge rather than 8dp.
+  &:has(> .#{c.$prefix}-chip__avatar:first-child) {
+    padding-inline-start: var(--#{c.$prefix}-sys-space-1);
+  }
+}
+
+// M3's leading avatar: a round 24dp image or initial at the leading edge of
+// an input chip.
+@mixin avatar {
+  @include m.own-box;
+  @include m.always-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  inline-size: #{v("chip-avatar-size")};
+  block-size: #{v("chip-avatar-size")};
+  border-radius: var(--#{c.$prefix}-sys-shape-pill);
+  overflow: clip;
+  background-color: var(--#{c.$sys-prefix}-sys-color-primary-container);
+  color: var(--#{c.$sys-prefix}-sys-color-on-primary-container);
+  // Initials, when there is no image.
+  @include m.typescale("label-small");
+
+  > img {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
   }
 }
 
@@ -258,6 +293,10 @@ $tokens: (
 
   .#{$p}-chip {
     @include base;
+  }
+
+  .#{$p}-chip__avatar {
+    @include avatar;
   }
 
   .#{$p}-chip--assist {

@@ -9,6 +9,7 @@
 //   --m3-menu-min-width        112px               surface min-inline-size
 //   --m3-menu-max-width        280px               surface max-inline-size
 //   --m3-menu-header-color     on-surface-variant  section header color
+//   --m3-menu-shortcut-color   on-surface-variant  trailing shortcut text
 //
 // Markup:
 //   <button popovertarget="demo-menu" class="m3-btn m3-btn--text">Menu</button>
@@ -18,6 +19,22 @@
 //     <hr>
 //     <a class="m3-menu__item" href="#">Sign out</a>
 //   </div>
+//
+// A menu item can carry trailing supporting text -- a keyboard shortcut, a
+// count -- and can open a CASCADING submenu, which is an ordinary
+// .m3-menu[popover] the item is the popovertarget of. Pair the two with an
+// anchor name so the child opens beside its parent instead of centred:
+//
+//   <button class="m3-menu__item m3-menu__item--submenu"
+//           popovertarget="share" style="anchor-name: --share-anchor">
+//     Share <span class="m3-menu__shortcut">Ctrl S</span>
+//   </button>
+//   <div class="m3-menu m3-menu--submenu" id="share" popover
+//        style="--m3-menu-anchor: --share-anchor"> ... </div>
+//
+// CSS cannot pair an anchor with its positioned element on its own, so the
+// name is the consumer's on both ends. Without anchor positioning the child
+// opens centred, which is a placement rather than a break.
 //
 // A [popover] menu keeps the UA default margin: auto, so an un-anchored open
 // centers in the viewport; consumers position it with CSS anchor positioning
@@ -42,6 +59,7 @@ $tokens: (
   "menu-min-width": #{fn.rem(112)},
   "menu-max-width": #{fn.rem(280)},
   "menu-header-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "menu-shortcut-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
 );
 
 @function v($name) {
@@ -162,6 +180,51 @@ $tokens: (
   }
 }
 
+// M3's trailing supporting text on a menu item: a keyboard shortcut, a
+// count, a unit. It is pushed to the trailing edge and never wraps.
+@mixin shortcut {
+  @include m.own-box;
+  display: block;
+  margin-inline-start: auto;
+  padding-inline-start: var(--#{c.$prefix}-sys-space-4);
+  color: #{v("menu-shortcut-color")};
+  white-space: nowrap;
+  @include m.typescale("label-large");
+}
+
+// M3's cascading menu: an item that opens another menu beside it. The nested
+// menu is an ordinary .m3-menu[popover] whose popovertarget is this item, so
+// the cascade is the Popover API's, not a script's -- what the modifier adds
+// is the trailing chevron that says there is more, and (where anchor
+// positioning exists) the placement of the child beside the parent rather
+// than centred in the viewport.
+@mixin item-submenu {
+  &::after {
+    content: "";
+    display: block;
+    margin-inline-start: auto;
+    // chevron-icon draws a down-pointing chevron; the cascade points along
+    // the inline axis, so the rotation is restated after the include and
+    // turns with direction.
+    @include m.chevron-icon;
+    rotate: -45deg;
+  }
+
+  &:dir(rtl)::after {
+    rotate: 135deg;
+  }
+}
+
+// Placement only. The UA's `margin: auto` still centres the popover -- inside
+// the area position-area gives it -- so an unset or unsupported anchor leaves
+// the child menu centred in the viewport like any other popover, rather than
+// pinned to a corner.
+@mixin submenu-anchored($anchor) {
+  position-anchor: #{$anchor};
+  position-area: inline-end span-block-end;
+  position-try-fallbacks: flip-inline, flip-block;
+}
+
 @mixin classes {
   $p: c.$prefix;
 
@@ -196,6 +259,25 @@ $tokens: (
 
   .#{$p}-menu__header {
     @include header;
+  }
+
+  .#{$p}-menu__shortcut {
+    @include shortcut;
+  }
+
+  .#{$p}-menu__item--submenu {
+    @include item-submenu;
+  }
+
+  // A nested menu placed beside its parent item. The anchor name is the
+  // consumer's (anchor-name on the item, position-anchor here), because CSS
+  // cannot pair the two on its own; without anchor positioning the child
+  // opens centred like any other popover, which is a placement rather than
+  // a break.
+  @supports (position-anchor: --a) {
+    .#{$p}-menu--submenu[popover] {
+      @include submenu-anchored("var(--#{$p}-menu-anchor)");
+    }
   }
 
   // Browsers without the Popover API treat [popover] as an ordinary element

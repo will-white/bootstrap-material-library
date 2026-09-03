@@ -1618,7 +1618,9 @@
 
     <div class="cat-item">
       <header><h3 class="m3-title-medium">Dialogs</h3>
-        <span class="cat-api"><code>.m3-dialog</code><code>--static</code><code>--fullscreen</code><code>.modal</code></span></header>
+        <span class="cat-api"><code>.m3-dialog</code><code>--static</code><code>--fullscreen</code><code>__icon</code><code>.modal</code></span></header>
+      <p class="cat-note m3-body-small">A hero icon centres the headline with it &mdash; a dialog that leads with an
+        icon is symmetric, one that leads with the headline is not.</p>
       <div class="cat-specimen cat-specimen--stack" style="justify-items: stretch;">
         <div>
           <button class="m3-btn m3-btn--filled" type="button" command="show-modal" commandfor="cat-dlg-2">Open modal</button>
@@ -1847,7 +1849,7 @@
         over the label &mdash; a property of the bar, so every tab shares it and the indicator stays on one line.</p>
       <div class="cat-specimen cat-specimen--stack" style="justify-items: stretch;">
         <nav class="m3-tabs" aria-label="Folders">
-          <button class="m3-tabs__tab active" type="button" aria-current="page">Inbox</button>
+          <button class="m3-tabs__tab active" type="button" aria-current="page">Inbox <span class="m3-badge">24</span></button>
           <button class="m3-tabs__tab" type="button">Starred</button>
           <button class="m3-tabs__tab" type="button">Archive</button>
         </nav>
@@ -1865,12 +1867,15 @@
 
     <div class="cat-item">
       <header><h3 class="m3-title-medium">Search</h3>
-        <span class="cat-api"><code>.m3-search</code><code>.m3-search__panel</code></span></header>
+        <span class="cat-api"><code>.m3-search</code><code>.m3-search__panel</code><code>__leading</code><code>__trailing</code></span></header>
       <p class="cat-note m3-body-small">A search bar that becomes a search view: focus the field to reveal the
-        suggestions panel.</p>
+        suggestions panel. The icon slots sit 16px from the container edge with 16px to the text, and take a
+        bare icon or a whole control.</p>
       <div class="cat-specimen cat-specimen--tall" style="align-items: stretch;">
         <form class="m3-search" role="search">
+          <span class="m3-search__leading"><span class="m3-icon">search</span></span>
           <input class="m3-search__input" type="search" placeholder="Search mail">
+          <button class="m3-search__trailing" type="reset" aria-label="Clear"><span class="m3-icon">close</span></button>
           <div class="m3-search__panel">
             <ul class="m3-list">
               <li class="m3-list-item"><span class="m3-list-item__leading"><span class="m3-icon">schedule</span></span><span class="m3-list-item__body"><span class="m3-list-item__headline">from:billing</span></span></li>
@@ -1982,6 +1987,7 @@
       <p class="cat-note m3-body-small">16px of label space, narrowing to 8px beside a leading icon or the filter
         check mark.</p>
       <div class="cat-specimen">
+        <span class="m3-chip m3-chip--input"><span class="m3-chip__avatar">RC</span>Riley Chen</span>
         <span class="m3-chip m3-chip--assist">Assist</span>
         <span class="m3-chip m3-chip--assist"><span class="m3-icon">calendar_today</span>Add to calendar</span>
         <span class="m3-chip m3-chip--suggestion">Suggestion</span>
@@ -1995,8 +2001,18 @@
 
     <div class="cat-item">
       <header><h3 class="m3-title-medium">Menus</h3>
-        <span class="cat-api"><code>.m3-menu</code><code>--static</code><code>.m3-menu__item</code><code>.m3-menu__header</code><code>.dropdown-menu</code></span></header>
+        <span class="cat-api"><code>.m3-menu</code><code>--static</code><code>.m3-menu__item</code><code>.m3-menu__header</code><code>__shortcut</code><code>__item--submenu</code><code>.dropdown-menu</code></span></header>
+      <p class="cat-note m3-body-small">An item can carry trailing supporting text and can open a cascading
+        submenu &mdash; which is an ordinary <code>.m3-menu[popover]</code> the item is the
+        <code>popovertarget</code> of, so the cascade is the Popover API&rsquo;s and not a script&rsquo;s.</p>
       <div class="cat-specimen cat-specimen--stack" style="justify-items: stretch;">
+        <div class="m3-menu m3-menu--static">
+          <button class="m3-menu__item" type="button">Undo <span class="m3-menu__shortcut">Ctrl Z</span></button>
+          <button class="m3-menu__item" type="button">Redo <span class="m3-menu__shortcut">Ctrl Shift Z</span></button>
+          <hr>
+          <button class="m3-menu__item m3-menu__item--submenu" type="button">Share</button>
+          <button class="m3-menu__item m3-menu__item--submenu" type="button">Export as</button>
+        </div>
         <div class="m3-menu m3-menu--static">
           <div class="m3-menu__header">Move to</div>
           <button class="m3-menu__item" type="button"><span class="m3-icon">archive</span>Archive</button>
@@ -2125,9 +2141,14 @@
 
     <div class="cat-item">
       <header><h3 class="m3-title-medium">Date picker</h3>
-        <span class="cat-api"><code>.m3-date-picker</code><code>--docked</code><code>--modal</code><code>--range</code></span></header>
-      <p class="cat-note m3-body-small">Real buttons and inputs styled by m3x; navigating months and applying a
-        selection is your form&rsquo;s job.</p>
+        <span class="cat-api"><code>.m3-date-picker</code><code>--docked</code><code>--modal</code><code>--range</code><code>__years</code><code>__year</code></span></header>
+      <p class="cat-note m3-body-small">Real buttons and inputs styled by m3x; navigating months, applying a
+        selection and swapping the calendar for the year view are your form&rsquo;s job.</p>
+      <div class="cat-specimen cat-specimen--center">
+        <div class="m3-date-picker m3-date-picker--docked">
+          <div class="m3-date-picker__years"><button class="m3-date-picker__year" type="button">2020</button><button class="m3-date-picker__year" type="button">2021</button><button class="m3-date-picker__year" type="button">2022</button><button class="m3-date-picker__year" type="button">2023</button><button class="m3-date-picker__year" type="button">2024</button><button class="m3-date-picker__year" type="button">2025</button><button class="m3-date-picker__year m3-date-picker__year--today" type="button" aria-selected="true">2026</button><button class="m3-date-picker__year" type="button">2027</button><button class="m3-date-picker__year" type="button">2028</button><button class="m3-date-picker__year" type="button">2029</button><button class="m3-date-picker__year" type="button">2030</button><button class="m3-date-picker__year" type="button">2031</button><button class="m3-date-picker__year" type="button">2032</button><button class="m3-date-picker__year" type="button">2033</button><button class="m3-date-picker__year" type="button">2034</button></div>
+        </div>
+      </div>
       <div class="cat-specimen cat-specimen--center">
         <div class="m3-date-picker m3-date-picker--docked">
           <div class="m3-date-picker__header">
@@ -2171,7 +2192,18 @@
 
     <div class="cat-item">
       <header><h3 class="m3-title-medium">Time picker</h3>
-        <span class="cat-api"><code>.m3-time-picker</code><code>--modal</code></span></header>
+        <span class="cat-api"><code>.m3-time-picker</code><code>--modal</code><code>__dial</code><code>__dial-number</code><code>__dial-hand</code></span></header>
+      <p class="cat-note m3-body-small">Both of M3&rsquo;s modes. The dial is twelve real radios laid out on a
+        circle with CSS trigonometry &mdash; the order in the markup <em>is</em> the position on the face, and the
+        hand follows the checked one. It is click-to-select: M3&rsquo;s drag is pointer tracking, not styling.</p>
+      <div class="cat-specimen cat-specimen--center">
+        <div class="m3-time-picker">
+          <div class="m3-time-picker__hint">Select time</div>
+          <div class="m3-time-picker__dial">
+            <span class="m3-time-picker__dial-hand"></span><label class="m3-time-picker__dial-number"><input type="radio" name="cat-dial" value="1"><span>1</span></label><label class="m3-time-picker__dial-number"><input type="radio" name="cat-dial" value="2"><span>2</span></label><label class="m3-time-picker__dial-number"><input type="radio" name="cat-dial" value="3"><span>3</span></label><label class="m3-time-picker__dial-number"><input type="radio" name="cat-dial" value="4"><span>4</span></label><label class="m3-time-picker__dial-number"><input type="radio" name="cat-dial" value="5"><span>5</span></label><label class="m3-time-picker__dial-number"><input type="radio" name="cat-dial" value="6"><span>6</span></label><label class="m3-time-picker__dial-number"><input type="radio" name="cat-dial" value="7"><span>7</span></label><label class="m3-time-picker__dial-number"><input type="radio" name="cat-dial" value="8"><span>8</span></label><label class="m3-time-picker__dial-number"><input type="radio" name="cat-dial" value="9"><span>9</span></label><label class="m3-time-picker__dial-number"><input type="radio" name="cat-dial" value="10" checked><span>10</span></label><label class="m3-time-picker__dial-number"><input type="radio" name="cat-dial" value="11"><span>11</span></label><label class="m3-time-picker__dial-number"><input type="radio" name="cat-dial" value="12"><span>12</span></label>
+          </div>
+        </div>
+      </div>
       <div class="cat-specimen cat-specimen--center">
         <div class="m3-time-picker">
           <div class="m3-time-picker__hint">Select time</div>

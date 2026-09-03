@@ -28,6 +28,10 @@
 //   --m3-date-picker-range-color               on-secondary-container
 //   --m3-date-picker-menu-color                on-surface-variant (month
 //                                              menu trigger label + chevron)
+//   --m3-date-picker-year-width                72px   year cell in the year
+//                                              selection grid
+//   --m3-date-picker-year-height               36px
+//   --m3-date-picker-years-height              280px  the grid's scroll box
 //   --m3-date-picker-supporting-color          on-surface-variant (header)
 //   --m3-date-picker-headline-color            on-surface (header)
 //   --m3-date-picker-divider-color             outline-variant (header rule)
@@ -140,6 +144,11 @@ $tokens: (
   "date-picker-range-container-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
   "date-picker-range-color": var(--#{c.$sys-prefix}-sys-color-on-secondary-container),
   "date-picker-menu-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  // M3's year-selection grid: 72x36dp pills, three to a row, scrolling
+  // inside the surface the calendar was filling.
+  "date-picker-year-width": #{fn.rem(72)},
+  "date-picker-year-height": #{fn.rem(36)},
+  "date-picker-years-height": #{fn.rem(280)},
   "date-picker-supporting-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
   "date-picker-headline-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
   "date-picker-divider-color": var(--#{c.$sys-prefix}-sys-color-outline-variant),
@@ -426,12 +435,84 @@ $tokens: (
 
 // --- class emission ---------------------------------------------------------
 
+// --- year selection ---------------------------------------------------------
+//
+// M3's second view: the calendar is replaced by a scrolling grid of years,
+// three to a row. It is the same surface, so it takes the same inline
+// padding; which view is showing is the consumer's (hide one, show the
+// other), because CSS has no notion of which year the calendar is on.
+@mixin years {
+  @include m.own-box;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  justify-items: center;
+  gap: var(--#{c.$prefix}-sys-space-2);
+  padding-inline: #{v("date-picker-padding")};
+  padding-block: var(--#{c.$prefix}-sys-space-2);
+  max-block-size: #{v("date-picker-years-height")};
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}
+
+@mixin year {
+  @include m.own-box;
+  --_container: transparent;
+  --_content: #{v("date-picker-day-color")};
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: #{v("date-picker-year-width")};
+  block-size: #{v("date-picker-year-height")};
+  padding: var(--#{c.$prefix}-sys-space-none);
+  border: none;
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  cursor: pointer;
+  user-select: none;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+  @include m.typescale("body-large");
+  @include m.state-layer;
+  @include m.focus-ring;
+  @include m.transition((background-color, color));
+}
+
+// The year the picker is on, marked the way a selected day is.
+@mixin year-selected {
+  --_container: #{v("date-picker-selected-container-color")};
+  --_content: #{v("date-picker-selected-color")};
+}
+
+// The current year, ringed rather than filled -- the same treatment `today`
+// gets in the calendar.
+@mixin year-today {
+  --_content: #{v("date-picker-today-color")};
+  box-shadow: inset 0 0 0 var(--#{c.$prefix}-sys-stroke-hairline)
+    #{v("date-picker-today-color")};
+}
+
 @mixin classes {
   $p: c.$prefix;
   $day: ".#{$p}-date-picker__day";
 
   .#{$p}-date-picker {
     @include surface;
+  }
+
+  .#{$p}-date-picker__years {
+    @include years;
+  }
+
+  .#{$p}-date-picker__year {
+    @include year;
+  }
+
+  .#{$p}-date-picker__year[aria-selected="true"] {
+    @include year-selected;
+  }
+
+  .#{$p}-date-picker__year--today {
+    @include year-today;
   }
 
   .#{$p}-date-picker--docked {

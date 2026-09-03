@@ -8,12 +8,21 @@
 //   --m3-search-placeholder-color  on-surface-variant
 //   --m3-search-shape              corner-full
 //   --m3-search-panel-shape        corner-medium
+//   --m3-search-icon-color         on-surface-variant  leading/trailing slots
 //
 // Markup:
 //   <form class="m3-search" role="search">
+//     <span class="m3-search__leading"><span class="m3-icon">search</span></span>
 //     <input type="search" class="m3-search__input" placeholder="Search settings">
+//     <button class="m3-search__trailing" type="reset" aria-label="Clear">
+//       <span class="m3-icon">close</span>
+//     </button>
 //     <div class="m3-search__panel"> ...suggestion content (e.g. an m3-list)... </div>
 //   </form>
+//
+// The icon slots are optional and in flow, so the bar's flex row places them:
+// M3's 16dp from the container edge comes from the bar's own padding, and the
+// slot adds the 8dp that makes the gap to the text 16dp as well.
 //
 // Pure-CSS focus caveat: the suggestion panel is revealed by :focus-within on
 // the form, so it stays open only while focus is inside the form. Suggestion
@@ -38,6 +47,7 @@ $tokens: (
   "search-placeholder-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
   "search-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
   "search-panel-shape": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "search-icon-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
 );
 
 @function v($name) {
@@ -120,6 +130,30 @@ $tokens: (
   z-index: var(--#{c.$prefix}-sys-z-overlay);
 }
 
+// M3's leading and trailing icon slots. The bar's own 16dp padding puts the
+// slot 16dp from the container edge; the slot adds the 8dp that turns the
+// bar's 8dp flex gap into M3's 16dp between icon and text. A slot is a plain
+// box, so it takes a bare icon or a whole .m3-icon-btn.
+@mixin icon-slot {
+  @include m.own-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border: none;
+  padding: var(--#{c.$prefix}-sys-space-none);
+  background-color: transparent;
+  color: #{v("search-icon-color")};
+}
+
+@mixin icon-slot-leading {
+  margin-inline-end: var(--#{c.$prefix}-sys-space-2);
+}
+
+@mixin icon-slot-trailing {
+  margin-inline-start: var(--#{c.$prefix}-sys-space-2);
+}
+
 @mixin classes {
   $p: c.$prefix;
 
@@ -129,6 +163,26 @@ $tokens: (
 
   .#{$p}-search__input {
     @include input;
+  }
+
+  .#{$p}-search__leading,
+  .#{$p}-search__trailing {
+    @include icon-slot;
+  }
+
+  .#{$p}-search__leading {
+    @include icon-slot-leading;
+  }
+
+  .#{$p}-search__trailing {
+    @include icon-slot-trailing;
+  }
+
+  // A slot that is a real control gets the pointer and the focus ring.
+  button.#{$p}-search__leading,
+  button.#{$p}-search__trailing {
+    cursor: pointer;
+    @include m.focus-ring;
   }
 
   .#{$p}-search__panel {

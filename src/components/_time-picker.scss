@@ -24,9 +24,32 @@
 //   --m3-time-picker-period-label-color              on-surface-variant
 //   --m3-time-picker-period-selected-container-color tertiary-container
 //   --m3-time-picker-period-selected-label-color     on-tertiary-container
+//   --m3-time-picker-dial-size                       256px  clock face
+//   --m3-time-picker-dial-container-color            surface-container-highest
+//   --m3-time-picker-dial-number-size                48px   one number's box
+//   --m3-time-picker-dial-hand-color                 primary
+//   --m3-time-picker-dial-selected-color             on-primary
 //
-// Scope: the input mode only. The dial (clock face) mode needs JavaScript
-// and stays out of this zero-JS library.
+// Both of M3's modes are here. The DIAL mode is real radio inputs laid out
+// on a circle with CSS trigonometry, so picking an hour is a click on a form
+// control and a plain <form> still submits it:
+//
+//   <div class="m3-time-picker__dial">
+//     <span class="m3-time-picker__dial-hand"></span>
+//     <label class="m3-time-picker__dial-number">
+//       <input type="radio" name="hour" value="1"><span>1</span>
+//     </label>
+//     ... twelve of them, in order ...
+//   </div>
+//
+// The numbers' order in the markup IS their position on the face -- the
+// first is one o'clock -- so nothing carries an angle in the HTML. The hand
+// follows the checked radio through :has(); without :has() the hand stays
+// hidden and the numbers still select.
+//
+// What the CSS dial does NOT do is M3's DRAG: you click a number rather than
+// sweeping the hand round to it. Dragging is a pointer-tracking problem, not
+// a styling one.
 //
 // Markup (real inputs; the hour/minute fields are text inputs with a numeric
 // keyboard, the period toggle is two radios, so a plain <form> submits the
@@ -109,6 +132,13 @@ $tokens: (
   "time-picker-period-label-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
   "time-picker-period-selected-container-color": var(--#{c.$sys-prefix}-sys-color-tertiary-container),
   "time-picker-period-selected-label-color": var(--#{c.$sys-prefix}-sys-color-on-tertiary-container),
+  // Dial mode. M3's clock face is 256dp with 48dp number targets, which puts
+  // their centres on a (256 - 48) / 2 = 104dp radius.
+  "time-picker-dial-size": #{fn.rem(256)},
+  "time-picker-dial-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-highest),
+  "time-picker-dial-number-size": #{fn.rem(48)},
+  "time-picker-dial-hand-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "time-picker-dial-selected-color": var(--#{c.$sys-prefix}-sys-color-on-primary),
 );
 
 @function v($name) {
@@ -373,11 +403,186 @@ $tokens: (
 
 // --- class emission ---------------------------------------------------------
 
+// --- dial mode ---------------------------------------------------------------
+//
+// The clock face. Each number sits at k x 30deg from twelve o'clock on a
+// radius of half the difference between the face and a number's box, placed
+// with sin()/cos() so the digits stay upright without a counter-rotation.
+@mixin dial {
+  @include m.own-box;
+  @include m.always-round;
+  --_radius: calc(
+    (#{v("time-picker-dial-size")} - #{v("time-picker-dial-number-size")}) / 2
+  );
+  // The hand's angle is declared HERE, on the face, because that is what the
+  // :has() rules re-point; a default on the hand itself would be set
+  // directly on the element and beat the inherited value every time.
+  --_hand: 0deg;
+
+  position: relative;
+  display: block;
+  inline-size: #{v("time-picker-dial-size")};
+  block-size: #{v("time-picker-dial-size")};
+  border-radius: var(--#{c.$prefix}-sys-shape-pill);
+  background-color: #{v("time-picker-dial-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("time-picker-dial-container-color")};
+}
+
+@mixin dial-number {
+  @include m.own-box;
+  @include m.always-round;
+  --_angle: calc(var(--_k) * 30deg);
+
+  position: absolute;
+  inset: var(--#{c.$prefix}-sys-space-none);
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: #{v("time-picker-dial-number-size")};
+  block-size: #{v("time-picker-dial-number-size")};
+  border-radius: var(--#{c.$prefix}-sys-shape-pill);
+  // Twelve o'clock is straight up, so x is sin and y is minus cos.
+  translate: calc(sin(var(--_angle)) * var(--_radius))
+    calc(-1 * cos(var(--_angle)) * var(--_radius));
+  color: #{v("time-picker-content-color")};
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  @include m.typescale("body-large");
+
+  // The radio is the control; it is heard and focusable, not seen. The label
+  // around it is what the pointer hits, and what carries the look.
+  > input {
+    @include m.own-box;
+    display: block;
+    position: absolute;
+    opacity: var(--#{c.$prefix}-sys-opacity-hidden);
+    pointer-events: none;
+  }
+}
+
+// The selected number sits under the hand's end circle, so it takes the
+// on-primary label the circle needs.
+@mixin dial-number-selected {
+  color: #{v("time-picker-dial-selected-color")};
+}
+
+// The hand: a 2px arm from the centre out to the selected number, with the
+// 48dp selector circle on its end. It is laid out pointing straight up and
+// rotated to the checked value.
+@mixin dial-hand {
+  @include m.own-box;
+  // The hand carries no text, but its two decorative pseudo-elements inherit
+  // their typography from it -- so it names a typescale rather than passing
+  // whatever the host set down to them.
+  @include m.typescale("body-large");
+  display: block;
+  position: absolute;
+  inset: var(--#{c.$prefix}-sys-space-none);
+  margin: auto;
+  inline-size: var(--#{c.$prefix}-sys-stroke-thick);
+  block-size: var(--_radius);
+  background-color: #{v("time-picker-dial-hand-color")};
+  transform-origin: 50% 100%;
+  // Half its own length up, so its foot sits on the dial's centre, and then
+  // round to the hour.
+  translate: 0 calc(-1 * var(--_radius) / 2);
+  rotate: var(--_hand);
+  // Nothing is picked until a radio is checked, and a hand pointing at
+  // twelve would be a lie; :has() below reveals it.
+  opacity: var(--#{c.$prefix}-sys-opacity-hidden);
+  pointer-events: none;
+  @include m.transition((rotate, opacity));
+
+  // M3's pin: a small dot on the dial's centre, at the hand's foot.
+  &::before {
+    @include m.own-pseudo;
+    content: "";
+    display: block;
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-start: 50%;
+    inline-size: var(--#{c.$prefix}-sys-space-2);
+    block-size: var(--#{c.$prefix}-sys-space-2);
+    translate: -50% 50%;
+    border-radius: var(--#{c.$prefix}-sys-shape-pill);
+    background-color: #{v("time-picker-dial-hand-color")};
+  }
+
+  // The selector circle on the hand's end.
+  &::after {
+    @include m.own-pseudo;
+    content: "";
+    display: block;
+    position: absolute;
+    inset-block-start: calc(-1 * #{v("time-picker-dial-number-size")} / 2);
+    inset-inline-start: 50%;
+    inline-size: #{v("time-picker-dial-number-size")};
+    block-size: #{v("time-picker-dial-number-size")};
+    translate: -50% 0;
+    border-radius: var(--#{c.$prefix}-sys-shape-pill);
+    background-color: #{v("time-picker-dial-hand-color")};
+  }
+}
+
+@mixin dial-hand-shown {
+  opacity: var(--#{c.$prefix}-sys-opacity-full);
+}
+
 @mixin classes {
   $p: c.$prefix;
 
   .#{$p}-time-picker {
     @include surface;
+  }
+
+  // sin()/cos() arrived after this library's @layer floor, and without them
+  // every number would stack on the dial's centre -- so the whole face is
+  // gated rather than degraded.
+  @supports (inline-size: calc(sin(30deg) * 1px)) {
+    .#{$p}-time-picker__dial {
+      @include dial;
+    }
+
+    .#{$p}-time-picker__dial-number {
+      @include dial-number;
+    }
+
+    // A number's place on the face is its place in the markup.
+    @for $k from 1 through 12 {
+      .#{$p}-time-picker__dial-number:nth-of-type(#{$k}) {
+        --_k: #{$k};
+      }
+    }
+
+    .#{$p}-time-picker__dial-hand {
+      @include dial-hand;
+    }
+
+    // Each rule stands alone in its selector list, so a browser without
+    // :has() drops them and keeps a working set of radios with no hand.
+    @for $k from 1 through 12 {
+      .#{$p}-time-picker__dial:has(
+          > .#{$p}-time-picker__dial-number:nth-of-type(#{$k}) > input:checked
+        ) {
+        --_hand: #{$k * 30}deg;
+      }
+    }
+
+    .#{$p}-time-picker__dial:has(> .#{$p}-time-picker__dial-number > input:checked)
+      .#{$p}-time-picker__dial-hand {
+      @include dial-hand-shown;
+    }
+
+    .#{$p}-time-picker__dial-number:has(> input:checked) {
+      @include dial-number-selected;
+    }
+
+    // The number must read above the hand's selector circle.
+    .#{$p}-time-picker__dial-number {
+      z-index: var(--#{c.$prefix}-sys-z-raised);
+    }
   }
 
   .#{$p}-time-picker--modal {
