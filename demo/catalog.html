@@ -41,6 +41,11 @@
     .cat-api { display: flex; flex-wrap: wrap; gap: var(--m3-sys-space-2); align-items: baseline; color: var(--md-sys-color-on-surface-variant); }
     code { font-family: var(--bs-font-monospace); font-size: 0.8125rem; }
     .cat-api code, .cat-note code { padding: 0.125rem 0.375rem; border-radius: var(--md-sys-shape-corner-extra-small); background-color: var(--md-sys-color-surface-container-highest); }
+    .cat-shapes { display: grid; grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr)); gap: var(--m3-sys-space-4); inline-size: 100%; }
+    .cat-shapes figure { margin: 0; display: grid; justify-items: center; gap: var(--m3-sys-space-2); }
+    .cat-shapes i { display: block; inline-size: 4.5rem; block-size: 4.5rem;
+      background: linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-tertiary)); }
+    .cat-shapes figcaption { color: var(--md-sys-color-on-surface-variant); }
     .cat-ext { display: inline-block; padding: 0.125rem 0.5rem; border-radius: var(--md-sys-shape-corner-full);
       background-color: var(--md-sys-color-tertiary-container); color: var(--md-sys-color-on-tertiary-container);
       font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; vertical-align: middle; }
@@ -564,6 +569,52 @@
     <div class="cat-labelled"><span style="inline-size: 4.5rem; block-size: 4.5rem; display: block; background-color: var(--md-sys-color-primary-container); border-radius: var(--md-sys-shape-corner-full);"></span><small class="m3-label-small">full<br>pill</small></div>
   </div></div>
 
+  <div class="cat-item cat-item--wide">
+    <h3 class="m3-title-medium">The shape library</h3>
+    <p class="cat-note m3-body-small">M3 Expressive&rsquo;s other shape system: 35 named decorative shapes for
+      avatars, media frames, badges and empty states. The scale rounds a container&rsquo;s <em>corners</em>; the
+      library replaces its <em>outline</em>. M3 defines them as rounded polygons &mdash; a vertex list plus a
+      per-vertex radius &mdash; so <code>scripts/shapes.js</code> ports that definition, rounds every corner with
+      the arc its radius asks for, and walks the outline at a constant arc length into a percentage
+      <code>polygon()</code> that follows whatever box it clips.</p>
+    <div class="cat-specimen cat-shapes">
+      <figure><i class="m3-shape-circle"></i><figcaption class="m3-label-small">circle</figcaption></figure>
+      <figure><i class="m3-shape-square"></i><figcaption class="m3-label-small">square</figcaption></figure>
+      <figure><i class="m3-shape-slanted"></i><figcaption class="m3-label-small">slanted</figcaption></figure>
+      <figure><i class="m3-shape-arch"></i><figcaption class="m3-label-small">arch</figcaption></figure>
+      <figure><i class="m3-shape-fan"></i><figcaption class="m3-label-small">fan</figcaption></figure>
+      <figure><i class="m3-shape-arrow"></i><figcaption class="m3-label-small">arrow</figcaption></figure>
+      <figure><i class="m3-shape-semi-circle"></i><figcaption class="m3-label-small">semi-circle</figcaption></figure>
+      <figure><i class="m3-shape-oval"></i><figcaption class="m3-label-small">oval</figcaption></figure>
+      <figure><i class="m3-shape-pill"></i><figcaption class="m3-label-small">pill</figcaption></figure>
+      <figure><i class="m3-shape-triangle"></i><figcaption class="m3-label-small">triangle</figcaption></figure>
+      <figure><i class="m3-shape-diamond"></i><figcaption class="m3-label-small">diamond</figcaption></figure>
+      <figure><i class="m3-shape-clam-shell"></i><figcaption class="m3-label-small">clam-shell</figcaption></figure>
+      <figure><i class="m3-shape-pentagon"></i><figcaption class="m3-label-small">pentagon</figcaption></figure>
+      <figure><i class="m3-shape-gem"></i><figcaption class="m3-label-small">gem</figcaption></figure>
+      <figure><i class="m3-shape-sunny"></i><figcaption class="m3-label-small">sunny</figcaption></figure>
+      <figure><i class="m3-shape-very-sunny"></i><figcaption class="m3-label-small">very-sunny</figcaption></figure>
+      <figure><i class="m3-shape-cookie-4"></i><figcaption class="m3-label-small">cookie-4</figcaption></figure>
+      <figure><i class="m3-shape-cookie-6"></i><figcaption class="m3-label-small">cookie-6</figcaption></figure>
+      <figure><i class="m3-shape-cookie-7"></i><figcaption class="m3-label-small">cookie-7</figcaption></figure>
+      <figure><i class="m3-shape-cookie-9"></i><figcaption class="m3-label-small">cookie-9</figcaption></figure>
+      <figure><i class="m3-shape-cookie-12"></i><figcaption class="m3-label-small">cookie-12</figcaption></figure>
+      <figure><i class="m3-shape-ghostish"></i><figcaption class="m3-label-small">ghostish</figcaption></figure>
+      <figure><i class="m3-shape-clover-4"></i><figcaption class="m3-label-small">clover-4</figcaption></figure>
+      <figure><i class="m3-shape-clover-8"></i><figcaption class="m3-label-small">clover-8</figcaption></figure>
+      <figure><i class="m3-shape-burst"></i><figcaption class="m3-label-small">burst</figcaption></figure>
+      <figure><i class="m3-shape-soft-burst"></i><figcaption class="m3-label-small">soft-burst</figcaption></figure>
+      <figure><i class="m3-shape-boom"></i><figcaption class="m3-label-small">boom</figcaption></figure>
+      <figure><i class="m3-shape-soft-boom"></i><figcaption class="m3-label-small">soft-boom</figcaption></figure>
+      <figure><i class="m3-shape-flower"></i><figcaption class="m3-label-small">flower</figcaption></figure>
+      <figure><i class="m3-shape-puffy"></i><figcaption class="m3-label-small">puffy</figcaption></figure>
+      <figure><i class="m3-shape-puffy-diamond"></i><figcaption class="m3-label-small">puffy-diamond</figcaption></figure>
+      <figure><i class="m3-shape-pixel-circle"></i><figcaption class="m3-label-small">pixel-circle</figcaption></figure>
+      <figure><i class="m3-shape-pixel-triangle"></i><figcaption class="m3-label-small">pixel-triangle</figcaption></figure>
+      <figure><i class="m3-shape-bun"></i><figcaption class="m3-label-small">bun</figcaption></figure>
+      <figure><i class="m3-shape-heart"></i><figcaption class="m3-label-small">heart</figcaption></figure>
+    </div>
+  </div>
 </section>
 <section class="cat-section" id="elevation">
   <header><h2 class="m3-headline-small">Elevation</h2>

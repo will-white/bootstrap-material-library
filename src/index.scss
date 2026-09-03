@@ -15,6 +15,8 @@
 @forward "config";
 @forward "functions";
 @forward "mixins";
+// m3.material-shape("cookie-9") and m3.$material-shapes, the shape library.
+@forward "shape-library" as material-*;
 @forward "components/button" as btn-*;
 @forward "components/icon-button" as icon-btn-*;
 @forward "components/fab" as fab-*;
@@ -75,6 +77,7 @@
 @use "base/base";
 @use "utilities/utilities";
 @use "utilities/motion-patterns";
+@use "shape-library";
 @use "compat/bootstrap-vars";
 @use "compat/bootstrap-components";
 @use "compat/bootstrap-grid";
@@ -378,6 +381,16 @@ m.$ownership: "collect";
   @layer rules {
     @include utilities.styles;
     @include motion-patterns.classes;
+
+    // M3 Expressive's shape library. One class per shape; the clip-path is a
+    // percentage polygon, so it follows whatever box it is put on.
+    @if c.$enable-shape-library {
+      @each $name, $shape in shape-library.$shapes {
+        .#{c.$prefix}-shape-#{$name} {
+          clip-path: #{$shape};
+        }
+      }
+    }
 
     // Bootstrap's utility API and helpers must beat every component layer
     // (.d-none on a .m3-card, .visually-hidden on a .btn), so they live here,

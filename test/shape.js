@@ -25,6 +25,11 @@ const path = require('path');
 const { launch, serve } = require('./lib/browser');
 
 const ROOT = path.resolve(__dirname, '..');
+// M3 Expressive's shape LIBRARY -- the decorative outlines -- is the other
+// half of M3's shape system, and generated rather than hand-written, so this
+// suite also checks that every shape the generator knows about reached the
+// stylesheet as a polygon of the sampled length.
+const SHAPE_LIBRARY = require(path.join(ROOT, 'scripts', 'shape-names.js'));
 
 // M3's scale, in px.
 const SLOTS = {
@@ -164,6 +169,7 @@ const PAGE = `<!doctype html><html><head><style>@import url("/m3x.css");</style>
   <button class="m3-btn m3-btn--filled" type="button" id="empToggle" aria-pressed="false">t</button>
   <button class="m3-btn m3-btn--filled" type="button" id="empSelected" aria-pressed="true">t</button>
 </div>
+${SHAPE_LIBRARY.shapes.map((s) => `<div class="m3-shape-${s.name}" id="lib-${s.name}"></div>`).join('\n')}
 </body></html>`;
 
 async function run() {
@@ -180,7 +186,7 @@ async function run() {
     });
     await page.goto(`http://127.0.0.1:${server.port}/shape.html`);
     r = await page.evaluate(
-      ([slots, assignment]) => {
+      ([slots, assignment, library]) => {
         const px = (v) => Math.round(parseFloat(v) * 100) / 100;
         const radius = (el, corner) => px(getComputedStyle(el)[corner || 'borderTopLeftRadius']);
         const family = (el) => {
@@ -191,6 +197,15 @@ async function run() {
         const root = getComputedStyle(document.documentElement);
         return {
           supportsCornerShape: CSS.supports('corner-shape', 'bevel'),
+          // The shape library: every generated shape must have reached the
+          // stylesheet as a polygon of the sampled length.
+          library: Object.fromEntries(
+            library.map((sh) => {
+              const clip = getComputedStyle(document.getElementById(`lib-${sh.name}`)).clipPath;
+              const m = /^polygon\((.*)\)$/.exec(clip);
+              return [sh.name, m ? m[1].split(',').length : 0];
+            }),
+          ),
           scale: Object.fromEntries(
             Object.keys(slots).map((n) => [
               n,
@@ -235,7 +250,7 @@ async function run() {
           },
         };
       },
-      [SLOTS, ASSIGNMENT],
+      [SLOTS, ASSIGNMENT, SHAPE_LIBRARY.shapes],
     );
     await page.close();
   } finally {
@@ -326,6 +341,15 @@ async function run() {
     r.emphasis.toggleBg !== r.emphasis.selectedBg,
     `setting --m3-sys-emphasis-selected-state-layer-opacity must bring the selection signal back in colour: both buttons render ${r.emphasis.toggleBg}`,
   );
+  // M3 Expressive's shape library: all 35, each at the sampled point count,
+  // and each a percentage polygon so it follows whatever box it clips.
+  for (const s of SHAPE_LIBRARY.shapes) {
+    expect(
+      r.library[s.name] === s.points,
+      `.m3-shape-${s.name} computes ${r.library[s.name]} polygon points, expected ${s.points}`,
+    );
+  }
+
   for (const id of ['radio', 'switch', 'spinner']) {
     expect(
       r.flat[id] > 0,
@@ -339,7 +363,9 @@ async function run() {
         ASSIGNMENT.length
       } containers on their assigned slot; re-pointing one slot moves its containers and only those; corner family rounded/cut${
         r.supportsCornerShape ? '' : ' (corner-shape unsupported here)'
-      } with identity circles pinned; a flat scale keeps its circles and hands the morph to the emphasis tokens: ok`,
+      } with identity circles pinned; a flat scale keeps its circles and hands the morph to the emphasis tokens; ${
+        SHAPE_LIBRARY.count
+      } library shapes at ${SHAPE_LIBRARY.shapes[0].points} points each: ok`,
     );
   }
   return failures;

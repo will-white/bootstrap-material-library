@@ -749,6 +749,57 @@ selected one `medium`, and each size rung shifts both up the scale
 (`--m3-btn-shape-pressed-medium` → `medium`, `-large` → `large`). So flattening
 the whole scale flattens the morph with it — see the emphasis channel below.
 
+### The shape library
+
+M3 Expressive publishes a second, unrelated shape system: **35 named
+decorative shapes** — cookie, clover, burst, flower, pixel-circle, heart —
+for avatars, media frames, badges and empty states. The scale rounds a
+container's *corners*; the library replaces its *outline*.
+
+```html
+<img class="m3-shape-cookie-9" src="…" alt="">
+<div class="m3-shape-heart"></div>
+```
+
+```scss
+.avatar { @include m3.material-shape("clover-4"); }
+```
+
+| | |
+|---|---|
+| circle, square, slanted, arch, fan, arrow, semi-circle, oval, pill | triangle, diamond, clam-shell, pentagon, gem |
+| sunny, very-sunny, cookie-4/6/7/9/12 | ghostish, clover-4, clover-8 |
+| burst, soft-burst, boom, soft-boom | flower, puffy, puffy-diamond |
+| pixel-circle, pixel-triangle | bun, heart |
+
+**How they get here.** M3 defines these as *rounded polygons* — a vertex list
+plus a per-vertex corner radius — in androidx's `MaterialShapes.kt`, not as
+paths. `scripts/shapes.js` is a port of that: it builds each shape's vertex
+list exactly as Compose does, rounds every corner with the arc its radius
+asks for, walks the outline at a constant arc length, and writes 56 samples
+out as percentages. `npm run shapes` regenerates `src/_shape-library.scss`,
+and `npm run build` runs it first.
+
+Percentages, not `path()`: `clip-path: path()` takes absolute user units, so
+a shape written that way would not scale with the box it clips. `polygon()`
+scales, works everywhere `clip-path` does, and at 56 samples a rounded corner
+is indistinguishable from its arc at UI sizes.
+
+**One thing is not ported.** `CornerRounding` has a *smoothing* parameter that
+blends the ends of each arc further along its edges; nine of the 35 ask for
+it. Without it those corners are plain circular arcs rather than M3's
+slightly softer transition — visible under magnification, not at UI sizes.
+The alternative was leaving nine shapes out.
+
+The library is the largest single block of CSS m3x emits (~29KB, about 4% of
+the bundle). `$enable-shape-library: false` drops the lot.
+
+`.m3-shape-<name>` (the library, a `clip-path`) and `.m3-shape-<slot>` (the
+scale, a `border-radius`) share a prefix because M3 calls both of them shape.
+The slot names — `none`, `extra-small`, `small`, `medium`, `large`,
+`extra-large`, `full` — are all distinct from the 35 shape names, so nothing
+collides.
+
 ### Corner family (`rounded` / `cut`)
 
 M3's second shape axis: the slot says how *big* a corner is, the corner family
@@ -1599,6 +1650,7 @@ no `@import`).
   $contrast: "standard",           // baked contrast level: standard | medium | high
   $custom-colors: (),              // ("brand": #ff6f00) -> harmonized --md-extended-color-brand roles + utilities
   $motion-scheme: "expressive",    // spring physics set: expressive | standard
+  $enable-shape-library: true,     // M3 Expressive's 35 decorative shapes as clip-path polygons (~29KB)
   $emphasis-pressed-state-layer-opacity: 16%,   // press feedback in colour, for when a flattened shape scale leaves no corner to morph
   $emphasis-selected-state-layer-opacity: 12%,  // selection feedback likewise (both tokens unset by default)
   $window-size-classes: (...),     // compact 0 / medium 600px / expanded 840px / large 1200px / extra-large 1600px
@@ -1626,7 +1678,7 @@ no `@import`).
 Functions and mixins are forwarded for building your own components:
 `tone($hue, $chroma, $t)`, `palette()`, `okl()`, `rem()`, `hex()`, plus
 `state-layer()`, `typescale()`, `focus-ring()`, `elevation()`,
-`surface-tint()`, `transition()`
+`surface-tint()`, `material-shape()`, `transition()`
 (with `$spring-properties`), `spring-transition()`, `hover()`, `touch-target()`,
 the ownership mixins `own-box()` / `own-region()` / `own-pseudo()`, the
 layout helpers `layout-at("medium")` / `layout-only("compact")`, and every
@@ -1648,6 +1700,7 @@ the `own` sub-layer.
 ```bash
 npm i
 npm run build    # dist/m3x.css + dist/m3x.min.css with source maps + dist/m3x.tokens.json
+npm run shapes   # regenerate src/_shape-library.scss (build runs this first)
 npm run watch
 npm run tokens   # regenerate the token export from dist/m3x.css
 npm test         # contrast assertions, box-ownership + stock-parity audits, hit areas
@@ -1707,7 +1760,8 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
   below it; a component token set on an ancestor still beats all of them; and
   the island utilities and a forced `[data-contrast]` subtree re-tint real
   components, not just inherited text.
-- **shape** (`test/shape.js`): M3's shape model, both axes. Every slot of the
+- **shape** (`test/shape.js`): M3's shape model, both axes, plus the shape
+  library. Every slot of the
   scale resolves to M3's published value; all 26 containers render on their
   assigned slot, on the corner that actually carries it (a drawer takes its
   radius on the trailing edge, a bottom sheet and a filled field on the top),
@@ -1716,7 +1770,10 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
   corner family computes `bevel` on chrome without resizing anything, with the
   round-by-identity controls pinned; and a flattened scale keeps its circles
   while the morph goes quiet — asserted in both directions, so the emphasis
-  tokens' reason for existing is documented rather than latent.
+  tokens' reason for existing is documented rather than latent. Every one of
+  the 35 generated library shapes is then checked to have reached the
+  stylesheet as a percentage polygon of the sampled length, so a generator
+  that silently drops a shape fails the suite.
 - **spec** (`test/spec.js`): M3's published numbers asserted against what the
   stylesheet computes in a browser, not against what the Sass declares --
   typescale (including all fifteen emphasized weights and trackings, and that

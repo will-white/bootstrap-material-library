@@ -13,11 +13,12 @@
     "README.md"
   ],
   "scripts": {
-    "build": "sass src/index.scss dist/m3x.css --style=expanded --source-map && sass src/index.scss dist/m3x.min.css --style=compressed --source-map && node scripts/tokens.js",
+    "build": "node scripts/shapes.js && sass src/index.scss dist/m3x.css --style=expanded --source-map && sass src/index.scss dist/m3x.min.css --style=compressed --source-map && node scripts/tokens.js",
     "watch": "sass --watch src/index.scss dist/m3x.css --style=expanded --source-map",
     "tokens": "node scripts/tokens.js",
     "test": "node test/run.js",
-    "baseline": "node test/equivalence.js --record"
+    "baseline": "node test/equivalence.js --record",
+    "shapes": "node scripts/shapes.js"
   },
   "devDependencies": {
     "bootstrap": "^5.3.8",

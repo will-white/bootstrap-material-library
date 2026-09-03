@@ -97,6 +97,12 @@ $window-size-classes: (
   "extra-large": 1600px,
 ) !default;
 
+// M3 Expressive's shape library: 35 decorative shapes as clip-path polygons
+// (.m3-shape-heart, .m3-shape-cookie-9, ...). It is the largest single block
+// of CSS the library emits -- 35 fifty-six-point polygons -- and a project
+// that uses none of them can drop the lot with one flag.
+$enable-shape-library: true !default;
+
 // Bootstrap interop switches (see README section "Bootstrap interop").
 // With all of these on (the default) a Bootstrap 5.3 codebase needs nothing
 // from bootstrap.css: components, grid, utilities, helpers, and reboot-level
