@@ -2,7 +2,8 @@
 // m3x navigation rail (side navigation for medium+ viewports)
 //
 // PUBLIC VARIABLE API (tier-3 tokens)
-//   --m3-rail-width                       80px   rail inline size
+//   --m3-rail-width                       96px   rail inline size (M3
+//                                                Expressive; 80px pre-Expressive)
 //   --m3-rail-pill-width                  56px   active-indicator pill
 //   --m3-rail-pill-height                 32px   active-indicator pill
 //   --m3-rail-container-color             surface
@@ -32,7 +33,7 @@
 @use "../mixins" as m;
 
 @mixin tokens {
-  --#{c.$prefix}-rail-width: #{fn.rem(80)};
+  --#{c.$prefix}-rail-width: #{fn.rem(96)};
   --#{c.$prefix}-rail-pill-width: #{fn.rem(56)};
   --#{c.$prefix}-rail-pill-height: #{fn.rem(32)};
   --#{c.$prefix}-rail-container-color: var(--md-sys-color-surface);

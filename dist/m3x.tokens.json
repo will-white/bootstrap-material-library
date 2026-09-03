@@ -3219,11 +3219,11 @@
       }
     },
     "progress-track-color": {
-      "$value": "{md.sys.color.surface-container-highest}",
+      "$value": "{md.sys.color.secondary-container}",
       "$type": "color",
       "$extensions": {
         "m3x": {
-          "css": "var(--md-sys-color-surface-container-highest)"
+          "css": "var(--md-sys-color-secondary-container)"
         }
       }
     },
@@ -3270,6 +3270,19 @@
       "$extensions": {
         "m3x": {
           "css": "var(--m3-progress-color)"
+        }
+      }
+    },
+    "progress-gap": {
+      "$type": "dimension",
+      "$value": "0.25rem"
+    },
+    "progress-circle-gap": {
+      "$type": "dimension",
+      "$value": "6deg",
+      "$extensions": {
+        "m3x": {
+          "css": "6deg"
         }
       }
     },
@@ -3395,6 +3408,15 @@
     "tooltip-rich-max-width": {
       "$type": "dimension",
       "$value": "20rem"
+    },
+    "tooltip-rich-padding": {
+      "$value": "{m3.space-4}",
+      "$type": "dimension",
+      "$extensions": {
+        "m3x": {
+          "css": "var(--m3-space-4)"
+        }
+      }
     },
     "card-container-color": {
       "$value": "{md.sys.color.surface-container-low}",
@@ -3584,11 +3606,11 @@
       }
     },
     "list-subheader-color": {
-      "$value": "{md.sys.color.primary}",
+      "$value": "{md.sys.color.on-surface-variant}",
       "$type": "color",
       "$extensions": {
         "m3x": {
-          "css": "var(--md-sys-color-primary)"
+          "css": "var(--md-sys-color-on-surface-variant)"
         }
       }
     },
@@ -3699,11 +3721,11 @@
     },
     "list-item-video-width": {
       "$type": "dimension",
-      "$value": "6.25rem"
+      "$value": "7.125rem"
     },
     "list-item-video-height": {
       "$type": "dimension",
-      "$value": "3.5rem"
+      "$value": "4rem"
     },
     "sheet-container-color": {
       "$value": "{md.sys.color.surface-container-low}",
@@ -3887,7 +3909,7 @@
     },
     "rail-width": {
       "$type": "dimension",
-      "$value": "5rem"
+      "$value": "6rem"
     },
     "rail-pill-width": {
       "$type": "dimension",

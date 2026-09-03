@@ -3,7 +3,7 @@
 //
 // PUBLIC VARIABLE API (tier-3 tokens)
 //   --m3-list-container-color              surface
-//   --m3-list-subheader-color              primary
+//   --m3-list-subheader-color              on-surface-variant
 //   --m3-list-subheader-height             48px; participates in density
 //   --m3-list-divider-color                outline-variant (.m3-list--dividers)
 //   --m3-list-divider-inset                padding + icon (24px) + gap = 56px;
@@ -21,8 +21,9 @@
 //   --m3-list-item-avatar-container-color  primary-container
 //   --m3-list-item-avatar-label-color      on-primary-container
 //   --m3-list-item-image-size              56px  (__leading--image, square)
-//   --m3-list-item-video-width             100px (__leading--video)
-//   --m3-list-item-video-height            56px
+//   --m3-list-item-video-width             114px (__leading--video; M3's
+//                                          16:9 thumbnail)
+//   --m3-list-item-video-height            64px
 //
 // Markup:
 //   <ul class="m3-list m3-list--dividers m3-list--inset">
@@ -38,7 +39,7 @@
 //     </li>
 //   </ul>
 // Leading variants: __leading--avatar (40px circle, initials or an <img>),
-// __leading--image (56px, corner-small, <img>), __leading--video (100x56,
+// __leading--image (56px, corner-small, <img>), __leading--video (114x64,
 // square corners, <img> or <video>). Trailing: plain text, __trailing--meta
 // (label-small text aligned to the headline's baseline), or a control
 // (.m3-checkbox / .m3-radio / .m3-switch), which is vertically centered.
@@ -51,7 +52,7 @@
 
 @mixin tokens {
   --#{c.$prefix}-list-container-color: var(--md-sys-color-surface);
-  --#{c.$prefix}-list-subheader-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-list-subheader-color: var(--md-sys-color-on-surface-variant);
   --#{c.$prefix}-list-subheader-height: #{fn.rem(48)};
   --#{c.$prefix}-list-divider-color: var(--md-sys-color-outline-variant);
   --#{c.$prefix}-list-divider-inset: calc(
@@ -70,8 +71,8 @@
   --#{c.$prefix}-list-item-avatar-container-color: var(--md-sys-color-primary-container);
   --#{c.$prefix}-list-item-avatar-label-color: var(--md-sys-color-on-primary-container);
   --#{c.$prefix}-list-item-image-size: #{fn.rem(56)};
-  --#{c.$prefix}-list-item-video-width: #{fn.rem(100)};
-  --#{c.$prefix}-list-item-video-height: #{fn.rem(56)};
+  --#{c.$prefix}-list-item-video-width: #{fn.rem(114)};
+  --#{c.$prefix}-list-item-video-height: #{fn.rem(64)};
 }
 
 @mixin list {
@@ -263,7 +264,10 @@
   @include -leading-media;
 }
 
-// 100x56 video thumbnail, square corners.
+// 114x64 video thumbnail (M3's 16:9 leading frame), square corners. It is
+// sized for the three-line item, where 64px plus the 8px block padding is
+// exactly the 88px row; in a shorter row the item grows to fit rather than
+// cropping the frame.
 @mixin leading-video {
   inline-size: var(--#{c.$prefix}-list-item-video-width);
   block-size: var(--#{c.$prefix}-list-item-video-height);

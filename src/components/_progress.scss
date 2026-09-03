@@ -13,6 +13,9 @@
 //   --m3-progress-wave-wavelength   24px   wavy linear: one crest + one trough
 //   --m3-progress-stop-size         4px    M3 stop indicator at the track end
 //   --m3-progress-stop-color        --m3-progress-color
+//   --m3-progress-gap               4px    gap between active indicator and
+//                                          track (linear); closes at value 0
+//   --m3-progress-circle-gap        6deg   the same gap on the circle
 //
 // Markup:
 //   <div class="m3-progress" role="progressbar" aria-valuenow="60"
@@ -57,7 +60,7 @@
 @use "../mixins" as m;
 
 @mixin tokens {
-  --#{c.$prefix}-progress-track-color: var(--md-sys-color-surface-container-highest);
+  --#{c.$prefix}-progress-track-color: var(--md-sys-color-secondary-container);
   --#{c.$prefix}-progress-color: var(--md-sys-color-primary);
   --#{c.$prefix}-progress-thickness: #{fn.rem(4)};
   --#{c.$prefix}-progress-value: 0;
@@ -67,6 +70,8 @@
   --#{c.$prefix}-progress-wave-wavelength: #{fn.rem(24)};
   --#{c.$prefix}-progress-stop-size: #{fn.rem(4)};
   --#{c.$prefix}-progress-stop-color: var(--#{c.$prefix}-progress-color);
+  --#{c.$prefix}-progress-gap: #{fn.rem(4)};
+  --#{c.$prefix}-progress-circle-gap: 6deg;
 }
 
 // Linear track: thin rounded rail that clips the bar, with M3's stop
@@ -79,8 +84,34 @@
   display: block;
   block-size: var(--#{c.$prefix}-progress-thickness);
   border-radius: var(--md-sys-shape-corner-full);
-  background: var(--#{c.$prefix}-progress-track-color);
+  background: transparent;
   overflow: clip;
+
+  // The track itself, painted on ::before rather than on the element, so the
+  // gap M3 leaves between the active indicator and the track can be cut by
+  // moving its leading edge -- a mask on the element would mask the bar with
+  // it. The gap only exists once there IS an active indicator, so it scales
+  // with clamp(0, value, 1): none at value 0, full from 1 upward. Driving the
+  // bar with an inline width instead of the value token (the Bootstrap way)
+  // leaves the track full-width and the gap closed.
+  &::before {
+    @include m.own-pseudo;
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    inset-inline-start: calc(
+      var(--#{c.$prefix}-progress-value) * 1% +
+        var(--#{c.$prefix}-progress-gap) *
+        clamp(0, var(--#{c.$prefix}-progress-value), 1)
+    );
+    border-radius: inherit;
+    // Painted from currentColor, like the stop indicator: the box is owned,
+    // so its colour is pinned rather than inherited from the page.
+    color: var(--#{c.$prefix}-progress-track-color);
+    background: currentColor;
+    @include m.typescale("label-small");
+  }
 
   &::after {
     @include m.own-pseudo;
@@ -104,6 +135,9 @@
 // Indeterminate progress has no stop indicator: there is no value for it to
 // stop at.
 @mixin linear-no-stop {
+  &::before {
+    inset-inline-start: 0;
+  }
   &::after {
     content: none;
   }
@@ -155,6 +189,14 @@
   @include m.own-box;
   --_active: var(--#{c.$prefix}-progress-color);
   --_track: var(--#{c.$prefix}-progress-track-color);
+  // Value and gap as angles, so no stop position mixes % with deg. The gap
+  // is the circular form of the linear one and closes the same way at value
+  // 0, leaving an unbroken ring.
+  --_sweep: calc(var(--#{c.$prefix}-progress-value) * 3.6deg);
+  --_gap: calc(
+    var(--#{c.$prefix}-progress-circle-gap) *
+      clamp(0, var(--#{c.$prefix}-progress-value), 1)
+  );
   color: var(--_active);
 
   display: inline-block;
@@ -162,8 +204,11 @@
   block-size: var(--#{c.$prefix}-progress-circle-size);
   border-radius: var(--md-sys-shape-corner-full);
   background: conic-gradient(
-    var(--_active) calc(var(--#{c.$prefix}-progress-value) * 1%),
-    var(--_track) 0
+    var(--_active) 0deg var(--_sweep),
+    transparent var(--_sweep) calc(var(--_sweep) + var(--_gap)),
+    var(--_track) calc(var(--_sweep) + var(--_gap))
+      calc(360deg - var(--_gap)),
+    transparent calc(360deg - var(--_gap)) 360deg
   );
   -webkit-mask: radial-gradient(
     farthest-side,
@@ -235,19 +280,24 @@
 
 // Wavy linear track: grows by twice the amplitude so the wave has room, and
 // paints its rail as a centered band of the track color instead of filling.
+// The band rides the same ::before as the flat track, so it keeps the gap.
 @mixin linear-wavy-track {
   block-size: calc(
     var(--#{c.$prefix}-progress-thickness) +
       2 * var(--#{c.$prefix}-progress-wave-amplitude)
   );
-  background-color: transparent;
-  background-image: linear-gradient(
-    var(--#{c.$prefix}-progress-track-color),
-    var(--#{c.$prefix}-progress-track-color)
-  );
-  background-size: 100% var(--#{c.$prefix}-progress-thickness);
-  background-position: center;
-  background-repeat: no-repeat;
+
+  &::before {
+    background-color: transparent;
+    background-image: linear-gradient(
+      var(--#{c.$prefix}-progress-track-color),
+      var(--#{c.$prefix}-progress-track-color)
+    );
+    background-size: 100% var(--#{c.$prefix}-progress-thickness);
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: var(--md-sys-shape-corner-full);
+  }
 }
 
 // Wavy bar: fills the taller track and is masked to a wave built from two

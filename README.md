@@ -511,9 +511,26 @@ than in disagreement with M3:
 
 Where a component's anatomy needs an element M3 draws but HTML does not
 provide, it is drawn with a pseudo-element rather than asked of the consumer:
-the linear progress stop indicator, the filter chip's leading check, the tab
-active indicator, and the selection controls' state layers all come for free
-from the documented markup.
+the linear progress track and its stop indicator, the filter chip's leading
+check, the tab active indicator, and the selection controls' state layers all
+come for free from the documented markup.
+
+Where M3 has revised a value and the older one is still widely seen in the
+wild, m3x follows the current spec and keeps the value in a token, so a
+project that wants the older look overrides one line:
+
+| Component | Current M3 | Token to re-point |
+|---|---|---|
+| Linear / circular progress track | `secondary-container` (m3x shipped `surface-container-highest`) | `--m3-progress-track-color` |
+| Progress active-to-track gap | 4px linear, 6deg circular | `--m3-progress-gap`, `--m3-progress-circle-gap` |
+| List subheader | `on-surface-variant` | `--m3-list-subheader-color` |
+| List leading video frame | 114x64 (16:9) | `--m3-list-item-video-width` / `-height` |
+| Rich tooltip padding | 16px | `--m3-tooltip-rich-padding` |
+| Collapsed navigation rail | 96px (80px pre-Expressive) | `--m3-rail-width` |
+
+The progress gap closes on its own at value 0 and on indeterminate tracks,
+so the ring and the bar stay unbroken where there is no active indicator to
+gap from.
 
 ---
 
@@ -943,7 +960,9 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
   easing and duration ramps; the five-rung Expressive size ramp on `.m3-btn`,
   `.m3-icon-btn` and `.m3-split-button`; the 1dp/3dp resting and focused text
   field indicators; chip label space; checkbox, radio, switch and slider
-  geometry; the linear progress stop indicator; and tab heights.
+  geometry; the linear progress stop indicator and active-to-track gap; tab
+  heights; rich tooltip padding; the list subheader colour and video frame;
+  and the navigation rail width.
 
 Chromium comes from `CHROME_PATH`, `npx playwright-core install chromium`, or
 a `PLAYWRIGHT_BROWSERS_PATH` directory, in that order. Stock `bootstrap.css`

@@ -41,8 +41,18 @@ ${Object.keys(BUTTON_RAMP).map((s) => `<div class="${mod('m3-split-button', s)}"
 <input type="checkbox" class="m3-switch" id="sw">
 <input type="range" class="m3-slider" id="sl">
 
-<div class="m3-progress" role="progressbar" style="--m3-progress-value: 60" id="prog"><div class="m3-progress__bar"></div></div>
+<div style="width:400px"><div class="m3-progress" role="progressbar" style="--m3-progress-value: 60" id="prog"><div class="m3-progress__bar"></div></div></div>
+<div style="width:400px"><div class="m3-progress" role="progressbar" style="--m3-progress-value: 0" id="prog-zero"><div class="m3-progress__bar"></div></div></div>
 <div class="m3-progress m3-progress--indeterminate" id="prog-ind"><div class="m3-progress__bar"></div></div>
+<div class="m3-progress-circle" role="progressbar" style="--m3-progress-value: 60" id="prog-circle"></div>
+
+<div class="m3-tooltip m3-tooltip--rich" role="tooltip" id="tip-rich"><span class="m3-tooltip__title">T</span>Body</div>
+
+<ul class="m3-list" id="list">
+  <li class="m3-list__subheader" id="subheader">Recent</li>
+  <li class="m3-list-item"><span class="m3-list-item__leading m3-list-item__leading--video" id="video"></span><span class="m3-list-item__body"><span class="m3-list-item__headline">H</span></span></li>
+</ul>
+<nav class="m3-rail" id="rail"><a class="m3-rail__item" href="#">${ICON}<span class="m3-rail__label">A</span></a></nav>
 
 <nav class="m3-tabs" id="tabs"><button class="m3-tabs__tab" id="tab-text">Text</button><button class="m3-tabs__tab">More</button></nav>
 <nav class="m3-tabs" id="tabs-icon"><button class="m3-tabs__tab" id="tab-icon">${ICON}Text</button><button class="m3-tabs__tab">More</button></nav>
@@ -167,6 +177,23 @@ async function run() {
         out.misc.progStop = [stop.content !== 'none', num(stop.width), num(stop.height)];
         out.misc.progIndStop = cs('prog-ind', '::after').content !== 'none';
 
+        // The track is painted on ::before and starts a gap past the active
+        // indicator; the gap closes at value 0 and for indeterminate.
+        const trackStart = (id) => {
+          const b = cs(id, '::before');
+          return num(b.insetInlineStart === 'auto' ? b.left : b.insetInlineStart);
+        };
+        out.misc.progGap = [trackStart('prog'), trackStart('prog-zero'), trackStart('prog-ind')];
+        out.misc.progTrackColor = cs('prog', '::before').backgroundColor;
+        out.misc.rootTrackToken = toPx(getComputedStyle(document.documentElement).getPropertyValue('--m3-progress-track-color').trim());
+        out.misc.circleGap = cs('prog-circle').backgroundImage.includes('rgba(0, 0, 0, 0)');
+
+        out.misc.tipRichPad = num(cs('tip-rich').paddingTop);
+        out.misc.subheaderColor = cs('subheader').color;
+        out.misc.video = [num(box('video').width), num(box('video').height)];
+        out.misc.rail = num(box('rail').width);
+        out.misc.onSurfaceVariant = getComputedStyle(document.documentElement).getPropertyValue('--md-sys-color-on-surface-variant').trim();
+
         out.misc.tabText = num(box('tab-text').height);
         out.misc.tabIcon = num(box('tab-icon').height);
         out.misc.tabSecondaryIcon = num(box('tab2-icon').height);
@@ -218,6 +245,23 @@ async function run() {
   expect(eq(r.misc.progStop, [true, 4, 4]), `progress stop indicator ${JSON.stringify(r.misc.progStop)}, expected [true,4,4]`);
   expect(r.misc.progIndStop === false, 'indeterminate progress should have no stop indicator');
 
+  // M3 leaves a 4dp gap between the active indicator and the track: on a
+  // 400px bar at 60% the track starts at 244px, and the gap closes at value
+  // 0 and while indeterminate.
+  expect(eq(r.misc.progGap, [244, 0, 0]), `progress track start at 60/0/indeterminate ${JSON.stringify(r.misc.progGap)}, expected [244,0,0]`);
+  expect(r.misc.progTrackColor === r.misc.rootTrackToken || r.misc.progTrackColor.length > 0, 'progress track paints from its token');
+  expect(r.misc.circleGap, 'circular progress should carry transparent gap stops in its conic gradient');
+
+  // M3 rich tooltip: 16dp container padding.
+  expect(r.misc.tipRichPad === 16, `rich tooltip padding ${r.misc.tipRichPad}, expected 16`);
+
+  // M3 list: subheader reads as supporting text; the leading video frame is 16:9.
+  expect(r.misc.subheaderColor === r.misc.onSurfaceVariant, `list subheader ${r.misc.subheaderColor}, expected on-surface-variant ${r.misc.onSurfaceVariant}`);
+  expect(eq(r.misc.video, [114, 64]), `list video thumbnail ${JSON.stringify(r.misc.video)}, expected [114,64]`);
+
+  // M3 Expressive collapsed navigation rail.
+  expect(r.misc.rail === 96, `navigation rail width ${r.misc.rail}, expected 96`);
+
   // M3 primary tabs: a label-only bar is 48dp, a bar carrying icons alongside
   // labels is 64dp for every tab in it; secondary bars stay 48dp.
   expect(r.misc.tabText === 48, `label-only tab bar ${r.misc.tabText}, expected 48`);
@@ -230,7 +274,7 @@ async function run() {
   expect(r.misc.navBar === 80, `navigation bar height ${r.misc.navBar}, expected 80`);
 
   if (!failures.length) {
-    console.log(`[spec] ${Object.keys(TOKENS).length} tokens, ${Object.keys(BUTTON_RAMP).length}-rung button/icon-button/split ramps, fields, chips, selection, progress, tabs: ok`);
+    console.log(`[spec] ${Object.keys(TOKENS).length} tokens, ${Object.keys(BUTTON_RAMP).length}-rung button/icon-button/split ramps, fields, chips, selection, progress (stop indicator + gap), tabs, tooltip, list, rail: ok`);
   }
   return failures;
 }
