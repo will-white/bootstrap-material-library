@@ -1,0 +1,2240 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>m3x component catalog</title>
+  <link rel="stylesheet" href="../dist/m3x.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=add,archive,arrow_back,arrow_forward,attach_file,bookmark,calendar_today,check,check_circle,chevron_right,close,delete,done,download,drafts,edit,expand_more,favorite,filter_list,folder,format_bold,format_italic,format_underlined,home,inbox,info,label,mail,menu,more_vert,notifications,person,push_pin,refresh,save,schedule,search,send,settings,share,star,tune,upload,visibility&amp;display=block">
+  <style>
+    /* ------------------------------------------------------------------
+       Catalog shell only. Every component below is m3x; these rules lay
+       the page out around them (sidebar, cards, specimen boxes) and draw
+       the live @supports badges. Nothing here restyles a component.
+       ------------------------------------------------------------------ */
+    .cat-skip { position: absolute; inset-inline-start: -100vw; }
+    .cat-skip:focus { position: static; }
+
+    .cat-bar { gap: var(--m3-sys-space-3); }
+    .cat-bar__title { display: flex; align-items: baseline; gap: var(--m3-sys-space-2); }
+    .cat-bar__controls { margin-inline-start: auto; display: flex; align-items: center; gap: var(--m3-sys-space-3); flex-wrap: wrap; }
+    .cat-bar__label { display: inline-flex; align-items: center; gap: var(--m3-sys-space-2); }
+    .cat-bar__select { --m3-field-height: 2.5rem; min-inline-size: 6.5rem; }
+    .cat-bar__seed { inline-size: 2rem; block-size: 2rem; border: none; padding: 0; background: none; cursor: pointer; }
+
+    .cat-shell { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: var(--m3-sys-space-6); align-items: start; max-inline-size: 92rem; margin-inline: auto; padding: var(--m3-sys-space-5); }
+    .cat-nav { position: sticky; inset-block-start: 5rem; display: grid; gap: 0.125rem; max-block-size: calc(100dvh - 7rem); overflow-y: auto; padding-inline-end: var(--m3-sys-space-2); }
+    .cat-nav__group { margin-block-start: var(--m3-sys-space-3); padding-inline: var(--m3-sys-space-3); color: var(--md-sys-color-on-surface-variant); }
+    .cat-nav a { display: block; padding: var(--m3-sys-space-2) var(--m3-sys-space-3); border-radius: var(--md-sys-shape-corner-full); color: inherit; text-decoration: none; }
+    .cat-nav a:hover { background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--md-sys-state-hover-state-layer-opacity), transparent); }
+
+    .cat-main { display: grid; gap: var(--m3-sys-space-7); min-inline-size: 0; }
+    .cat-section { display: grid; gap: var(--m3-sys-space-4); scroll-margin-block-start: 6rem; }
+    .cat-section > header { display: grid; gap: var(--m3-sys-space-2); }
+    .cat-lede { max-inline-size: 64ch; color: var(--md-sys-color-on-surface-variant); }
+
+    .cat-cards { display: grid; gap: var(--m3-sys-space-4); grid-template-columns: repeat(auto-fit, minmax(21rem, 1fr)); align-items: start; }
+    .cat-item { display: grid; gap: var(--m3-sys-space-3); min-inline-size: 0; padding: var(--m3-sys-space-4); border-radius: var(--md-sys-shape-corner-large); background-color: var(--md-sys-color-surface-container-low); --m3-sys-container-color: var(--md-sys-color-surface-container-low); scroll-margin-block-start: 6rem; }
+    .cat-item--wide { grid-column: 1 / -1; }
+    .cat-item > header { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--m3-sys-space-2) var(--m3-sys-space-3); }
+    .cat-item h3 { margin: 0; }
+    .cat-api { display: flex; flex-wrap: wrap; gap: var(--m3-sys-space-2); align-items: baseline; color: var(--md-sys-color-on-surface-variant); }
+    code { font-family: var(--bs-font-monospace); font-size: 0.8125rem; }
+    .cat-api code, .cat-note code { padding: 0.125rem 0.375rem; border-radius: var(--md-sys-shape-corner-extra-small); background-color: var(--md-sys-color-surface-container-highest); }
+    .cat-note { color: var(--md-sys-color-on-surface-variant); max-inline-size: 66ch; }
+
+    .cat-specimen { display: flex; flex-wrap: wrap; min-inline-size: 0; gap: var(--m3-sys-space-3); align-items: center; padding: var(--m3-sys-space-4); border-radius: var(--md-sys-shape-corner-medium); background-color: var(--md-sys-color-surface); --m3-sys-container-color: var(--md-sys-color-surface); }
+    .cat-specimen--stack { display: grid; justify-items: start; }
+    .cat-specimen--tall { min-block-size: 13rem; align-items: start; }
+    .cat-specimen--center { justify-content: center; overflow-x: auto; }
+    .cat-specimen--plain { padding: 0; background: none; }
+    .cat-labelled { display: grid; gap: var(--m3-sys-space-2); justify-items: center; }
+    .cat-labelled > small { color: var(--md-sys-color-on-surface-variant); }
+
+    .cat-swatches { display: grid; gap: var(--m3-sys-space-2); grid-template-columns: repeat(auto-fill, minmax(11.5rem, 1fr)); }
+    .cat-swatch { display: grid; gap: 0.125rem; padding: var(--m3-sys-space-3); border-radius: var(--md-sys-shape-corner-medium); min-block-size: 4.5rem; align-content: end; }
+    .cat-swatch code { font-size: 0.6875rem; opacity: 0.85; }
+    .cat-ramp { display: flex; border-radius: var(--md-sys-shape-corner-small); overflow: hidden; }
+    .cat-ramp > span { flex: 1 1 0; min-block-size: 2.75rem; display: grid; place-content: center; font-size: 0.625rem; font-family: var(--bs-font-monospace); }
+
+    .cat-table { inline-size: 100%; border-collapse: collapse; }
+    .cat-table th, .cat-table td { text-align: start; padding: var(--m3-sys-space-2) var(--m3-sys-space-3); border-block-end: 1px solid var(--md-sys-color-outline-variant); vertical-align: baseline; }
+    .cat-table th { color: var(--md-sys-color-on-surface-variant); font-weight: 500; }
+
+    .cat-frame { position: relative; overflow: hidden; border-radius: var(--md-sys-shape-corner-medium); border: 1px solid var(--md-sys-color-outline-variant); background-color: var(--md-sys-color-surface); --m3-sys-container-color: var(--md-sys-color-surface); }
+    .cat-frame--tall { block-size: 18rem; }
+    .cat-frame--scroll { block-size: 15rem; overflow-y: auto; }
+    .cat-pair { display: grid; gap: var(--m3-sys-space-2); }
+    .cat-pair > small { color: var(--md-sys-color-on-surface-variant); }
+
+    /* Live capability read-out. Each badge says "fallback" until its own
+       feature query matches, so the page reports what THIS browser does. */
+    @supports (color: oklch(0% 0 0)) {
+      [data-feature="oklch"] { background-color: var(--md-extended-color-success-container); color: var(--md-extended-color-on-success-container); }
+      [data-feature="oklch"]::before { content: "supported in this browser"; }
+    }
+    @supports (color: light-dark(#000, #fff)) {
+      [data-feature="light-dark"] { background-color: var(--md-extended-color-success-container); color: var(--md-extended-color-on-success-container); }
+      [data-feature="light-dark"]::before { content: "supported in this browser"; }
+    }
+    @supports (color: oklch(from red l c h)) {
+      [data-feature="relative"] { background-color: var(--md-extended-color-success-container); color: var(--md-extended-color-on-success-container); }
+      [data-feature="relative"]::before { content: "supported in this browser"; }
+    }
+    @supports (color: color-mix(in srgb, red, blue)) {
+      [data-feature="color-mix"] { background-color: var(--md-extended-color-success-container); color: var(--md-extended-color-on-success-container); }
+      [data-feature="color-mix"]::before { content: "supported in this browser"; }
+    }
+    @supports (transition-timing-function: linear(0, 1)) {
+      [data-feature="linear"] { background-color: var(--md-extended-color-success-container); color: var(--md-extended-color-on-success-container); }
+      [data-feature="linear"]::before { content: "supported in this browser"; }
+    }
+    @supports selector(:has(*)) {
+      [data-feature="has"] { background-color: var(--md-extended-color-success-container); color: var(--md-extended-color-on-success-container); }
+      [data-feature="has"]::before { content: "supported in this browser"; }
+    }
+    @supports selector(:popover-open) {
+      [data-feature="popover"] { background-color: var(--md-extended-color-success-container); color: var(--md-extended-color-on-success-container); }
+      [data-feature="popover"]::before { content: "supported in this browser"; }
+    }
+    @supports selector(::backdrop) {
+      [data-feature="backdrop"] { background-color: var(--md-extended-color-success-container); color: var(--md-extended-color-on-success-container); }
+      [data-feature="backdrop"]::before { content: "supported in this browser"; }
+    }
+    @supports (appearance: base-select) {
+      [data-feature="base-select"] { background-color: var(--md-extended-color-success-container); color: var(--md-extended-color-on-success-container); }
+      [data-feature="base-select"]::before { content: "supported in this browser"; }
+    }
+    @supports selector(::picker(select)) {
+      [data-feature="picker"] { background-color: var(--md-extended-color-success-container); color: var(--md-extended-color-on-success-container); }
+      [data-feature="picker"]::before { content: "supported in this browser"; }
+    }
+    @supports (interpolate-size: allow-keywords) {
+      [data-feature="interpolate"] { background-color: var(--md-extended-color-success-container); color: var(--md-extended-color-on-success-container); }
+      [data-feature="interpolate"]::before { content: "supported in this browser"; }
+    }
+    @supports selector(::details-content) {
+      [data-feature="details"] { background-color: var(--md-extended-color-success-container); color: var(--md-extended-color-on-success-container); }
+      [data-feature="details"]::before { content: "supported in this browser"; }
+    }
+    @supports (field-sizing: content) {
+      [data-feature="field-sizing"] { background-color: var(--md-extended-color-success-container); color: var(--md-extended-color-on-success-container); }
+      [data-feature="field-sizing"]::before { content: "supported in this browser"; }
+    }
+    @supports (animation-timeline: scroll()) {
+      [data-feature="scroll-timeline"] { background-color: var(--md-extended-color-success-container); color: var(--md-extended-color-on-success-container); }
+      [data-feature="scroll-timeline"]::before { content: "supported in this browser"; }
+    }
+    @supports (anchor-name: --a) {
+      [data-feature="anchor"] { background-color: var(--md-extended-color-success-container); color: var(--md-extended-color-on-success-container); }
+      [data-feature="anchor"]::before { content: "supported in this browser"; }
+    }
+    @supports (container-type: inline-size) {
+      [data-feature="container"] { background-color: var(--md-extended-color-success-container); color: var(--md-extended-color-on-success-container); }
+      [data-feature="container"]::before { content: "supported in this browser"; }
+    }
+    @supports (transition-behavior: allow-discrete) {
+      [data-feature="discrete"] { background-color: var(--md-extended-color-success-container); color: var(--md-extended-color-on-success-container); }
+      [data-feature="discrete"]::before { content: "supported in this browser"; }
+    }
+    @supports (accent-color: red) {
+      [data-feature="accent-color"] { background-color: var(--md-extended-color-success-container); color: var(--md-extended-color-on-success-container); }
+      [data-feature="accent-color"]::before { content: "supported in this browser"; }
+    }
+    @supports selector(:open) {
+      [data-feature="open"] { background-color: var(--md-extended-color-success-container); color: var(--md-extended-color-on-success-container); }
+      [data-feature="open"]::before { content: "supported in this browser"; }
+    }
+    @supports selector(:user-invalid) {
+      [data-feature="user-invalid"] { background-color: var(--md-extended-color-success-container); color: var(--md-extended-color-on-success-container); }
+      [data-feature="user-invalid"]::before { content: "supported in this browser"; }
+    }
+    @supports (mask-image: linear-gradient(#000, #000)) {
+      [data-feature="mask"] { background-color: var(--md-extended-color-success-container); color: var(--md-extended-color-on-success-container); }
+      [data-feature="mask"]::before { content: "supported in this browser"; }
+    }
+    @supports (scroll-snap-align: start) {
+      [data-feature="scroll-snap"] { background-color: var(--md-extended-color-success-container); color: var(--md-extended-color-on-success-container); }
+      [data-feature="scroll-snap"]::before { content: "supported in this browser"; }
+    }
+
+    @media (max-width: 60rem) {
+      .cat-shell { grid-template-columns: minmax(0, 1fr); }
+      .cat-nav { display: none; }
+    }
+    @media (max-width: 36rem) {
+      .cat-bar { flex-wrap: wrap; block-size: auto; padding-block: var(--m3-sys-space-2); row-gap: var(--m3-sys-space-2); }
+      .cat-bar__title { flex-basis: 100%; }
+      .cat-bar__controls { margin-inline-start: 0; }
+      .cat-bar__select { min-inline-size: 0; flex: 1 1 4rem; }
+    }
+  </style>
+</head>
+<body>
+<a class="cat-skip" href="#main">Skip to the catalog</a>
+<header class="m3-top-app-bar m3-top-app-bar--sticky cat-bar">
+  <span class="cat-bar__title">
+    <span class="m3-top-app-bar__title m3-title-large">m3x</span>
+    <span class="m3-body-medium m3-text-on-surface-variant">component catalog</span>
+  </span>
+  <span class="cat-bar__controls">
+    <a class="m3-btn m3-btn--text" href="index.html">Demo app</a>
+    <label class="m3-body-medium cat-bar__label" for="seed">Seed <input type="color" id="seed" class="cat-bar__seed" value="#6750a4"></label>
+    <label class="m3-body-medium cat-bar__label" for="theme">Theme
+      <select id="theme" class="m3-select cat-bar__select">
+        <option value="auto" selected>Auto</option><option value="light">Light</option><option value="dark">Dark</option>
+      </select></label>
+    <label class="m3-body-medium cat-bar__label" for="contrast">Contrast
+      <select id="contrast" class="m3-select cat-bar__select">
+        <option value="" selected>Auto</option><option value="standard">Standard</option><option value="medium">Medium</option><option value="high">High</option>
+      </select></label>
+    <label class="m3-body-medium cat-bar__label" for="density">Density
+      <select id="density" class="m3-select cat-bar__select">
+        <option value="0" selected>0</option><option value="-1">-1</option><option value="-2">-2</option><option value="-3">-3</option>
+      </select></label>
+  </span>
+</header>
+
+<div class="cat-shell">
+<nav class="cat-nav" aria-label="Catalog">
+  <div class="cat-nav__group m3-label-medium">Foundations</div>
+  <a class="m3-body-medium" href="#color">Color roles</a>
+  <a class="m3-body-medium" href="#palettes">Tonal palettes</a>
+  <a class="m3-body-medium" href="#type">Typography</a>
+  <a class="m3-body-medium" href="#shape">Shape</a>
+  <a class="m3-body-medium" href="#elevation">Elevation</a>
+  <a class="m3-body-medium" href="#motion">Motion</a>
+  <a class="m3-body-medium" href="#state">State layers</a>
+  <a class="m3-body-medium" href="#density">Spacing &amp; density</a>
+  <div class="cat-nav__group m3-label-medium">Platform</div>
+  <a class="m3-body-medium" href="#modern">Modern CSS</a>
+  <a class="m3-body-medium" href="#adaptive">Adaptive layout</a>
+  <a class="m3-body-medium" href="#islands">Token islands</a>
+  <div class="cat-nav__group m3-label-medium">Components</div>
+  <a class="m3-body-medium" href="#actions">Actions</a>
+  <a class="m3-body-medium" href="#communication">Communication</a>
+  <a class="m3-body-medium" href="#containment">Containment</a>
+  <a class="m3-body-medium" href="#navigation">Navigation</a>
+  <a class="m3-body-medium" href="#selection">Selection</a>
+  <a class="m3-body-medium" href="#inputs">Text inputs</a>
+  <div class="cat-nav__group m3-label-medium">Interop</div>
+  <a class="m3-body-medium" href="#interop">Bootstrap 5.3</a>
+</nav>
+
+<main id="main" class="cat-main">
+
+<section class="cat-section" id="intro">
+  <header>
+    <h1 class="m3-headline-medium">Every control, every foundation, every modern-CSS gate</h1>
+    <p class="cat-lede m3-body-large">
+      This page is the whole of m3x rendered by m3x. The components are grouped the way Material 3
+      groups them &mdash; actions, communication, containment, navigation, selection, text inputs &mdash;
+      and each entry names its <code>.m3-*</code> class and the Bootstrap class that renders the same
+      component from the same mixin. The platform section demonstrates the modern CSS the library is
+      built on, each with a badge that reports what <em>your</em> browser is doing with it right now.
+      There is no JavaScript here beyond the four controls in the header.
+    </p>
+  </header>
+  <div class="cat-specimen cat-specimen--stack">
+    <p class="m3-body-medium cat-note">
+      Change the seed, scheme, contrast level or density in the header and the entire page re-themes:
+      every colour below is derived from the seed at build time and, where relative color syntax is
+      available, recomputed live from <code>--md-seed</code>.
+    </p>
+  </div>
+</section>
+
+<section class="cat-section" id="foundations">
+  <header><h2 class="m3-headline-small">Foundations</h2>
+    <p class="cat-lede m3-body-medium">Four tiers: a seed generates the reference palettes, the palettes
+      resolve to M3&rsquo;s system roles, the roles feed per-component tokens, and components read those.
+      Everything on this page moves when the seed, scheme or contrast level moves.</p></header>
+</section>
+<section class="cat-section" id="color">
+  <header><h2 class="m3-headline-small">Color roles</h2>
+    <p class="cat-lede m3-body-medium">Every role is registered with <code>@property</code> as a
+      <code>&lt;color&gt;</code>, defined once with <code>light-dark()</code>, and re-pointed by
+      <code>[data-contrast]</code> at the medium and high levels. Contrast pairs are asserted in the
+      test suite at M3&rsquo;s minimums for both schemes and both levels.</p></header>
+  <div class="cat-item cat-item--wide">
+    <header><h3 class="m3-title-medium">Accent</h3></header>
+    <div class="cat-swatches">
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary);"><span class="m3-label-large">Primary</span><code>--md-sys-color-primary</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-on-primary); color: var(--md-sys-color-primary);"><span class="m3-label-large">On primary</span><code>--md-sys-color-on-primary</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container);"><span class="m3-label-large">Primary container</span><code>--md-sys-color-primary-container</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-on-primary-container); color: var(--md-sys-color-primary-container);"><span class="m3-label-large">On primary container</span><code>--md-sys-color-on-primary-container</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-secondary); color: var(--md-sys-color-on-secondary);"><span class="m3-label-large">Secondary</span><code>--md-sys-color-secondary</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container);"><span class="m3-label-large">Secondary container</span><code>--md-sys-color-secondary-container</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-tertiary); color: var(--md-sys-color-on-tertiary);"><span class="m3-label-large">Tertiary</span><code>--md-sys-color-tertiary</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-tertiary-container); color: var(--md-sys-color-on-tertiary-container);"><span class="m3-label-large">Tertiary container</span><code>--md-sys-color-tertiary-container</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-error); color: var(--md-sys-color-on-error);"><span class="m3-label-large">Error</span><code>--md-sys-color-error</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-error-container); color: var(--md-sys-color-on-error-container);"><span class="m3-label-large">Error container</span><code>--md-sys-color-error-container</code></div>
+    </div>
+  </div>
+  <div class="cat-item cat-item--wide">
+    <header><h3 class="m3-title-medium">Surface</h3></header>
+    <div class="cat-swatches">
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface);"><span class="m3-label-large">Surface</span><code>--md-sys-color-surface</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-surface-dim); color: var(--md-sys-color-on-surface);"><span class="m3-label-large">Surface dim</span><code>--md-sys-color-surface-dim</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-surface-bright); color: var(--md-sys-color-on-surface);"><span class="m3-label-large">Surface bright</span><code>--md-sys-color-surface-bright</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-surface-container-lowest); color: var(--md-sys-color-on-surface);"><span class="m3-label-large">Container lowest</span><code>--md-sys-color-surface-container-lowest</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-surface-container-low); color: var(--md-sys-color-on-surface);"><span class="m3-label-large">Container low</span><code>--md-sys-color-surface-container-low</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-surface-container); color: var(--md-sys-color-on-surface);"><span class="m3-label-large">Container</span><code>--md-sys-color-surface-container</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);"><span class="m3-label-large">Container high</span><code>--md-sys-color-surface-container-high</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-surface-container-highest); color: var(--md-sys-color-on-surface);"><span class="m3-label-large">Container highest</span><code>--md-sys-color-surface-container-highest</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-surface-variant); color: var(--md-sys-color-on-surface-variant);"><span class="m3-label-large">Surface variant</span><code>--md-sys-color-surface-variant</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-inverse-surface); color: var(--md-sys-color-inverse-on-surface);"><span class="m3-label-large">Inverse surface</span><code>--md-sys-color-inverse-surface</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-inverse-primary); color: var(--md-sys-color-inverse-surface);"><span class="m3-label-large">Inverse primary</span><code>--md-sys-color-inverse-primary</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-outline); color: var(--md-sys-color-surface);"><span class="m3-label-large">Outline</span><code>--md-sys-color-outline</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-outline-variant); color: var(--md-sys-color-on-surface);"><span class="m3-label-large">Outline variant</span><code>--md-sys-color-outline-variant</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-scrim); color: var(--md-sys-color-surface);"><span class="m3-label-large">Scrim</span><code>--md-sys-color-scrim</code></div>
+    </div>
+  </div>
+  <div class="cat-item cat-item--wide">
+    <header><h3 class="m3-title-medium">Extended (m3x adds these; harmonized to the seed)</h3></header>
+    <div class="cat-swatches">
+    <div class="cat-swatch" style="background-color: var(--md-extended-color-success); color: var(--md-extended-color-on-success);"><span class="m3-label-large">Success</span><code>--md-extended-color-success</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-extended-color-success-container); color: var(--md-extended-color-on-success-container);"><span class="m3-label-large">Success container</span><code>--md-extended-color-success-container</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-extended-color-warning); color: var(--md-extended-color-on-warning);"><span class="m3-label-large">Warning</span><code>--md-extended-color-warning</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-extended-color-warning-container); color: var(--md-extended-color-on-warning-container);"><span class="m3-label-large">Warning container</span><code>--md-extended-color-warning-container</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-extended-color-info); color: var(--md-extended-color-on-info);"><span class="m3-label-large">Info</span><code>--md-extended-color-info</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-extended-color-info-container); color: var(--md-extended-color-on-info-container);"><span class="m3-label-large">Info container</span><code>--md-extended-color-info-container</code></div>
+    </div>
+  </div>
+  <div class="cat-item cat-item--wide">
+    <header><h3 class="m3-title-medium">Fixed (identical in both schemes)</h3></header>
+    <div class="cat-swatches">
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-primary-fixed); color: var(--md-sys-color-on-primary-fixed);"><span class="m3-label-large">Primary fixed</span><code>--md-sys-color-primary-fixed</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-primary-fixed-dim); color: var(--md-sys-color-on-primary-fixed-variant);"><span class="m3-label-large">Primary fixed dim</span><code>--md-sys-color-primary-fixed-dim</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-secondary-fixed); color: var(--md-sys-color-on-secondary-fixed);"><span class="m3-label-large">Secondary fixed</span><code>--md-sys-color-secondary-fixed</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-secondary-fixed-dim); color: var(--md-sys-color-on-secondary-fixed-variant);"><span class="m3-label-large">Secondary fixed dim</span><code>--md-sys-color-secondary-fixed-dim</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-tertiary-fixed); color: var(--md-sys-color-on-tertiary-fixed);"><span class="m3-label-large">Tertiary fixed</span><code>--md-sys-color-tertiary-fixed</code></div>
+    <div class="cat-swatch" style="background-color: var(--md-sys-color-tertiary-fixed-dim); color: var(--md-sys-color-on-tertiary-fixed-variant);"><span class="m3-label-large">Tertiary fixed dim</span><code>--md-sys-color-tertiary-fixed-dim</code></div>
+    </div>
+  </div>
+</section>
+<section class="cat-section" id="palettes">
+  <header><h2 class="m3-headline-small">Tonal palettes</h2>
+    <p class="cat-lede m3-body-medium">HCT approximated with OKLCH: tone is CIELAB L*, computed exactly at
+      build time and reproduced at runtime with relative color syntax, so setting
+      <code>--md-seed</code> rethemes all nine ramps without a rebuild. <code>$scheme</code> picks any of
+      M3&rsquo;s nine variants (tonal-spot, vibrant, expressive, neutral, monochrome, fidelity, content,
+      rainbow, fruit-salad) as per-palette chroma and hue rules.</p></header>
+  <div class="cat-item cat-item--wide">
+    <div class="cat-pair"><small class="m3-label-medium">Primary &mdash; <code>--md-ref-palette-primary&lt;tone&gt;</code></small>
+      <div class="cat-ramp">
+        <span style="background-color: var(--md-ref-palette-primary0); color: var(--md-ref-palette-neutral100);">0</span>
+        <span style="background-color: var(--md-ref-palette-primary10); color: var(--md-ref-palette-neutral100);">10</span>
+        <span style="background-color: var(--md-ref-palette-primary20); color: var(--md-ref-palette-neutral100);">20</span>
+        <span style="background-color: var(--md-ref-palette-primary30); color: var(--md-ref-palette-neutral100);">30</span>
+        <span style="background-color: var(--md-ref-palette-primary40); color: var(--md-ref-palette-neutral100);">40</span>
+        <span style="background-color: var(--md-ref-palette-primary50); color: var(--md-ref-palette-neutral100);">50</span>
+        <span style="background-color: var(--md-ref-palette-primary60); color: var(--md-ref-palette-neutral0);">60</span>
+        <span style="background-color: var(--md-ref-palette-primary70); color: var(--md-ref-palette-neutral0);">70</span>
+        <span style="background-color: var(--md-ref-palette-primary80); color: var(--md-ref-palette-neutral0);">80</span>
+        <span style="background-color: var(--md-ref-palette-primary90); color: var(--md-ref-palette-neutral0);">90</span>
+        <span style="background-color: var(--md-ref-palette-primary95); color: var(--md-ref-palette-neutral0);">95</span>
+        <span style="background-color: var(--md-ref-palette-primary99); color: var(--md-ref-palette-neutral0);">99</span>
+        <span style="background-color: var(--md-ref-palette-primary100); color: var(--md-ref-palette-neutral0);">100</span>
+      </div></div>
+    <div class="cat-pair"><small class="m3-label-medium">Secondary &mdash; <code>--md-ref-palette-secondary&lt;tone&gt;</code></small>
+      <div class="cat-ramp">
+        <span style="background-color: var(--md-ref-palette-secondary0); color: var(--md-ref-palette-neutral100);">0</span>
+        <span style="background-color: var(--md-ref-palette-secondary10); color: var(--md-ref-palette-neutral100);">10</span>
+        <span style="background-color: var(--md-ref-palette-secondary20); color: var(--md-ref-palette-neutral100);">20</span>
+        <span style="background-color: var(--md-ref-palette-secondary30); color: var(--md-ref-palette-neutral100);">30</span>
+        <span style="background-color: var(--md-ref-palette-secondary40); color: var(--md-ref-palette-neutral100);">40</span>
+        <span style="background-color: var(--md-ref-palette-secondary50); color: var(--md-ref-palette-neutral100);">50</span>
+        <span style="background-color: var(--md-ref-palette-secondary60); color: var(--md-ref-palette-neutral0);">60</span>
+        <span style="background-color: var(--md-ref-palette-secondary70); color: var(--md-ref-palette-neutral0);">70</span>
+        <span style="background-color: var(--md-ref-palette-secondary80); color: var(--md-ref-palette-neutral0);">80</span>
+        <span style="background-color: var(--md-ref-palette-secondary90); color: var(--md-ref-palette-neutral0);">90</span>
+        <span style="background-color: var(--md-ref-palette-secondary95); color: var(--md-ref-palette-neutral0);">95</span>
+        <span style="background-color: var(--md-ref-palette-secondary99); color: var(--md-ref-palette-neutral0);">99</span>
+        <span style="background-color: var(--md-ref-palette-secondary100); color: var(--md-ref-palette-neutral0);">100</span>
+      </div></div>
+    <div class="cat-pair"><small class="m3-label-medium">Tertiary &mdash; <code>--md-ref-palette-tertiary&lt;tone&gt;</code></small>
+      <div class="cat-ramp">
+        <span style="background-color: var(--md-ref-palette-tertiary0); color: var(--md-ref-palette-neutral100);">0</span>
+        <span style="background-color: var(--md-ref-palette-tertiary10); color: var(--md-ref-palette-neutral100);">10</span>
+        <span style="background-color: var(--md-ref-palette-tertiary20); color: var(--md-ref-palette-neutral100);">20</span>
+        <span style="background-color: var(--md-ref-palette-tertiary30); color: var(--md-ref-palette-neutral100);">30</span>
+        <span style="background-color: var(--md-ref-palette-tertiary40); color: var(--md-ref-palette-neutral100);">40</span>
+        <span style="background-color: var(--md-ref-palette-tertiary50); color: var(--md-ref-palette-neutral100);">50</span>
+        <span style="background-color: var(--md-ref-palette-tertiary60); color: var(--md-ref-palette-neutral0);">60</span>
+        <span style="background-color: var(--md-ref-palette-tertiary70); color: var(--md-ref-palette-neutral0);">70</span>
+        <span style="background-color: var(--md-ref-palette-tertiary80); color: var(--md-ref-palette-neutral0);">80</span>
+        <span style="background-color: var(--md-ref-palette-tertiary90); color: var(--md-ref-palette-neutral0);">90</span>
+        <span style="background-color: var(--md-ref-palette-tertiary95); color: var(--md-ref-palette-neutral0);">95</span>
+        <span style="background-color: var(--md-ref-palette-tertiary99); color: var(--md-ref-palette-neutral0);">99</span>
+        <span style="background-color: var(--md-ref-palette-tertiary100); color: var(--md-ref-palette-neutral0);">100</span>
+      </div></div>
+    <div class="cat-pair"><small class="m3-label-medium">Neutral &mdash; <code>--md-ref-palette-neutral&lt;tone&gt;</code></small>
+      <div class="cat-ramp">
+        <span style="background-color: var(--md-ref-palette-neutral0); color: var(--md-ref-palette-neutral100);">0</span>
+        <span style="background-color: var(--md-ref-palette-neutral10); color: var(--md-ref-palette-neutral100);">10</span>
+        <span style="background-color: var(--md-ref-palette-neutral20); color: var(--md-ref-palette-neutral100);">20</span>
+        <span style="background-color: var(--md-ref-palette-neutral30); color: var(--md-ref-palette-neutral100);">30</span>
+        <span style="background-color: var(--md-ref-palette-neutral40); color: var(--md-ref-palette-neutral100);">40</span>
+        <span style="background-color: var(--md-ref-palette-neutral50); color: var(--md-ref-palette-neutral100);">50</span>
+        <span style="background-color: var(--md-ref-palette-neutral60); color: var(--md-ref-palette-neutral0);">60</span>
+        <span style="background-color: var(--md-ref-palette-neutral70); color: var(--md-ref-palette-neutral0);">70</span>
+        <span style="background-color: var(--md-ref-palette-neutral80); color: var(--md-ref-palette-neutral0);">80</span>
+        <span style="background-color: var(--md-ref-palette-neutral90); color: var(--md-ref-palette-neutral0);">90</span>
+        <span style="background-color: var(--md-ref-palette-neutral95); color: var(--md-ref-palette-neutral0);">95</span>
+        <span style="background-color: var(--md-ref-palette-neutral99); color: var(--md-ref-palette-neutral0);">99</span>
+        <span style="background-color: var(--md-ref-palette-neutral100); color: var(--md-ref-palette-neutral0);">100</span>
+      </div></div>
+    <div class="cat-pair"><small class="m3-label-medium">Neutral variant &mdash; <code>--md-ref-palette-neutral-variant&lt;tone&gt;</code></small>
+      <div class="cat-ramp">
+        <span style="background-color: var(--md-ref-palette-neutral-variant0); color: var(--md-ref-palette-neutral100);">0</span>
+        <span style="background-color: var(--md-ref-palette-neutral-variant10); color: var(--md-ref-palette-neutral100);">10</span>
+        <span style="background-color: var(--md-ref-palette-neutral-variant20); color: var(--md-ref-palette-neutral100);">20</span>
+        <span style="background-color: var(--md-ref-palette-neutral-variant30); color: var(--md-ref-palette-neutral100);">30</span>
+        <span style="background-color: var(--md-ref-palette-neutral-variant40); color: var(--md-ref-palette-neutral100);">40</span>
+        <span style="background-color: var(--md-ref-palette-neutral-variant50); color: var(--md-ref-palette-neutral100);">50</span>
+        <span style="background-color: var(--md-ref-palette-neutral-variant60); color: var(--md-ref-palette-neutral0);">60</span>
+        <span style="background-color: var(--md-ref-palette-neutral-variant70); color: var(--md-ref-palette-neutral0);">70</span>
+        <span style="background-color: var(--md-ref-palette-neutral-variant80); color: var(--md-ref-palette-neutral0);">80</span>
+        <span style="background-color: var(--md-ref-palette-neutral-variant90); color: var(--md-ref-palette-neutral0);">90</span>
+        <span style="background-color: var(--md-ref-palette-neutral-variant95); color: var(--md-ref-palette-neutral0);">95</span>
+        <span style="background-color: var(--md-ref-palette-neutral-variant99); color: var(--md-ref-palette-neutral0);">99</span>
+        <span style="background-color: var(--md-ref-palette-neutral-variant100); color: var(--md-ref-palette-neutral0);">100</span>
+      </div></div>
+    <div class="cat-pair"><small class="m3-label-medium">Error &mdash; <code>--md-ref-palette-error&lt;tone&gt;</code></small>
+      <div class="cat-ramp">
+        <span style="background-color: var(--md-ref-palette-error0); color: var(--md-ref-palette-neutral100);">0</span>
+        <span style="background-color: var(--md-ref-palette-error10); color: var(--md-ref-palette-neutral100);">10</span>
+        <span style="background-color: var(--md-ref-palette-error20); color: var(--md-ref-palette-neutral100);">20</span>
+        <span style="background-color: var(--md-ref-palette-error30); color: var(--md-ref-palette-neutral100);">30</span>
+        <span style="background-color: var(--md-ref-palette-error40); color: var(--md-ref-palette-neutral100);">40</span>
+        <span style="background-color: var(--md-ref-palette-error50); color: var(--md-ref-palette-neutral100);">50</span>
+        <span style="background-color: var(--md-ref-palette-error60); color: var(--md-ref-palette-neutral0);">60</span>
+        <span style="background-color: var(--md-ref-palette-error70); color: var(--md-ref-palette-neutral0);">70</span>
+        <span style="background-color: var(--md-ref-palette-error80); color: var(--md-ref-palette-neutral0);">80</span>
+        <span style="background-color: var(--md-ref-palette-error90); color: var(--md-ref-palette-neutral0);">90</span>
+        <span style="background-color: var(--md-ref-palette-error95); color: var(--md-ref-palette-neutral0);">95</span>
+        <span style="background-color: var(--md-ref-palette-error99); color: var(--md-ref-palette-neutral0);">99</span>
+        <span style="background-color: var(--md-ref-palette-error100); color: var(--md-ref-palette-neutral0);">100</span>
+      </div></div>
+    <div class="cat-pair"><small class="m3-label-medium">Success &mdash; <code>--md-ref-palette-success&lt;tone&gt;</code></small>
+      <div class="cat-ramp">
+        <span style="background-color: var(--md-ref-palette-success0); color: var(--md-ref-palette-neutral100);">0</span>
+        <span style="background-color: var(--md-ref-palette-success10); color: var(--md-ref-palette-neutral100);">10</span>
+        <span style="background-color: var(--md-ref-palette-success20); color: var(--md-ref-palette-neutral100);">20</span>
+        <span style="background-color: var(--md-ref-palette-success30); color: var(--md-ref-palette-neutral100);">30</span>
+        <span style="background-color: var(--md-ref-palette-success40); color: var(--md-ref-palette-neutral100);">40</span>
+        <span style="background-color: var(--md-ref-palette-success50); color: var(--md-ref-palette-neutral100);">50</span>
+        <span style="background-color: var(--md-ref-palette-success60); color: var(--md-ref-palette-neutral0);">60</span>
+        <span style="background-color: var(--md-ref-palette-success70); color: var(--md-ref-palette-neutral0);">70</span>
+        <span style="background-color: var(--md-ref-palette-success80); color: var(--md-ref-palette-neutral0);">80</span>
+        <span style="background-color: var(--md-ref-palette-success90); color: var(--md-ref-palette-neutral0);">90</span>
+        <span style="background-color: var(--md-ref-palette-success95); color: var(--md-ref-palette-neutral0);">95</span>
+        <span style="background-color: var(--md-ref-palette-success99); color: var(--md-ref-palette-neutral0);">99</span>
+        <span style="background-color: var(--md-ref-palette-success100); color: var(--md-ref-palette-neutral0);">100</span>
+      </div></div>
+    <div class="cat-pair"><small class="m3-label-medium">Warning &mdash; <code>--md-ref-palette-warning&lt;tone&gt;</code></small>
+      <div class="cat-ramp">
+        <span style="background-color: var(--md-ref-palette-warning0); color: var(--md-ref-palette-neutral100);">0</span>
+        <span style="background-color: var(--md-ref-palette-warning10); color: var(--md-ref-palette-neutral100);">10</span>
+        <span style="background-color: var(--md-ref-palette-warning20); color: var(--md-ref-palette-neutral100);">20</span>
+        <span style="background-color: var(--md-ref-palette-warning30); color: var(--md-ref-palette-neutral100);">30</span>
+        <span style="background-color: var(--md-ref-palette-warning40); color: var(--md-ref-palette-neutral100);">40</span>
+        <span style="background-color: var(--md-ref-palette-warning50); color: var(--md-ref-palette-neutral100);">50</span>
+        <span style="background-color: var(--md-ref-palette-warning60); color: var(--md-ref-palette-neutral0);">60</span>
+        <span style="background-color: var(--md-ref-palette-warning70); color: var(--md-ref-palette-neutral0);">70</span>
+        <span style="background-color: var(--md-ref-palette-warning80); color: var(--md-ref-palette-neutral0);">80</span>
+        <span style="background-color: var(--md-ref-palette-warning90); color: var(--md-ref-palette-neutral0);">90</span>
+        <span style="background-color: var(--md-ref-palette-warning95); color: var(--md-ref-palette-neutral0);">95</span>
+        <span style="background-color: var(--md-ref-palette-warning99); color: var(--md-ref-palette-neutral0);">99</span>
+        <span style="background-color: var(--md-ref-palette-warning100); color: var(--md-ref-palette-neutral0);">100</span>
+      </div></div>
+    <div class="cat-pair"><small class="m3-label-medium">Info &mdash; <code>--md-ref-palette-info&lt;tone&gt;</code></small>
+      <div class="cat-ramp">
+        <span style="background-color: var(--md-ref-palette-info0); color: var(--md-ref-palette-neutral100);">0</span>
+        <span style="background-color: var(--md-ref-palette-info10); color: var(--md-ref-palette-neutral100);">10</span>
+        <span style="background-color: var(--md-ref-palette-info20); color: var(--md-ref-palette-neutral100);">20</span>
+        <span style="background-color: var(--md-ref-palette-info30); color: var(--md-ref-palette-neutral100);">30</span>
+        <span style="background-color: var(--md-ref-palette-info40); color: var(--md-ref-palette-neutral100);">40</span>
+        <span style="background-color: var(--md-ref-palette-info50); color: var(--md-ref-palette-neutral100);">50</span>
+        <span style="background-color: var(--md-ref-palette-info60); color: var(--md-ref-palette-neutral0);">60</span>
+        <span style="background-color: var(--md-ref-palette-info70); color: var(--md-ref-palette-neutral0);">70</span>
+        <span style="background-color: var(--md-ref-palette-info80); color: var(--md-ref-palette-neutral0);">80</span>
+        <span style="background-color: var(--md-ref-palette-info90); color: var(--md-ref-palette-neutral0);">90</span>
+        <span style="background-color: var(--md-ref-palette-info95); color: var(--md-ref-palette-neutral0);">95</span>
+        <span style="background-color: var(--md-ref-palette-info99); color: var(--md-ref-palette-neutral0);">99</span>
+        <span style="background-color: var(--md-ref-palette-info100); color: var(--md-ref-palette-neutral0);">100</span>
+      </div></div>
+  </div>
+</section>
+<section class="cat-section" id="type">
+  <header><h2 class="m3-headline-small">Typography</h2>
+    <p class="cat-lede m3-body-medium">M3&rsquo;s fifteen-step scale. Each class sets font, size, line height,
+      weight and tracking from <code>--md-sys-typescale-*</code>; components apply the same mixin, so a
+      button label and a <code>.m3-label-large</code> span are the same type by construction.</p></header>
+  <div class="cat-item cat-item--wide"><div class="cat-specimen cat-specimen--stack">
+    <div class="cat-pair"><small class="m3-label-small">.m3-display-large &mdash; 57/64</small>
+      <span class="m3-display-large">Display large</span></div>
+    <div class="cat-pair"><small class="m3-label-small">.m3-display-medium &mdash; 45/52</small>
+      <span class="m3-display-medium">Display medium</span></div>
+    <div class="cat-pair"><small class="m3-label-small">.m3-display-small &mdash; 36/44</small>
+      <span class="m3-display-small">Display small</span></div>
+    <div class="cat-pair"><small class="m3-label-small">.m3-headline-large &mdash; 32/40</small>
+      <span class="m3-headline-large">Headline large</span></div>
+    <div class="cat-pair"><small class="m3-label-small">.m3-headline-medium &mdash; 28/36</small>
+      <span class="m3-headline-medium">Headline medium</span></div>
+    <div class="cat-pair"><small class="m3-label-small">.m3-headline-small &mdash; 24/32</small>
+      <span class="m3-headline-small">Headline small</span></div>
+    <div class="cat-pair"><small class="m3-label-small">.m3-title-large &mdash; 22/28</small>
+      <span class="m3-title-large">Title large</span></div>
+    <div class="cat-pair"><small class="m3-label-small">.m3-title-medium &mdash; 16/24 · 500</small>
+      <span class="m3-title-medium">Title medium</span></div>
+    <div class="cat-pair"><small class="m3-label-small">.m3-title-small &mdash; 14/20 · 500</small>
+      <span class="m3-title-small">Title small</span></div>
+    <div class="cat-pair"><small class="m3-label-small">.m3-body-large &mdash; 16/24</small>
+      <span class="m3-body-large">Body large</span></div>
+    <div class="cat-pair"><small class="m3-label-small">.m3-body-medium &mdash; 14/20</small>
+      <span class="m3-body-medium">Body medium</span></div>
+    <div class="cat-pair"><small class="m3-label-small">.m3-body-small &mdash; 12/16</small>
+      <span class="m3-body-small">Body small</span></div>
+    <div class="cat-pair"><small class="m3-label-small">.m3-label-large &mdash; 14/20 · 500</small>
+      <span class="m3-label-large">Label large</span></div>
+    <div class="cat-pair"><small class="m3-label-small">.m3-label-medium &mdash; 12/16 · 500</small>
+      <span class="m3-label-medium">Label medium</span></div>
+    <div class="cat-pair"><small class="m3-label-small">.m3-label-small &mdash; 11/16 · 500</small>
+      <span class="m3-label-small">Label small</span></div>
+  </div></div>
+</section>
+<section class="cat-section" id="shape">
+  <header><h2 class="m3-headline-small">Shape</h2>
+    <p class="cat-lede m3-body-medium">The Expressive scale, including the two &ldquo;increased&rdquo; steps and the
+      48dp rung. <code>corner-full</code> is 9999px, which renders as a pill but cannot interpolate, so every
+      morphing control resolves its shape against half its own height and springs between real radii &mdash;
+      see <a href="#motion">Motion</a>.</p></header>
+  <div class="cat-item cat-item--wide"><div class="cat-specimen">
+    <div class="cat-labelled"><span style="inline-size: 4.5rem; block-size: 4.5rem; display: block; background-color: var(--md-sys-color-primary-container); border-radius: var(--md-sys-shape-corner-none);"></span><small class="m3-label-small">none<br>0</small></div>
+    <div class="cat-labelled"><span style="inline-size: 4.5rem; block-size: 4.5rem; display: block; background-color: var(--md-sys-color-primary-container); border-radius: var(--md-sys-shape-corner-extra-small);"></span><small class="m3-label-small">extra-small<br>4</small></div>
+    <div class="cat-labelled"><span style="inline-size: 4.5rem; block-size: 4.5rem; display: block; background-color: var(--md-sys-color-primary-container); border-radius: var(--md-sys-shape-corner-small);"></span><small class="m3-label-small">small<br>8</small></div>
+    <div class="cat-labelled"><span style="inline-size: 4.5rem; block-size: 4.5rem; display: block; background-color: var(--md-sys-color-primary-container); border-radius: var(--md-sys-shape-corner-medium);"></span><small class="m3-label-small">medium<br>12</small></div>
+    <div class="cat-labelled"><span style="inline-size: 4.5rem; block-size: 4.5rem; display: block; background-color: var(--md-sys-color-primary-container); border-radius: var(--md-sys-shape-corner-large);"></span><small class="m3-label-small">large<br>16</small></div>
+    <div class="cat-labelled"><span style="inline-size: 4.5rem; block-size: 4.5rem; display: block; background-color: var(--md-sys-color-primary-container); border-radius: var(--md-sys-shape-corner-large-increased);"></span><small class="m3-label-small">large-increased<br>20</small></div>
+    <div class="cat-labelled"><span style="inline-size: 4.5rem; block-size: 4.5rem; display: block; background-color: var(--md-sys-color-primary-container); border-radius: var(--md-sys-shape-corner-extra-large);"></span><small class="m3-label-small">extra-large<br>28</small></div>
+    <div class="cat-labelled"><span style="inline-size: 4.5rem; block-size: 4.5rem; display: block; background-color: var(--md-sys-color-primary-container); border-radius: var(--md-sys-shape-corner-extra-large-increased);"></span><small class="m3-label-small">extra-large-increased<br>32</small></div>
+    <div class="cat-labelled"><span style="inline-size: 4.5rem; block-size: 4.5rem; display: block; background-color: var(--md-sys-color-primary-container); border-radius: var(--md-sys-shape-corner-extra-extra-large);"></span><small class="m3-label-small">extra-extra-large<br>48</small></div>
+    <div class="cat-labelled"><span style="inline-size: 4.5rem; block-size: 4.5rem; display: block; background-color: var(--md-sys-color-primary-container); border-radius: var(--md-sys-shape-corner-full);"></span><small class="m3-label-small">full<br>pill</small></div>
+  </div></div>
+</section>
+<section class="cat-section" id="elevation">
+  <header><h2 class="m3-headline-small">Elevation</h2>
+    <p class="cat-lede m3-body-medium">Six levels, each a key/ambient shadow pair mixed from
+      <code>--md-sys-color-shadow</code> at M3&rsquo;s 30% and 15% opacities. Cards, menus, dialogs and FABs
+      read these; <code>.m3-elevation-0</code>&hellip;<code>-5</code> apply them directly.</p></header>
+  <div class="cat-item cat-item--wide"><div class="cat-specimen" style="padding-block: var(--m3-sys-space-6);">
+    <div class="cat-labelled"><span class="m3-elevation-0" style="inline-size: 6rem; block-size: 4rem; display: block; border-radius: var(--md-sys-shape-corner-medium); background-color: var(--md-sys-color-surface-container-low);"></span><small class="m3-label-small">level 0</small></div>
+    <div class="cat-labelled"><span class="m3-elevation-1" style="inline-size: 6rem; block-size: 4rem; display: block; border-radius: var(--md-sys-shape-corner-medium); background-color: var(--md-sys-color-surface-container-low);"></span><small class="m3-label-small">level 1</small></div>
+    <div class="cat-labelled"><span class="m3-elevation-2" style="inline-size: 6rem; block-size: 4rem; display: block; border-radius: var(--md-sys-shape-corner-medium); background-color: var(--md-sys-color-surface-container-low);"></span><small class="m3-label-small">level 2</small></div>
+    <div class="cat-labelled"><span class="m3-elevation-3" style="inline-size: 6rem; block-size: 4rem; display: block; border-radius: var(--md-sys-shape-corner-medium); background-color: var(--md-sys-color-surface-container-low);"></span><small class="m3-label-small">level 3</small></div>
+    <div class="cat-labelled"><span class="m3-elevation-4" style="inline-size: 6rem; block-size: 4rem; display: block; border-radius: var(--md-sys-shape-corner-medium); background-color: var(--md-sys-color-surface-container-low);"></span><small class="m3-label-small">level 4</small></div>
+    <div class="cat-labelled"><span class="m3-elevation-5" style="inline-size: 6rem; block-size: 4rem; display: block; border-radius: var(--md-sys-shape-corner-medium); background-color: var(--md-sys-color-surface-container-low);"></span><small class="m3-label-small">level 5</small></div>
+  </div></div>
+</section>
+<section class="cat-section" id="motion">
+  <header><h2 class="m3-headline-small">Motion</h2>
+    <p class="cat-lede m3-body-medium">M3&rsquo;s easing set and duration ramp, plus the Expressive spring tokens.
+      Each spring is resolved at build time into a <code>linear()</code> curve sampled from the damped-oscillator
+      solution, with its settle time as the duration; a cubic-b&eacute;zier stand-in ships for browsers without
+      <code>linear()</code>. Every transition on this page sits behind
+      <code>prefers-reduced-motion: no-preference</code>.</p></header>
+
+  <div class="cat-item">
+    <header><h3 class="m3-title-medium">Springs</h3>
+      <span class="cat-support" data-feature="linear"></span></header>
+    <p class="cat-note m3-body-small">Press and hold a button: the corner radius runs 20px &rarr; 8px and springs
+      back past its resting value. The overshoot is the curve, not a keyframe.</p>
+    <div class="cat-specimen">
+      <button class="m3-btn m3-btn--filled" type="button">Press me</button>
+      <button class="m3-btn m3-btn--tonal m3-btn--large" type="button">Large</button>
+      <button class="m3-icon-btn m3-icon-btn--filled" type="button" aria-label="Favourite"><span class="m3-icon">favorite</span></button>
+    </div>
+    <table class="cat-table">
+      <tr><th>token</th><th>duration</th></tr>
+      <tr><td><code>spring-fast-spatial</code></td><td>360ms</td></tr>
+      <tr><td><code>spring-default-spatial</code></td><td>430ms</td></tr>
+      <tr><td><code>spring-slow-spatial</code></td><td>600ms</td></tr>
+      <tr><td><code>spring-fast-effects</code></td><td>150ms</td></tr>
+      <tr><td><code>spring-default-effects</code></td><td>230ms</td></tr>
+      <tr><td><code>spring-slow-effects</code></td><td>330ms</td></tr>
+    </table>
+  </div>
+
+  <div class="cat-item">
+    <header><h3 class="m3-title-medium">Easing and duration</h3></header>
+    <table class="cat-table">
+      <tr><th>easing</th><th>curve</th></tr>
+      <tr><td><code>standard</code></td><td>cubic-bezier(0.2, 0, 0, 1)</td></tr>
+      <tr><td><code>standard-decelerate</code></td><td>cubic-bezier(0, 0, 0, 1)</td></tr>
+      <tr><td><code>standard-accelerate</code></td><td>cubic-bezier(0.3, 0, 1, 1)</td></tr>
+      <tr><td><code>emphasized-decelerate</code></td><td>cubic-bezier(0.05, 0.7, 0.1, 1)</td></tr>
+      <tr><td><code>emphasized-accelerate</code></td><td>cubic-bezier(0.3, 0, 0.8, 0.15)</td></tr>
+      <tr><td><code>short1&hellip;4</code></td><td>50 / 100 / 150 / 200ms</td></tr>
+      <tr><td><code>medium1&hellip;4</code></td><td>250 / 300 / 350 / 400ms</td></tr>
+      <tr><td><code>long1&hellip;4</code></td><td>450 / 500 / 550 / 600ms</td></tr>
+      <tr><td><code>extra-long1&hellip;4</code></td><td>700 / 800 / 900 / 1000ms</td></tr>
+    </table>
+  </div>
+</section>
+
+<section class="cat-section" id="state">
+  <header><h2 class="m3-headline-small">State layers</h2>
+    <p class="cat-lede m3-body-medium">Every interactive surface composites one <code>color-mix()</code> layer at
+      M3&rsquo;s opacity for the state. No <code>rgba()</code> appears anywhere in the build; hover states sit behind
+      <code>@media (hover: hover)</code> so a touch device never sticks in a hover look.</p></header>
+  <div class="cat-item cat-item--wide">
+    <table class="cat-table">
+      <tr><th>state</th><th>opacity</th><th>token</th></tr>
+      <tr><td>Hover</td><td>8%</td><td><code>--md-sys-state-hover-state-layer-opacity</code></td></tr>
+      <tr><td>Focus</td><td>10%</td><td><code>--md-sys-state-focus-state-layer-opacity</code></td></tr>
+      <tr><td>Pressed</td><td>10%</td><td><code>--md-sys-state-pressed-state-layer-opacity</code></td></tr>
+      <tr><td>Dragged</td><td>16%</td><td><code>--md-sys-state-dragged-state-layer-opacity</code></td></tr>
+      <tr><td>Disabled content</td><td>38%</td><td><code>--md-sys-state-disabled-content-opacity</code></td></tr>
+      <tr><td>Disabled container</td><td>12%</td><td><code>--md-sys-state-disabled-container-opacity</code></td></tr>
+      <tr><td>Focus indicator</td><td>3px, offset 2px</td><td><code>--md-sys-state-focus-indicator-thickness</code></td></tr>
+    </table>
+    <p class="cat-note m3-body-small">Tab through the row below to see the 3px indicator; hover to see the 8% layer.</p>
+    <div class="cat-specimen">
+      <button class="m3-btn m3-btn--filled" type="button">Enabled</button>
+      <button class="m3-btn m3-btn--filled" type="button" disabled>Disabled</button>
+      <button class="m3-btn m3-btn--outlined" type="button">Outlined</button>
+      <button class="m3-btn m3-btn--outlined" type="button" disabled>Disabled</button>
+      <button class="m3-btn m3-btn--text" type="button">Text</button>
+      <button class="m3-btn m3-btn--text" type="button" disabled>Disabled</button>
+    </div>
+  </div>
+</section>
+
+<section class="cat-section" id="density">
+  <header><h2 class="m3-headline-small">Spacing and density</h2>
+    <p class="cat-lede m3-body-medium">One spacing scale (<code>--m3-sys-space-1</code>&hellip;<code>-8</code>:
+      4, 8, 12, 16, 24, 32, 48, 64px) and one density knob. Density is the sole vertical authority: every control
+      height is <code>height + density &times; 4px</code>, clamped to its minimum, so setting
+      <code>--m3-sys-density</code> on any ancestor compacts everything inside it. Try the header&rsquo;s Density
+      control, or read the row below.</p></header>
+  <div class="cat-item cat-item--wide">
+    <div class="cat-specimen cat-specimen--stack">
+      <div class="cat-pair"><small class="m3-label-medium">density 0 (default)</small>
+        <div class="cat-specimen cat-specimen--plain" style="gap: var(--m3-sys-space-2);">
+          <button class="m3-btn m3-btn--filled" type="button">Button</button>
+          <span class="m3-chip m3-chip--assist">Chip</span>
+          <label class="m3-field m3-field--outlined" style="inline-size: 12rem;"><input class="m3-field__input" placeholder=" "><span class="m3-field__label">Field</span></label>
+        </div></div>
+      <div class="cat-pair" style="--m3-sys-density: -2;"><small class="m3-label-medium">--m3-sys-density: -2 on this row only</small>
+        <div class="cat-specimen cat-specimen--plain" style="gap: var(--m3-sys-space-2);">
+          <button class="m3-btn m3-btn--filled" type="button">Button</button>
+          <span class="m3-chip m3-chip--assist">Chip</span>
+          <label class="m3-field m3-field--outlined" style="inline-size: 12rem;"><input class="m3-field__input" placeholder=" "><span class="m3-field__label">Field</span></label>
+        </div></div>
+    </div>
+  </div>
+</section>
+
+<section class="cat-section" id="modern">
+  <header><h2 class="m3-headline-small">Modern CSS, in depth</h2>
+    <p class="cat-lede m3-body-medium">m3x is built on the current platform rather than around it. Every feature
+      below is gated by its own <code>@supports</code> query and has a stated fallback, so the library degrades to
+      a plainer version of the same design instead of a broken one. Each badge reads the query live &mdash; it
+      tells you what the browser you are reading this in actually does.</p></header>
+  <div class="cat-cards">
+
+  <div class="cat-item">
+    <header><h3 class="m3-title-medium">Cascade layers</h3></header>
+    <p class="cat-note m3-body-small">The compiled CSS opens with exactly this statement, and it is the
+      library&rsquo;s public contract:</p>
+    <div class="cat-specimen cat-specimen--stack"><code>@layer reset, bootstrap, tokens, bootstrap-compat, base, components, utilities, overrides;</code></div>
+    <p class="cat-note m3-body-small"><code>bootstrap</code> is reserved and left empty for a consumer&rsquo;s real
+      Bootstrap import &mdash; everything m3x defines outranks it. <code>overrides</code> is declared, always empty,
+      and belongs to you. Each layer that carries component chrome splits into <code>own</code> and
+      <code>rules</code>: the shared box-ownership rule sits in <code>own</code>, the component rules in
+      <code>rules</code>, and a rule you write directly into the parent layer beats both.</p>
+  </div>
+
+  <div class="cat-item">
+    <header><h3 class="m3-title-medium">Registered custom properties</h3>
+      <span class="cat-support" data-feature="oklch"></span></header>
+    <p class="cat-note m3-body-small">Every colour role is registered with <code>@property</code> as a
+      <code>&lt;color&gt;</code>, every shape step as a <code>&lt;length&gt;</code>, and the icon fill axis as a
+      <code>&lt;number&gt;</code>. Typing them makes them <em>interpolable</em>: a theme change can be transitioned,
+      a corner can spring, and an outlined icon can fill on select.</p>
+    <div class="cat-specimen">
+      <button class="m3-icon-btn m3-icon-btn--tonal" type="button" aria-pressed="true" data-toggle aria-label="Toggle fill"><span class="m3-icon">favorite</span></button>
+      <button class="m3-icon-btn m3-icon-btn--tonal" type="button" aria-pressed="false" data-toggle aria-label="Toggle fill"><span class="m3-icon">bookmark</span></button>
+      <span class="m3-body-small cat-note">click &mdash; <code>--m3-icon-fill</code> animates 0&nbsp;&rarr;&nbsp;1</span>
+    </div>
+  </div>
+
+  <div class="cat-item">
+    <header><h3 class="m3-title-medium"><code>light-dark()</code></h3>
+      <span class="cat-support" data-feature="light-dark"></span></header>
+    <p class="cat-note m3-body-small">Each role is declared once, with both scheme values inline, and
+      <code>color-scheme</code> alone decides which applies. <code>[data-theme]</code> and Bootstrap&rsquo;s
+      <code>[data-bs-theme]</code> just set <code>color-scheme</code> &mdash; there is no second block of dark
+      overrides to keep in sync.</p>
+    <p class="cat-note m3-body-small"><strong>Without it:</strong> a static sRGB tier plus a
+      <code>prefers-color-scheme</code> block ships first and is simply not overridden.</p>
+  </div>
+
+  <div class="cat-item">
+    <header><h3 class="m3-title-medium">Relative color syntax</h3>
+      <span class="cat-support" data-feature="relative"></span></header>
+    <p class="cat-note m3-body-small">Where <code>oklch(from &hellip;)</code> works, all nine tonal ramps are derived
+      from <code>--md-seed</code> at runtime, so retheming is one declaration. The seed picker in the header does
+      exactly that &mdash; try it.</p>
+    <div class="cat-specimen cat-specimen--stack">
+      <code>:root { --md-seed: teal; }</code>
+      <span class="m3-body-small cat-note">rethemes both vocabularies, no rebuild</span>
+    </div>
+    <p class="cat-note m3-body-small"><strong>Without it:</strong> the build-time palettes stay in force; the seed
+      picker does nothing and the compiled theme is unchanged.</p>
+  </div>
+
+  <div class="cat-item">
+    <header><h3 class="m3-title-medium"><code>color-mix()</code></h3>
+      <span class="cat-support" data-feature="color-mix"></span></header>
+    <p class="cat-note m3-body-small">Every state layer, every disabled treatment, every subtle border and every
+      opacity utility is a <code>color-mix()</code> in sRGB. The build contains no <code>rgba()</code> or
+      <code>hsla()</code> at all, which is what lets a token stay a token all the way to the pixel.</p>
+    <div class="cat-specimen">
+      <span class="m3-chip m3-chip--assist">Hover me</span>
+      <button class="m3-btn m3-btn--tonal" type="button">And me</button>
+    </div>
+  </div>
+
+  <div class="cat-item">
+    <header><h3 class="m3-title-medium"><code>@scope</code></h3></header>
+    <p class="cat-note m3-body-small">Three jobs: donut slots (a card&rsquo;s content region is scoped so component
+      rules stop at the slot), low-specificity internals, and the token islands below. There is no feature query for
+      an at-rule, so an unsupporting browser drops these blocks wholesale &mdash; which is why every one of them is a
+      refinement, never load-bearing structure.</p>
+    <p class="cat-note m3-body-small">See <a href="#islands">Token islands</a>.</p>
+  </div>
+
+  <div class="cat-item">
+    <header><h3 class="m3-title-medium"><code>:has()</code></h3>
+      <span class="cat-support" data-feature="has"></span></header>
+    <p class="cat-note m3-body-small">Parent-aware styling with no script: an open popover is read as
+      <code>:has(:popover-open)</code>, a split button&rsquo;s menu picks the leading action through hidden radios,
+      and a colour-swatch button follows the checked swatch through one rule per colour.</p>
+    <div class="cat-specimen">
+      <div class="m3-split-button">
+        <button class="m3-btn m3-split-button__action" type="button">
+          <span class="m3-split-button__label">Send</span>
+          <span class="m3-split-button__label">Schedule send</span>
+          <span class="m3-split-button__label">Send later</span>
+        </button>
+        <button class="m3-btn m3-split-button__toggle" type="button" popovertarget="cat-has-menu" aria-label="Choose send action"></button>
+        <div class="m3-menu" id="cat-has-menu" popover>
+          <label class="m3-menu__item"><input class="m3-split-button__option" type="radio" name="cat-send" checked>Send</label>
+          <label class="m3-menu__item"><input class="m3-split-button__option" type="radio" name="cat-send">Schedule send</label>
+          <label class="m3-menu__item"><input class="m3-split-button__option" type="radio" name="cat-send">Send later</label>
+        </div>
+      </div>
+      <span class="m3-body-small cat-note">the menu picks what the leading half does &mdash; no script</span>
+    </div>
+  </div>
+
+  <div class="cat-item">
+    <header><h3 class="m3-title-medium">Popover API</h3>
+      <span class="cat-support" data-feature="popover"></span></header>
+    <p class="cat-note m3-body-small">Menus are <code>[popover]</code> elements in the top layer, opened by
+      <code>popovertarget</code>. Light dismiss, focus management and stacking are the browser&rsquo;s job; m3x only
+      styles the surface and reads <code>:popover-open</code> for the invoker&rsquo;s open state.</p>
+    <div class="cat-specimen">
+      <button class="m3-btn m3-btn--outlined" type="button" popovertarget="cat-pop">Open menu</button>
+      <div class="m3-menu" id="cat-pop" popover role="menu">
+        <div class="m3-menu__header">Move to</div>
+        <button class="m3-menu__item" type="button" role="menuitem"><span class="m3-icon">archive</span>Archive</button>
+        <button class="m3-menu__item" type="button" role="menuitem"><span class="m3-icon">inbox</span>Inbox</button>
+        <hr class="m3-divider">
+        <button class="m3-menu__item" type="button" role="menuitem"><span class="m3-icon">delete</span>Trash</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="cat-item">
+    <header><h3 class="m3-title-medium">Anchor positioning</h3>
+      <span class="cat-support" data-feature="anchor"></span></header>
+    <p class="cat-note m3-body-small">A FAB menu and the dense toolbar&rsquo;s dropdowns carry
+      <code>anchor-name</code> and place their surface with <code>position-area</code>, so the menu tracks its
+      invoker without measuring anything.</p>
+    <p class="cat-note m3-body-small"><strong>Without it:</strong> the popover opens at its static position, which
+      is still correct &mdash; just centred rather than tucked under the button.</p>
+  </div>
+
+  <div class="cat-item">
+    <header><h3 class="m3-title-medium">Native <code>&lt;dialog&gt;</code> and <code>::backdrop</code></h3>
+      <span class="cat-support" data-feature="backdrop"></span></header>
+    <p class="cat-note m3-body-small">Modals are real <code>&lt;dialog&gt;</code> elements: top layer, inert
+      background, Escape to close. The scrim is <code>::backdrop</code> at M3&rsquo;s 32% scrim opacity.</p>
+    <div class="cat-specimen">
+      <button class="m3-btn m3-btn--filled" type="button" command="show-modal" commandfor="cat-dialog">Open dialog</button>
+      <dialog class="m3-dialog" id="cat-dialog">
+        <h2 class="m3-dialog__title">Empty trash?</h2>
+        <div class="m3-dialog__content"><p class="m3-body-medium">142 conversations will be deleted forever.</p></div>
+        <div class="m3-dialog__actions">
+          <button class="m3-btn m3-btn--text" type="button" command="close" commandfor="cat-dialog">Cancel</button>
+          <button class="m3-btn m3-btn--filled" type="button" command="close" commandfor="cat-dialog">Empty trash</button>
+        </div>
+      </dialog>
+    </div>
+  </div>
+
+  <div class="cat-item">
+    <header><h3 class="m3-title-medium">Entry motion for the top layer</h3>
+      <span class="cat-support" data-feature="discrete"></span></header>
+    <p class="cat-note m3-body-small">Menus and dialogs animate in from <code>@starting-style</code> and animate out
+      because <code>display</code> and <code>overlay</code> transition with
+      <code>transition-behavior: allow-discrete</code>. No animation classes, no timers.</p>
+    <p class="cat-note m3-body-small"><strong>Without it:</strong> they appear and disappear instantly.</p>
+  </div>
+
+
+  <div class="cat-item">
+    <header><h3 class="m3-title-medium">Customizable select</h3>
+      <span class="cat-support" data-feature="base-select"></span></header>
+    <p class="cat-note m3-body-small">Under <code>appearance: base-select</code> the picker of a native
+      <code>&lt;select&gt;</code> becomes an M3 menu surface: <code>::picker(select)</code> takes the menu&rsquo;s
+      shape, elevation and entry motion, every <code>option</code> becomes a 48dp menu item, and
+      <code>::picker-icon</code> is hidden in favour of the CSS-drawn chevron. The control is still one native
+      <code>&lt;select&gt;</code>.</p>
+    <div class="cat-specimen">
+      <label class="m3-field" style="inline-size: 14rem;">
+        <select class="m3-select" aria-label="Default action">
+          <option>Reply</option><option>Reply all</option><option>Forward</option><option>Archive</option>
+        </select>
+        <span class="m3-field__supporting">Default action</span>
+      </label>
+    </div>
+    <p class="cat-note m3-body-small"><strong>Without it:</strong> the styled native select, with the platform&rsquo;s
+      own option list &mdash; the same box, the same chevron.</p>
+  </div>
+
+  <div class="cat-item">
+    <header><h3 class="m3-title-medium">Animating to <code>auto</code></h3>
+      <span class="cat-support" data-feature="interpolate"></span>
+      <span class="cat-support" data-feature="details"></span></header>
+    <p class="cat-note m3-body-small"><code>interpolate-size: allow-keywords</code> is opted in on
+      <code>:root</code>, so a height can transition to <code>auto</code>. A disclosure is a real
+      <code>&lt;details&gt;</code> whose <code>::details-content</code> animates open; the
+      <code>name</code> attribute makes a group exclusive, with no accordion script.</p>
+    <div class="cat-specimen cat-specimen--stack" style="justify-items: stretch;">
+      <details class="m3-disclosure" name="cat-faq" open>
+        <summary>Where is my data stored?</summary>
+        <p class="m3-body-medium">In the region you picked when the account was created.</p>
+      </details>
+      <details class="m3-disclosure" name="cat-faq">
+        <summary>Can I export everything?</summary>
+        <p class="m3-body-medium">Yes &mdash; a full archive, on demand.</p>
+      </details>
+      <details class="m3-disclosure" name="cat-faq">
+        <summary>How do I delete my account?</summary>
+        <p class="m3-body-medium">Settings, then Account, then Delete.</p>
+      </details>
+    </div>
+    <p class="cat-note m3-body-small"><strong>Without it:</strong> the disclosure still opens and closes, instantly.</p>
+  </div>
+
+  <div class="cat-item">
+    <header><h3 class="m3-title-medium"><code>field-sizing: content</code></h3>
+      <span class="cat-support" data-feature="field-sizing"></span></header>
+    <p class="cat-note m3-body-small">A textarea that grows with what you type, with no measuring script and no
+      hidden mirror element. Type into it.</p>
+    <div class="cat-specimen" style="align-items: stretch;">
+      <label class="m3-field m3-field--outlined" style="flex: 1 1 auto;">
+        <textarea class="m3-field__input" rows="1" placeholder=" "></textarea>
+        <span class="m3-field__label">Signature</span>
+      </label>
+    </div>
+    <p class="cat-note m3-body-small"><strong>Without it:</strong> a fixed <code>rows</code> textarea with the
+      native resize grabber.</p>
+  </div>
+
+  <div class="cat-item">
+    <header><h3 class="m3-title-medium">Scroll-driven animation</h3>
+      <span class="cat-support" data-feature="scroll-timeline"></span></header>
+    <p class="cat-note m3-body-small">A sticky large app bar collapses to the small height and its headline fades,
+      driven by <code>animation-timeline: scroll(nearest block)</code>. Scroll the frame.</p>
+    <div class="cat-frame cat-frame--scroll">
+      <header class="m3-top-app-bar m3-top-app-bar--sticky m3-top-app-bar--large">
+        <h2 class="m3-top-app-bar__title">Inbox</h2>
+      </header>
+      <div style="padding: var(--m3-sys-space-4); display: grid; gap: var(--m3-sys-space-3);">
+        <p class="m3-body-medium">Scroll me. The bar tints and collapses on the way down.</p>
+        <p class="m3-body-medium">The animation is the scroll position; there is no listener.</p>
+        <p class="m3-body-medium">Its progress is the scrollport&rsquo;s, so it works in this frame exactly as it
+          does on a page.</p>
+        <p class="m3-body-medium">Nothing here is measured in JavaScript.</p>
+        <p class="m3-body-medium">Keep going.</p>
+        <p class="m3-body-medium">Almost there.</p>
+        <p class="m3-body-medium">Done.</p>
+      </div>
+    </div>
+    <p class="cat-note m3-body-small"><strong>Without it:</strong> the bar keeps its resting height, and
+      <code>.m3-top-app-bar--scrolled</code> can carry the tint from your own code.</p>
+  </div>
+
+  <div class="cat-item cat-item--wide">
+    <header><h3 class="m3-title-medium">Container queries</h3>
+      <span class="cat-support" data-feature="container"></span></header>
+    <p class="cat-note m3-body-small">The dense editor toolbar is a container. Groups marked
+      <code>--priority-low</code> and <code>--priority-medium</code> fold away from the right as the bar narrows,
+      and the overflow button appears &mdash; on the bar&rsquo;s own width, not the window&rsquo;s.
+      <strong>Drag the bottom-right corner of the box below.</strong></p>
+    <div style="resize: horizontal; overflow: auto; min-inline-size: 18rem; max-inline-size: 100%; padding-block-end: var(--m3-sys-space-3);">
+      <div class="m3-toolbar m3-toolbar--dense">
+        <div class="m3-toolbar__group">
+          <button class="m3-icon-btn" type="button" aria-label="Undo"><span class="m3-icon">arrow_back</span></button>
+          <button class="m3-icon-btn" type="button" aria-label="Redo"><span class="m3-icon">arrow_forward</span></button>
+        </div>
+        <div class="m3-toolbar__group">
+          <button class="m3-icon-btn" type="button" aria-pressed="true" data-toggle aria-label="Bold"><span class="m3-icon">format_bold</span></button>
+          <button class="m3-icon-btn" type="button" aria-pressed="false" data-toggle aria-label="Italic"><span class="m3-icon">format_italic</span></button>
+          <button class="m3-icon-btn" type="button" aria-pressed="false" data-toggle aria-label="Underline"><span class="m3-icon">format_underlined</span></button>
+        </div>
+        <div class="m3-toolbar__group m3-toolbar__group--priority-medium">
+          <select class="m3-toolbar__select" aria-label="Zoom"><option>100%</option><option>75%</option><option>50%</option></select>
+        </div>
+        <div class="m3-toolbar__group m3-toolbar__group--priority-low">
+          <button class="m3-icon-btn" type="button" aria-label="Insert image"><span class="m3-icon">attach_file</span></button>
+          <button class="m3-icon-btn" type="button" aria-label="Link"><span class="m3-icon">share</span></button>
+        </div>
+        <div class="m3-toolbar__spacer"></div>
+        <button class="m3-icon-btn m3-toolbar__more" type="button" aria-label="More"><span class="m3-icon">more_vert</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="cat-item">
+    <header><h3 class="m3-title-medium">Masks, conic gradients, clip paths</h3>
+      <span class="cat-support" data-feature="mask"></span></header>
+    <p class="cat-note m3-body-small">Progress indicators and the slider are drawn, not assembled: the linear track
+      paints on a pseudo-element so the M3 gap can be cut without masking the bar inside it, the circular indicator is
+      a conic gradient with transparent gap stops, and the slider&rsquo;s handle clips its own gap ring with a
+      <code>clip-path</code>. No SVG, no extra elements.</p>
+    <div class="cat-specimen cat-specimen--stack" style="justify-items: stretch;">
+      <div class="m3-progress" style="--m3-progress-value: 62;" role="progressbar" aria-valuenow="62"><div class="m3-progress__bar"></div></div>
+      <div class="m3-progress m3-progress--wavy" style="--m3-progress-value: 38;" role="progressbar" aria-valuenow="38"><div class="m3-progress__bar"></div></div>
+      <input class="m3-slider" type="range" value="45" aria-label="Value">
+    </div>
+  </div>
+
+  <div class="cat-item">
+    <header><h3 class="m3-title-medium">Scroll snap</h3>
+      <span class="cat-support" data-feature="scroll-snap"></span></header>
+    <p class="cat-note m3-body-small">The carousel is a scroll-snap container: no transform maths, no index state,
+      and the browser&rsquo;s own momentum and keyboard scrolling.</p>
+    <div class="m3-carousel" role="group" aria-label="Previews">
+      <div class="m3-carousel__item m3-bg-primary-container" style="min-block-size: 6rem; display: grid; place-content: center;">One</div>
+      <div class="m3-carousel__item m3-bg-secondary-container" style="min-block-size: 6rem; display: grid; place-content: center;">Two</div>
+      <div class="m3-carousel__item m3-bg-tertiary-container" style="min-block-size: 6rem; display: grid; place-content: center;">Three</div>
+      <div class="m3-carousel__item m3-bg-error-container" style="min-block-size: 6rem; display: grid; place-content: center;">Four</div>
+    </div>
+  </div>
+
+  <div class="cat-item">
+    <header><h3 class="m3-title-medium">Form state selectors</h3>
+      <span class="cat-support" data-feature="user-invalid"></span>
+      <span class="cat-support" data-feature="open"></span></header>
+    <p class="cat-note m3-body-small"><code>:user-invalid</code> means &ldquo;invalid <em>after</em> the user has
+      had a go&rdquo;, so a required field is not red before it is touched. Type something into the field below and
+      clear it. <code>:open</code> flips a select&rsquo;s chevron while its picker is showing.
+      <code>.is-invalid</code> is emitted byte-identical to <code>:user-invalid</code> for Bootstrap parity.</p>
+    <div class="cat-specimen">
+      <label class="m3-field m3-field--outlined" style="inline-size: 15rem;">
+        <input class="m3-field__input" type="email" required placeholder=" ">
+        <span class="m3-field__label">Recovery email</span>
+        <span class="m3-field__supporting">Required</span>
+      </label>
+    </div>
+  </div>
+
+  <div class="cat-item">
+    <header><h3 class="m3-title-medium"><code>accent-color</code></h3>
+      <span class="cat-support" data-feature="accent-color"></span></header>
+    <p class="cat-note m3-body-small">Native controls m3x does not repaint &mdash; a date input&rsquo;s picker, a
+      file input&rsquo;s button, the text selection &mdash; still take the theme, because
+      <code>accent-color</code> is inherited from the root and re-inherited by every component.</p>
+    <div class="cat-specimen">
+      <input class="m3-datetime" type="date" value="2026-09-01" aria-label="Date">
+      <input class="m3-datetime" type="time" value="07:30" aria-label="Time">
+    </div>
+  </div>
+
+  <div class="cat-item">
+    <header><h3 class="m3-title-medium">User preferences</h3></header>
+    <p class="cat-note m3-body-small">Four media queries carry real weight in the build:</p>
+    <table class="cat-table">
+      <tr><td><code>prefers-color-scheme</code></td><td>the dark tier, for browsers without <code>light-dark()</code></td></tr>
+      <tr><td><code>prefers-contrast: more</code></td><td>re-points every role to its high-contrast tone</td></tr>
+      <tr><td><code>prefers-reduced-motion</code></td><td>gates <em>every</em> transition and animation in the build</td></tr>
+      <tr><td><code>hover: hover</code></td><td>gates every hover state, so touch never sticks</td></tr>
+      <tr><td><code>forced-colors: active</code></td><td>hands components back to system colours with real borders</td></tr>
+    </table>
+    <p class="cat-note m3-body-small">The header&rsquo;s Contrast control forces a level with
+      <code>[data-contrast]</code>, which works on the root or on any subtree.</p>
+  </div>
+
+  </div>
+</section>
+
+<section class="cat-section" id="adaptive">
+  <header><h2 class="m3-headline-small">Adaptive layout</h2>
+    <p class="cat-lede m3-body-medium">M3&rsquo;s five window size classes &mdash; compact, medium (600), expanded
+      (840), large (1200), extra-large (1600) &mdash; as media queries, plus the canonical pane layouts and a
+      navigation component that becomes a bar, a rail or a drawer by width. Resize the window: the sidebar of this
+      page disappears below 960px, and <code>demo/adaptive.html</code> shows the full navigation switch.</p></header>
+  <div class="cat-cards">
+    <div class="cat-item cat-item--wide">
+      <header><h3 class="m3-title-medium">Pane layouts</h3>
+        <span class="cat-api"><code>.m3-pane-layout--list-detail</code><code>--supporting-pane</code><code>--feed</code><code>.m3-pane</code></span></header>
+      <p class="cat-note m3-body-small">One column below the expanded size class, a 360px list beside the detail
+        above it. Panes are equal-height surfaces on <code>surface-container-low</code> with 16px corners.</p>
+      <div class="m3-pane-layout m3-pane-layout--list-detail">
+        <section class="m3-pane">
+          <span class="m3-title-small">List pane</span>
+          <p class="m3-body-medium">360px from the expanded size class up, full width below it.</p>
+        </section>
+        <section class="m3-pane">
+          <span class="m3-title-small">Detail pane</span>
+          <p class="m3-body-medium">Takes the remaining track. Both panes stretch to the same height so the layout
+            reads as one band rather than two floating cards.</p>
+        </section>
+      </div>
+    </div>
+    <div class="cat-item cat-item--wide">
+      <header><h3 class="m3-title-medium">Feed</h3></header>
+      <div class="m3-pane-layout m3-pane-layout--feed">
+        <section class="m3-pane"><span class="m3-title-small">Feed pane</span><p class="m3-body-medium">As many equal columns as fit the feed minimum.</p></section>
+        <section class="m3-pane"><span class="m3-title-small">Feed pane</span><p class="m3-body-medium">auto-fill, minmax(min(100%, &hellip;), 1fr).</p></section>
+        <section class="m3-pane"><span class="m3-title-small">Feed pane</span><p class="m3-body-medium">No breakpoints of its own.</p></section>
+      </div>
+    </div>
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Visibility by size class</h3>
+        <span class="cat-api"><code>.m3-only-*</code><code>.m3-hide-*</code></span></header>
+      <div class="cat-specimen cat-specimen--stack">
+        <span class="m3-body-medium m3-only-compact">You are in the <strong>compact</strong> size class.</span>
+        <span class="m3-body-medium m3-only-medium">You are in the <strong>medium</strong> size class.</span>
+        <span class="m3-body-medium m3-only-expanded">You are in the <strong>expanded</strong> size class.</span>
+        <span class="m3-body-medium m3-only-large">You are in the <strong>large</strong> size class.</span>
+        <span class="m3-body-medium m3-only-extra-large">You are in the <strong>extra-large</strong> size class.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cat-section" id="islands">
+  <header><h2 class="m3-headline-small">Token islands</h2>
+    <p class="cat-lede m3-body-medium">A region that re-points the system roles on its own scope root. Everything
+      inside adapts &mdash; not just inherited text, but the components, and the Bootstrap vocabulary alongside them.
+      Islands nest: the nearest one wins.</p></header>
+  <div class="cat-cards">
+    <div class="cat-item cat-item--wide m3-island--inverse" style="padding: var(--m3-sys-space-5);">
+      <header><h3 class="m3-title-medium">.m3-island--inverse</h3></header>
+      <p class="cat-note m3-body-small" style="color: inherit; opacity: 0.85;">An inverse hero. The island moves
+        <code>primary</code> to <code>inverse-primary</code> &mdash; and <code>on-primary</code> with it, or a filled
+        control would keep a label mixed for an accent it no longer has.</p>
+      <div class="cat-specimen" style="background-color: var(--md-sys-color-surface-container-low);">
+        <button class="m3-btn m3-btn--filled" type="button">Filled</button>
+        <button class="m3-btn m3-btn--tonal" type="button">Tonal</button>
+        <button class="m3-btn m3-btn--outlined" type="button">Outlined</button>
+        <button class="btn btn-primary" type="button">Bootstrap</button>
+        <span class="m3-chip m3-chip--assist">Chip</span>
+        <span class="badge text-bg-primary">9</span>
+      </div>
+      <div class="m3-card" style="padding: var(--m3-sys-space-4);">
+        <span class="m3-title-medium">A card inside the island</span>
+        <p class="m3-body-medium">It reads the island&rsquo;s surface-container tokens by inheritance.</p>
+        <div class="m3-island--tertiary" style="padding: var(--m3-sys-space-4); border-radius: var(--md-sys-shape-corner-medium);">
+          <p class="m3-body-medium">And a tertiary island nested inside the card inside the inverse hero. Proximity wins.</p>
+          <button class="m3-btn m3-btn--filled" type="button" style="margin-block-start: var(--m3-sys-space-2);">Filled</button>
+        </div>
+      </div>
+    </div>
+    <div class="cat-item m3-island--primary" style="padding: var(--m3-sys-space-5);">
+      <header><h3 class="m3-title-medium">.m3-island--primary</h3></header>
+      <div class="cat-specimen" style="background-color: var(--md-sys-color-surface-container-low);">
+        <button class="m3-btn m3-btn--filled" type="button">Filled</button>
+        <span class="m3-chip m3-chip--assist">Chip</span>
+      </div>
+    </div>
+    <div class="cat-item m3-island--tertiary" style="padding: var(--m3-sys-space-5);">
+      <header><h3 class="m3-title-medium">.m3-island--tertiary</h3></header>
+      <div class="cat-specimen" style="background-color: var(--md-sys-color-surface-container-low);">
+        <button class="m3-btn m3-btn--filled" type="button">Filled</button>
+        <span class="m3-chip m3-chip--assist">Chip</span>
+      </div>
+    </div>
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Forced contrast on a subtree</h3>
+        <span class="cat-api"><code>[data-contrast]</code></span></header>
+      <p class="cat-note m3-body-small">The same attribute the header uses, applied to one region.</p>
+      <div class="cat-specimen cat-specimen--stack">
+        <div class="cat-specimen cat-specimen--plain"><span class="m3-body-small">page level</span>
+          <button class="m3-btn m3-btn--filled" type="button">Filled</button>
+          <button class="m3-btn m3-btn--tonal" type="button">Tonal</button></div>
+        <div class="cat-specimen cat-specimen--plain" data-contrast="high"><span class="m3-body-small">high</span>
+          <button class="m3-btn m3-btn--filled" type="button">Filled</button>
+          <button class="m3-btn m3-btn--tonal" type="button">Tonal</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cat-section" id="actions">
+  <header><h2 class="m3-headline-small">Actions</h2>
+    <p class="cat-lede m3-body-medium">Buttons, icon buttons, FABs, segmented and grouped buttons, the split
+      button and toolbars. Every one of them presses into a squarer shape on a spring and returns; connected
+      groups and the dense bar keep their own geometry.</p></header>
+  <div class="cat-cards">
+    <div class="cat-item cat-item--wide">
+      <header><h3 class="m3-title-medium">Common buttons</h3>
+        <span class="cat-api"><code>.m3-btn</code><code>--filled</code><code>--tonal</code><code>--elevated</code><code>--outlined</code><code>--text</code>
+        <code>.btn .btn-primary</code></span></header>
+      <p class="cat-note m3-body-small">Five variants. Filled and tonal lift to elevation 1 on hover; elevated
+        starts at 1 and lifts to 2. Any of them can carry a leading icon at 20px.</p>
+      <div class="cat-specimen">
+        <button class="m3-btn m3-btn--filled" type="button">Filled</button>
+        <button class="m3-btn m3-btn--tonal" type="button">Tonal</button>
+        <button class="m3-btn m3-btn--elevated" type="button">Elevated</button>
+        <button class="m3-btn m3-btn--outlined" type="button">Outlined</button>
+        <button class="m3-btn m3-btn--text" type="button">Text</button>
+      </div>
+      <div class="cat-specimen">
+        <button class="m3-btn m3-btn--filled" type="button"><span class="m3-icon">send</span>Send</button>
+        <button class="m3-btn m3-btn--tonal" type="button"><span class="m3-icon">save</span>Save</button>
+        <button class="m3-btn m3-btn--outlined" type="button"><span class="m3-icon">download</span>Export</button>
+        <a class="m3-btn m3-btn--text" href="#actions"><span class="m3-icon">chevron_right</span>As a link</a>
+      </div>
+      <div class="cat-specimen">
+        <button class="m3-btn m3-btn--filled" type="button" disabled>Filled</button>
+        <button class="m3-btn m3-btn--tonal" type="button" disabled>Tonal</button>
+        <button class="m3-btn m3-btn--elevated" type="button" disabled>Elevated</button>
+        <button class="m3-btn m3-btn--outlined" type="button" disabled>Outlined</button>
+        <button class="m3-btn m3-btn--text" type="button" disabled>Text</button>
+      </div>
+    </div>
+
+    <div class="cat-item cat-item--wide">
+      <header><h3 class="m3-title-medium">Button sizes</h3>
+        <span class="cat-api"><code>--xs</code><code>--small</code><code>--medium</code><code>--large</code><code>--xl</code><code>--square</code></span></header>
+      <p class="cat-note m3-body-small">M3 Expressive&rsquo;s five-rung ramp: 32 / 40 / 56 / 96 / 136px, each with its
+        own padding, icon size and label typescale. <code>.m3-icon-btn</code> and <code>.m3-split-button</code> share
+        the same ramp. Bootstrap&rsquo;s <code>.btn-sm</code> / <code>.btn-lg</code> keep Bootstrap&rsquo;s own
+        32/48px through their own mixin.</p>
+      <div class="cat-specimen" style="align-items: flex-end;">
+        <div class="cat-labelled"><button class="m3-btn m3-btn--filled m3-btn--xs" type="button">Extra small</button><small class="m3-label-small">32px</small></div>
+        <div class="cat-labelled"><button class="m3-btn m3-btn--filled m3-btn--small" type="button">Small</button><small class="m3-label-small">40px</small></div>
+        <div class="cat-labelled"><button class="m3-btn m3-btn--filled m3-btn--medium" type="button">Medium</button><small class="m3-label-small">56px</small></div>
+        <div class="cat-labelled"><button class="m3-btn m3-btn--filled m3-btn--large" type="button">Large</button><small class="m3-label-small">96px</small></div>
+      </div>
+      <div class="cat-specimen" style="align-items: flex-end;">
+        <div class="cat-labelled"><button class="m3-btn m3-btn--filled m3-btn--xl" type="button">Extra large</button><small class="m3-label-small">136px</small></div>
+        <div class="cat-labelled"><button class="m3-btn m3-btn--tonal m3-btn--medium m3-btn--square" type="button">Square</button><small class="m3-label-small">--square</small></div>
+      </div>
+    </div>
+
+    <div class="cat-item cat-item--wide">
+      <header><h3 class="m3-title-medium">Icon buttons</h3>
+        <span class="cat-api"><code>.m3-icon-btn</code><code>--filled</code><code>--tonal</code><code>--outlined</code><code>--square</code><code>.btn-icon</code></span></header>
+      <p class="cat-note m3-body-small">Same five-rung ramp, a 48dp hit area whatever the visible size, and
+        <code>aria-pressed</code> for toggles &mdash; a selected toggle fills its icon and morphs its shape.</p>
+      <div class="cat-specimen">
+        <button class="m3-icon-btn" type="button" aria-label="Standard"><span class="m3-icon">star</span></button>
+        <button class="m3-icon-btn m3-icon-btn--filled" type="button" aria-label="Filled"><span class="m3-icon">star</span></button>
+        <button class="m3-icon-btn m3-icon-btn--tonal" type="button" aria-label="Tonal"><span class="m3-icon">star</span></button>
+        <button class="m3-icon-btn m3-icon-btn--outlined" type="button" aria-label="Outlined"><span class="m3-icon">star</span></button>
+        <button class="m3-icon-btn m3-icon-btn--square" type="button" aria-label="Square"><span class="m3-icon">star</span></button>
+        <button class="m3-icon-btn m3-icon-btn--filled" type="button" aria-label="Disabled" disabled><span class="m3-icon">star</span></button>
+      </div>
+      <div class="cat-specimen" style="align-items: flex-end;">
+        <div class="cat-labelled"><button class="m3-icon-btn m3-icon-btn--filled m3-icon-btn--xs" type="button" aria-label="xs"><span class="m3-icon">edit</span></button><small class="m3-label-small">32</small></div>
+        <div class="cat-labelled"><button class="m3-icon-btn m3-icon-btn--filled m3-icon-btn--small" type="button" aria-label="small"><span class="m3-icon">edit</span></button><small class="m3-label-small">40</small></div>
+        <div class="cat-labelled"><button class="m3-icon-btn m3-icon-btn--filled m3-icon-btn--medium" type="button" aria-label="medium"><span class="m3-icon">edit</span></button><small class="m3-label-small">56</small></div>
+        <div class="cat-labelled"><button class="m3-icon-btn m3-icon-btn--filled m3-icon-btn--large" type="button" aria-label="large"><span class="m3-icon">edit</span></button><small class="m3-label-small">96</small></div>
+        <div class="cat-labelled"><button class="m3-icon-btn m3-icon-btn--filled m3-icon-btn--xl" type="button" aria-label="xl"><span class="m3-icon">edit</span></button><small class="m3-label-small">136</small></div>
+      </div>
+      <div class="cat-specimen">
+        <button class="m3-icon-btn m3-icon-btn--tonal" type="button" aria-pressed="true" data-toggle aria-label="Selected toggle"><span class="m3-icon">favorite</span></button>
+        <button class="m3-icon-btn m3-icon-btn--tonal" type="button" aria-pressed="false" data-toggle aria-label="Unselected toggle"><span class="m3-icon">favorite</span></button>
+        <span class="m3-body-small cat-note">click either &mdash; fill and shape both animate</span>
+      </div>
+    </div>
+
+    <div class="cat-item cat-item--wide">
+      <header><h3 class="m3-title-medium">Floating action buttons</h3>
+        <span class="cat-api"><code>.m3-fab</code><code>--small</code><code>--medium</code><code>--large</code><code>--extended</code><code>--primary</code><code>--secondary</code><code>--tertiary</code><code>--surface</code></span></header>
+      <div class="cat-specimen" style="align-items: flex-end;">
+        <div class="cat-labelled"><button class="m3-fab m3-fab--small" type="button" aria-label="Small"><span class="m3-icon">add</span></button><small class="m3-label-small">small 40</small></div>
+        <div class="cat-labelled"><button class="m3-fab" type="button" aria-label="Default"><span class="m3-icon">add</span></button><small class="m3-label-small">default 56</small></div>
+        <div class="cat-labelled"><button class="m3-fab m3-fab--medium" type="button" aria-label="Medium"><span class="m3-icon">add</span></button><small class="m3-label-small">medium 80</small></div>
+        <div class="cat-labelled"><button class="m3-fab m3-fab--large" type="button" aria-label="Large"><span class="m3-icon">add</span></button><small class="m3-label-small">large 96</small></div>
+      </div>
+      <div class="cat-specimen">
+        <button class="m3-fab m3-fab--primary" type="button" aria-label="Primary"><span class="m3-icon">edit</span></button>
+        <button class="m3-fab m3-fab--secondary" type="button" aria-label="Secondary"><span class="m3-icon">edit</span></button>
+        <button class="m3-fab m3-fab--tertiary" type="button" aria-label="Tertiary"><span class="m3-icon">edit</span></button>
+        <button class="m3-fab m3-fab--surface" type="button" aria-label="Surface"><span class="m3-icon">edit</span></button>
+        <button class="m3-fab m3-fab--extended" type="button"><span class="m3-icon">edit</span><span class="m3-fab__label">Compose</span></button>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">FAB menu</h3>
+        <span class="cat-api"><code>.m3-fab-menu</code></span></header>
+      <p class="cat-note m3-body-small">A FAB that opens a popover of labelled actions, anchored to itself.</p>
+      <div class="cat-specimen cat-specimen--tall">
+        <div class="m3-fab-menu">
+          <button class="m3-fab m3-fab-menu__fab" type="button" popovertarget="cat-fabmenu" aria-label="Create"><span class="m3-icon">add</span></button>
+          <div class="m3-fab-menu__items" id="cat-fabmenu" popover role="menu">
+            <button class="m3-fab-menu__item" type="button" role="menuitem" popovertarget="cat-fabmenu" popovertargetaction="hide"><span class="m3-icon">edit</span><span class="m3-fab-menu__label">Compose</span></button>
+            <button class="m3-fab-menu__item" type="button" role="menuitem" popovertarget="cat-fabmenu" popovertargetaction="hide"><span class="m3-icon">schedule</span><span class="m3-fab-menu__label">Schedule</span></button>
+            <button class="m3-fab-menu__item" type="button" role="menuitem" popovertarget="cat-fabmenu" popovertargetaction="hide"><span class="m3-icon">label</span><span class="m3-fab-menu__label">New label</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Segmented buttons</h3>
+        <span class="cat-api"><code>.m3-segmented</code><code>.btn-group + .btn-check</code></span></header>
+      <p class="cat-note m3-body-small">Radios in labels; the checked segment takes the secondary container and a
+        Material check mark.</p>
+      <div class="cat-specimen cat-specimen--stack">
+        <fieldset class="m3-segmented" aria-label="Digest frequency">
+          <label class="m3-segmented__segment"><input class="m3-segmented__input" type="radio" name="cat-seg"><span class="m3-segmented__label">Daily</span></label>
+          <label class="m3-segmented__segment"><input class="m3-segmented__input" type="radio" name="cat-seg" checked><span class="m3-segmented__label">Weekly</span></label>
+          <label class="m3-segmented__segment"><input class="m3-segmented__input" type="radio" name="cat-seg"><span class="m3-segmented__label">Never</span></label>
+        </fieldset>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Button groups</h3>
+        <span class="cat-api"><code>.m3-button-group</code><code>--connected</code><code>.btn-group</code></span></header>
+      <p class="cat-note m3-body-small">A connected group&rsquo;s members sit 2px apart and the selected one morphs
+        its seam corners. An icon button&rsquo;s 48dp hit area stops at the seam so neighbours stay reachable.</p>
+      <div class="cat-specimen cat-specimen--stack">
+        <div class="m3-button-group m3-button-group--connected" role="group" aria-label="Style">
+          <button class="m3-btn m3-btn--tonal" type="button" aria-pressed="true" data-toggle>Bold</button>
+          <button class="m3-btn m3-btn--tonal" type="button" aria-pressed="false" data-toggle>Italic</button>
+          <button class="m3-btn m3-btn--tonal" type="button" aria-pressed="false" data-toggle>Underline</button>
+        </div>
+        <div class="m3-button-group" role="group" aria-label="Align">
+          <button class="m3-btn m3-btn--outlined" type="button">Left</button>
+          <button class="m3-btn m3-btn--outlined" type="button">Center</button>
+          <button class="m3-btn m3-btn--outlined" type="button">Right</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-item cat-item--wide">
+      <header><h3 class="m3-title-medium">Split button</h3>
+        <span class="cat-api"><code>.m3-split-button</code><code>--tonal</code><code>--outlined</code><code>--elevated</code><code>.btn + .dropdown-toggle-split</code></span></header>
+      <p class="cat-note m3-body-small">Two independently enabled buttons on one pill. The trailing half morphs to a
+        circle while its menu is open. The leading action can be chosen from the menu with no script: hidden radios in
+        label menu items reveal the matching label through <code>:has()</code>.</p>
+      <div class="cat-specimen">
+        <div class="m3-split-button m3-split-button--tonal">
+          <button class="m3-btn m3-split-button__action" type="button">Save</button>
+          <button class="m3-btn m3-split-button__toggle" type="button" popovertarget="cat-split-a" aria-label="More save options"></button>
+          <div class="m3-menu" id="cat-split-a" popover>
+            <button class="m3-menu__item" type="button" popovertarget="cat-split-a" popovertargetaction="hide">Save a copy</button>
+            <button class="m3-menu__item" type="button" popovertarget="cat-split-a" popovertargetaction="hide">Save as template</button>
+          </div>
+        </div>
+        <div class="m3-split-button">
+          <button class="m3-btn m3-split-button__action" type="button">Send</button>
+          <button class="m3-btn m3-split-button__toggle" type="button" popovertarget="cat-split-b" aria-label="More send options"></button>
+          <div class="m3-menu" id="cat-split-b" popover>
+            <button class="m3-menu__item" type="button" popovertarget="cat-split-b" popovertargetaction="hide">Schedule send</button>
+            <button class="m3-menu__item" type="button" popovertarget="cat-split-b" popovertargetaction="hide">Send later</button>
+          </div>
+        </div>
+        <div class="m3-split-button m3-split-button--outlined">
+          <button class="m3-btn m3-split-button__action" type="button" disabled>Publish</button>
+          <button class="m3-btn m3-split-button__toggle" type="button" popovertarget="cat-split-c" aria-label="Publish options"></button>
+          <div class="m3-menu" id="cat-split-c" popover>
+            <button class="m3-menu__item" type="button" popovertarget="cat-split-c" popovertargetaction="hide">Publish to web</button>
+          </div>
+        </div>
+        <div class="m3-split-button m3-split-button--elevated">
+          <button class="m3-btn m3-split-button__action" type="button">Export</button>
+          <button class="m3-btn m3-split-button__toggle" type="button" popovertarget="cat-split-d" aria-label="Export options"></button>
+          <div class="m3-menu" id="cat-split-d" popover>
+            <button class="m3-menu__item" type="button" popovertarget="cat-split-d" popovertargetaction="hide">as PDF</button>
+          </div>
+        </div>
+      </div>
+      <div class="cat-specimen" style="align-items: flex-end;">
+        <div class="cat-labelled"><div class="m3-split-button m3-split-button--tonal m3-split-button--xs">
+          <button class="m3-btn m3-split-button__action" type="button">XS</button>
+          <button class="m3-btn m3-split-button__toggle" type="button" aria-label="More" aria-expanded="false"></button></div><small class="m3-label-small">32px</small></div>
+        <div class="cat-labelled"><div class="m3-split-button m3-split-button--tonal">
+          <button class="m3-btn m3-split-button__action" type="button">Default</button>
+          <button class="m3-btn m3-split-button__toggle" type="button" aria-label="More" aria-expanded="false"></button></div><small class="m3-label-small">40px</small></div>
+        <div class="cat-labelled"><div class="m3-split-button m3-split-button--tonal m3-split-button--medium">
+          <button class="m3-btn m3-split-button__action" type="button">Medium</button>
+          <button class="m3-btn m3-split-button__toggle" type="button" aria-label="More" aria-expanded="false"></button></div><small class="m3-label-small">56px</small></div>
+        <div class="cat-labelled"><div class="m3-split-button m3-split-button--tonal m3-split-button--large">
+          <button class="m3-btn m3-split-button__action" type="button">Large</button>
+          <button class="m3-btn m3-split-button__toggle" type="button" aria-label="More" aria-expanded="false"></button></div><small class="m3-label-small">96px</small></div>
+      </div>
+    </div>
+
+    <div class="cat-item cat-item--wide">
+      <header><h3 class="m3-title-medium">Toolbars</h3>
+        <span class="cat-api"><code>.m3-toolbar</code><code>--floating</code><code>--docked</code><code>--vibrant</code><code>--vertical</code><code>--dense</code></span></header>
+      <div class="cat-specimen cat-specimen--stack" style="justify-items: stretch;">
+        <div class="m3-toolbar m3-toolbar--floating">
+          <button class="m3-icon-btn" type="button" aria-label="Bold"><span class="m3-icon">format_bold</span></button>
+          <button class="m3-icon-btn" type="button" aria-label="Italic"><span class="m3-icon">format_italic</span></button>
+          <button class="m3-icon-btn" type="button" aria-label="Underline"><span class="m3-icon">format_underlined</span></button>
+          <button class="m3-btn m3-btn--text" type="button">Share</button>
+          <button class="m3-icon-btn m3-icon-btn--tonal" type="button" aria-label="Add"><span class="m3-icon">add</span></button>
+        </div>
+        <div class="m3-toolbar m3-toolbar--standard">
+          <button class="m3-icon-btn" type="button" aria-label="Undo"><span class="m3-icon">arrow_back</span></button>
+          <button class="m3-icon-btn" type="button" aria-label="Redo"><span class="m3-icon">arrow_forward</span></button>
+          <button class="m3-icon-btn" type="button" aria-label="Delete"><span class="m3-icon">delete</span></button>
+          <button class="m3-icon-btn" type="button" aria-label="Share"><span class="m3-icon">share</span></button>
+        </div>
+        <div class="m3-toolbar m3-toolbar--vibrant m3-toolbar--docked">
+          <button class="m3-icon-btn" type="button" aria-label="Bold"><span class="m3-icon">format_bold</span></button>
+          <button class="m3-icon-btn" type="button" aria-label="Italic"><span class="m3-icon">format_italic</span></button>
+          <button class="m3-btn m3-btn--text" type="button">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cat-section" id="communication">
+  <header><h2 class="m3-headline-small">Communication</h2>
+    <p class="cat-lede m3-body-medium">Badges, progress, the shape-morphing loading indicator, snackbars and
+      tooltips.</p></header>
+  <div class="cat-cards">
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Badges</h3>
+        <span class="cat-api"><code>.m3-badge</code><code>--dot</code><code>.m3-badge-anchor</code><code>.badge</code></span></header>
+      <div class="cat-specimen">
+        <span class="m3-badge">12</span>
+        <span class="m3-badge">999+</span>
+        <span class="m3-badge m3-badge--dot"></span>
+        <span class="m3-badge-anchor">
+          <button class="m3-icon-btn" type="button" aria-label="Notifications"><span class="m3-icon">notifications</span></button>
+          <span class="m3-badge">4</span>
+        </span>
+        <span class="m3-badge-anchor">
+          <button class="m3-icon-btn" type="button" aria-label="Mail"><span class="m3-icon">mail</span></button>
+          <span class="m3-badge m3-badge--dot"></span>
+        </span>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Linear progress</h3>
+        <span class="cat-api"><code>.m3-progress</code><code>--indeterminate</code><code>--wavy</code><code>.progress</code></span></header>
+      <p class="cat-note m3-body-small">M3&rsquo;s 4px indicator: a 4px stop dot parked at the end of the track, and a
+        4px gap between the active indicator and the track that closes on its own at value 0.</p>
+      <div class="cat-specimen cat-specimen--stack" style="justify-items: stretch;">
+        <div class="m3-progress" role="progressbar" aria-label="0%" aria-valuenow="0" style="--m3-progress-value: 0;"><div class="m3-progress__bar"></div></div>
+        <div class="m3-progress" role="progressbar" aria-label="35%" aria-valuenow="35" style="--m3-progress-value: 35;"><div class="m3-progress__bar"></div></div>
+        <div class="m3-progress" role="progressbar" aria-label="100%" aria-valuenow="100" style="--m3-progress-value: 100;"><div class="m3-progress__bar"></div></div>
+        <div class="m3-progress m3-progress--indeterminate" role="progressbar" aria-label="Working"><div class="m3-progress__bar"></div></div>
+        <div class="m3-progress m3-progress--wavy" role="progressbar" aria-label="60%" aria-valuenow="60" style="--m3-progress-value: 60;"><div class="m3-progress__bar"></div></div>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Circular progress</h3>
+        <span class="cat-api"><code>.m3-progress-circle</code><code>--wavy</code><code>.m3-spinner</code></span></header>
+      <p class="cat-note m3-body-small">A conic gradient with transparent gap stops &mdash; a 6&deg; gap at each end
+        of the active arc, pinned closed while indeterminate. No SVG.</p>
+      <div class="cat-specimen">
+        <div class="cat-labelled"><div class="m3-progress-circle" role="progressbar" aria-label="25%" aria-valuenow="25" style="--m3-progress-value: 25;"></div><small class="m3-label-small">25%</small></div>
+        <div class="cat-labelled"><div class="m3-progress-circle" role="progressbar" aria-label="65%" aria-valuenow="65" style="--m3-progress-value: 65;"></div><small class="m3-label-small">65%</small></div>
+        <div class="cat-labelled"><div class="m3-progress-circle m3-progress-circle--wavy" role="progressbar" aria-label="60%" aria-valuenow="60" style="--m3-progress-value: 60;"></div><small class="m3-label-small">wavy</small></div>
+        <div class="cat-labelled"><span class="m3-spinner" role="status" aria-label="Loading"></span><small class="m3-label-small">spinner</small></div>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Loading indicator</h3>
+        <span class="cat-api"><code>.m3-loading-indicator</code><code>--contained</code><code>--small</code><code>--large</code></span></header>
+      <p class="cat-note m3-body-small">M3 Expressive&rsquo;s shape-morphing loader. Under
+        <code>prefers-reduced-motion</code> it holds a still shape rather than stopping dead.</p>
+      <div class="cat-specimen">
+        <div class="m3-loading-indicator m3-loading-indicator--small" role="progressbar" aria-label="Loading"></div>
+        <div class="m3-loading-indicator" role="progressbar" aria-label="Loading"></div>
+        <div class="m3-loading-indicator m3-loading-indicator--large" role="progressbar" aria-label="Loading"></div>
+        <div class="m3-loading-indicator m3-loading-indicator--contained" role="progressbar" aria-label="Loading"></div>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Snackbar</h3>
+        <span class="cat-api"><code>.m3-snackbar</code><code>--fixed</code><code>.toast</code></span></header>
+      <p class="cat-note m3-body-small">Inverse surface, one optional action, one optional close. <code>--fixed</code>
+        parks it at the bottom of the viewport.</p>
+      <div class="cat-specimen cat-specimen--stack" style="justify-items: stretch;">
+        <div class="m3-snackbar" role="status">
+          <span class="m3-snackbar__text">Signature saved</span>
+          <button class="m3-snackbar__action" type="button">Undo</button>
+          <button class="m3-snackbar__close" type="button" aria-label="Dismiss"></button>
+        </div>
+        <div class="m3-snackbar" role="status">
+          <span class="m3-snackbar__text">Message archived. It will stay in All Mail.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Tooltips</h3>
+        <span class="cat-api"><code>.m3-tooltip</code><code>--rich</code><code>--floating</code><code>.m3-tooltip-anchor</code></span></header>
+      <p class="cat-note m3-body-small">Hover or focus the controls. A rich tooltip carries a title, body and
+        actions, and takes 16px of container padding.</p>
+      <div class="cat-specimen cat-specimen--tall">
+        <span class="m3-tooltip-anchor">
+          <button class="m3-icon-btn" type="button" aria-label="Refresh" aria-describedby="cat-tip-1"><span class="m3-icon">refresh</span></button>
+          <span class="m3-tooltip" role="tooltip" id="cat-tip-1">Last synced 2 minutes ago</span>
+        </span>
+        <span class="m3-tooltip-anchor">
+          <button class="m3-btn m3-btn--outlined" type="button" aria-describedby="cat-tip-2">Rich tooltip</button>
+          <span class="m3-tooltip m3-tooltip--rich" role="tooltip" id="cat-tip-2">
+            <span class="m3-tooltip__title">Scheduled send</span>
+            Pick a time and the message leaves your outbox then.
+          </span>
+        </span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="cat-section" id="containment">
+  <header><h2 class="m3-headline-small">Containment</h2>
+    <p class="cat-lede m3-body-medium">Cards, carousels, dialogs, dividers, lists and sheets. Every one of them
+      announces its own background as <code>--m3-sys-container-color</code>, so a slider or a progress gap sitting on
+      it cuts to the right backdrop.</p></header>
+  <div class="cat-cards">
+
+    <div class="cat-item cat-item--wide">
+      <header><h3 class="m3-title-medium">Cards</h3>
+        <span class="cat-api"><code>.m3-card</code><code>--elevated</code><code>--filled</code><code>--outlined</code><code>--interactive</code><code>.card</code></span></header>
+      <div class="cat-specimen" style="align-items: stretch;">
+        <div class="m3-card m3-card--elevated" style="flex: 1 1 15rem; padding: var(--m3-sys-space-4);">
+          <span class="m3-title-medium">Elevated</span>
+          <p class="m3-body-medium">Level 1 at rest, level 2 on hover when interactive.</p>
+        </div>
+        <div class="m3-card m3-card--filled" style="flex: 1 1 15rem; padding: var(--m3-sys-space-4);">
+          <span class="m3-title-medium">Filled</span>
+          <p class="m3-body-medium">Surface container highest, no outline, no shadow.</p>
+        </div>
+        <div class="m3-card m3-card--outlined" style="flex: 1 1 15rem; padding: var(--m3-sys-space-4);">
+          <span class="m3-title-medium">Outlined</span>
+          <p class="m3-body-medium">A hairline in the outline-variant role.</p>
+        </div>
+      </div>
+      <div class="cat-specimen" style="align-items: stretch;">
+        <div class="m3-card m3-card--outlined m3-card--interactive" style="flex: 1 1 18rem;">
+          <div class="m3-card__media m3-bg-primary-container" style="min-block-size: 6rem;"></div>
+          <div class="m3-card__slot">
+            <span class="m3-title-medium">With media and actions</span>
+            <p class="m3-body-medium">The slot is a scoped content region: component rules stop at its edge, so
+              your typography inside is yours.</p>
+          </div>
+          <div class="m3-card__actions">
+            <button class="m3-btn m3-btn--text" type="button">Dismiss</button>
+            <button class="m3-btn m3-btn--filled" type="button">Open</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-item cat-item--wide">
+      <header><h3 class="m3-title-medium">Lists</h3>
+        <span class="cat-api"><code>.m3-list</code><code>--dividers</code><code>--inset</code><code>.m3-list-item</code><code>--two-line</code><code>--three-line</code><code>--interactive</code><code>.list-group</code></span></header>
+      <p class="cat-note m3-body-small">One, two and three-line rows at 56 / 72 / 88px; leading avatar, image or the
+        16:9 114&times;64 video frame; trailing meta; subheaders in the supporting-text role.</p>
+      <ul class="m3-list m3-list--dividers" style="border-radius: var(--md-sys-shape-corner-medium); overflow: hidden;">
+        <li class="m3-list__subheader">Alerts</li>
+        <li class="m3-list-item m3-list-item--interactive">
+          <span class="m3-list-item__leading m3-list-item__leading--avatar" aria-hidden="true">R</span>
+          <span class="m3-list-item__body"><span class="m3-list-item__headline">One-line row</span></span>
+          <span class="m3-list-item__trailing"><span class="m3-icon">chevron_right</span></span>
+        </li>
+        <li class="m3-list-item m3-list-item--two-line m3-list-item--interactive">
+          <span class="m3-list-item__leading" aria-hidden="true"><span class="m3-icon">mail</span></span>
+          <span class="m3-list-item__body">
+            <span class="m3-list-item__headline">Two-line row</span>
+            <span class="m3-list-item__supporting">Supporting text in the on-surface-variant role.</span>
+          </span>
+          <span class="m3-list-item__trailing m3-list-item__trailing--meta">14:32</span>
+        </li>
+        <li class="m3-list-item m3-list-item--three-line">
+          <span class="m3-list-item__leading m3-list-item__leading--video m3-bg-secondary-container" aria-hidden="true"></span>
+          <span class="m3-list-item__body">
+            <span class="m3-list-item__overline">Overline</span>
+            <span class="m3-list-item__headline">Three-line row with a video frame</span>
+            <span class="m3-list-item__supporting">The 16:9 114&times;64 leading frame lands the row at exactly 88px.</span>
+          </span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Dividers</h3>
+        <span class="cat-api"><code>.m3-divider</code><code>--inset</code><code>--middle</code><code>--vertical</code></span></header>
+      <div class="cat-specimen cat-specimen--stack" style="justify-items: stretch;">
+        <span class="m3-body-small">full bleed</span><hr class="m3-divider">
+        <span class="m3-body-small">inset</span><hr class="m3-divider m3-divider--inset">
+        <span class="m3-body-small">middle</span><hr class="m3-divider m3-divider--middle">
+        <div class="cat-specimen cat-specimen--plain" style="block-size: 2.5rem;">
+          <span class="m3-body-small">vertical</span><hr class="m3-divider m3-divider--vertical"><span class="m3-body-small">between</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Dialogs</h3>
+        <span class="cat-api"><code>.m3-dialog</code><code>--static</code><code>--fullscreen</code><code>.modal</code></span></header>
+      <div class="cat-specimen cat-specimen--stack" style="justify-items: stretch;">
+        <div>
+          <button class="m3-btn m3-btn--filled" type="button" command="show-modal" commandfor="cat-dlg-2">Open modal</button>
+          <button class="m3-btn m3-btn--outlined" type="button" command="show-modal" commandfor="cat-dlg-3">Full screen</button>
+        </div>
+        <dialog class="m3-dialog" id="cat-dlg-2">
+          <h2 class="m3-dialog__title">Reset settings?</h2>
+          <div class="m3-dialog__content"><p class="m3-body-medium">Every preference returns to its default. This cannot be undone.</p></div>
+          <div class="m3-dialog__actions">
+            <button class="m3-btn m3-btn--text" type="button" command="close" commandfor="cat-dlg-2">Cancel</button>
+            <button class="m3-btn m3-btn--filled" type="button" command="close" commandfor="cat-dlg-2">Reset</button>
+          </div>
+        </dialog>
+        <dialog class="m3-dialog m3-dialog--fullscreen" id="cat-dlg-3">
+          <h2 class="m3-dialog__title">Full-screen dialog</h2>
+          <div class="m3-dialog__content"><p class="m3-body-medium">Used on compact windows where a basic dialog would crowd the screen.</p></div>
+          <div class="m3-dialog__actions">
+            <button class="m3-btn m3-btn--text" type="button" command="close" commandfor="cat-dlg-3">Close</button>
+          </div>
+        </dialog>
+        <p class="cat-note m3-body-small">Rendered in flow with <code>--static</code>:</p>
+        <dialog class="m3-dialog m3-dialog--static" open>
+          <h2 class="m3-dialog__title">Empty trash?</h2>
+          <div class="m3-dialog__content"><p class="m3-body-medium">142 conversations will be deleted forever.</p></div>
+          <div class="m3-dialog__actions">
+            <button class="m3-btn m3-btn--text" type="button">Cancel</button>
+            <button class="m3-btn m3-btn--text" type="button">Empty trash</button>
+          </div>
+        </dialog>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Sheets</h3>
+        <span class="cat-api"><code>.m3-sheet--bottom</code><code>--side</code><code>--side-standard</code><code>.offcanvas</code></span></header>
+      <div class="cat-specimen cat-specimen--stack" style="justify-items: stretch;">
+        <div>
+          <button class="m3-btn m3-btn--tonal" type="button" command="show-modal" commandfor="cat-sheet-b">Bottom sheet</button>
+          <button class="m3-btn m3-btn--tonal" type="button" command="show-modal" commandfor="cat-sheet-s">Side sheet</button>
+        </div>
+        <dialog class="m3-sheet--bottom" id="cat-sheet-b">
+          <div class="m3-sheet__handle"></div>
+          <div class="m3-sheet__slot">
+            <h2 class="m3-title-large">Share</h2>
+            <p class="m3-body-medium">A modal bottom sheet is a native dialog with a drag handle.</p>
+            <button class="m3-btn m3-btn--text" type="button" command="close" commandfor="cat-sheet-b">Close</button>
+          </div>
+        </dialog>
+        <dialog class="m3-sheet--side" id="cat-sheet-s">
+          <div class="m3-sheet__slot">
+            <h2 class="m3-title-large">Details</h2>
+            <p class="m3-body-medium">Side sheets slide in from the inline end.</p>
+            <button class="m3-btn m3-btn--text" type="button" command="close" commandfor="cat-sheet-s">Close</button>
+          </div>
+        </dialog>
+        <p class="cat-note m3-body-small">A standard side sheet stays in flow beside its content:</p>
+        <aside class="m3-sheet--side-standard" style="position: static; inline-size: 100%;">
+          <div class="m3-sheet__slot">
+            <span class="m3-title-medium">Standard side sheet</span>
+            <p class="m3-body-medium">No scrim, no dialog &mdash; it shares the layout.</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <div class="cat-item cat-item--wide">
+      <header><h3 class="m3-title-medium">Carousel</h3>
+        <span class="cat-api"><code>.m3-carousel</code><code>.m3-carousel__item</code><code>.carousel</code></span></header>
+      <div class="m3-carousel" role="group" aria-label="Themes">
+        <div class="m3-carousel__item m3-bg-primary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Primary</div>
+        <div class="m3-carousel__item m3-bg-secondary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Secondary</div>
+        <div class="m3-carousel__item m3-bg-tertiary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Tertiary</div>
+        <div class="m3-carousel__item m3-bg-error-container" style="min-block-size: 7rem; display: grid; place-content: center;">Error</div>
+        <div class="m3-carousel__item m3-bg-surface-container-highest" style="min-block-size: 7rem; display: grid; place-content: center;">Surface</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="cat-section" id="navigation">
+  <header><h2 class="m3-headline-small">Navigation</h2>
+    <p class="cat-lede m3-body-medium">App bars, the navigation bar / rail / drawer trio, tabs and search. The
+      adaptive navigation switches between the three by window size class on its own.</p></header>
+  <div class="cat-cards">
+
+    <div class="cat-item cat-item--wide">
+      <header><h3 class="m3-title-medium">Top app bars</h3>
+        <span class="cat-api"><code>.m3-top-app-bar</code><code>--center</code><code>--medium</code><code>--large</code><code>--sticky</code><code>--scrolled</code><code>.navbar</code></span></header>
+      <div class="cat-specimen cat-specimen--stack" style="justify-items: stretch;">
+        <header class="m3-top-app-bar">
+          <button class="m3-icon-btn" type="button" aria-label="Menu"><span class="m3-icon">menu</span></button>
+          <h3 class="m3-top-app-bar__title">Small</h3>
+          <button class="m3-icon-btn" type="button" aria-label="More"><span class="m3-icon">more_vert</span></button>
+        </header>
+        <header class="m3-top-app-bar m3-top-app-bar--center">
+          <button class="m3-icon-btn" type="button" aria-label="Back"><span class="m3-icon">arrow_back</span></button>
+          <h3 class="m3-top-app-bar__title">Center-aligned</h3>
+          <button class="m3-icon-btn" type="button" aria-label="Settings"><span class="m3-icon">settings</span></button>
+        </header>
+        <header class="m3-top-app-bar m3-top-app-bar--medium">
+          <h3 class="m3-top-app-bar__title">Medium</h3>
+        </header>
+        <header class="m3-top-app-bar m3-top-app-bar--large m3-top-app-bar--scrolled">
+          <h3 class="m3-top-app-bar__title">Large, scrolled tint</h3>
+        </header>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Bottom app bar</h3>
+        <span class="cat-api"><code>.m3-bottom-app-bar</code></span></header>
+      <div class="cat-specimen" style="align-items: stretch; padding: 0;">
+        <div class="m3-bottom-app-bar" style="position: static; inline-size: 100%;">
+          <button class="m3-icon-btn" type="button" aria-label="Menu"><span class="m3-icon">menu</span></button>
+          <button class="m3-icon-btn" type="button" aria-label="Star"><span class="m3-icon">star</span></button>
+          <button class="m3-icon-btn" type="button" aria-label="Archive"><span class="m3-icon">archive</span></button>
+          <span class="m3-bottom-app-bar__trailing"><button class="m3-fab m3-fab--secondary" type="button" aria-label="Compose"><span class="m3-icon">edit</span></button></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Navigation bar</h3>
+        <span class="cat-api"><code>.m3-nav-bar</code><code>--fixed</code></span></header>
+      <p class="cat-note m3-body-small">The active destination fills its icon and takes a pill-shaped active
+        indicator behind it.</p>
+      <div class="cat-specimen" style="align-items: stretch; padding: 0;">
+        <nav class="m3-nav-bar" style="position: static; inline-size: 100%;" aria-label="Primary">
+          <a class="m3-nav-bar__item active" href="#navigation" aria-current="page"><span class="m3-nav-bar__icon"><span class="m3-icon">inbox</span></span>Inbox</a>
+          <a class="m3-nav-bar__item" href="#navigation"><span class="m3-nav-bar__icon"><span class="m3-icon">star</span></span>Starred</a>
+          <a class="m3-nav-bar__item" href="#navigation"><span class="m3-nav-bar__icon"><span class="m3-icon">send</span></span>Sent</a>
+          <a class="m3-nav-bar__item" href="#navigation"><span class="m3-nav-bar__icon"><span class="m3-icon">settings</span></span>Settings</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Navigation rail</h3>
+        <span class="cat-api"><code>.m3-rail</code><code>--fixed</code></span></header>
+      <p class="cat-note m3-body-small">96px collapsed, per M3 Expressive &mdash; and the adaptive layout reserves
+        exactly that through the same token.</p>
+      <div class="cat-specimen" style="padding: 0;">
+        <aside class="m3-rail" style="position: static;" aria-label="Primary">
+          <a class="m3-rail__item active" href="#navigation" aria-current="page"><span class="m3-rail__icon"><span class="m3-icon">inbox</span></span>Inbox</a>
+          <a class="m3-rail__item" href="#navigation"><span class="m3-rail__icon"><span class="m3-icon">star</span></span>Starred</a>
+          <a class="m3-rail__item" href="#navigation"><span class="m3-rail__icon"><span class="m3-icon">archive</span></span>Archive</a>
+        </aside>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Navigation drawer</h3>
+        <span class="cat-api"><code>.m3-drawer</code><code>--modal</code><code>.m3-drawer__badge</code><code>.offcanvas</code></span></header>
+      <div class="cat-specimen" style="padding: 0;">
+        <aside class="m3-drawer" style="position: static;" aria-label="Mail">
+          <div class="m3-drawer__headline">Mail</div>
+          <a class="m3-drawer__item active" href="#navigation" aria-current="page"><span class="m3-icon">inbox</span>Inbox<span class="m3-drawer__badge">24</span></a>
+          <a class="m3-drawer__item" href="#navigation"><span class="m3-icon">star</span>Starred</a>
+          <a class="m3-drawer__item" href="#navigation"><span class="m3-icon">drafts</span>Drafts<span class="m3-drawer__badge">3</span></a>
+          <hr class="m3-divider">
+          <a class="m3-drawer__item" href="#navigation"><span class="m3-icon">settings</span>Settings</a>
+        </aside>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Tabs</h3>
+        <span class="cat-api"><code>.m3-tabs</code><code>--secondary</code><code>--fixed</code><code>.nav-tabs</code></span></header>
+      <p class="cat-note m3-body-small">A primary bar carrying icons alongside labels is 64px with the icon stacked
+        over the label &mdash; a property of the bar, so every tab shares it and the indicator stays on one line.</p>
+      <div class="cat-specimen cat-specimen--stack" style="justify-items: stretch;">
+        <nav class="m3-tabs" aria-label="Folders">
+          <button class="m3-tabs__tab active" type="button" aria-current="page">Inbox</button>
+          <button class="m3-tabs__tab" type="button">Starred</button>
+          <button class="m3-tabs__tab" type="button">Archive</button>
+        </nav>
+        <nav class="m3-tabs" aria-label="Folders with icons">
+          <button class="m3-tabs__tab active" type="button" aria-current="page"><span class="m3-icon">inbox</span>Inbox</button>
+          <button class="m3-tabs__tab" type="button"><span class="m3-icon">star</span>Starred</button>
+          <button class="m3-tabs__tab" type="button"><span class="m3-icon">archive</span>Archive</button>
+        </nav>
+        <nav class="m3-tabs m3-tabs--secondary" aria-label="Secondary tabs">
+          <button class="m3-tabs__tab active" type="button" aria-current="page">All</button>
+          <button class="m3-tabs__tab" type="button">Unread</button>
+        </nav>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Search</h3>
+        <span class="cat-api"><code>.m3-search</code><code>.m3-search__panel</code></span></header>
+      <p class="cat-note m3-body-small">A search bar that becomes a search view: focus the field to reveal the
+        suggestions panel.</p>
+      <div class="cat-specimen cat-specimen--tall" style="align-items: stretch;">
+        <form class="m3-search" role="search">
+          <input class="m3-search__input" type="search" placeholder="Search mail">
+          <div class="m3-search__panel">
+            <ul class="m3-list">
+              <li class="m3-list-item"><span class="m3-list-item__leading"><span class="m3-icon">schedule</span></span><span class="m3-list-item__body"><span class="m3-list-item__headline">from:billing</span></span></li>
+              <li class="m3-list-item"><span class="m3-list-item__leading"><span class="m3-icon">schedule</span></span><span class="m3-list-item__body"><span class="m3-list-item__headline">has:attachment</span></span></li>
+            </ul>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="cat-section" id="selection">
+  <header><h2 class="m3-headline-small">Selection</h2>
+    <p class="cat-lede m3-body-medium">Checkbox, radio, switch, slider, chips, menus and the date and time pickers.
+      Every selection control carries M3&rsquo;s 40dp circular state layer inside a 48dp target.</p></header>
+  <div class="cat-cards">
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Checkbox</h3>
+        <span class="cat-api"><code>.m3-checkbox</code><code>.form-check-input</code></span></header>
+      <p class="cat-note m3-body-small">18dp box, 2dp stroke, a Material check mark, and an indeterminate dash from
+        the DOM property.</p>
+      <div class="cat-specimen cat-specimen--stack">
+        <label class="m3-body-medium" style="display: flex; align-items: center; gap: var(--m3-sys-space-2);"><input class="m3-checkbox" type="checkbox" checked> Checked</label>
+        <label class="m3-body-medium" style="display: flex; align-items: center; gap: var(--m3-sys-space-2);"><input class="m3-checkbox" type="checkbox"> Unchecked</label>
+        <label class="m3-body-medium" style="display: flex; align-items: center; gap: var(--m3-sys-space-2);"><input class="m3-checkbox" type="checkbox" data-indeterminate> Indeterminate</label>
+        <label class="m3-body-medium" style="display: flex; align-items: center; gap: var(--m3-sys-space-2);"><input class="m3-checkbox" type="checkbox" checked disabled> Disabled</label>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Radio button</h3>
+        <span class="cat-api"><code>.m3-radio</code><code>.form-check-input</code></span></header>
+      <div class="cat-specimen cat-specimen--stack">
+        <label class="m3-body-medium" style="display: flex; align-items: center; gap: var(--m3-sys-space-2);"><input class="m3-radio" type="radio" name="cat-radio" checked> Chime</label>
+        <label class="m3-body-medium" style="display: flex; align-items: center; gap: var(--m3-sys-space-2);"><input class="m3-radio" type="radio" name="cat-radio"> Pop</label>
+        <label class="m3-body-medium" style="display: flex; align-items: center; gap: var(--m3-sys-space-2);"><input class="m3-radio" type="radio" name="cat-radio-2" disabled> Disabled</label>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Switch</h3>
+        <span class="cat-api"><code>.m3-switch</code><code>.form-switch .form-check-input</code></span></header>
+      <p class="cat-note m3-body-small">52&times;32dp track. The state layer rides the handle, which grows to 28dp
+        while pressed.</p>
+      <div class="cat-specimen cat-specimen--stack">
+        <label class="m3-body-medium" style="display: flex; align-items: center; gap: var(--m3-sys-space-3);"><input class="m3-switch" type="checkbox" checked> On</label>
+        <label class="m3-body-medium" style="display: flex; align-items: center; gap: var(--m3-sys-space-3);"><input class="m3-switch" type="checkbox"> Off</label>
+        <label class="m3-body-medium" style="display: flex; align-items: center; gap: var(--m3-sys-space-3);"><input class="m3-switch" type="checkbox" checked disabled> Disabled</label>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Slider</h3>
+        <span class="cat-api"><code>.m3-slider</code><code>--ticks</code><code>.form-range</code></span></header>
+      <p class="cat-note m3-body-small">16dp track, a 4&times;44dp handle, a stop indicator at the far end and a gap
+        either side of the handle that cuts to whatever the slider is sitting on.</p>
+      <div class="cat-specimen cat-specimen--stack" style="justify-items: stretch;">
+        <input class="m3-slider" type="range" value="35" aria-label="Continuous">
+        <input class="m3-slider m3-slider--ticks" type="range" value="60" step="20" style="--m3-slider-ticks: 5;" aria-label="With ticks">
+        <input class="m3-slider" type="range" value="45" disabled aria-label="Disabled">
+      </div>
+    </div>
+
+    <div class="cat-item cat-item--wide">
+      <header><h3 class="m3-title-medium">Chips</h3>
+        <span class="cat-api"><code>.m3-chip</code><code>--assist</code><code>--filter</code><code>--input</code><code>--suggestion</code><code>--elevated</code></span></header>
+      <p class="cat-note m3-body-small">16px of label space, narrowing to 8px beside a leading icon or the filter
+        check mark.</p>
+      <div class="cat-specimen">
+        <span class="m3-chip m3-chip--assist">Assist</span>
+        <span class="m3-chip m3-chip--assist"><span class="m3-icon">calendar_today</span>Add to calendar</span>
+        <span class="m3-chip m3-chip--suggestion">Suggestion</span>
+        <span class="m3-chip m3-chip--elevated">Elevated</span>
+        <label class="m3-chip m3-chip--filter"><input class="m3-chip__input" type="checkbox" checked><span class="m3-chip__label">Unread</span></label>
+        <label class="m3-chip m3-chip--filter"><input class="m3-chip__input" type="checkbox"><span class="m3-chip__label">Has attachment</span></label>
+        <span class="m3-chip m3-chip--input">Riley Chen<button class="m3-chip__remove" type="button" aria-label="Remove"></button></span>
+        <span class="m3-chip m3-chip--assist" aria-disabled="true">Disabled</span>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Menus</h3>
+        <span class="cat-api"><code>.m3-menu</code><code>--static</code><code>.m3-menu__item</code><code>.m3-menu__header</code><code>.dropdown-menu</code></span></header>
+      <div class="cat-specimen cat-specimen--stack" style="justify-items: stretch;">
+        <div class="m3-menu m3-menu--static">
+          <div class="m3-menu__header">Move to</div>
+          <button class="m3-menu__item" type="button"><span class="m3-icon">archive</span>Archive</button>
+          <button class="m3-menu__item" type="button"><span class="m3-icon">inbox</span>Inbox</button>
+          <hr class="m3-divider">
+          <button class="m3-menu__item" type="button"><span class="m3-icon">delete</span>Trash</button>
+          <button class="m3-menu__item" type="button" disabled><span class="m3-icon">folder</span>Unavailable</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Colour palette</h3>
+        <span class="cat-api"><code>.m3-color-palette</code></span></header>
+      <p class="cat-note m3-body-small">A popover of swatches on hidden radios: theme roles, the standard editor
+        grid, a &ldquo;none&rdquo; swatch and a native colour input. Arrow keys select; the ring and the inverting
+        check mark follow the choice. No colours in the markup and no script.</p>
+      <div class="cat-specimen cat-specimen--tall">
+        <button class="m3-btn m3-btn--outlined" type="button" popovertarget="cat-palette">Pick a colour</button>
+        <div class="m3-color-palette" id="cat-palette" popover>
+          <div class="m3-color-palette__label">Theme</div>
+          <div class="m3-color-palette__theme">
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="On surface"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="On surface variant"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Primary" checked></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Secondary"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Tertiary"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Error"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Primary container"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Secondary container"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Tertiary container"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Surface"></label>
+          </div>
+          <div class="m3-color-palette__label">Standard</div>
+          <div class="m3-color-palette__standard">
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 1"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 2"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 3"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 4"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 5"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 6"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 7"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 8"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 9"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 10"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 11"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 12"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 13"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 14"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 15"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 16"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 17"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 18"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 19"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 20"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 21"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 22"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 23"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 24"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 25"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 26"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 27"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 28"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 29"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 30"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 31"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 32"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 33"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 34"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 35"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 36"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 37"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 38"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 39"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 40"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 41"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 42"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 43"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 44"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 45"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 46"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 47"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 48"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 49"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 50"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 51"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 52"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 53"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 54"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 55"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 56"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 57"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 58"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 59"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 60"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 61"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 62"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 63"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 64"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 65"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 66"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 67"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 68"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 69"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 70"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 71"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 72"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 73"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 74"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 75"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 76"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 77"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 78"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 79"></label>
+            <label class="m3-color-palette__swatch"><input type="radio" name="cat-swatch" aria-label="Colour 80"></label>
+          </div>
+          <div class="m3-color-palette__label">Custom</div>
+          <div class="m3-color-palette__grid">
+            <label class="m3-color-palette__swatch m3-color-palette__swatch--none"><input type="radio" name="cat-swatch" aria-label="None"></label>
+            <label class="m3-color-palette__custom"><input type="color" value="#6750a4" aria-label="Custom colour"></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Date picker</h3>
+        <span class="cat-api"><code>.m3-date-picker</code><code>--docked</code><code>--modal</code><code>--range</code></span></header>
+      <p class="cat-note m3-body-small">Real buttons and inputs styled by m3x; navigating months and applying a
+        selection is your form&rsquo;s job.</p>
+      <div class="cat-specimen cat-specimen--center">
+        <div class="m3-date-picker m3-date-picker--docked">
+          <div class="m3-date-picker__header">
+            <button class="m3-date-picker__menu" type="button">August 2026</button>
+            <div class="m3-date-picker__arrows">
+              <button class="m3-date-picker__nav" type="button" aria-label="Previous month"></button>
+              <button class="m3-date-picker__nav" type="button" aria-label="Next month"></button>
+            </div>
+          </div>
+          <div class="m3-date-picker__grid">
+            <span class="m3-date-picker__weekday">S</span><span class="m3-date-picker__weekday">M</span><span class="m3-date-picker__weekday">T</span><span class="m3-date-picker__weekday">W</span><span class="m3-date-picker__weekday">T</span><span class="m3-date-picker__weekday">F</span><span class="m3-date-picker__weekday">S</span>
+            <button class="m3-date-picker__day m3-date-picker__day--outside" type="button">26</button>
+            <button class="m3-date-picker__day m3-date-picker__day--outside" type="button">27</button>
+            <button class="m3-date-picker__day" type="button">28</button>
+            <button class="m3-date-picker__day" type="button">29</button>
+            <button class="m3-date-picker__day" type="button">30</button>
+            <button class="m3-date-picker__day" type="button">31</button>
+            <button class="m3-date-picker__day" type="button">1</button>
+            <button class="m3-date-picker__day" type="button">2</button>
+            <button class="m3-date-picker__day" type="button">3</button>
+            <button class="m3-date-picker__day m3-date-picker__day--today" type="button">4</button>
+            <button class="m3-date-picker__day" type="button">5</button>
+            <button class="m3-date-picker__day m3-date-picker__day--range-start" type="button">6</button>
+            <button class="m3-date-picker__day m3-date-picker__day--range" type="button">7</button>
+            <button class="m3-date-picker__day m3-date-picker__day--range-end" type="button">8</button>
+            <button class="m3-date-picker__day" type="button">9</button>
+            <button class="m3-date-picker__day m3-date-picker__day--selected" type="button">10</button>
+            <button class="m3-date-picker__day" type="button">11</button>
+            <button class="m3-date-picker__day" type="button" disabled>12</button>
+            <button class="m3-date-picker__day" type="button">13</button>
+            <button class="m3-date-picker__day" type="button">14</button>
+            <button class="m3-date-picker__day" type="button">15</button>
+          </div>
+          <div class="m3-date-picker__actions">
+            <button class="m3-btn m3-btn--text" type="button">Cancel</button>
+            <button class="m3-btn m3-btn--text" type="button">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Time picker</h3>
+        <span class="cat-api"><code>.m3-time-picker</code><code>--modal</code></span></header>
+      <div class="cat-specimen cat-specimen--center">
+        <div class="m3-time-picker">
+          <div class="m3-time-picker__hint">Select time</div>
+          <div class="m3-time-picker__fields">
+            <label class="m3-time-picker__field m3-time-picker__field--selected">
+              <input class="m3-time-picker__input" value="07" aria-label="Hour">
+              <span class="m3-time-picker__label">Hour</span>
+            </label>
+            <span class="m3-time-picker__separator">:</span>
+            <label class="m3-time-picker__field">
+              <input class="m3-time-picker__input" value="30" aria-label="Minute">
+              <span class="m3-time-picker__label">Minute</span>
+            </label>
+            <div class="m3-time-picker__period">
+              <label class="m3-time-picker__period-option"><input class="m3-time-picker__period-input" type="radio" name="cat-period" checked><span class="m3-time-picker__period-label">AM</span></label>
+              <label class="m3-time-picker__period-option"><input class="m3-time-picker__period-input" type="radio" name="cat-period"><span class="m3-time-picker__period-label">PM</span></label>
+            </div>
+          </div>
+          <div class="m3-time-picker__actions">
+            <button class="m3-btn m3-btn--text" type="button">Cancel</button>
+            <button class="m3-btn m3-btn--text" type="button">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="cat-section" id="inputs">
+  <header><h2 class="m3-headline-small">Text inputs</h2>
+    <p class="cat-lede m3-body-medium">One field component with filled and outlined variants, and the select,
+      textarea and date/time inputs built on it. A focused field draws M3&rsquo;s 3px indicator; validity and width
+      sit on separate custom properties, so a focused invalid field reads error at 3px and a resting one error at
+      1px, with no layout shift.</p></header>
+  <div class="cat-cards">
+
+    <div class="cat-item cat-item--wide">
+      <header><h3 class="m3-title-medium">Text fields</h3>
+        <span class="cat-api"><code>.m3-field</code><code>--outlined</code><code>--filled</code><code>.m3-field__input</code><code>__label</code><code>__supporting</code><code>.form-floating</code></span></header>
+      <div class="cat-specimen" style="align-items: flex-start;">
+        <label class="m3-field m3-field--outlined" style="flex: 1 1 14rem;">
+          <input class="m3-field__input" placeholder=" ">
+          <span class="m3-field__label">Outlined, empty</span>
+        </label>
+        <label class="m3-field m3-field--outlined" style="flex: 1 1 14rem;">
+          <input class="m3-field__input" value="Riley Chen" placeholder=" ">
+          <span class="m3-field__label">Outlined, filled in</span>
+          <span class="m3-field__supporting">Supporting text</span>
+        </label>
+        <label class="m3-field m3-field--filled" style="flex: 1 1 14rem;">
+          <input class="m3-field__input" value="Aurora" placeholder=" ">
+          <span class="m3-field__label">Filled variant</span>
+        </label>
+      </div>
+      <div class="cat-specimen" style="align-items: flex-start;">
+        <label class="m3-field m3-field--outlined" style="flex: 1 1 14rem;">
+          <input class="m3-field__input" type="email" value="not-an-email" placeholder=" " required>
+          <span class="m3-field__label">Invalid</span>
+          <span class="m3-field__supporting">Enter a valid address.</span>
+        </label>
+        <label class="m3-field m3-field--outlined" style="flex: 1 1 14rem;">
+          <input class="m3-field__input" value="Read only" placeholder=" " readonly>
+          <span class="m3-field__label">Read only</span>
+        </label>
+        <label class="m3-field m3-field--outlined" style="flex: 1 1 14rem;">
+          <input class="m3-field__input" value="Disabled" placeholder=" " disabled>
+          <span class="m3-field__label">Disabled</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Select</h3>
+        <span class="cat-api"><code>.m3-select</code><code>--filled</code><code>.form-select</code></span></header>
+      <div class="cat-specimen cat-specimen--stack" style="justify-items: stretch;">
+        <label class="m3-field">
+          <select class="m3-select" aria-label="Default action"><option>Reply</option><option>Reply all</option><option>Forward</option></select>
+          <span class="m3-field__supporting">Default action &mdash; a select always has a value, so it takes a supporting label rather than a floating one</span>
+        </label>
+        <select class="m3-select m3-select--filled" aria-label="Filled select"><option>Filled variant</option><option>Second</option></select>
+        <select class="m3-select" aria-label="Disabled select" disabled><option>Disabled</option></select>
+        <select class="m3-select" aria-label="List box" size="3">
+          <option>Inbox</option><option selected>Starred</option><option>Archive</option><option>Trash</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Textarea</h3>
+        <span class="cat-api"><code>.m3-field__input</code> on <code>&lt;textarea&gt;</code></span></header>
+      <div class="cat-specimen" style="align-items: stretch;">
+        <label class="m3-field m3-field--outlined" style="flex: 1 1 auto;">
+          <textarea class="m3-field__input" rows="3" placeholder=" ">Grows with its content where field-sizing is available.</textarea>
+          <span class="m3-field__label">Signature</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="cat-item">
+      <header><h3 class="m3-title-medium">Date and time inputs</h3>
+        <span class="cat-api"><code>.m3-datetime</code><code>--filled</code></span></header>
+      <p class="cat-note m3-body-small">Native inputs, styled: the platform&rsquo;s own picker opens, and takes the
+        theme through <code>accent-color</code>.</p>
+      <div class="cat-specimen">
+        <input class="m3-datetime" type="date" value="2026-09-01" aria-label="Date">
+        <input class="m3-datetime" type="time" value="07:30" aria-label="Time">
+        <input class="m3-datetime m3-datetime--filled" type="datetime-local" value="2026-09-01T07:30" aria-label="Date and time">
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="cat-section" id="interop">
+  <header><h2 class="m3-headline-small">Bootstrap 5.3 interop</h2>
+    <p class="cat-lede m3-body-medium">Every component above is authored once as a Sass mixin, and both vocabularies
+      are emitted from it. The pairs below are the same rules: <code>.btn.btn-primary</code> and
+      <code>.m3-btn.m3-btn--filled</code> compute to identical styles, longhand for longhand, in a browser.
+      Bootstrap&rsquo;s JavaScript keeps working &mdash; the <code>.show</code> / <code>.fade</code> /
+      <code>.collapsing</code> state-class contract is honoured &mdash; and nothing here needs
+      <code>bootstrap.css</code>.</p></header>
+  <div class="cat-cards">
+
+    <div class="cat-item cat-item--wide">
+      <header><h3 class="m3-title-medium">Same component, two vocabularies</h3></header>
+      <div class="cat-specimen" style="align-items: flex-start;">
+        <div class="cat-pair" style="flex: 1 1 16rem;"><small class="m3-label-medium">Bootstrap markup</small>
+          <div class="cat-specimen cat-specimen--plain">
+            <button class="btn btn-primary" type="button">Send</button>
+            <button class="btn btn-secondary" type="button">Snooze</button>
+            <button class="btn btn-outline-primary" type="button">Preview</button>
+            <button class="btn btn-link" type="button">Learn more</button>
+          </div></div>
+        <div class="cat-pair" style="flex: 1 1 16rem;"><small class="m3-label-medium">m3x markup</small>
+          <div class="cat-specimen cat-specimen--plain">
+            <button class="m3-btn m3-btn--filled" type="button">Send</button>
+            <button class="m3-btn m3-btn--tonal" type="button">Snooze</button>
+            <button class="m3-btn m3-btn--outlined" type="button">Preview</button>
+            <button class="m3-btn m3-btn--text" type="button">Learn more</button>
+          </div></div>
+      </div>
+      <div class="cat-specimen" style="align-items: flex-start;">
+        <div class="cat-pair" style="flex: 1 1 16rem;"><small class="m3-label-medium">.card</small>
+          <div class="card" style="max-inline-size: 22rem;">
+            <div class="card-body">
+              <h5 class="card-title">Storage almost full</h5>
+              <p class="card-text">Free up space or upgrade to keep receiving mail.</p>
+              <button class="btn btn-primary" type="button">Upgrade</button>
+            </div>
+          </div></div>
+        <div class="cat-pair" style="flex: 1 1 16rem;"><small class="m3-label-medium">.m3-card--outlined</small>
+          <div class="m3-card m3-card--outlined" style="max-inline-size: 22rem; padding: var(--m3-sys-space-4);">
+            <span class="m3-title-medium">Storage almost full</span>
+            <p class="m3-body-medium">Free up space or upgrade to keep receiving mail.</p>
+            <button class="m3-btn m3-btn--filled" type="button" style="justify-self: start;">Upgrade</button>
+          </div></div>
+      </div>
+    </div>
+
+    <div class="cat-item cat-item--wide">
+      <header><h3 class="m3-title-medium">The rest of Bootstrap, rendered by m3x</h3></header>
+      <div class="cat-specimen cat-specimen--stack" style="justify-items: stretch;">
+        <div class="alert alert-warning" role="alert"><strong>Heads up.</strong> Vacation responder is on until Sep 12.</div>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="#interop">Mail</a></li><li class="breadcrumb-item"><a href="#interop">Settings</a></li><li class="breadcrumb-item active" aria-current="page">Filters</li></ol></nav>
+        <ul class="nav nav-pills"><li class="nav-item"><button class="nav-link active" type="button">All</button></li><li class="nav-item"><button class="nav-link" type="button">Unread</button></li></ul>
+        <div class="list-group">
+          <button class="list-group-item list-group-item-action" type="button">Filters</button>
+          <button class="list-group-item list-group-item-action active" type="button">Blocked senders</button>
+          <button class="list-group-item list-group-item-action" type="button">Forwarding</button>
+        </div>
+        <nav aria-label="Pages"><ul class="pagination"><li class="page-item"><button class="page-link" type="button">&lsaquo;</button></li><li class="page-item active"><button class="page-link" type="button">1</button></li><li class="page-item"><button class="page-link" type="button">2</button></li><li class="page-item"><button class="page-link" type="button">&rsaquo;</button></li></ul></nav>
+        <div class="progress" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" style="width: 70%">70%</div></div>
+        <div class="accordion">
+          <div class="accordion-item">
+            <h3 class="accordion-header"><button class="accordion-button" type="button">Signatures</button></h3>
+            <div class="accordion-collapse collapse show"><div class="accordion-body">One signature per address is supported.</div></div>
+          </div>
+          <div class="accordion-item">
+            <h3 class="accordion-header"><button class="accordion-button collapsed" type="button">Templates</button></h3>
+            <div class="accordion-collapse collapse"><div class="accordion-body">Hidden.</div></div>
+          </div>
+        </div>
+        <table class="table table-striped">
+          <thead><tr><th>Filter</th><th>Action</th></tr></thead>
+          <tbody><tr><td>from:billing@*</td><td>Label &ldquo;Receipts&rdquo;</td></tr><tr><td>list:dev-null</td><td>Skip inbox</td></tr></tbody>
+        </table>
+        <div class="cat-specimen cat-specimen--plain">
+          <span class="badge text-bg-primary">Primary</span>
+          <span class="badge text-bg-success">Synced</span>
+          <span class="badge text-bg-warning">Warning</span>
+          <span class="badge text-bg-danger">Error</span>
+          <span class="badge text-bg-dark">Dark</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-item cat-item--wide">
+      <header><h3 class="m3-title-medium">Interop map</h3></header>
+      <table class="cat-table">
+        <tr><th>Bootstrap</th><th>m3x</th><th>Notes</th></tr>
+        <tr><td><code>.btn .btn-*</code></td><td><code>.m3-btn</code></td><td><code>.btn-sm</code>/<code>.btn-lg</code> keep Bootstrap&rsquo;s 32/48px</td></tr>
+        <tr><td><code>.btn-group</code></td><td><code>.m3-button-group--connected</code></td><td>hit areas stop at the seam</td></tr>
+        <tr><td><code>.btn + .dropdown-toggle-split</code></td><td><code>.m3-split-button</code></td><td><code>aria-expanded</code> drives the open morph</td></tr>
+        <tr><td><code>.card</code></td><td><code>.m3-card</code></td><td></td></tr>
+        <tr><td><code>.form-control</code>, <code>.form-floating</code></td><td><code>.m3-field</code></td><td>label above vs label inside, both supported</td></tr>
+        <tr><td><code>.form-select</code></td><td><code>.m3-select</code></td><td>same customizable picker</td></tr>
+        <tr><td><code>.form-check-input</code></td><td><code>.m3-checkbox</code> / <code>.m3-radio</code></td><td></td></tr>
+        <tr><td><code>.form-switch .form-check-input</code></td><td><code>.m3-switch</code></td><td>the switch re-asserts its own handle</td></tr>
+        <tr><td><code>.form-range</code></td><td><code>.m3-slider</code></td><td></td></tr>
+        <tr><td><code>.dropdown-menu</code></td><td><code>.m3-menu</code></td><td>Bootstrap&rsquo;s box, M3&rsquo;s surface</td></tr>
+        <tr><td><code>.modal</code></td><td><code>.m3-dialog</code></td><td><code>.show</code>/<code>.fade</code> honoured</td></tr>
+        <tr><td><code>.offcanvas</code></td><td><code>.m3-sheet</code> / <code>.m3-drawer</code></td><td></td></tr>
+        <tr><td><code>.toast</code></td><td><code>.m3-snackbar</code></td><td>inverse surface</td></tr>
+        <tr><td><code>.progress</code></td><td>&mdash;</td><td>stays Bootstrap&rsquo;s 1rem labelled bar; <code>.m3-progress</code> is M3&rsquo;s 4px indicator</td></tr>
+        <tr><td><code>.badge</code>, <code>.text-bg-*</code></td><td><code>.m3-badge</code></td><td></td></tr>
+        <tr><td><code>.nav-tabs</code>, <code>.nav-pills</code></td><td><code>.m3-tabs</code></td><td></td></tr>
+        <tr><td><code>.list-group</code></td><td><code>.m3-list</code></td><td></td></tr>
+        <tr><td><code>.navbar</code></td><td><code>.m3-top-app-bar</code></td><td></td></tr>
+        <tr><td><code>.accordion</code></td><td><code>.m3-disclosure</code></td><td>collapse classes honoured</td></tr>
+        <tr><td><code>.container</code>, <code>.row</code>, <code>.col-*</code></td><td>&mdash;</td><td>the grid ships from m3x</td></tr>
+        <tr><td>the 5.3 utility API</td><td>&mdash;</td><td>generated from tokens in the <code>utilities</code> layer</td></tr>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<footer class="cat-section" style="padding-block: var(--m3-sys-space-6); color: var(--md-sys-color-on-surface-variant);">
+  <p class="m3-body-medium">Everything on this page is <code>dist/m3x.css</code> and semantic HTML. The only script
+    is the twelve lines below, which drive the header&rsquo;s four controls and two DOM properties CSS cannot set.</p>
+</footer>
+</main>
+</div>
+
+<script>
+  // Catalog shell only: the header controls, plus two DOM-level states.
+  var root = document.documentElement;
+  document.getElementById("theme").addEventListener("change", function (e) {
+    if (e.target.value === "auto") root.removeAttribute("data-theme");
+    else root.setAttribute("data-theme", e.target.value);
+  });
+  document.getElementById("seed").addEventListener("input", function (e) {
+    root.style.setProperty("--md-seed", e.target.value);
+  });
+  document.getElementById("contrast").addEventListener("change", function (e) {
+    if (e.target.value) root.setAttribute("data-contrast", e.target.value);
+    else root.removeAttribute("data-contrast");
+  });
+  document.getElementById("density").addEventListener("change", function (e) {
+    root.style.setProperty("--m3-sys-density", e.target.value);
+  });
+  // aria-pressed is state, not styling.
+  document.querySelectorAll("[data-toggle]").forEach(function (b) {
+    b.addEventListener("click", function () { b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true"); });
+  });
+  // Indeterminate is a DOM property, not an attribute.
+  document.querySelectorAll("[data-indeterminate]").forEach(function (i) { i.indeterminate = true; });
+  // Browsers without Invoker Commands: open and close dialogs from a click.
+  if (!("commandForElement" in HTMLButtonElement.prototype)) {
+    document.querySelectorAll("[command]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var t = document.getElementById(b.getAttribute("commandfor"));
+        if (!t) return;
+        if (b.getAttribute("command") === "show-modal") t.showModal(); else t.close();
+      });
+    });
+  }
+</script>
+</body>
+</html>
+

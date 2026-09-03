@@ -26,7 +26,14 @@ primitives, with a complete Bootstrap 5.3 interop surface.**
 
 ```bash
 npm i && npm run build
-# then serve the repo root statically and open demo/index.html
+# then serve the repo root statically and open:
+#   demo/catalog.html   every component, every foundation, every modern-CSS
+#                       gate -- with live @supports badges reporting what your
+#                       browser does with each one
+#   demo/index.html     the same library as a working settings app, in both
+#                       vocabularies side by side
+#   demo/adaptive.html  the navigation bar / rail / drawer switch, the
+#                       collapsing large app bar, and a list-detail layout
 ```
 
 ---
