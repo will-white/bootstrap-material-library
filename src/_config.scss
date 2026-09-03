@@ -106,8 +106,18 @@ $shape-families: (
     "corner-shape": squircle,
   ),
   // Softer than M3 across the board: every rung 1.5x, pills unchanged.
+  //
+  // It carries the color channel for the mirror image of the flat family's
+  // reason. Scaling the scale UP spends shape headroom: the resting shape of
+  // a button is the pill, which does not scale, so the morph targets climb
+  // toward a fixed ceiling -- at 1.5x the selected rung lands 2px under the
+  // pill on a 40px button, which is a morph you cannot see. And the pill is
+  // half the control's height, so the headroom is smaller the smaller the
+  // control: no multiplier can promise a visible morph at every size. A
+  // family that scales up therefore cannot rely on shape alone.
   "soft": (
     "scale": 1.5,
+    "emphasis": "color",
   ),
 ) !default;
 

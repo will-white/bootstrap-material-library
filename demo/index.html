@@ -17,6 +17,12 @@
     /* Popover menu anchored below its trigger (CSS anchor positioning; elsewhere it opens at its static position). */
     .demo-popover { position-anchor: --demo-menu; position-area: block-end span-inline-end; inset: auto; margin: var(--m3-sys-space-1) 0 0; }
     section > h2 { margin-block-end: var(--m3-sys-space-3); }
+    /* Shape-family rows: one subtree per family, so each carries its own corners. */
+    .demo-families { display: grid; gap: var(--m3-sys-space-4); }
+    .demo-family { padding: var(--m3-sys-space-4); border-radius: var(--md-sys-shape-corner-large); background-color: var(--md-sys-color-surface-container-low); }
+    .demo-family__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--m3-sys-space-3); }
+    .demo-family__head code, .demo-family__head small { color: var(--md-sys-color-on-surface-variant); }
+    .demo-family__note { margin-block: var(--m3-sys-space-1) var(--m3-sys-space-3); color: var(--md-sys-color-on-surface-variant); }
     .demo-bar-label { display: inline-flex; align-items: center; gap: var(--m3-sys-space-2); }
     .demo-bar-select { --m3-field-height: 2.5rem; min-inline-size: 7rem; }
     @media (max-width: 48rem) { .demo-shell { grid-template-columns: 1fr; } .demo-shell > .m3-rail { display: none; } }
@@ -82,6 +88,12 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 22a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2zm6-6V11c0-3-2-5.5-5-6.2V4a1 1 0 1 0-2 0v.8C8 5.5 6 8 6 11v5l-2 2v1h16v-1z"/></svg>
       </span>
       Alerts
+    </a>
+    <a class="m3-rail__item" href="#shapes">
+      <span class="m3-rail__icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4h7v7H4z"/><path d="M13 13h7v7h-7z"/><circle cx="16.5" cy="7.5" r="3.5"/><path d="M7.5 13 11 20H4z"/></svg>
+      </span>
+      Shape
     </a>
     <a class="m3-rail__item" href="#interop">
       <span class="m3-rail__icon">
@@ -365,6 +377,137 @@
             <div class="m3-island--tertiary" style="padding: var(--m3-sys-space-4); border-radius: var(--md-sys-shape-corner-large);">
               <p class="m3-body-medium" style="margin: 0;">And a tertiary island nested inside the card inside the inverse hero. Proximity wins.</p>
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <section id="shapes" aria-labelledby="shapes-h">
+      <h2 id="shapes-h" class="m3-headline-small">Shape families</h2>
+      <p class="m3-body-medium">The shape scale says how big a corner is. A <strong>family</strong> says what a corner
+        <em>is</em>, and may re-point the scale. Each row below is one subtree with a single
+        <code>[data-shape]</code> attribute on it &mdash; no other markup differs, and Bootstrap&rsquo;s
+        <code>.btn</code> and <code>.card</code> follow the family along with the M3 components. Use
+        <strong>Shape</strong> in the header to put the whole page in one.</p>
+      <p class="m3-body-medium"><strong>Look at <em>Toggle</em> beside <em>Selected</em> in each row.</strong> M3 signals
+        selection by morphing the corner, so the signal is the <em>difference between two radii</em> &mdash; and a
+        family with flat corners has none to spend. In <em>Rounded</em>, <em>Cut</em>, <em>Squircle</em> and
+        <em>Soft</em>, <em>Selected</em> differs from <em>Toggle</em> by its <strong>shape</strong>. In
+        <em>Sharp</em> nothing can morph, so it differs by its <strong>colour</strong> instead: the emphasis
+        channel takes over, and a square button that could not press squarer still has a selected state. Press and
+        hold any <em>Toggle</em> to see the same swap on the press half.</p>
+      <p class="m3-body-medium">Radios and switches are round <em>by identity</em>, not as a corner treatment &mdash;
+        a square radio is indistinguishable from a checkbox &mdash; so they keep their circle in every family.</p>
+      <div class="demo-families">
+        <div class="demo-family">
+          <div class="demo-family__head">
+            <span class="m3-title-medium">Rounded</span>
+            <code class="m3-label-small">no attribute</code>
+            <small class="m3-label-small">M3 as published</small>
+          </div>
+          <p class="m3-body-small demo-family__note">The shape channel: <em>Selected</em> is the same colour as <em>Toggle</em> and a different corner.</p>
+          <div class="demo-row">
+            <button class="m3-btn m3-btn--filled" type="button">Filled</button>
+            <button class="m3-btn m3-btn--outlined" type="button">Outlined</button>
+            <button class="m3-btn m3-btn--filled" type="button" aria-pressed="false" data-toggle>Toggle</button>
+            <button class="m3-btn m3-btn--filled" type="button" aria-pressed="true" data-toggle>Selected</button>
+            <label class="m3-chip m3-chip--filter">
+              <input class="m3-chip__input" type="checkbox" checked>
+              <span class="m3-chip__label">Chip</span>
+            </label>
+            <label class="demo-row" style="gap: var(--m3-sys-space-2);"><input type="radio" name="fam-rounded" class="m3-radio" checked> Radio</label>
+            <input type="checkbox" role="switch" class="m3-switch" aria-label="Switch, stays a pill" checked>
+            <div class="m3-card m3-card--outlined" style="inline-size: 8rem;"><div class="m3-card__slot"><p style="margin: 0;">Card</p></div></div>
+            <button class="btn btn-primary" type="button">Bootstrap</button>
+          </div>
+        </div>
+        <div class="demo-family" data-shape="sharp">
+          <div class="demo-family__head">
+            <span class="m3-title-medium">Sharp</span>
+            <code class="m3-label-small">[data-shape=&quot;sharp&quot;]</code>
+            <small class="m3-label-small">every rung 0</small>
+          </div>
+          <p class="m3-body-small demo-family__note">Nothing left to morph, so <em>Selected</em> is the same corner as <em>Toggle</em> and a different colour.</p>
+          <div class="demo-row">
+            <button class="m3-btn m3-btn--filled" type="button">Filled</button>
+            <button class="m3-btn m3-btn--outlined" type="button">Outlined</button>
+            <button class="m3-btn m3-btn--filled" type="button" aria-pressed="false" data-toggle>Toggle</button>
+            <button class="m3-btn m3-btn--filled" type="button" aria-pressed="true" data-toggle>Selected</button>
+            <label class="m3-chip m3-chip--filter">
+              <input class="m3-chip__input" type="checkbox" checked>
+              <span class="m3-chip__label">Chip</span>
+            </label>
+            <label class="demo-row" style="gap: var(--m3-sys-space-2);"><input type="radio" name="fam-sharp" class="m3-radio" checked> Radio</label>
+            <input type="checkbox" role="switch" class="m3-switch" aria-label="Switch, stays a pill" checked>
+            <div class="m3-card m3-card--outlined" style="inline-size: 8rem;"><div class="m3-card__slot"><p style="margin: 0;">Card</p></div></div>
+            <button class="btn btn-primary" type="button">Bootstrap</button>
+          </div>
+        </div>
+        <div class="demo-family" data-shape="cut">
+          <div class="demo-family__head">
+            <span class="m3-title-medium">Cut</span>
+            <code class="m3-label-small">[data-shape=&quot;cut&quot;]</code>
+            <small class="m3-label-small">corner-shape: bevel</small>
+          </div>
+          <p class="m3-body-small demo-family__note">Mitred corners, roundest rung capped at 16 so the morph still has room.</p>
+          <div class="demo-row">
+            <button class="m3-btn m3-btn--filled" type="button">Filled</button>
+            <button class="m3-btn m3-btn--outlined" type="button">Outlined</button>
+            <button class="m3-btn m3-btn--filled" type="button" aria-pressed="false" data-toggle>Toggle</button>
+            <button class="m3-btn m3-btn--filled" type="button" aria-pressed="true" data-toggle>Selected</button>
+            <label class="m3-chip m3-chip--filter">
+              <input class="m3-chip__input" type="checkbox" checked>
+              <span class="m3-chip__label">Chip</span>
+            </label>
+            <label class="demo-row" style="gap: var(--m3-sys-space-2);"><input type="radio" name="fam-cut" class="m3-radio" checked> Radio</label>
+            <input type="checkbox" role="switch" class="m3-switch" aria-label="Switch, stays a pill" checked>
+            <div class="m3-card m3-card--outlined" style="inline-size: 8rem;"><div class="m3-card__slot"><p style="margin: 0;">Card</p></div></div>
+            <button class="btn btn-primary" type="button">Bootstrap</button>
+          </div>
+        </div>
+        <div class="demo-family" data-shape="squircle">
+          <div class="demo-family__head">
+            <span class="m3-title-medium">Squircle</span>
+            <code class="m3-label-small">[data-shape=&quot;squircle&quot;]</code>
+            <small class="m3-label-small">corner-shape: squircle</small>
+          </div>
+          <p class="m3-body-small demo-family__note">Superellipse corners; they interpolate, so the shape channel stays.</p>
+          <div class="demo-row">
+            <button class="m3-btn m3-btn--filled" type="button">Filled</button>
+            <button class="m3-btn m3-btn--outlined" type="button">Outlined</button>
+            <button class="m3-btn m3-btn--filled" type="button" aria-pressed="false" data-toggle>Toggle</button>
+            <button class="m3-btn m3-btn--filled" type="button" aria-pressed="true" data-toggle>Selected</button>
+            <label class="m3-chip m3-chip--filter">
+              <input class="m3-chip__input" type="checkbox" checked>
+              <span class="m3-chip__label">Chip</span>
+            </label>
+            <label class="demo-row" style="gap: var(--m3-sys-space-2);"><input type="radio" name="fam-squircle" class="m3-radio" checked> Radio</label>
+            <input type="checkbox" role="switch" class="m3-switch" aria-label="Switch, stays a pill" checked>
+            <div class="m3-card m3-card--outlined" style="inline-size: 8rem;"><div class="m3-card__slot"><p style="margin: 0;">Card</p></div></div>
+            <button class="btn btn-primary" type="button">Bootstrap</button>
+          </div>
+        </div>
+        <div class="demo-family" data-shape="soft">
+          <div class="demo-family__head">
+            <span class="m3-title-medium">Soft</span>
+            <code class="m3-label-small">[data-shape=&quot;soft&quot;]</code>
+            <small class="m3-label-small">every rung 1.5&times;</small>
+          </div>
+          <p class="m3-body-small demo-family__note">Scaled up. Pills are untouched &mdash; nothing is rounder than a pill &mdash; which is exactly why this family also carries the colour channel: scaling <em>toward</em> a fixed ceiling leaves the morph 2px to work in, and less on smaller controls.</p>
+          <div class="demo-row">
+            <button class="m3-btn m3-btn--filled" type="button">Filled</button>
+            <button class="m3-btn m3-btn--outlined" type="button">Outlined</button>
+            <button class="m3-btn m3-btn--filled" type="button" aria-pressed="false" data-toggle>Toggle</button>
+            <button class="m3-btn m3-btn--filled" type="button" aria-pressed="true" data-toggle>Selected</button>
+            <label class="m3-chip m3-chip--filter">
+              <input class="m3-chip__input" type="checkbox" checked>
+              <span class="m3-chip__label">Chip</span>
+            </label>
+            <label class="demo-row" style="gap: var(--m3-sys-space-2);"><input type="radio" name="fam-soft" class="m3-radio" checked> Radio</label>
+            <input type="checkbox" role="switch" class="m3-switch" aria-label="Switch, stays a pill" checked>
+            <div class="m3-card m3-card--outlined" style="inline-size: 8rem;"><div class="m3-card__slot"><p style="margin: 0;">Card</p></div></div>
+            <button class="btn btn-primary" type="button">Bootstrap</button>
           </div>
         </div>
       </div>

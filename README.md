@@ -517,7 +517,7 @@ runtime or applied to a single subtree — the same shape as `[data-contrast]`.
 | `sharp` | Every rung collapses to 0. Emphasis moves to color (below). |
 | `cut` | The same radii, mitred instead of rounded (`corner-shape: bevel`), with the roundest rung capped — see below. |
 | `squircle` | Superellipse corners (`corner-shape: squircle`). |
-| `soft` | Every rung 1.5×; pills stay pills. |
+| `soft` | Every rung 1.5×; pills stay pills, so it carries the colour channel too — see below. |
 
 A family entry takes any of four keys:
 
@@ -549,9 +549,18 @@ comes out as a six-sided badge. The cap then has to clear the **morph
 targets** as well: at `corner-medium` it would land exactly on the selected
 rung and a selected button would hold its resting shape — the flat family's
 problem arriving by a side door. `cut` caps at 16, which leaves 16 → 8 pressed
-and 16 → 12 selected. The rule a family has to satisfy is simply this: either
-its resting rungs clear its morph targets, or it declares
-`"emphasis": "color"`. `test/shape.js` asserts it for the shipped families.
+and 16 → 12 selected.
+
+**The rule every family has to satisfy:** either its resting rungs clear its
+morph targets by enough to see, or it declares `"emphasis": "color"`. A
+numeric difference is not enough — `soft` at 1.5× puts the selected rung 2px
+under the pill, which is a morph nobody can perceive. And because the resting
+pill is *half the control's height*, that headroom shrinks with the control:
+no multiplier can promise a visible morph at every size on the ramp, which is
+why a family that scales up needs the colour channel whether or not it looks
+fine at 40px. `test/shape.js` drives a real press and a real selection on one
+button per shipped family and enforces a 4px minimum — half M3's smallest
+rung — for any family that has not declared the channel.
 
 **Corner geometry.** `--m3-sys-corner-shape` carries the family's CSS
 [`corner-shape`](https://drafts.csswg.org/css-borders-4/#corner-shaping)

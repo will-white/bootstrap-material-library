@@ -63,6 +63,15 @@ const PAGE = `<!doctype html><html><head><style>@import url("/m3x.css");</style>
 <!-- scaled up: every rung 1.5x, but a pill is already as round as it gets -->
 <div data-shape="soft" id="soft">${TOGGLE('softBtn')}<div class="m3-card m3-card--outlined" id="softCard">c</div></div>
 
+<!-- one probe button per shipped family, for the morph-clearance rule -->
+<div id="probes">
+  <button class="m3-btn m3-btn--filled" type="button" data-probe="rounded">p</button>
+  <div data-shape="sharp"><button class="m3-btn m3-btn--filled" type="button" data-probe="sharp">p</button></div>
+  <div data-shape="cut"><button class="m3-btn m3-btn--filled" type="button" data-probe="cut">p</button></div>
+  <div data-shape="squircle"><button class="m3-btn m3-btn--filled" type="button" data-probe="squircle">p</button></div>
+  <div data-shape="soft"><button class="m3-btn m3-btn--filled" type="button" data-probe="soft">p</button></div>
+</div>
+
 <!-- the utility form of the same family, on a subtree -->
 <div class="m3-shape--sharp" id="utilSharp">${TOGGLE('utilSharpBtn')}</div>
 
@@ -87,7 +96,7 @@ async function run() {
     '/shape.html': PAGE,
   });
   const browser = await launch();
-  let r, sharpPress, defaultPress, selectedBefore, selectedAfter;
+  let r, sharpPress, defaultPress, selectedBefore, selectedAfter, probes;
   try {
     // Motion on: the press has to be sampled while the spring runs, which is
     // the only way to tell "the morph is a no-op" from "the morph is fast".
@@ -119,6 +128,49 @@ async function run() {
 
     sharpPress = await press('sharpBtn');
     defaultPress = await press('defaultBtn');
+
+    // The expression budget, per shipped family: the resting radius, the two
+    // radii the morph actually settles on (driven for real -- the shape tokens
+    // are unset by design, so there is nothing to read), and whether the
+    // family declared the colour channel.
+    probes = {};
+    for (const el of await page.locator('[data-probe]').all()) {
+      const family = await el.getAttribute('data-probe');
+      const read = () =>
+        page.evaluate((f) => {
+          const n = document.querySelector(`[data-probe="${f}"]`);
+          const c = getComputedStyle(n);
+          const px = (v) => Math.round(parseFloat(v) * 100) / 100;
+          return {
+            radius: px(c.borderTopLeftRadius),
+            height: px(c.height),
+            colorChannel:
+              c.getPropertyValue('--m3-sys-emphasis-selected-state-layer-opacity').trim() !== '',
+          };
+        }, family);
+
+      const rest = await read();
+      const box = await el.boundingBox();
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+      await page.mouse.down();
+      await page.waitForTimeout(500);
+      const pressed = await read();
+      await page.mouse.up();
+      await page.mouse.move(0, 0);
+      await page.waitForTimeout(500);
+      await el.evaluate((n) => n.setAttribute('aria-pressed', 'true'));
+      await page.waitForTimeout(500);
+      const selected = await read();
+      await el.evaluate((n) => n.setAttribute('aria-pressed', 'false'));
+
+      probes[family] = {
+        rest: rest.radius,
+        pressed: pressed.radius,
+        selected: selected.radius,
+        height: rest.height,
+        colorChannel: rest.colorChannel,
+      };
+    }
 
     // Select the flat-family toggle.
     selectedBefore = await page.evaluate(
@@ -343,20 +395,34 @@ async function run() {
     }
   }
 
-  // A family that KEEPS the shape channel has to leave it something to say.
-  // Capping the roundest rung is how a cut family avoids hexagons, and it is
-  // also how it can accidentally land on a morph target: cap `full` at
-  // corner-medium and a selected button holds its resting shape, which is
-  // the flat family's problem arriving by a side door. A family either
-  // clears its morph targets or declares "emphasis": "color".
-  expect(
-    r.radii.cutBtn !== r.radii.cutPressed,
-    `cut family keeps the shape channel, so its resting rung (${r.radii.cutBtn}px) must clear the pressed target (${r.radii.cutPressed}px) -- as capped, a press morphs nothing`,
-  );
-  expect(
-    r.radii.cutBtn !== r.radii.cutSelected,
-    `cut family keeps the shape channel, so its resting rung (${r.radii.cutBtn}px) must clear the selected target (${r.radii.cutSelected}px) -- as capped, a selection morphs nothing`,
-  );
+  // The expression-budget rule, over every shipped family. A family either
+  // leaves the shape channel a VISIBLE gap between its resting rung and its
+  // morph targets, or it declares "emphasis": "color". A numeric difference
+  // is not enough: `cut` capped at corner-medium landed exactly on the
+  // selected rung, and `soft` scaled the selected rung to 2px under the pill
+  // -- one morphs nothing, the other morphs invisibly, and both are the flat
+  // family's problem arriving by a side door. MIN_GAP is half M3's smallest
+  // rung. There is no multiplier that satisfies this at every size, because
+  // the resting pill is half the control's height and shrinks with it, which
+  // is exactly why a family that scales up needs the colour channel.
+  const MIN_GAP = 4;
+  for (const [family, p] of Object.entries(probes)) {
+    if (p.colorChannel) continue;
+    for (const state of ['pressed', 'selected']) {
+      expect(
+        Math.abs(p.rest - p[state]) >= MIN_GAP,
+        `${family} family relies on the shape channel but its resting rung (${p.rest}px on a ${p.height}px button) is only ${Math.abs(p.rest - p[state])}px from the ${state} target (${p[state]}px) -- that morph is not visible, so the family needs "emphasis": "color" or a rung that clears it by ${MIN_GAP}px`,
+      );
+    }
+  }
+  // ...and a family that DID declare the colour channel has to have opened it.
+  for (const [family, p] of Object.entries(probes)) {
+    if (!p.colorChannel) continue;
+    expect(
+      family !== 'rounded',
+      'the identity family must not declare the colour channel',
+    );
+  }
 
   // --- 5. a scaled family scales the rungs and leaves the pill alone --------
   // `full` does not mean 9999px, it means "as round as this box can be", so

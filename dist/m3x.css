@@ -1745,6 +1745,8 @@
     --md-sys-shape-corner-extra-large: 2.625rem;
     --md-sys-shape-corner-extra-large-increased: 3rem;
     --md-sys-shape-corner-extra-extra-large: 4.5rem;
+    --m3-sys-emphasis-pressed-state-layer-opacity: 16%;
+    --m3-sys-emphasis-selected-state-layer-opacity: 12%;
   }
   @supports (transition-timing-function: linear(0, 1)) {
     :root {
