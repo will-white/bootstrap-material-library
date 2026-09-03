@@ -13,8 +13,10 @@
 //   --m3-field-supporting-color    on-surface-variant
 //   --m3-field-indicator-color     on-surface-variant (filled underline)
 //   --m3-field-indicator-width     1px (hairline token)
+//   --m3-field-indicator-width-focus  3px (heavy token; M3 focused indicator)
 //   --m3-field-outline-color       outline (outlined variant)
 //   --m3-field-outline-width       1px (hairline token)
+//   --m3-field-outline-width-focus 3px (heavy token; M3 focused outline)
 //   --m3-field-label-bg            surface (outlined label cutout; re-point
 //                                  when the field sits on another surface)
 //   --m3-field-padding-inline      space-4
@@ -47,8 +49,10 @@
   --#{c.$prefix}-field-supporting-color: var(--md-sys-color-on-surface-variant);
   --#{c.$prefix}-field-indicator-color: var(--md-sys-color-on-surface-variant);
   --#{c.$prefix}-field-indicator-width: var(--m3-stroke-hairline);
+  --#{c.$prefix}-field-indicator-width-focus: var(--m3-stroke-heavy);
   --#{c.$prefix}-field-outline-color: var(--md-sys-color-outline);
   --#{c.$prefix}-field-outline-width: var(--m3-stroke-hairline);
+  --#{c.$prefix}-field-outline-width-focus: var(--m3-stroke-heavy);
   --#{c.$prefix}-field-label-bg: var(--md-sys-color-surface);
   --#{c.$prefix}-field-padding-inline: var(--m3-space-4);
 }
@@ -116,39 +120,43 @@
 
 // Validation states, single visual source for :user-invalid, .is-invalid and
 // .was-validated alike (acceptance: identical error rendering).
+// Validation states re-point the indicator colour only. The indicator's
+// WIDTH is owned by --_indicator-grow, which only :focus sets, so an invalid
+// focused field reads error at the focused 3px and an invalid resting one
+// reads error at the resting 1px -- both as M3 specifies, with no
+// combinatorial focus x validity rules.
 @mixin filled-invalid-state {
-  border-block-end-color: var(--#{c.$prefix}-field-error-color);
-  box-shadow: inset 0 calc(-1 * var(--#{c.$prefix}-field-indicator-width)) 0 0
-    var(--#{c.$prefix}-field-error-color);
+  --_indicator: var(--#{c.$prefix}-field-error-color);
   caret-color: var(--#{c.$prefix}-field-error-color);
 }
 
 @mixin filled-valid-state {
-  border-block-end-color: var(--#{c.$prefix}-field-valid-color);
-  box-shadow: inset 0 calc(-1 * var(--#{c.$prefix}-field-indicator-width)) 0 0
-    var(--#{c.$prefix}-field-valid-color);
+  --_indicator: var(--#{c.$prefix}-field-valid-color);
 }
 
 @mixin outlined-invalid-state {
-  border-color: var(--#{c.$prefix}-field-error-color);
-  box-shadow: inset 0 0 0 var(--#{c.$prefix}-field-outline-width)
-    var(--#{c.$prefix}-field-error-color);
+  --_indicator: var(--#{c.$prefix}-field-error-color);
   caret-color: var(--#{c.$prefix}-field-error-color);
 }
 
 @mixin outlined-valid-state {
-  border-color: var(--#{c.$prefix}-field-valid-color);
-  box-shadow: inset 0 0 0 var(--#{c.$prefix}-field-outline-width)
-    var(--#{c.$prefix}-field-valid-color);
+  --_indicator: var(--#{c.$prefix}-field-valid-color);
 }
 
 // Filled variant: container + active indicator drawn on the input itself so
 // every state works from the input's own pseudo-classes.
 @mixin input-filled {
+  // Resting indicator on the border, the focused growth on an inset shadow
+  // drawn inside it: 1px border + (3px - 1px) shadow = the 3px M3 asks for
+  // when focused, with the border box -- and so the text -- never moving.
+  --_indicator: var(--#{c.$prefix}-field-indicator-color);
+  --_indicator-grow: 0px;
+
   background-color: var(--#{c.$prefix}-field-container-color);
   border: none;
   border-block-end: var(--#{c.$prefix}-field-indicator-width) solid
-    var(--#{c.$prefix}-field-indicator-color);
+    var(--_indicator);
+  box-shadow: inset 0 calc(-1 * var(--_indicator-grow)) 0 0 var(--_indicator);
   border-start-start-radius: var(--#{c.$prefix}-field-shape);
   border-start-end-radius: var(--#{c.$prefix}-field-shape);
   border-end-start-radius: var(--md-sys-shape-corner-none);
@@ -168,10 +176,11 @@
   &:focus,
   &:focus-visible {
     outline: none;
-    border-block-end-color: var(--#{c.$prefix}-field-focus-color);
-    box-shadow: inset 0
-      calc(-1 * var(--#{c.$prefix}-field-indicator-width)) 0 0
-      var(--#{c.$prefix}-field-focus-color);
+    --_indicator: var(--#{c.$prefix}-field-focus-color);
+    --_indicator-grow: calc(
+      var(--#{c.$prefix}-field-indicator-width-focus) -
+        var(--#{c.$prefix}-field-indicator-width)
+    );
   }
 
   // :user-invalid, .is-invalid and .was-validated are separate rules (never
@@ -196,22 +205,30 @@
 // Outlined variant: full border, focus thickens visually via an inset shadow
 // (no layout shift), label floats through the border with a cutout.
 @mixin input-outlined {
+  // Same trick as the filled variant: the outline grows inward on an inset
+  // shadow so a focused outline measures the 3px M3 asks for without the
+  // border box (and the text inside it) moving.
+  --_indicator: var(--#{c.$prefix}-field-outline-color);
+  --_indicator-grow: 0px;
+
   background-color: transparent;
-  border: var(--#{c.$prefix}-field-outline-width) solid
-    var(--#{c.$prefix}-field-outline-color);
+  border: var(--#{c.$prefix}-field-outline-width) solid var(--_indicator);
   border-radius: var(--#{c.$prefix}-field-shape);
   padding-block: var(--m3-space-3);
+  box-shadow: inset 0 0 0 var(--_indicator-grow) var(--_indicator);
 
   @include m.hover {
-    border-color: var(--md-sys-color-on-surface);
+    --_indicator: var(--md-sys-color-on-surface);
   }
 
   &:focus,
   &:focus-visible {
     outline: none;
-    border-color: var(--#{c.$prefix}-field-focus-color);
-    box-shadow: inset 0 0 0 var(--#{c.$prefix}-field-outline-width)
-      var(--#{c.$prefix}-field-focus-color);
+    --_indicator: var(--#{c.$prefix}-field-focus-color);
+    --_indicator-grow: calc(
+      var(--#{c.$prefix}-field-outline-width-focus) -
+        var(--#{c.$prefix}-field-outline-width)
+    );
   }
 
   &:user-invalid {

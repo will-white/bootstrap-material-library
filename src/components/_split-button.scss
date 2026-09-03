@@ -357,7 +357,7 @@
 
 @mixin large {
   @include -size("large");
-  --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-xl);
+  --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-large);
   --#{c.$prefix}-split-button-chevron-stroke: var(--m3-stroke-heavy);
 
   > .#{c.$prefix}-split-button__action {

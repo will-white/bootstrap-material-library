@@ -11,6 +11,9 @@
 //   --m3-chip-selected-label-color      on-secondary-container
 //   --m3-chip-elevated-container-color  surface-container-low (--elevated)
 //   --m3-chip-icon-size                 18px (icon-size-small token)
+//   --m3-chip-padding-inline            space-4 (16px) label space
+//   --m3-chip-padding-inline-icon       space-2 (8px)  label space on the side
+//                                       carrying a leading icon or checkmark
 //
 // Markup:
 //   <button class="m3-chip m3-chip--assist">Assist</button>
@@ -42,6 +45,8 @@
   --#{c.$prefix}-chip-selected-label-color: var(--md-sys-color-on-secondary-container);
   --#{c.$prefix}-chip-elevated-container-color: var(--md-sys-color-surface-container-low);
   --#{c.$prefix}-chip-icon-size: var(--m3-icon-size-small);
+  --#{c.$prefix}-chip-padding-inline: var(--m3-space-4);
+  --#{c.$prefix}-chip-padding-inline-icon: var(--m3-space-2);
 }
 
 // Shared shell: outline, shape, height, typography. Variants add the state
@@ -56,10 +61,17 @@
   @include m.control-height(--#{c.$prefix}-chip-height);
   border-radius: var(--#{c.$prefix}-chip-shape);
   border: var(--m3-stroke-hairline) solid var(--#{c.$prefix}-chip-outline-color);
-  padding-inline: var(--m3-space-3);
+  padding-inline: var(--#{c.$prefix}-chip-padding-inline);
   background-color: transparent;
   cursor: pointer;
   @include m.typescale("label-large");
+
+  // M3 gives a chip 16dp of label space, cut to 8dp on the side that carries
+  // a leading icon. Without :has() every chip keeps the 16dp default, which
+  // is the spec value for the icon-less chip.
+  &:has(> :is(svg, img, .#{c.$prefix}-icon):first-child) {
+    padding-inline-start: var(--#{c.$prefix}-chip-padding-inline-icon);
+  }
 }
 
 // Assist chip: a plain <button>; the root carries the state layer.
@@ -111,7 +123,7 @@
     align-items: center;
     justify-content: center;
     gap: var(--m3-space-2);
-    padding-inline: var(--m3-space-3);
+    padding-inline: var(--#{c.$prefix}-chip-padding-inline);
     border-radius: inherit;
     block-size: 100%;
     color: var(--_content);
@@ -145,6 +157,8 @@
 
   .#{c.$prefix}-chip__input:checked + .#{c.$prefix}-chip__label {
     --m3-icon-fill: 1;
+    // The checkmark is a leading icon, so the leading space narrows with it.
+    padding-inline-start: var(--#{c.$prefix}-chip-padding-inline-icon);
     --_container: var(--#{c.$prefix}-chip-selected-container-color);
     --_content: var(--#{c.$prefix}-chip-selected-label-color);
 

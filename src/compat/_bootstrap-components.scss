@@ -305,7 +305,7 @@ $-themes: (
   }
 
   .btn-lg {
-    @include button.large;
+    @include button.bootstrap-large;
   }
 
   .btn.active,
@@ -343,7 +343,7 @@ $-themes: (
   }
 
   .btn-group-lg > .btn {
-    @include button.large;
+    @include button.bootstrap-large;
   }
 
   .btn-toolbar {

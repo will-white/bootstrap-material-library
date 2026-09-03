@@ -8,6 +8,7 @@
 //   --m3-tabs-indicator-color       primary
 //   --m3-tabs-indicator-thickness   3px (heavy stroke token)
 //   --m3-tabs-divider-color         outline-variant (bar bottom divider)
+//   --m3-tabs-height-icon-label     64px   primary tab with icon + label
 //   --m3-tabs-pill-height           40px   .nav-pills reuse; density-aware
 //   --m3-tabs-pill-container-color  secondary-container (active pill)
 //   --m3-tabs-pill-label-color      on-secondary-container (active pill)
@@ -34,6 +35,7 @@
 
 @mixin tokens {
   --#{c.$prefix}-tabs-height: #{fn.rem(48)};
+  --#{c.$prefix}-tabs-height-icon-label: #{fn.rem(64)};
   --#{c.$prefix}-tabs-label-color: var(--md-sys-color-on-surface-variant);
   --#{c.$prefix}-tabs-active-label-color: var(--md-sys-color-primary);
   --#{c.$prefix}-tabs-indicator-color: var(--md-sys-color-primary);
@@ -64,6 +66,19 @@
   outline: var(--md-sys-state-focus-indicator-thickness) solid
     var(--md-sys-color-secondary);
   outline-offset: calc(-1 * var(--md-sys-state-focus-indicator-offset));
+}
+
+// A primary tab bar carrying icons alongside labels is 64dp tall with the
+// icon stacked over the label (M3); a label-only or icon-only bar stays 48dp.
+// The height is a property of the BAR, not of the individual tab, so every
+// tab in one bar shares it and the active indicator stays on one line.
+// Secondary tabs keep the 48dp single line. Without :has() every bar keeps
+// the 48dp default, which is the spec value for the label-only bar.
+@mixin tab-icon-label {
+  @include m.control-height(--#{c.$prefix}-tabs-height-icon-label);
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--m3-space-1);
 }
 
 // One tab (button, a, or label for the real-input variant).
@@ -165,6 +180,13 @@
 
   .#{$p}-tabs__tab {
     @include tab;
+  }
+
+  .#{$p}-tabs:not(.#{$p}-tabs--secondary):has(
+      .#{$p}-tabs__tab > :is(svg, img, .#{$p}-icon)
+    )
+    .#{$p}-tabs__tab {
+    @include tab-icon-label;
   }
 
   // All old-syntax selectors: one shared list is safe.

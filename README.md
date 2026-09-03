@@ -346,13 +346,19 @@ components.
 | Token | Default | Notes |
 |---|---|---|
 | `--m3-btn-height` | 40px (2.5rem) | participates in density |
-| `--m3-btn-height-small` | 32px | `.m3-btn--small` / `.btn-sm` |
-| `--m3-btn-height-large` | 48px | `.m3-btn--large` / `.btn-lg` |
-| `--m3-btn-padding-inline` | `--m3-space-5` (24px) | |
-| `--m3-btn-padding-inline-small` | `--m3-space-4` | |
-| `--m3-btn-padding-inline-large` | `--m3-space-6` | |
+| `--m3-btn-height-xs` | 32px | `.m3-btn--xs` |
+| `--m3-btn-height-medium` | 56px | `.m3-btn--medium` |
+| `--m3-btn-height-large` | 96px | `.m3-btn--large` |
+| `--m3-btn-height-xl` | 136px | `.m3-btn--xl` |
+| `--m3-btn-height-small` | 32px | `.m3-btn--small` / `.btn-sm` (Bootstrap's ramp) |
+| `--m3-btn-height-bootstrap-large` | 48px | `.btn-lg` (Bootstrap's ramp) |
+| `--m3-btn-padding-inline` | `--m3-space-4` (16px) | |
+| `--m3-btn-padding-inline-xs` | `--m3-space-3` (12px) | |
+| `--m3-btn-padding-inline-medium` | `--m3-space-5` (24px) | |
+| `--m3-btn-padding-inline-large` | `--m3-space-7` (48px) | |
+| `--m3-btn-padding-inline-xl` | 64px | |
 | `--m3-btn-icon-gap` | `--m3-space-2` | |
-| `--m3-btn-icon-size` | 18px | leading icon slot |
+| `--m3-btn-icon-size` | 20px | leading icon slot |
 | `--m3-btn-shape` | `corner-full` | resolved to half the height for the morph |
 | `--m3-btn-outline-width` | `--m3-stroke-hairline` | outlined variant |
 | `--m3-btn-container-color` | `primary` | filled container |
@@ -466,6 +472,48 @@ box around the glyph; the switch paints its 40dp layer centered on the handle,
 which grows to 28dp while pressed; a selected segmented button shows the check
 icon. Check marks (checkbox, filter chip, segmented button) are drawn at the
 Material Symbols glyph proportions and optically centered.
+
+---
+
+## Spec conformance
+
+The token tiers carry M3's published values: the full typescale, the five
+elevation shadow pairs, the shape scale from `none` through
+`extra-extra-large` (48px) plus `full`, state-layer and disabled opacities,
+the easing curves and duration ramp, the Expressive spring physics, and the
+color-role tone assignments in light and dark. `test/spec.js` asserts them
+against what a browser computes, so a value cannot drift without a test
+edit.
+
+Components follow M3 Expressive where the two generations differ. The size
+ramp is the clearest case: `.m3-btn`, `.m3-icon-btn` and `.m3-split-button`
+all carry the same five rungs.
+
+| Size | Height | Inline padding | Icon | Label |
+|---|---|---|---|---|
+| `--xs` | 32px | 12px | 20px | label-large |
+| (default) | 40px | 16px | 20px | label-large |
+| `--medium` | 56px | 24px | 24px | title-medium |
+| `--large` | 96px | 48px | 32px | headline-small |
+| `--xl` | 136px | 64px | 40px | headline-large |
+
+Two deliberate departures, both in service of the Bootstrap surface rather
+than in disagreement with M3:
+
+- **Bootstrap's size ramp is kept alongside M3's.** `.btn-sm` (32px) and
+  `.btn-lg` (48px) render at Bootstrap's metrics, not M3's, so re-skinning an
+  existing Bootstrap page does not re-flow it. `.m3-btn--small` is the alias
+  of the 32px size, as `.m3-icon-btn--small` is. M3's own ramp is the table
+  above.
+- **Spacing tokens are a library extension.** M3 publishes no spacing token
+  set, so `--m3-space-*` and the density scale are m3x's, documented as
+  extensions.
+
+Where a component's anatomy needs an element M3 draws but HTML does not
+provide, it is drawn with a pseudo-element rather than asked of the consumer:
+the linear progress stop indicator, the filter chip's leading check, the tab
+active indicator, and the selection controls' state layers all come for free
+from the documented markup.
 
 ---
 
@@ -865,7 +913,7 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
 
 ### Tests
 
-`npm test` runs five suites against the built CSS:
+`npm test` runs six suites against the built CSS:
 
 - **contrast** (`test/contrast.js`, no browser): reads the static sRGB tier
   and asserts M3's minimum ratios for every accent / on-accent, container /
@@ -889,6 +937,13 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
   every frame: the pill is half the height, the radius moves through visible
   intermediate values, never clamps toward square, and settles on the target
   shape.
+- **spec** (`test/spec.js`): M3's published numbers asserted against what the
+  stylesheet computes in a browser, not against what the Sass declares --
+  typescale, state-layer opacities, the focus indicator, the shape scale, the
+  easing and duration ramps; the five-rung Expressive size ramp on `.m3-btn`,
+  `.m3-icon-btn` and `.m3-split-button`; the 1dp/3dp resting and focused text
+  field indicators; chip label space; checkbox, radio, switch and slider
+  geometry; the linear progress stop indicator; and tab heights.
 
 Chromium comes from `CHROME_PATH`, `npx playwright-core install chromium`, or
 a `PLAYWRIGHT_BROWSERS_PATH` directory, in that order. Stock `bootstrap.css`

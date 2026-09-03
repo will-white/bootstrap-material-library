@@ -11,6 +11,8 @@
 //   --m3-progress-wave-amplitude    3px    wavy variants: wave rise above /
 //                                          below the rail (and scallop radius)
 //   --m3-progress-wave-wavelength   24px   wavy linear: one crest + one trough
+//   --m3-progress-stop-size         4px    M3 stop indicator at the track end
+//   --m3-progress-stop-color        --m3-progress-color
 //
 // Markup:
 //   <div class="m3-progress" role="progressbar" aria-valuenow="60"
@@ -63,16 +65,48 @@
   --#{c.$prefix}-progress-circle-thickness: #{fn.rem(4)};
   --#{c.$prefix}-progress-wave-amplitude: #{fn.rem(3)};
   --#{c.$prefix}-progress-wave-wavelength: #{fn.rem(24)};
+  --#{c.$prefix}-progress-stop-size: #{fn.rem(4)};
+  --#{c.$prefix}-progress-stop-color: var(--#{c.$prefix}-progress-color);
 }
 
-// Linear track: thin rounded rail that clips the bar.
+// Linear track: thin rounded rail that clips the bar, with M3's stop
+// indicator -- a dot of the active-indicator colour parked at the trailing
+// end of the track -- drawn on ::after. The bar is raised a layer above it so
+// a full-value bar occludes the dot, exactly as the spec shows it.
 @mixin linear-track {
   @include m.own-box;
+  position: relative;
   display: block;
   block-size: var(--#{c.$prefix}-progress-thickness);
   border-radius: var(--md-sys-shape-corner-full);
   background: var(--#{c.$prefix}-progress-track-color);
   overflow: clip;
+
+  &::after {
+    @include m.own-pseudo;
+    content: "";
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: 0;
+    inline-size: var(--#{c.$prefix}-progress-stop-size);
+    block-size: var(--#{c.$prefix}-progress-stop-size);
+    translate: 0 -50%;
+    border-radius: var(--md-sys-shape-corner-full);
+    color: var(--#{c.$prefix}-progress-stop-color);
+    background: currentColor;
+    // The dot never renders text, but the box is owned: pinning a typescale
+    // stops a hostile host reaching it through inheritance (own-pseudo
+    // re-inherits typography by design, for generated content that IS text).
+    @include m.typescale("label-small");
+  }
+}
+
+// Indeterminate progress has no stop indicator: there is no value for it to
+// stop at.
+@mixin linear-no-stop {
+  &::after {
+    content: none;
+  }
 }
 
 // Determinate bar: width driven by the unitless value token (or an inline
@@ -80,6 +114,8 @@
 @mixin linear-bar {
   @include m.own-box;
   color: var(--#{c.$prefix}-progress-color); // the wavy mask stops resolve from currentColor
+  position: relative;
+  z-index: 1; // above the track's stop indicator
   display: block;
   block-size: 100%;
   border-radius: inherit;
@@ -340,6 +376,10 @@ $-scallops: 12;
 
   .#{$p}-progress__bar {
     @include linear-bar;
+  }
+
+  .#{$p}-progress--indeterminate {
+    @include linear-no-stop;
   }
 
   .#{$p}-progress--indeterminate .#{$p}-progress__bar {

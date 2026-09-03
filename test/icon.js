@@ -50,7 +50,7 @@ async function run() {
     expect(/m3x-icon-blank/.test(v.family), `${k}: font-family ${v.family} lacks the blank fallback`);
   }
   expect(r.lone.w === 24 && r.lone.h === 24, `lone icon box ${r.lone.w}x${r.lone.h}, expected 24x24`);
-  expect(r.btn.w === 18 && /"opsz" 20/.test(r.btn.fvs), `button icon ${r.btn.w}px ${r.btn.fvs}, expected 18px at opsz 20`);
+  expect(r.btn.w === 20 && /"opsz" 20/.test(r.btn.fvs), `button icon ${r.btn.w}px ${r.btn.fvs}, expected 20px at opsz 20`);
   expect(r.xl.w === 40 && /"opsz" 40/.test(r.xl.fvs), `xl icon-button icon ${r.xl.w}px ${r.xl.fvs}, expected 40px at opsz 40`);
   expect(r.dense.w === 20 && /"opsz" 20/.test(r.dense.fvs), `dense toolbar icon ${r.dense.w}px ${r.dense.fvs}, expected 20px at opsz 20`);
   expect(r.fab.w === 36 && /"opsz" 36/.test(r.fab.fvs), `large FAB icon ${r.fab.w}px ${r.fab.fvs}, expected 36px at opsz 36`);
