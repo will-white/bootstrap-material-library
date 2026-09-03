@@ -10,7 +10,6 @@
 @use "../config" as c;
 @use "../functions" as fn;
 @use "../tokens/color-scheme";
-@use "../tokens/shape-family";
 
 // Bootstrap theme-color name -> m3x color role custom property.
 $-theme-map: (
@@ -216,11 +215,11 @@ $-extra-triplets: (
 
 // The radius scale, split out of the static aliases for the same reason the
 // color aliases are split out: a var() is substituted where its DECLARATION
-// applies, so an alias declared only at :root freezes there. A shape family
-// on a subtree re-points --#{c.$sys-prefix}-sys-shape-corner-*, and Bootstrap's radius
-// scale has to be re-resolved where that family applies or the M3 components
-// inside would take the family's corners while .card and .btn kept the
-// root's.
+// applies, so an alias declared only at :root freezes there. Re-pointing a
+// shape slot on a SUBTREE therefore moves the M3 components inside it while
+// .card and .btn keep the root's corners. Re-include this mixin wherever you
+// do that and Bootstrap's scale follows:
+//   .compact-zone { --md-sys-shape-corner-medium: 4px; @include m3.bootstrap-shape-aliases; }
 @mixin shape-aliases {
   --bs-border-radius-sm: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
   --bs-border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-small);
@@ -264,12 +263,6 @@ $-extra-triplets: (
     @include color-aliases;
   }
 
-  // Contexts that re-point the shape scale on a subtree: the shape families.
-  @if list.length(shape-family.selectors()) > 0 {
-    #{shape-family.selectors()} {
-      @include shape-aliases;
-    }
-  }
 
   // Bootstrap 5.3's own theme switch keeps working: it simply drives
   // color-scheme, exactly like [data-theme].

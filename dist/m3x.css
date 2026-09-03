@@ -1712,42 +1712,6 @@
       --md-extended-color-on-info-container: light-dark(var(--md-ref-palette-info100), var(--md-ref-palette-info0));
     }
   }
-  [data-shape=sharp],
-  .m3-shape--sharp {
-    --md-sys-shape-corner-extra-small: 0px;
-    --md-sys-shape-corner-small: 0px;
-    --md-sys-shape-corner-medium: 0px;
-    --md-sys-shape-corner-large: 0px;
-    --md-sys-shape-corner-large-increased: 0px;
-    --md-sys-shape-corner-extra-large: 0px;
-    --md-sys-shape-corner-extra-large-increased: 0px;
-    --md-sys-shape-corner-extra-extra-large: 0px;
-    --md-sys-shape-corner-full: 0px;
-    --m3-sys-emphasis-pressed-state-layer-opacity: 16%;
-    --m3-sys-emphasis-selected-state-layer-opacity: 12%;
-  }
-  [data-shape=cut],
-  .m3-shape--cut {
-    --md-sys-shape-corner-full: 1rem;
-    --m3-sys-corner-shape: bevel;
-  }
-  [data-shape=squircle],
-  .m3-shape--squircle {
-    --m3-sys-corner-shape: squircle;
-  }
-  [data-shape=soft],
-  .m3-shape--soft {
-    --md-sys-shape-corner-extra-small: 0.375rem;
-    --md-sys-shape-corner-small: 0.75rem;
-    --md-sys-shape-corner-medium: 1.125rem;
-    --md-sys-shape-corner-large: 1.5rem;
-    --md-sys-shape-corner-large-increased: 1.875rem;
-    --md-sys-shape-corner-extra-large: 2.625rem;
-    --md-sys-shape-corner-extra-large-increased: 3rem;
-    --md-sys-shape-corner-extra-extra-large: 4.5rem;
-    --m3-sys-emphasis-pressed-state-layer-opacity: 16%;
-    --m3-sys-emphasis-selected-state-layer-opacity: 12%;
-  }
   @supports (transition-timing-function: linear(0, 1)) {
     :root {
       --md-sys-motion-spring-fast-spatial: linear(0, 0.0292, 0.1046, 0.2099, 0.3314, 0.458, 0.5814, 0.6955, 0.7966, 0.8823, 0.952, 1.006, 1.0455, 1.072, 1.0876, 1.0942, 1.0938, 1.0883, 1.0794, 1.0684, 1.0565, 1.0446, 1.0333, 1.0232, 1.0144, 1.0072, 1.0014, 0.9971, 0.9941, 0.9922, 0.9912, 0.991, 0.9914, 0.9921, 0.9931, 0.9942, 0.9953, 0.9964, 0.9974, 0.9983, 1);
@@ -2346,14 +2310,6 @@
       --bs-progress-bg: var(--md-sys-color-secondary-container);
       --bs-progress-bar-color: var(--md-sys-color-on-primary);
       --bs-progress-bar-bg: var(--md-sys-color-primary);
-    }
-    [data-shape=sharp], .m3-shape--sharp, [data-shape=cut], .m3-shape--cut, [data-shape=squircle], .m3-shape--squircle, [data-shape=soft], .m3-shape--soft {
-      --bs-border-radius-sm: var(--md-sys-shape-corner-extra-small);
-      --bs-border-radius: var(--md-sys-shape-corner-small);
-      --bs-border-radius-lg: var(--md-sys-shape-corner-medium);
-      --bs-border-radius-xl: var(--md-sys-shape-corner-large);
-      --bs-border-radius-xxl: var(--md-sys-shape-corner-extra-large);
-      --bs-border-radius-pill: var(--md-sys-shape-corner-full);
     }
     [data-bs-theme=light] {
       color-scheme: light;

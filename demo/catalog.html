@@ -192,10 +192,6 @@
       <select id="contrast" class="m3-select cat-bar__select">
         <option value="" selected>Auto</option><option value="standard">Standard</option><option value="medium">Medium</option><option value="high">High</option>
       </select></label>
-    <label class="m3-body-medium cat-bar__label" for="shape">Shape
-      <select id="shape" class="m3-select cat-bar__select">
-        <option value="" selected>Rounded</option><option value="sharp">Sharp</option><option value="cut">Cut</option><option value="squircle">Squircle</option><option value="soft">Soft</option>
-      </select></label>
     <label class="m3-body-medium cat-bar__label" for="density">Density
       <select id="density" class="m3-select cat-bar__select">
         <option value="0" selected>0</option><option value="-1">-1</option><option value="-2">-2</option><option value="-3">-3</option>
@@ -516,9 +512,13 @@
 <section class="cat-section" id="shape">
   <header><h2 class="m3-headline-small">Shape</h2>
     <p class="cat-lede m3-body-medium">The Expressive scale, including the two &ldquo;increased&rdquo; steps and the
-      48dp rung. <code>corner-full</code> is 9999px, which renders as a pill but cannot interpolate, so every
-      morphing control resolves its shape against half its own height and springs between real radii &mdash;
-      see <a href="#motion">Motion</a>.</p></header>
+      48dp rung. These are <strong>slots</strong>, not per-component radii: M3 assigns every container to one
+      &mdash; card <code>medium</code>, FAB <code>large</code>, dialog <code>extra-large</code>, button
+      <code>full</code> &mdash; so re-pointing a slot re-shapes every container on it and nothing else.
+      <code>corner-full</code> is 9999px, which renders as a pill but cannot interpolate, so every morphing
+      control resolves its shape against half its own height and springs between real radii &mdash; see
+      <a href="#motion">Motion</a>. The assignment table is in the README, and
+      <code>test/shape.js</code> asserts every row of it.</p></header>
   <div class="cat-item cat-item--wide"><div class="cat-specimen">
     <div class="cat-labelled"><span style="inline-size: 4.5rem; block-size: 4.5rem; display: block; background-color: var(--md-sys-color-primary-container); border-radius: var(--md-sys-shape-corner-none);"></span><small class="m3-label-small">none<br>0</small></div>
     <div class="cat-labelled"><span style="inline-size: 4.5rem; block-size: 4.5rem; display: block; background-color: var(--md-sys-color-primary-container); border-radius: var(--md-sys-shape-corner-extra-small);"></span><small class="m3-label-small">extra-small<br>4</small></div>
@@ -532,85 +532,6 @@
     <div class="cat-labelled"><span style="inline-size: 4.5rem; block-size: 4.5rem; display: block; background-color: var(--md-sys-color-primary-container); border-radius: var(--md-sys-shape-corner-full);"></span><small class="m3-label-small">full<br>pill</small></div>
   </div></div>
 
-  <header style="margin-block-start: var(--m3-sys-space-6);"><h3 class="m3-title-large">Families</h3>
-    <p class="cat-lede m3-body-medium">The scale says how big a corner is; a <strong>family</strong> says what a
-      corner <em>is</em>, and may re-point the scale. Each is emitted as <code>[data-shape="&hellip;"]</code> and
-      <code>.m3-shape--&hellip;</code>, so it works on the root element or on one subtree &mdash; the rows below
-      are four subtrees of this page. Switch the whole page with <strong>Shape</strong> in the header.</p>
-    <p class="cat-lede m3-body-medium">Press and hold a <em>Toggle</em> in each row. On <em>Rounded</em> and
-      <em>Cut</em> the corner morphs, which is M3&rsquo;s press signal. On <em>Sharp</em> there is no corner left
-      to morph &mdash; a square button cannot press squarer &mdash; so the same press and the same selection are
-      carried by the <strong>emphasis channel</strong> instead: a louder state layer, and a persistent tint under
-      it while selected. Corner geometry and interaction feedback come out of the same budget, so a family that
-      spends its shape is given colour to spend. Radios and switches are load-bearing circles and stay round in
-      every family.</p></header>
-  <div class="cat-cards">
-    <div class="cat-item"><header><h3 class="m3-title-medium">Rounded</h3>
-      <p class="cat-note m3-body-small">M3 as published. The identity family: it emits nothing, and press and selection morph the corner.</p>
-      <span class="cat-api"><code>no attribute</code></span></header>
-      <div class="cat-specimen">
-        <button class="m3-btn m3-btn--filled" type="button">Filled</button>
-        <button class="m3-btn m3-btn--outlined" type="button">Outlined</button>
-        <button class="m3-btn m3-btn--filled" type="button" aria-pressed="false" data-toggle>Toggle</button>
-        <button class="m3-btn m3-btn--filled" type="button" aria-pressed="true" data-toggle>Selected</button>
-        <span class="m3-chip m3-chip--assist">Chip</span>
-        <input type="radio" class="m3-radio" aria-label="Stays round">
-        <input type="checkbox" role="switch" class="m3-switch" aria-label="Stays round" checked>
-        <div class="m3-card m3-card--outlined" style="inline-size: 9rem;"><div class="m3-card__slot"><p style="margin: 0;">Card</p></div></div>
-      </div></div>
-    <div class="cat-item"><header><h3 class="m3-title-medium">Sharp</h3>
-      <p class="cat-note m3-body-small">Every rung collapses to 0, the pill included. Nothing can morph, so the emphasis channel carries press and selection in colour.</p>
-      <span class="cat-api"><code>[data-shape=&quot;sharp&quot;]</code></span></header>
-      <div class="cat-specimen" data-shape="sharp">
-        <button class="m3-btn m3-btn--filled" type="button">Filled</button>
-        <button class="m3-btn m3-btn--outlined" type="button">Outlined</button>
-        <button class="m3-btn m3-btn--filled" type="button" aria-pressed="false" data-toggle>Toggle</button>
-        <button class="m3-btn m3-btn--filled" type="button" aria-pressed="true" data-toggle>Selected</button>
-        <span class="m3-chip m3-chip--assist">Chip</span>
-        <input type="radio" class="m3-radio" aria-label="Stays round">
-        <input type="checkbox" role="switch" class="m3-switch" aria-label="Stays round" checked>
-        <div class="m3-card m3-card--outlined" style="inline-size: 9rem;"><div class="m3-card__slot"><p style="margin: 0;">Card</p></div></div>
-      </div></div>
-    <div class="cat-item"><header><h3 class="m3-title-medium">Cut</h3>
-      <p class="cat-note m3-body-small">The same radii, mitred instead of rounded, via <code>corner-shape: bevel</code>, with the roundest rung capped at 16 &mdash; a bevel taken at half the box height is a hexagon, not a cut corner, and the cap has to clear the morph targets too or a selected button stops moving. A bevel still shrinks under a press, so the shape channel stays. Falls back to rounded corners where the property is unsupported.</p>
-      <span class="cat-api"><code>[data-shape=&quot;cut&quot;]</code></span></header>
-      <div class="cat-specimen" data-shape="cut">
-        <button class="m3-btn m3-btn--filled" type="button">Filled</button>
-        <button class="m3-btn m3-btn--outlined" type="button">Outlined</button>
-        <button class="m3-btn m3-btn--filled" type="button" aria-pressed="false" data-toggle>Toggle</button>
-        <button class="m3-btn m3-btn--filled" type="button" aria-pressed="true" data-toggle>Selected</button>
-        <span class="m3-chip m3-chip--assist">Chip</span>
-        <input type="radio" class="m3-radio" aria-label="Stays round">
-        <input type="checkbox" role="switch" class="m3-switch" aria-label="Stays round" checked>
-        <div class="m3-card m3-card--outlined" style="inline-size: 9rem;"><div class="m3-card__slot"><p style="margin: 0;">Card</p></div></div>
-      </div></div>
-    <div class="cat-item"><header><h3 class="m3-title-medium">Squircle</h3>
-      <p class="cat-note m3-body-small">Superellipse corners: rounder than round, and they interpolate, so the shape channel stays.</p>
-      <span class="cat-api"><code>[data-shape=&quot;squircle&quot;]</code></span></header>
-      <div class="cat-specimen" data-shape="squircle">
-        <button class="m3-btn m3-btn--filled" type="button">Filled</button>
-        <button class="m3-btn m3-btn--outlined" type="button">Outlined</button>
-        <button class="m3-btn m3-btn--filled" type="button" aria-pressed="false" data-toggle>Toggle</button>
-        <button class="m3-btn m3-btn--filled" type="button" aria-pressed="true" data-toggle>Selected</button>
-        <span class="m3-chip m3-chip--assist">Chip</span>
-        <input type="radio" class="m3-radio" aria-label="Stays round">
-        <input type="checkbox" role="switch" class="m3-switch" aria-label="Stays round" checked>
-        <div class="m3-card m3-card--outlined" style="inline-size: 9rem;"><div class="m3-card__slot"><p style="margin: 0;">Card</p></div></div>
-      </div></div>
-    <div class="cat-item"><header><h3 class="m3-title-medium">Soft</h3>
-      <p class="cat-note m3-body-small">Every rung 1.5&times;. Pills are left alone &mdash; <code>full</code> means &ldquo;as round as this box can be&rdquo;, and nothing is rounder than a pill. Which is why this family carries the colour channel too: scaling toward a fixed ceiling leaves the morph 2px to work in, and less on smaller controls.</p>
-      <span class="cat-api"><code>[data-shape=&quot;soft&quot;]</code></span></header>
-      <div class="cat-specimen" data-shape="soft">
-        <button class="m3-btn m3-btn--filled" type="button">Filled</button>
-        <button class="m3-btn m3-btn--outlined" type="button">Outlined</button>
-        <button class="m3-btn m3-btn--filled" type="button" aria-pressed="false" data-toggle>Toggle</button>
-        <button class="m3-btn m3-btn--filled" type="button" aria-pressed="true" data-toggle>Selected</button>
-        <span class="m3-chip m3-chip--assist">Chip</span>
-        <input type="radio" class="m3-radio" aria-label="Stays round">
-        <input type="checkbox" role="switch" class="m3-switch" aria-label="Stays round" checked>
-        <div class="m3-card m3-card--outlined" style="inline-size: 9rem;"><div class="m3-card__slot"><p style="margin: 0;">Card</p></div></div>
-      </div></div>
-  </div>
 </section>
 <section class="cat-section" id="elevation">
   <header><h2 class="m3-headline-small">Elevation</h2>
@@ -1005,17 +926,20 @@
     <header><h3 class="m3-title-medium">Corner geometry (<code>corner-shape</code>)</h3>
       <span class="cat-api"><code>--m3-sys-corner-shape</code></span>
       <span class="cat-support" data-feature="corner-shape"></span></header>
-    <p class="cat-note m3-body-small">A shape family&rsquo;s corners are cut, scooped or squircled with CSS
-      <code>corner-shape</code>, applied to every piece of chrome by the box-ownership rule &mdash; so a host
-      stylesheet cannot re-cut the library&rsquo;s corners either. The radii are the same radii, so where the
-      property is unsupported the row below simply draws M3&rsquo;s rounded corners: the fallback needs no
-      second code path. Load-bearing circles pin themselves to <code>round</code>, because a bevel on a radius
-      that is half the box turns a circle into a diamond.</p>
+    <p class="cat-note m3-body-small">M3&rsquo;s second shape axis. The scale above says how big a corner is;
+      the <strong>corner family</strong> says how it is drawn, and Material&rsquo;s spec has two &mdash;
+      <em>rounded</em> and <em>cut</em> (Android exposes them as <code>shapeCornerFamily</code>). CSS now has the
+      property, so <code>--m3-sys-corner-shape</code> carries the keyword (<code>round</code> for rounded,
+      <code>bevel</code> for cut) and the box-ownership rule applies it to every piece of chrome &mdash; so a
+      host stylesheet cannot re-cut the library&rsquo;s corners either. The radii are the same radii, so where
+      the property is unsupported the row below simply draws rounded corners: the fallback needs no second code
+      path. Controls that are round <em>by identity</em> pin themselves to <code>round</code>, because a bevel on
+      a radius that is half the box turns a circle into a diamond.</p>
     <div class="cat-specimen">
       <div class="cat-labelled"><button class="m3-btn m3-btn--filled" type="button">round</button><small class="m3-label-small">rounded</small></div>
-      <div class="cat-labelled" data-shape="cut"><button class="m3-btn m3-btn--filled" type="button">bevel</button><small class="m3-label-small">cut</small></div>
-      <div class="cat-labelled" data-shape="squircle"><button class="m3-btn m3-btn--filled" type="button">squircle</button><small class="m3-label-small">squircle</small></div>
-      <div class="cat-labelled" data-shape="cut"><input type="radio" class="m3-radio" aria-label="Pinned round" checked><small class="m3-label-small">pinned round</small></div>
+      <div class="cat-labelled" style="--m3-sys-corner-shape: bevel;"><button class="m3-btn m3-btn--filled" type="button">bevel</button><small class="m3-label-small">cut family</small></div>
+      <div class="cat-labelled" style="--m3-sys-corner-shape: squircle;"><button class="m3-btn m3-btn--filled" type="button">squircle</button><small class="m3-label-small">squircle (CSS, not M3)</small></div>
+      <div class="cat-labelled" style="--m3-sys-corner-shape: bevel;"><input type="radio" class="m3-radio" aria-label="Pinned round" checked><small class="m3-label-small">pinned round</small></div>
     </div>
   </div>
 
@@ -2321,10 +2245,6 @@
   document.getElementById("contrast").addEventListener("change", function (e) {
     if (e.target.value) root.setAttribute("data-contrast", e.target.value);
     else root.removeAttribute("data-contrast");
-  });
-  document.getElementById("shape").addEventListener("change", function (e) {
-    if (e.target.value) root.setAttribute("data-shape", e.target.value);
-    else root.removeAttribute("data-shape");
   });
   document.getElementById("density").addEventListener("change", function (e) {
     root.style.setProperty("--m3-sys-density", e.target.value);

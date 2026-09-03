@@ -58,7 +58,7 @@ via `@supports`:
 | Customizable `<select>` picker | `@supports (appearance: base-select)` | the styled native select (CSS chevron, native picker) |
 | Animated disclosure, `auto` sizes | `@supports selector(::details-content)` and `@supports (interpolate-size: allow-keywords)` | instant open/close, exactly like a bare `<details>` |
 | Auto-growing textareas | `@supports (field-sizing: content)` | the `rows` attribute / the field's minimum height |
-| Cut / squircle corner geometry (shape families) | `@supports (corner-shape: bevel)` | the same radii, drawn as M3's rounded corners |
+| Cut corner family (`corner-shape`) | `@supports (corner-shape: bevel)` | the same radii, drawn as M3's rounded corners |
 | Dense toolbar overflow | `@container` (Baseline 2023) | groups never collapse; `__more` stays hidden |
 | `@scope` refinements | none -- see below | slightly less isolation, identical rendering |
 | Anchor-positioned tooltips/menus, Popover menus, `:has()` selection states | per-feature `@supports`; every `:has()` / `:popover-open` rule stands alone in its selector list | hidden gracefully / static fallback / the non-`:has()` state |
@@ -503,126 +503,137 @@ stuck in its hover look. Bootstrap's explicit hover utilities
 
 ---
 
-## Shape families
+## Shape
 
-The shape **scale** says how big a corner is. A **family** says what a corner
-*is*, and may re-point the scale itself. `$shape-family` names the build
-default; every family in `$shape-families` is also emitted as
-`[data-shape="<name>"]` and `.m3-shape--<name>`, so it can be switched at
-runtime or applied to a single subtree — the same shape as `[data-contrast]`.
-
-| Family | What it does |
-| --- | --- |
-| `rounded` | M3 as published. The identity family: it emits nothing. |
-| `sharp` | Every rung collapses to 0. Emphasis moves to color (below). |
-| `cut` | The same radii, mitred instead of rounded (`corner-shape: bevel`), with the roundest rung capped — see below. |
-| `squircle` | Superellipse corners (`corner-shape: squircle`). |
-| `soft` | Every rung 1.5×; pills stay pills, so it carries the colour channel too — see below. |
-
-A family entry takes any of four keys:
-
-```scss
-@use "m3x/src" with (
-  $shape-family: "brand",
-  $shape-families: (
-    "rounded": (),
-    "brand": (
-      "corners": ("medium": 10, "large": 14), // per-rung px override
-      "scale": 1.25,                          // multiplier over the rest
-      "corner-shape": squircle,               // CSS corner geometry
-      "emphasis": "color",                    // see below
-    ),
-  )
-);
-```
-
-`full` is deliberately exempt from `scale`: it does not mean 9999px, it means
-"as round as this box can be", and there is nothing rounder than a pill. A
-multiplier of `0` *does* flatten it, because a family with no corners has no
-pills either — and that is what makes the shape morph a clean no-op instead of
-a pill pressing into a square.
-
-A family that changes the corner *geometry* usually has to cap `full`
-explicitly, which is why the shipped `cut` family does. A bevel taken at half
-the box height is a hexagon, not a cut corner, so an uncapped pill button
-comes out as a six-sided badge. The cap then has to clear the **morph
-targets** as well: at `corner-medium` it would land exactly on the selected
-rung and a selected button would hold its resting shape — the flat family's
-problem arriving by a side door. `cut` caps at 16, which leaves 16 → 8 pressed
-and 16 → 12 selected.
-
-**The rule every family has to satisfy:** either its resting rungs clear its
-morph targets by enough to see, or it declares `"emphasis": "color"`. A
-numeric difference is not enough — `soft` at 1.5× puts the selected rung 2px
-under the pill, which is a morph nobody can perceive. And because the resting
-pill is *half the control's height*, that headroom shrinks with the control:
-no multiplier can promise a visible morph at every size on the ramp, which is
-why a family that scales up needs the colour channel whether or not it looks
-fine at 40px. `test/shape.js` drives a real press and a real selection on one
-button per shipped family and enforces a 4px minimum — half M3's smallest
-rung — for any family that has not declared the channel.
-
-**Corner geometry.** `--m3-sys-corner-shape` carries the family's CSS
-[`corner-shape`](https://drafts.csswg.org/css-borders-4/#corner-shaping)
-keyword, and the box-ownership rule applies it to every piece of chrome inside
-`@supports (corner-shape: bevel)` — so a host stylesheet cannot re-cut the
-library's corners, and where the property is unsupported the same radii simply
-draw M3's rounded corners. Nothing else in a family depends on it. Components
-whose shape is a load-bearing **circle** — radio, switch, spinner, progress
-circle, badge, avatar, palette swatch, carousel dot, loading indicator, slider
-— pin themselves to `round` with `m3.always-round()`: a bevel on a radius that
-is half the box turns a circle into a diamond, which reads as a bug rather
-than a style. Their radii still follow the family's scale.
-
-### The emphasis channel (why a family has to say more than "corners")
-
-M3 Expressive signals a press and a selection by **morphing the corner**: a
-40px pill's 20px radius drops to 8px pressed and settles at 12px selected.
-That signal is the *difference between two radii* — so a family that flattens
-the scale silently deletes it. A square button cannot press squarer, and the
-control ends up with no press feedback and no selected state at all. Corner
-geometry and interaction feedback are the same budget, and a family that
-spends its shape has to be given something else to spend.
-
-So a family declares which channel it uses. `"emphasis": "color"` opens three
-tokens, all **unset** by default, so under M3's own family every read site
-falls back to the M3 value and the shape morph remains the whole signal:
-
-| Token | Default (unset) | What a `color` family sets |
-| --- | --- | --- |
-| `--m3-sys-emphasis-pressed-state-layer-opacity` | M3's pressed 10% | 16% (`$emphasis-pressed-state-layer-opacity`) |
-| `--m3-sys-emphasis-selected-state-layer-opacity` | `state-none` (0%) | 12% (`$emphasis-selected-state-layer-opacity`) |
-| `--m3-sys-emphasis-selected-container-color` | the control's own content color | any color to tint toward |
-
-The selected half is a **persistent tint composited under the interaction
-state layer**, not a container swap, so hover, focus and press still read on a
-control that is already carrying it. It is a tint of the *content* color
-because that color is already known to contrast with whatever container the
-control has: it works in every variant and both schemes without knowing
-whether it is sitting on `primary` or on `transparent`, and it cannot lose a
-specificity fight with a variant modifier the way a container swap would.
-Re-point `--m3-sys-emphasis-selected-container-color` to tint toward something
-else — at 100% that is a full container swap, at 12% a nudge.
-
-The two channels are independent of the family, so this is also how you get
-color-forward feedback on rounded corners:
+M3 does not give each component a radius. It gives the system a set of named
+**slots** and assigns every container to one — a card is `medium`, a dialog is
+`extra-large`, a button is `full` — so theming shape means re-pointing a
+**slot**, and every container sitting on it follows. That is the same
+arrangement as Compose's
+[`Shapes`](https://developer.android.com/develop/ui/compose/designsystems/material3)
+object, whose `extraSmall`…`extraLarge` properties every component reads.
 
 ```css
-:root {
+/* Every container on the `medium` slot squares off: cards, small FABs,
+   rich tooltips, the search panel, a pressed medium button. Nothing else
+   moves. Works on :root or on any ancestor. */
+.compact-zone { --md-sys-shape-corner-medium: 4px; }
+```
+
+### The slots
+
+| Slot | m3x | M3 |
+| --- | --- | --- |
+| `none` | 0 | 0 |
+| `extra-small` | 4px | 4dp |
+| `small` | 8px | 8dp |
+| `medium` | 12px | 12dp |
+| `large` | 16px | 16dp |
+| `large-increased` | 20px | 20dp (Expressive) |
+| `extra-large` | 28px | 28dp |
+| `extra-large-increased` | 32px | 32dp (Expressive) |
+| `extra-extra-large` | 48px | 48dp (Expressive) |
+| `full` | 9999px | 50% |
+
+### The assignment
+
+Which container sits on which slot. `test/shape.js` asserts every row against
+what a browser computes, so a component cannot drift off its slot silently.
+
+| Slot | Containers |
+| --- | --- |
+| `extra-small` | menu, snackbar, plain tooltip, colour palette, filled field (top corners), split-button seam, dense-toolbar control |
+| `small` | chip, disclosure summary, time-picker field and period, pressed button, connected-group inner corner |
+| `medium` | **card**, small FAB, rich tooltip, search panel, selected button, pressed medium button |
+| `large` | **FAB**, navigation drawer (trailing corners), docked toolbar (top corners), date picker, pane, pressed large button |
+| `extra-large` | **dialog**, bottom sheet (top corners), carousel item, large FAB, time picker, selected large button |
+| `full` | **button**, icon button, badge, segmented button, search bar, toolbar, FAB menu item, date-picker day, loading indicator |
+
+Each container also exposes its own token (`--m3-card-shape`,
+`--m3-dialog-shape`, …) whose *default* is its slot, so you can move one
+container off the shared slot without touching the slot itself. Precedence is
+nearest-first: the container's own token, then the slot, then the scale.
+
+```css
+.m3-card { --m3-card-shape: var(--md-sys-shape-corner-large); }  /* just cards */
+```
+
+The morph targets are slot assignments too: a pressed button takes `small`, a
+selected one `medium`, and each size rung shifts both up the scale
+(`--m3-btn-shape-pressed-medium` → `medium`, `-large` → `large`). So flattening
+the whole scale flattens the morph with it — see the emphasis channel below.
+
+### Corner family (`rounded` / `cut`)
+
+M3's second shape axis: the slot says how *big* a corner is, the corner family
+says how it is *drawn*. Material's spec has two,
+[`rounded` and `cut`](https://github.com/material-components/material-components-android/blob/master/docs/theming/Shape.md)
+(Android exposes them as `shapeCornerFamily`, with per-corner overrides). CSS
+now has the property for it, so `--m3-sys-corner-shape` carries the
+[`corner-shape`](https://drafts.csswg.org/css-borders-4/#corner-shaping)
+keyword and the box-ownership rule applies it to every piece of chrome — which
+also means a host stylesheet cannot re-cut the library's corners.
+
+```css
+:root { --m3-sys-corner-shape: bevel; }   /* M3's cut family */
+.callout { --m3-sys-corner-shape: bevel; } /* or on one subtree */
+```
+
+`round` is the rounded family, `bevel` the cut one; CSS also offers `notch`,
+`scoop` and `squircle`, which are not M3 values. The declaration sits behind
+`@supports (corner-shape: bevel)`, and since the radii are the same radii, an
+unsupported browser simply draws M3's rounded corners — the fallback needs no
+second code path.
+
+Controls that are round **by identity** rather than by corner treatment — a
+radio, a switch handle, a spinner, a progress circle, a badge dot, an avatar,
+a palette swatch, a carousel dot, the loading indicator, the slider — pin
+themselves to `round` and take their radius from `--m3-sys-shape-pill`, which
+the scale does not reach. Squaring those does not restyle them, it breaks them:
+a square radio is indistinguishable from a checkbox, so single choice stops
+reading as single choice. A bevel on a radius that is half the box would turn
+a circle into a diamond for the same reason.
+
+### The emphasis channel
+
+Corner geometry and interaction feedback come out of the same budget. M3
+signals a press and a selection by *morphing* the corner — a 40px pill's 20px
+radius drops to 8px pressed and settles at 12px selected — so the signal is
+the *difference between two radii*. Flatten the scale and it is gone: a square
+button cannot press squarer, and a selected one is indistinguishable from an
+unselected one. `test/shape.js` asserts exactly that, so the problem is
+documented rather than latent.
+
+Three tokens move the signal to colour instead. All are **unset** by default,
+so every read site falls back to the M3 value and the default build is
+unchanged:
+
+| Token | Default (unset) | Suggested |
+| --- | --- | --- |
+| `--m3-sys-emphasis-pressed-state-layer-opacity` | M3's pressed 10% | 16% |
+| `--m3-sys-emphasis-selected-state-layer-opacity` | `state-none` (0%) | 12% |
+| `--m3-sys-emphasis-selected-container-color` | the control's own content colour | any colour to tint toward |
+
+```css
+/* squared off, and still legible */
+.brutalist {
+  --md-sys-shape-corner-medium: 0px;
+  --md-sys-shape-corner-full: 0px;
   --m3-sys-emphasis-pressed-state-layer-opacity: 16%;
   --m3-sys-emphasis-selected-state-layer-opacity: 12%;
 }
 ```
 
-The channel fires only where shape *was* the signal — `.m3-btn`,
-`.m3-icon-btn` and the split button's action. Components that already swap a
+The selected half is a persistent tint composited *under* the interaction
+state layer, so hover, focus and press still read on a control already
+carrying it. It tints toward the *content* colour rather than swapping the
+container role, because that colour already contrasts with whatever container
+the variant has: one rule works on `primary` and on `transparent` alike, and
+it cannot lose a specificity fight with a variant modifier the way a container
+swap would. The channel applies where shape *was* the signal — `.m3-btn`,
+`.m3-icon-btn` and the split button's action; components that already swap a
 container on selection (chips, segmented buttons, tabs, nav destinations, the
-dense toolbar's toggles) are colour-forward already and are left alone rather
-than piling a second tint on top.
-
-`test/shape.js` asserts both halves: that a flat family flattens every rung so
-a real press produces no radius change at all, and that press and selection
-are still visible when it does.
+dense toolbar's toggles) are colour-forward already and are left alone.
 
 ---
 
@@ -1114,10 +1125,8 @@ no `@import`).
   $contrast: "standard",           // baked contrast level: standard | medium | high
   $custom-colors: (),              // ("brand": #ff6f00) -> harmonized --md-extended-color-brand roles + utilities
   $motion-scheme: "expressive",    // spring physics set: expressive | standard
-  $shape-family: "rounded",        // build-default corner family: rounded | sharp | cut | squircle | soft (see "Shape families")
-  $shape-families: (...),          // name -> ("corners", "scale", "corner-shape", "emphasis"); each is also [data-shape="<name>"] / .m3-shape--<name>
-  $emphasis-pressed-state-layer-opacity: 16%,   // press feedback a "color" family uses in place of the corner morph
-  $emphasis-selected-state-layer-opacity: 12%,  // selection feedback likewise
+  $emphasis-pressed-state-layer-opacity: 16%,   // press feedback in colour, for when a flattened shape scale leaves no corner to morph
+  $emphasis-selected-state-layer-opacity: 12%,  // selection feedback likewise (both tokens unset by default)
   $window-size-classes: (...),     // compact 0 / medium 600px / expanded 840px / large 1200px / extra-large 1600px
   $icon-blank-fallback: true,      // embedded 332-byte blank face behind --m3-icon-font (missing icon font renders nothing)
   $prefix: "m3",                   // class prefix + the library's own token tiers (--m3-sys-*, --m3-<component>-*)
@@ -1220,17 +1229,16 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
   below it; a component token set on an ancestor still beats all of them; and
   the island utilities and a forced `[data-contrast]` subtree re-tint real
   components, not just inherited text.
-- **shape** (`test/shape.js`): the shape-family contract and the expression
-  budget behind it. Every rung of every family resolves to the family's value;
-  a flat family flattens the pill along with the rest, so a real press
-  produces *no* radius change at all — and press and selection are still
-  visible, because the emphasis channel opened when the shape channel closed
-  (removing `"emphasis": "color"` from that family makes the suite report a
-  selected control whose background never moved). A cut family re-cuts the
-  geometry without resizing it, load-bearing circles stay round, a family on a
-  subtree reaches the components inside it and `--bs-border-radius` with them
-  and nothing outside, and the default build resolves to M3's published scale
-  with every emphasis token unset.
+- **shape** (`test/shape.js`): M3's shape model, both axes. Every slot of the
+  scale resolves to M3's published value; all 26 containers render on their
+  assigned slot, on the corner that actually carries it (a drawer takes its
+  radius on the trailing edge, a bottom sheet and a filled field on the top),
+  so a component cannot drift off its slot silently; re-pointing one slot on a
+  plain ancestor moves the containers on it and leaves the others alone; the
+  corner family computes `bevel` on chrome without resizing anything, with the
+  round-by-identity controls pinned; and a flattened scale keeps its circles
+  while the morph goes quiet — asserted in both directions, so the emphasis
+  tokens' reason for existing is documented rather than latent.
 - **spec** (`test/spec.js`): M3's published numbers asserted against what the
   stylesheet computes in a browser, not against what the Sass declares --
   typescale, state-layer opacities, the focus indicator, the shape scale, the
