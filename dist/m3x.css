@@ -6387,7 +6387,6 @@
       --_reach: 100vw;
       --_fill-x: calc(var(--m3-slider-gap, 0.375rem) - var(--_reach));
       --_end: right;
-      --_stop-pos: var(--_end) var(--_mark-x) center;
       display: inline-block;
       -webkit-appearance: none;
       appearance: none;
@@ -6408,6 +6407,7 @@
     .form-range::-webkit-slider-runnable-track {
       --_mark-x: calc(var(--_inset) - var(--m3-slider-stop-size, 0.25rem) / 2);
       --_tick-size: calc((100% - 2 * var(--_inset)) / var(--m3-slider-ticks, 10));
+      --_stop-pos: var(--_stop-align, var(--_end) var(--_mark-x) center);
       --_inset: calc(var(--m3-slider-gap, 0.375rem) + var(--m3-slider-thumb-width, 0.25rem) / 2);
       display: block;
       box-sizing: border-box;
@@ -6439,6 +6439,7 @@
     .form-range::-moz-range-track {
       --_mark-x: calc(var(--_inset) - var(--m3-slider-stop-size, 0.25rem) / 2);
       --_tick-size: calc((100% - 2 * var(--_inset)) / var(--m3-slider-ticks, 10));
+      --_stop-pos: var(--_stop-align, var(--_end) var(--_mark-x) center);
       --_inset: calc(var(--m3-slider-thumb-width, 0.25rem) / 2);
       display: block;
       box-sizing: border-box;
@@ -11188,10 +11189,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: var(--m3-sys-space-3);
+      gap: var(--m3-rail-item-gap, 0.25rem);
       inline-size: var(--m3-rail-width, 6rem);
       block-size: 100%;
-      padding-block: var(--m3-sys-space-4);
+      padding-block-start: var(--m3-rail-top-space, 2.75rem);
+      padding-block-end: var(--m3-sys-space-none);
       background-color: var(--m3-rail-container-color, var(--md-sys-color-surface));
       --m3-sys-container-color: var(--m3-rail-container-color, var(--md-sys-color-surface));
     }
@@ -11206,8 +11208,10 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       gap: var(--m3-sys-space-1);
       inline-size: 100%;
+      min-block-size: var(--m3-rail-item-height, 4rem);
       color: var(--m3-rail-label-color, var(--md-sys-color-on-surface-variant));
       text-decoration: none;
       cursor: pointer;
@@ -11241,7 +11245,7 @@
       --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-rail__item.active, .m3-rail__item[aria-current=page] {
-      color: var(--m3-rail-active-label-color, var(--md-sys-color-on-surface));
+      color: var(--m3-rail-active-label-color, var(--md-sys-color-secondary));
     }
     .m3-rail__item.active .m3-rail__icon, .m3-rail__item[aria-current=page] .m3-rail__icon {
       --m3-icon-fill: 1;
@@ -11281,10 +11285,11 @@
       align-items: center;
       gap: var(--m3-sys-space-3);
       inline-size: 100%;
-      margin-block-end: calc(var(--m3-rail-header-gap, 2.5rem) - var(--m3-sys-space-3));
+      margin-block-end: calc(var(--m3-rail-header-gap, 2.5rem) - var(--m3-rail-item-gap, 0.25rem));
     }
     .m3-rail--expanded {
       align-items: stretch;
+      gap: var(--m3-sys-space-none);
       inline-size: clamp(13.75rem, var(--m3-rail-expanded-width, 13.75rem), 22.5rem);
       padding-inline: var(--m3-sys-space-3);
     }
@@ -11294,13 +11299,13 @@
     }
     .m3-rail--expanded .m3-rail__item {
       --_container: transparent;
+      min-block-size: var(--m3-rail-expanded-item-height, 3.5rem);
       --_content: var(--m3-rail-label-color, var(--md-sys-color-on-surface-variant));
       --_state-color: var(--_content);
       flex-direction: row;
       align-items: center;
       justify-content: flex-start;
       gap: var(--m3-sys-space-2);
-      min-block-size: var(--m3-rail-expanded-item-height, 3.5rem);
       padding-inline: var(--m3-sys-space-4);
       border-radius: var(--md-sys-shape-corner-full);
       text-align: start;
@@ -11335,13 +11340,15 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: var(--m3-sys-space-3);
+      gap: var(--m3-rail-item-gap, 0.25rem);
       inline-size: var(--m3-rail-width, 6rem);
       block-size: 100%;
-      padding-block: var(--m3-sys-space-4);
+      padding-block-start: var(--m3-rail-top-space, 2.75rem);
+      padding-block-end: var(--m3-sys-space-none);
       background-color: var(--m3-rail-container-color, var(--md-sys-color-surface));
       --m3-sys-container-color: var(--m3-rail-container-color, var(--md-sys-color-surface));
       align-items: stretch;
+      gap: var(--m3-sys-space-none);
       inline-size: clamp(13.75rem, var(--m3-rail-expanded-width, 13.75rem), 22.5rem);
       padding-inline: var(--m3-sys-space-3);
       position: absolute;
@@ -11390,13 +11397,13 @@
     }
     .m3-rail--modal .m3-rail__item {
       --_container: transparent;
+      min-block-size: var(--m3-rail-expanded-item-height, 3.5rem);
       --_content: var(--m3-rail-label-color, var(--md-sys-color-on-surface-variant));
       --_state-color: var(--_content);
       flex-direction: row;
       align-items: center;
       justify-content: flex-start;
       gap: var(--m3-sys-space-2);
-      min-block-size: var(--m3-rail-expanded-item-height, 3.5rem);
       padding-inline: var(--m3-sys-space-4);
       border-radius: var(--md-sys-shape-corner-full);
       text-align: start;
@@ -12628,7 +12635,6 @@
       --_reach: 100vw;
       --_fill-x: calc(var(--m3-slider-gap, 0.375rem) - var(--_reach));
       --_end: right;
-      --_stop-pos: var(--_end) var(--_mark-x) center;
       display: inline-block;
       -webkit-appearance: none;
       appearance: none;
@@ -12649,6 +12655,7 @@
     input[type=range].m3-slider::-webkit-slider-runnable-track {
       --_mark-x: calc(var(--_inset) - var(--m3-slider-stop-size, 0.25rem) / 2);
       --_tick-size: calc((100% - 2 * var(--_inset)) / var(--m3-slider-ticks, 10));
+      --_stop-pos: var(--_stop-align, var(--_end) var(--_mark-x) center);
       --_inset: calc(var(--m3-slider-gap, 0.375rem) + var(--m3-slider-thumb-width, 0.25rem) / 2);
       display: block;
       box-sizing: border-box;
@@ -12680,6 +12687,7 @@
     input[type=range].m3-slider::-moz-range-track {
       --_mark-x: calc(var(--_inset) - var(--m3-slider-stop-size, 0.25rem) / 2);
       --_tick-size: calc((100% - 2 * var(--_inset)) / var(--m3-slider-ticks, 10));
+      --_stop-pos: var(--_stop-align, var(--_end) var(--_mark-x) center);
       --_inset: calc(var(--m3-slider-thumb-width, 0.25rem) / 2);
       display: block;
       box-sizing: border-box;
@@ -12858,7 +12866,7 @@
       --_progress-color: transparent;
       --_band-from: min(50%, calc(var(--m3-slider-thumb-width, 0.25rem) / 2 + (100% - var(--m3-slider-thumb-width, 0.25rem)) * var(--m3-slider-value, 0) / 100));
       --_band-to: max(50%, calc(var(--m3-slider-thumb-width, 0.25rem) / 2 + (100% - var(--m3-slider-thumb-width, 0.25rem)) * var(--m3-slider-value, 0) / 100));
-      --_stop-pos: center;
+      --_stop-align: center;
     }
     .m3-slider-field--range {
       grid-template-rows: auto auto;
@@ -16948,10 +16956,11 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: var(--m3-sys-space-3);
+        gap: var(--m3-rail-item-gap, 0.25rem);
         inline-size: var(--m3-rail-width, 6rem);
         block-size: 100%;
-        padding-block: var(--m3-sys-space-4);
+        padding-block-start: var(--m3-rail-top-space, 2.75rem);
+        padding-block-end: var(--m3-sys-space-none);
         background-color: var(--m3-rail-container-color, var(--md-sys-color-surface));
         --m3-sys-container-color: var(--m3-rail-container-color, var(--md-sys-color-surface));
         position: fixed;
@@ -16967,8 +16976,10 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        justify-content: center;
         gap: var(--m3-sys-space-1);
         inline-size: 100%;
+        min-block-size: var(--m3-rail-item-height, 4rem);
         color: var(--m3-rail-label-color, var(--md-sys-color-on-surface-variant));
         text-decoration: none;
         cursor: pointer;
@@ -17006,7 +17017,7 @@
         --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
       }
       .m3-adaptive-nav .m3-adaptive-nav__item.active, .m3-adaptive-nav .m3-adaptive-nav__item[aria-current=page] {
-        color: var(--m3-rail-active-label-color, var(--md-sys-color-on-surface));
+        color: var(--m3-rail-active-label-color, var(--md-sys-color-secondary));
       }
       .m3-adaptive-nav .m3-adaptive-nav__item.active .m3-adaptive-nav__icon, .m3-adaptive-nav .m3-adaptive-nav__item[aria-current=page] .m3-adaptive-nav__icon {
         --m3-icon-fill: 1;

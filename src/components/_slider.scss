@@ -180,6 +180,13 @@ $tokens: map.set($tokens, "slider-thumb-height", #{m.token($tokens, "slider-thum
 @mixin -track-marks {
   --_mark-x: calc(var(--_inset) - #{v("slider-stop-size")} / 2);
   --_tick-size: calc((100% - 2 * var(--_inset)) / #{v("slider-ticks")});
+  // The stop indicator's place in the background-position list. It has to be
+  // resolved HERE, on the track, because --_mark-x and --_inset only exist
+  // here: a var() naming them from the input would be invalid at
+  // computed-value time and would take the whole declaration -- every layer's
+  // position, not just this one -- down with it. Variants re-aim the dot by
+  // setting --_stop-align on the input instead.
+  --_stop-pos: var(--_stop-align, var(--_end) var(--_mark-x) center);
 }
 
 @mixin -track-webkit {
@@ -312,7 +319,6 @@ $tokens: map.set($tokens, "slider-thumb-height", #{m.token($tokens, "slider-thum
   // Fill direction and the stop indicator's end, flipped for RTL below.
   --_fill-x: calc(#{v("slider-gap")} - var(--_reach));
   --_end: right;
-  --_stop-pos: var(--_end) var(--_mark-x) center;
 
   display: inline-block;
   -webkit-appearance: none;
@@ -442,7 +448,7 @@ $tokens: map.set($tokens, "slider-thumb-height", #{m.token($tokens, "slider-thum
   // origin, which is exactly what value 0 draws.
   --_band-from: min(50%, #{-handle-x("--#{c.$prefix}-slider-value", 0)});
   --_band-to: max(50%, #{-handle-x("--#{c.$prefix}-slider-value", 0)});
-  --_stop-pos: center;
+  --_stop-align: center;
 }
 
 // M3's range slider is two handles on one track. CSS has no two-thumb range

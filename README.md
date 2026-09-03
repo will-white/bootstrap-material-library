@@ -1004,6 +1004,8 @@ project that wants the older look overrides one line:
 | List leading video frame | 114x64 (16:9) | `--m3-list-item-video-width` / `-height` |
 | Rich tooltip padding | 16px | `--m3-tooltip-rich-padding` |
 | Collapsed navigation rail | 96px (80px pre-Expressive) | `--m3-rail-width` |
+| Rail vertical rhythm | 44px above the first destination and 0 below, 4px between them, 64px per destination | `--m3-rail-top-space`, `--m3-rail-item-gap`, `--m3-rail-item-height` |
+| Rail active label | `secondary` (m3x shipped `on-surface`) | `--m3-rail-active-label-color` |
 
 The progress gap closes on its own at value 0 and on indeterminate tracks,
 so the ring and the bar stay unbroken where there is no active indicator to
@@ -1336,6 +1338,14 @@ them.
   <a class="m3-rail__item" href="/starred"><span class="m3-rail__icon">…</span>Starred</a>
 </aside>
 ```
+
+**Vertical rhythm.** M3 hangs the collapsed rail from the top: 44px of top
+space (`TopSpace`) with nothing below it, 4px between destinations
+(`ItemVerticalSpace`), and 64px minimum per destination (`ContainerHeight`).
+The expanded rail closes that gap to zero — its rows are each their own 56px
+indicator, so a gap between them would read as a break in a list rather than
+spacing. The active label is `secondary` (`ItemActiveLabelText`), not
+`on-surface`.
 
 **What moves when it expands.** In the collapsed rail the active indicator is
 the pill around the icon; in the expanded rail M3's horizontal item is one
@@ -1787,7 +1797,9 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
   inputs and hands the pointer to its handles, and that a vertical slider's
   rotated input lands flush on its wrapper; the rail's expanded width, its
   56px horizontal item, the icon going back to a glyph box, and the 40px
-  header gap; the four carousel layouts on a fixed track; that every
+  header gap, its 44px top space with nothing below, its 4px item gap, its
+  64px destinations and its `secondary` active label; the four carousel
+  layouts on a fixed track; that every
   transition pattern is inert under reduced motion; the time picker's dial
   (its face, three numbers' places on the circle, and the hand following the
   checked hour), the date picker's year cell, the menu shortcut's trailing

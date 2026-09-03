@@ -105,6 +105,9 @@ ${Object.keys(BUTTON_RAMP).map((s) => `<div class="${mod('m3-split-button', s)}"
 <aside class="m3-rail" id="rail-header">
   <div class="m3-rail__header" id="rail-header-slot"><button class="m3-icon-btn" type="button" aria-label="M">${ICON}</button></div>
   <a class="m3-rail__item" href="#" id="rail-header-item"><span class="m3-rail__icon">${ICON}</span>A</a></aside>
+<aside class="m3-rail" id="rail-rhythm">
+  <a class="m3-rail__item active" href="#" id="rail-item-1"><span class="m3-rail__icon">${ICON}</span>A</a>
+  <a class="m3-rail__item" href="#" id="rail-item-2"><span class="m3-rail__icon">${ICON}</span>B</a></aside>
 <aside class="m3-rail m3-rail--expanded" id="rail-expanded">
   <a class="m3-rail__item" href="#" id="rail-exp-item"><span class="m3-rail__icon" id="rail-exp-icon">${ICON}</span>A</a></aside>
 
@@ -344,6 +347,16 @@ async function run() {
           // The indicator is the row now, so the icon is back to a glyph box.
           iconBox: [num(box('rail-exp-icon').width), num(box('rail-exp-icon').height)],
           headerGap: num(box('rail-header-item').top - box('rail-header-slot').bottom),
+          // The collapsed rail's own vertical rhythm: M3 hangs it from a
+          // 44dp top space with nothing below, 4dp between destinations, and
+          // a 64dp minimum for a destination.
+          topSpace: num(box('rail-item-1').top - box('rail-rhythm').top),
+          bottomSpace: num(box('rail-rhythm').bottom - box('rail-item-2').bottom),
+          itemGap: num(box('rail-item-2').top - box('rail-item-1').bottom),
+          collapsedItemHeight: num(box('rail-item-1').height),
+          // M3's ItemActiveLabelText is `secondary`, not `on-surface`.
+          activeLabel: cs('rail-item-1').color,
+          secondaryRole: getComputedStyle(document.documentElement).getPropertyValue('--md-sys-color-secondary').trim(),
         };
 
         // M3's slider value indicator: 12dp above the track, centred on the
@@ -441,6 +454,29 @@ async function run() {
       },
       { BUTTON_RAMP, ICON_BUTTON_RAMP, TOKENS, EMPHASIZED }
     );
+    // The slider paints its track as background LAYERS on a vendor
+    // pseudo-element, whose computed style getComputedStyle() will not return
+    // -- so this reads the PAINT instead. One bad var() anywhere in the
+    // track's background-position list is invalid at computed-value time and
+    // takes the whole declaration to 0% 0%, sliding every layer to the top of
+    // the control: a second track floating above the real one. A 1x1
+    // screenshot is byte-identical to another of the same colour, so three of
+    // them settle it with no image decoder.
+    {
+      const b = await page.locator('#sl').boundingBox();
+      const dot = async (x, y) =>
+        (await page.screenshot({ clip: { x, y, width: 1, height: 1 } })).toString('base64');
+      r.misc.sliderPaint = {
+        // Well inside the active track, at the control's vertical centre.
+        centre: await dot(b.x + 8, b.y + b.height / 2),
+        // The same column, 8px down. The correct 16px band sits at the
+        // control's centre (16..32 of 48), so nothing paints here; a band
+        // pushed to 0% 0% of the 44px runnable track covers 2..18 and does.
+        top: await dot(b.x + 8, b.y + 8),
+        // A reference pixel of the page, far from any control.
+        page: await dot(b.x + 8, b.y - 6),
+      };
+    }
     await page.close();
   } finally {
     await browser.close();
@@ -530,6 +566,25 @@ async function run() {
   expect(r.misc.rail2.itemHeight === 56, `expanded rail item ${r.misc.rail2.itemHeight}, expected 56`);
   expect(eq(r.misc.rail2.iconBox, [24, 24]), `expanded rail icon ${JSON.stringify(r.misc.rail2.iconBox)}, expected [24,24]`);
   expect(r.misc.rail2.headerGap === 40, `rail header gap ${r.misc.rail2.headerGap}, expected 40 (M3's HeaderSpaceMinimum)`);
+  expect(r.misc.rail2.topSpace === 44, `rail top space ${r.misc.rail2.topSpace}, expected 44 (M3's TopSpace)`);
+  expect(r.misc.rail2.bottomSpace === 0, `rail bottom space ${r.misc.rail2.bottomSpace}, expected 0 (M3 hangs the rail from the top)`);
+  expect(r.misc.rail2.itemGap === 4, `rail item gap ${r.misc.rail2.itemGap}, expected 4 (M3's ItemVerticalSpace)`);
+  expect(r.misc.rail2.collapsedItemHeight === 64,
+    `collapsed rail item height ${r.misc.rail2.collapsedItemHeight}, expected 64 (M3's ContainerHeight)`);
+  expect(r.misc.rail2.activeLabel === r.misc.rail2.secondaryRole,
+    `rail active label ${r.misc.rail2.activeLabel}, expected the secondary role ${r.misc.rail2.secondaryRole}`);
+
+  // The track band is painted at the control's vertical centre, and nothing
+  // is painted at its top edge. If the background-position list ever goes
+  // invalid, every layer moves to 0% 0% and both of these flip.
+  {
+    const paint = r.misc.sliderPaint;
+    expect(paint.centre !== paint.page, 'slider: no track painted at the control centre');
+    expect(
+      paint.top === paint.page,
+      'slider: something is painted at the top edge of the control -- the track layers have lost their positions and are stacking above the real track'
+    );
+  }
 
   // M3's slider value indicator sits 12dp above the track (M3's
   // ValueIndicatorActiveBottomSpace) and centres on the handle, whose centre
@@ -653,7 +708,7 @@ async function run() {
   expect(r.misc.navBar === 80, `navigation bar height ${r.misc.navBar}, expected 80`);
 
   if (!failures.length) {
-    console.log(`[spec] ${Object.keys(TOKENS).length} tokens, ${Object.keys(BUTTON_RAMP).length}-rung button/icon-button/split ramps, ${Object.keys(EMPHASIZED).length} emphasized typescale styles, 6 tonal-elevation surfaces, field anatomy, slider anatomy, fields, chips, selection, progress (stop indicator + gap), tabs, tooltip, list, 4 carousel layouts, motion patterns inert under reduced motion, dial/year/shortcut/search-slot/hero-icon/avatar anatomy, rail (collapsed + expanded + header): ok`);
+    console.log(`[spec] ${Object.keys(TOKENS).length} tokens, ${Object.keys(BUTTON_RAMP).length}-rung button/icon-button/split ramps, ${Object.keys(EMPHASIZED).length} emphasized typescale styles, 6 tonal-elevation surfaces, field anatomy, slider anatomy (track layers positioned), fields, chips, selection, progress (stop indicator + gap), tabs, tooltip, list, 4 carousel layouts, motion patterns inert under reduced motion, dial/year/shortcut/search-slot/hero-icon/avatar anatomy, rail (collapsed rhythm + expanded + header): ok`);
   }
   return failures;
 }

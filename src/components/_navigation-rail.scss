@@ -11,6 +11,10 @@
 //   --m3-rail-active-label-color          on-surface
 //   --m3-rail-active-icon-container-color secondary-container
 //   --m3-rail-active-icon-color           on-secondary-container
+//   --m3-rail-top-space                   44px   M3's TopSpace, above the
+//                                                first destination
+//   --m3-rail-item-gap                    4px    M3's ItemVerticalSpace
+//   --m3-rail-item-height                 64px   M3's ContainerHeight
 //   --m3-rail-expanded-width              220px  M3's minimum; its maximum is
 //                                                360px and this clamps to both
 //   --m3-rail-header-gap                  40px   M3's HeaderSpaceMinimum, the
@@ -67,9 +71,17 @@ $tokens: (
   "rail-pill-height": #{fn.rem(32)},
   "rail-container-color": var(--#{c.$sys-prefix}-sys-color-surface),
   "rail-label-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
-  "rail-active-label-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  // M3's NavigationRailColorTokens.ItemActiveLabelText, which Compose passes
+  // straight through as the selected item's text colour.
+  "rail-active-label-color": var(--#{c.$sys-prefix}-sys-color-secondary),
   "rail-active-icon-container-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
   "rail-active-icon-color": var(--#{c.$sys-prefix}-sys-color-on-secondary-container),
+  // The collapsed rail's own vertical rhythm, from the Expressive rail's
+  // layout: 44dp above the first destination and nothing below it, 4dp
+  // between destinations, and a 64dp minimum for a destination itself.
+  "rail-top-space": #{fn.rem(44)},
+  "rail-item-gap": #{fn.rem(4)},
+  "rail-item-height": #{fn.rem(64)},
   // Expanded: M3 gives the wide rail a 220dp minimum and a 360dp maximum, and
   // the token is clamped to both, so re-pointing it stays inside the spec.
   "rail-expanded-width": #{fn.rem(220)},
@@ -94,10 +106,13 @@ $tokens: (
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--#{c.$prefix}-sys-space-3);
+  gap: #{v("rail-item-gap")};
   inline-size: #{v("rail-width")};
   block-size: 100%;
-  padding-block: var(--#{c.$prefix}-sys-space-4);
+  // M3 puts its whole vertical allowance above the first destination and
+  // none below it, so the rail reads as a column hanging from the top.
+  padding-block-start: #{v("rail-top-space")};
+  padding-block-end: var(--#{c.$prefix}-sys-space-none);
   background-color: #{v("rail-container-color")};
   --#{c.$prefix}-sys-container-color: #{v("rail-container-color")};
 }
@@ -118,8 +133,10 @@ $tokens: (
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: var(--#{c.$prefix}-sys-space-1);
   inline-size: 100%;
+  min-block-size: #{v("rail-item-height")};
   color: #{v("rail-label-color")};
   text-decoration: none;
   cursor: pointer;
@@ -200,9 +217,9 @@ $tokens: (
   align-items: center;
   gap: var(--#{c.$prefix}-sys-space-3);
   inline-size: 100%;
-  margin-block-end: calc(
-    #{v("rail-header-gap")} - var(--#{c.$prefix}-sys-space-3)
-  );
+  // HeaderSpaceMinimum measures from the header to the first destination, and
+  // the container's own gap already contributes part of it.
+  margin-block-end: calc(#{v("rail-header-gap")} - #{v("rail-item-gap")});
 }
 
 @mixin header-expanded {
@@ -217,6 +234,9 @@ $tokens: (
 // indicator that spans the item.
 @mixin expanded {
   align-items: stretch;
+  // The expanded rail's rows sit flush: each is its own 56dp indicator, so a
+  // gap between them would read as a break in a list rather than spacing.
+  gap: var(--#{c.$prefix}-sys-space-none);
   // M3's minimum and maximum for the expanded rail; re-pointing the token
   // moves the width inside them rather than past them.
   inline-size: clamp(#{fn.rem(220)}, #{v("rail-expanded-width")}, #{fn.rem(360)});
@@ -229,6 +249,7 @@ $tokens: (
 // than under it.
 @mixin expanded-item {
   --_container: transparent;
+  min-block-size: #{v("rail-expanded-item-height")};
   --_content: #{v("rail-label-color")};
   --_state-color: var(--_content);
 
@@ -236,7 +257,6 @@ $tokens: (
   align-items: center;
   justify-content: flex-start;
   gap: var(--#{c.$prefix}-sys-space-2);
-  min-block-size: #{v("rail-expanded-item-height")};
   padding-inline: var(--#{c.$prefix}-sys-space-4);
   border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   text-align: start;

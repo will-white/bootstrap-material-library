@@ -5911,9 +5911,17 @@
         }
       },
       "rail": {
+        "item-gap": {
+          "$type": "dimension",
+          "$value": "0.25rem"
+        },
         "width": {
           "$type": "dimension",
           "$value": "6rem"
+        },
+        "top-space": {
+          "$type": "dimension",
+          "$value": "2.75rem"
         },
         "container-color": {
           "$value": "{md.sys.color.surface}",
@@ -5923,6 +5931,10 @@
               "css": "var(--md-sys-color-surface)"
             }
           }
+        },
+        "item-height": {
+          "$type": "dimension",
+          "$value": "4rem"
         },
         "label-color": {
           "$value": "{md.sys.color.on-surface-variant}",
@@ -5934,11 +5946,11 @@
           }
         },
         "active-label-color": {
-          "$value": "{md.sys.color.on-surface}",
+          "$value": "{md.sys.color.secondary}",
           "$type": "color",
           "$extensions": {
             "m3x": {
-              "css": "var(--md-sys-color-on-surface)"
+              "css": "var(--md-sys-color-secondary)"
             }
           }
         },
