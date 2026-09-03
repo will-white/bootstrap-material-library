@@ -662,6 +662,23 @@ together and they stay in step. Durations and easings are M3 tokens
 throughout; the shared axes' 30px travel is
 `--m3-sys-motion-axis-distance`.
 
+That is also how you slow one down. At M3's specified 300ms the patterns are a
+few frames apart and hard to tell from one another — which matters when you are
+choosing between them, or showing a colleague why fade through is not a fade.
+Re-point the duration tokens on any ancestor and every pattern inside it
+retimes, ratio intact:
+
+```css
+.slow-motion {
+  --md-sys-motion-duration-medium2: 1200ms;  /* fade through, shared axis */
+  --md-sys-motion-duration-short3: 600ms;    /* fade, in */
+  --md-sys-motion-duration-short1: 200ms;    /* fade, out */
+}
+```
+
+The catalog's transition-pattern demo is exactly this, wired to a segmented
+control, and it opens at ¼× for that reason.
+
 **Container transform** is the one pattern the web already has a mechanism
 for, so m3x drives that rather than reimplementing the morph:
 

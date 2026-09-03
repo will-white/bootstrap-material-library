@@ -74,6 +74,31 @@
     .cat-frame--scroll { block-size: 15rem; overflow-y: auto; }
     .cat-pair { display: grid; gap: var(--m3-sys-space-2); }
     .cat-pair > small { color: var(--md-sys-color-on-surface-variant); }
+    /* Transition-pattern stage. Both screens share one grid cell so the
+       outgoing and incoming halves genuinely overlap -- that overlap is the
+       whole point of the 90/210 split, and it is invisible if only one
+       element moves. The speed control re-points M3's own duration tokens on
+       this block, which is exactly how a consumer would retime the patterns;
+       :has() reads the checked radio, so it costs no script. */
+    .cat-motion { display: grid; gap: var(--m3-sys-space-4); grid-template-columns: minmax(0, 14rem) minmax(0, 1fr); align-items: start; }
+    .cat-motion__controls { display: grid; gap: var(--m3-sys-space-3); justify-items: start; }
+    .cat-motion__buttons { display: grid; gap: var(--m3-sys-space-2); justify-items: stretch; inline-size: 100%; }
+    .cat-motion__speed { align-self: start; }
+    .cat-motion__stage { display: grid; min-block-size: 12rem; border-radius: var(--md-sys-shape-corner-large); overflow: clip; }
+    .cat-motion__pane { grid-area: 1 / 1; align-self: stretch; }
+    .cat-motion__pane--off { opacity: 0; pointer-events: none; }
+    .cat-motion:has(#motion-speed-2:checked) {
+      --md-sys-motion-duration-medium2: 600ms;
+      --md-sys-motion-duration-short3: 300ms;
+      --md-sys-motion-duration-short1: 100ms;
+    }
+    .cat-motion:has(#motion-speed-4:checked) {
+      --md-sys-motion-duration-medium2: 1200ms;
+      --md-sys-motion-duration-short3: 600ms;
+      --md-sys-motion-duration-short1: 200ms;
+    }
+    @media (max-width: 48rem) { .cat-motion { grid-template-columns: minmax(0, 1fr); } }
+
     .cat-emph { display: grid; gap: var(--m3-sys-space-4); }
     .cat-emph__row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--m3-sys-space-4); align-items: baseline; }
     .cat-emph__row > small { grid-column: 1 / -1; color: var(--md-sys-color-on-surface-variant); }
@@ -696,25 +721,46 @@
   <div class="cat-item cat-item--wide">
     <h3 class="m3-title-medium">Transition patterns</h3>
     <p class="cat-note m3-body-small">The layer above per-property transitions: how one piece of UI
-      <em>replaces</em> another. Material Motion&rsquo;s cross-fade is a 90ms&thinsp;/&thinsp;210ms split &mdash;
-      the outgoing element is gone before the incoming one starts, so they never both sit at half opacity. Each
-      pattern is <em>one</em> animation whose keyframes put that split at 30% of the timeline, so re-pointing the
-      duration token moves both halves together. Press a button to replay it.</p>
-    <div class="cat-specimen" style="align-items: flex-start; gap: var(--m3-sys-space-4);">
-      <div style="display: grid; gap: var(--m3-sys-space-2); justify-items: start;">
-        <button class="m3-btn m3-btn--tonal" type="button" data-motion="m3-motion-fade-through">Fade through</button>
-        <button class="m3-btn m3-btn--tonal" type="button" data-motion="m3-motion-shared-x">Shared axis X</button>
-        <button class="m3-btn m3-btn--tonal" type="button" data-motion="m3-motion-shared-x m3-motion--reverse">Shared axis X, back</button>
-        <button class="m3-btn m3-btn--tonal" type="button" data-motion="m3-motion-shared-y">Shared axis Y</button>
-        <button class="m3-btn m3-btn--tonal" type="button" data-motion="m3-motion-shared-z">Shared axis Z</button>
-        <button class="m3-btn m3-btn--tonal" type="button" data-motion="m3-motion-fade">Fade</button>
+      <em>replaces</em> another. Both screens below occupy the same box, so you are watching the real thing &mdash;
+      one leaving while the other arrives. Material Motion&rsquo;s cross-fade is a 90ms&thinsp;/&thinsp;210ms split:
+      the outgoing screen is <em>gone</em> before the incoming one starts, so they never both sit at half opacity.
+      Each pattern is one animation whose keyframes put that split at 30% of the timeline, which is why re-pointing
+      a duration token moves both halves together and keeps the ratio.</p>
+    <p class="cat-note m3-body-small">At M3&rsquo;s specified 300ms the difference between these patterns is a
+      matter of a few frames. <strong>Slow it down first</strong> &mdash; the speed control does nothing but
+      re-point <code>--md-sys-motion-duration-medium2</code>, <code>-short3</code> and <code>-short1</code> on this
+      block, which is exactly how you would retime the patterns in your own app. Watch the same button at 1&times;
+      afterwards and you will see what you were missing.</p>
+    <div class="cat-motion">
+      <div class="cat-motion__controls">
+        <fieldset class="m3-segmented cat-motion__speed" aria-label="Playback speed">
+          <label class="m3-segmented__segment"><input class="m3-segmented__input" type="radio" name="motion-speed" id="motion-speed-4" checked><span class="m3-segmented__label">&frac14;&times;</span></label>
+          <label class="m3-segmented__segment"><input class="m3-segmented__input" type="radio" name="motion-speed" id="motion-speed-2"><span class="m3-segmented__label">&frac12;&times;</span></label>
+          <label class="m3-segmented__segment"><input class="m3-segmented__input" type="radio" name="motion-speed" id="motion-speed-1"><span class="m3-segmented__label">1&times; spec</span></label>
+        </fieldset>
+        <div class="cat-motion__buttons">
+          <button class="m3-btn m3-btn--tonal" type="button" data-motion="m3-motion-fade-through">Fade through</button>
+          <button class="m3-btn m3-btn--tonal" type="button" data-motion="m3-motion-shared-x">Shared axis X</button>
+          <button class="m3-btn m3-btn--tonal" type="button" data-motion="m3-motion-shared-y">Shared axis Y</button>
+          <button class="m3-btn m3-btn--tonal" type="button" data-motion="m3-motion-shared-z">Shared axis Z</button>
+          <button class="m3-btn m3-btn--tonal" type="button" data-motion="m3-motion-fade">Fade</button>
+        </div>
+        <small class="m3-body-small cat-note">Each press swaps the two screens, and every second press runs the
+          same pattern <code>--reverse</code>, the way a back navigation should.</small>
       </div>
-      <div style="flex: 1 1 18rem; overflow: clip; border-radius: var(--md-sys-shape-corner-large);">
-        <div class="m3-card m3-card--filled" id="motion-stage">
+      <div class="cat-motion__stage" id="motion-stage">
+        <div class="m3-card m3-card--filled cat-motion__pane" data-pane>
           <div class="m3-card__slot">
-            <h4 class="m3-title-medium">Second screen</h4>
-            <p class="m3-body-medium">Whichever pattern you pick runs on this card. With
-              <code>prefers-reduced-motion: reduce</code> it is simply here, keyframes and all.</p>
+            <h4 class="m3-title-medium">Screen one</h4>
+            <p class="m3-body-medium">The screen you are leaving. On a fade through it fades out
+              <em>first</em>, alone; on a shared axis it also slides, and on Z it recedes past you.</p>
+          </div>
+        </div>
+        <div class="m3-card m3-card--filled cat-motion__pane cat-motion__pane--off" data-pane>
+          <div class="m3-card__slot">
+            <h4 class="m3-title-medium">Screen two</h4>
+            <p class="m3-body-medium">The screen arriving. It waits out the first 90ms, then takes the
+              remaining 210ms &mdash; growing from 92% on a fade through, from 80% on a plain fade.</p>
           </div>
         </div>
       </div>
@@ -2563,17 +2609,38 @@
   }
 </script>
 <script>
-  // Transition patterns: swap the class on the stage and let the animation
-  // restart. Nothing here is part of the library -- the classes are.
+  // Transition patterns: run BOTH halves of the swap -- the outgoing screen
+  // takes the pattern's `-out` class, the incoming one takes the pattern.
+  // Nothing here is part of the library; the classes are.
   (function () {
     var stage = document.getElementById("motion-stage");
     if (!stage) return;
-    var base = stage.className;
+    var panes = stage.querySelectorAll("[data-pane]");
+    var rest = "m3-card m3-card--filled cat-motion__pane";
+    var off = rest + " cat-motion__pane--off";
+    var showing = 0;       // which pane is on screen
+    var back = false;      // every second press runs the pattern in reverse
+    var still = matchMedia("(prefers-reduced-motion: reduce)");
+
     document.querySelectorAll("[data-motion]").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        stage.className = base;
-        void stage.offsetWidth;               // restart the animation
-        stage.className = base + " " + btn.dataset.motion;
+        var going = panes[showing], coming = panes[1 - showing];
+        var pattern = btn.dataset.motion;
+        var reverse = back ? " m3-motion--reverse" : "";
+        showing = 1 - showing;
+        back = !back;
+
+        if (still.matches) {                  // no animation to wait on
+          going.className = off;
+          coming.className = rest;
+          return;
+        }
+        going.className = rest + " " + pattern + "-out" + reverse;
+        coming.className = rest + " " + pattern + reverse;
+        going.addEventListener("animationend", function done() {
+          going.removeEventListener("animationend", done);
+          going.className = off;              // hand off at opacity 0, no flash
+        });
       });
     });
   })();
