@@ -118,7 +118,15 @@ ${Object.keys(BUTTON_RAMP).map((s) => `<div class="${mod('m3-split-button', s)}"
   <div class="m3-carousel" id="car-default"><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div></div>
   <div class="m3-carousel m3-carousel--multi-browse" id="car-multi"><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div></div>
   <div class="m3-carousel m3-carousel--hero" id="car-hero"><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div></div>
-  <div class="m3-carousel m3-carousel--uncontained" id="car-unc"><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div></div>
+  <div id="motion-probe" style="position:absolute;visibility:hidden">
+  <div class="m3-motion-fade-through" id="mo-ft-in"></div>
+  <div class="m3-motion-fade-through-out" id="mo-ft-out"></div>
+  <div class="m3-motion-shared-x" id="mo-x-in"></div>
+  <div class="m3-motion-shared-x m3-motion--reverse" id="mo-x-rev"></div>
+  <div class="m3-motion-shared-z-out" id="mo-z-out"></div>
+  <div class="m3-motion-fade" id="mo-fade"></div>
+</div>
+<div class="m3-carousel m3-carousel--uncontained" id="car-unc"><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div></div>
 </div>
 <div class="m3-nav-bar" id="navbar"><a class="m3-nav-bar__item" href="#">${ICON}<span class="m3-nav-bar__label">A</span></a></div>
 ${Object.keys(EMPHASIZED).map((role) => `<p class="m3-${role}" id="ts-${role}">Aa</p><p class="m3-${role}-emphasized" id="tse-${role}">Aa</p>`).join('\n')}
@@ -269,6 +277,13 @@ async function run() {
         out.misc.cardRadius = num(cs('card').borderTopLeftRadius);
         out.misc.navBar = num(box('navbar').height);
 
+        // M3's transition patterns are all behind
+        // prefers-reduced-motion: no-preference, and this page runs with
+        // reduced motion, so every one of them must be inert here. The frames
+        // themselves are sampled in test/morph.js, which runs without it.
+        out.misc.motionReduced = ['mo-ft-in', 'mo-ft-out', 'mo-x-in', 'mo-x-rev', 'mo-z-out', 'mo-fade']
+          .map((id) => [cs(id).animationName, el(id).getAnimations().length]);
+
         // M3's carousel layouts, measured on a 672px track.
         const carWidths = (id) => [...el(id).children].map((e) => num(e.getBoundingClientRect().width));
         out.misc.carousel = {
@@ -415,6 +430,13 @@ async function run() {
     // The point of the scale: emphasized is always heavier than baseline.
     expect(Number(got.weight) > Number(got.baseWeight), `.m3-${role}-emphasized weight ${got.weight} should exceed baseline ${got.baseWeight}`);
   }
+
+  // Under reduced motion every transition pattern is inert: no animation
+  // name, no running animation, the element simply there.
+  expect(
+    r.misc.motionReduced.every(([name, count]) => name === 'none' && count === 0),
+    `motion patterns under reduced motion ${JSON.stringify(r.misc.motionReduced)}, expected none/0 for all`
+  );
 
   // M3's carousel layouts. The default is one large item; multi-browse cycles
   // large / medium / small out of one repeating grid-auto-columns track list;
@@ -566,7 +588,7 @@ async function run() {
   expect(r.misc.navBar === 80, `navigation bar height ${r.misc.navBar}, expected 80`);
 
   if (!failures.length) {
-    console.log(`[spec] ${Object.keys(TOKENS).length} tokens, ${Object.keys(BUTTON_RAMP).length}-rung button/icon-button/split ramps, ${Object.keys(EMPHASIZED).length} emphasized typescale styles, 6 tonal-elevation surfaces, field anatomy, slider anatomy, fields, chips, selection, progress (stop indicator + gap), tabs, tooltip, list, 4 carousel layouts, rail (collapsed + expanded + header): ok`);
+    console.log(`[spec] ${Object.keys(TOKENS).length} tokens, ${Object.keys(BUTTON_RAMP).length}-rung button/icon-button/split ramps, ${Object.keys(EMPHASIZED).length} emphasized typescale styles, 6 tonal-elevation surfaces, field anatomy, slider anatomy, fields, chips, selection, progress (stop indicator + gap), tabs, tooltip, list, 4 carousel layouts, motion patterns inert under reduced motion, rail (collapsed + expanded + header): ok`);
   }
   return failures;
 }

@@ -17789,6 +17789,237 @@
         transition-timing-function: var(--md-sys-motion-easing-standard);
       }
     }
+    @media (prefers-reduced-motion: no-preference) {
+      @keyframes m3-fade-through-in {
+        0%, 30% {
+          opacity: 0;
+          scale: 0.92;
+        }
+        100% {
+          opacity: 1;
+          scale: 1;
+        }
+      }
+      @keyframes m3-fade-through-out {
+        0% {
+          opacity: 1;
+        }
+        30%, 100% {
+          opacity: 0;
+        }
+      }
+      @keyframes m3-shared-axis-x-in {
+        0% {
+          opacity: 0;
+          translate: var(--_axis) 0;
+        }
+        30% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+          translate: 0 0;
+        }
+      }
+      @keyframes m3-shared-axis-x-out {
+        0% {
+          opacity: 1;
+          translate: 0 0;
+        }
+        30% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 0;
+          translate: calc(-1 * var(--_axis)) 0;
+        }
+      }
+      @keyframes m3-shared-axis-y-in {
+        0% {
+          opacity: 0;
+          translate: 0 var(--_axis);
+        }
+        30% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+          translate: 0 0;
+        }
+      }
+      @keyframes m3-shared-axis-y-out {
+        0% {
+          opacity: 1;
+          translate: 0 0;
+        }
+        30% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 0;
+          translate: 0 calc(-1 * var(--_axis));
+        }
+      }
+      @keyframes m3-shared-axis-z-in {
+        0% {
+          opacity: 0;
+          scale: var(--_z-from);
+        }
+        30% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+          scale: 1;
+        }
+      }
+      @keyframes m3-shared-axis-z-out {
+        0% {
+          opacity: 1;
+          scale: 1;
+        }
+        30% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 0;
+          scale: var(--_z-to);
+        }
+      }
+      @keyframes m3-fade-in {
+        0% {
+          opacity: 0;
+          scale: 0.8;
+        }
+        100% {
+          opacity: 1;
+          scale: 1;
+        }
+      }
+      @keyframes m3-fade-out {
+        0% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+      .m3-motion-fade-through {
+        animation-name: m3-fade-through-in;
+        animation-duration: var(--md-sys-motion-duration-medium2);
+        animation-timing-function: var(--md-sys-motion-easing-emphasized);
+        animation-fill-mode: both;
+      }
+      .m3-motion-fade-through-out {
+        animation-name: m3-fade-through-out;
+        animation-duration: var(--md-sys-motion-duration-medium2);
+        animation-timing-function: var(--md-sys-motion-easing-emphasized-accelerate);
+        animation-fill-mode: both;
+      }
+      .m3-motion-shared-x,
+      .m3-motion-shared-x-out,
+      .m3-motion-shared-y,
+      .m3-motion-shared-y-out {
+        --_axis: var(--m3-sys-motion-axis-distance, 30px);
+      }
+      .m3-motion-shared-x.m3-motion--reverse,
+      .m3-motion-shared-x-out.m3-motion--reverse,
+      .m3-motion-shared-y.m3-motion--reverse,
+      .m3-motion-shared-y-out.m3-motion--reverse {
+        --_axis: calc(-1 * var(--m3-sys-motion-axis-distance, 30px));
+      }
+      .m3-motion-shared-x {
+        animation-name: m3-shared-axis-x-in;
+        animation-duration: var(--md-sys-motion-duration-medium2);
+        animation-timing-function: var(--md-sys-motion-easing-emphasized);
+        animation-fill-mode: both;
+      }
+      .m3-motion-shared-x-out {
+        animation-name: m3-shared-axis-x-out;
+        animation-duration: var(--md-sys-motion-duration-medium2);
+        animation-timing-function: var(--md-sys-motion-easing-emphasized-accelerate);
+        animation-fill-mode: both;
+      }
+      .m3-motion-shared-y {
+        animation-name: m3-shared-axis-y-in;
+        animation-duration: var(--md-sys-motion-duration-medium2);
+        animation-timing-function: var(--md-sys-motion-easing-emphasized);
+        animation-fill-mode: both;
+      }
+      .m3-motion-shared-y-out {
+        animation-name: m3-shared-axis-y-out;
+        animation-duration: var(--md-sys-motion-duration-medium2);
+        animation-timing-function: var(--md-sys-motion-easing-emphasized-accelerate);
+        animation-fill-mode: both;
+      }
+      .m3-motion-shared-z,
+      .m3-motion-shared-z-out {
+        --_z-from: 0.8;
+        --_z-to: 1.1;
+      }
+      .m3-motion-shared-z.m3-motion--reverse,
+      .m3-motion-shared-z-out.m3-motion--reverse {
+        --_z-from: 1.1;
+        --_z-to: 0.8;
+      }
+      .m3-motion-shared-z {
+        animation-name: m3-shared-axis-z-in;
+        animation-duration: var(--md-sys-motion-duration-medium2);
+        animation-timing-function: var(--md-sys-motion-easing-emphasized);
+        animation-fill-mode: both;
+      }
+      .m3-motion-shared-z-out {
+        animation-name: m3-shared-axis-z-out;
+        animation-duration: var(--md-sys-motion-duration-medium2);
+        animation-timing-function: var(--md-sys-motion-easing-emphasized-accelerate);
+        animation-fill-mode: both;
+      }
+      .m3-motion-fade {
+        animation-name: m3-fade-in;
+        animation-duration: var(--md-sys-motion-duration-short3);
+        animation-timing-function: var(--md-sys-motion-easing-emphasized-decelerate);
+        animation-fill-mode: both;
+      }
+      .m3-motion-fade-out {
+        animation-name: m3-fade-out;
+        animation-duration: var(--md-sys-motion-duration-short1);
+        animation-timing-function: var(--md-sys-motion-easing-emphasized-accelerate);
+        animation-fill-mode: both;
+      }
+    }
+    @supports (view-transition-name: none) {
+      .m3-container-transform {
+        view-transition-name: var(--m3-sys-view-transition-name, auto);
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        :root.m3-view-transition::view-transition-group(*) {
+          animation-duration: var(--md-sys-motion-duration-medium4);
+          animation-timing-function: var(--md-sys-motion-easing-emphasized);
+        }
+        :root.m3-view-transition-fade-through::view-transition-old(root) {
+          animation-name: m3-fade-through-out;
+          animation-duration: var(--md-sys-motion-duration-medium2);
+          animation-timing-function: var(--md-sys-motion-easing-emphasized-accelerate);
+        }
+        :root.m3-view-transition-fade-through::view-transition-new(root) {
+          animation-name: m3-fade-through-in;
+          animation-duration: var(--md-sys-motion-duration-medium2);
+          animation-timing-function: var(--md-sys-motion-easing-emphasized);
+        }
+        :root.m3-view-transition-shared-x::view-transition-old(root) {
+          --_axis: var(--m3-sys-motion-axis-distance, 30px);
+          animation-name: m3-shared-axis-x-out;
+          animation-duration: var(--md-sys-motion-duration-medium2);
+          animation-timing-function: var(--md-sys-motion-easing-emphasized-accelerate);
+        }
+        :root.m3-view-transition-shared-x::view-transition-new(root) {
+          --_axis: var(--m3-sys-motion-axis-distance, 30px);
+          animation-name: m3-shared-axis-x-in;
+          animation-duration: var(--md-sys-motion-duration-medium2);
+          animation-timing-function: var(--md-sys-motion-easing-emphasized);
+        }
+      }
+    }
     .clearfix::after {
       display: block;
       clear: both;

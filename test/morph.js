@@ -4,6 +4,10 @@
 // 9999px corner-full token (which cannot interpolate), every transition
 // shows intermediate frames, the spring's overshoot never clamps the radius
 // toward square corners, and the radius settles on the target shape.
+//
+// Also M3's four transition patterns, driven to specific points on their own
+// timelines: they are the other half of the library's motion, and they need
+// a page WITHOUT reduced motion, which is what this suite already has.
 const fs = require('fs');
 const path = require('path');
 const { launch, serve } = require('./lib/browser');
@@ -14,7 +18,40 @@ const PAGE = `<!doctype html><html><head><style>@import url("/m3x.css");</style>
 <button class="m3-btn m3-btn--filled" type="button" id="btn">Send</button>
 <button class="m3-icon-btn m3-icon-btn--tonal" type="button" aria-label="icon" id="icon">${ICON}</button>
 <div class="m3-button-group m3-button-group--connected" role="group"><button class="m3-btn m3-btn--tonal" type="button" id="member" aria-pressed="false">Bold</button><button class="m3-btn m3-btn--tonal" type="button" aria-pressed="true">Italic</button></div>
+<div style="position:absolute;visibility:hidden">
+  <div class="m3-motion-fade-through" id="mo-ft-in"></div>
+  <div class="m3-motion-fade-through-out" id="mo-ft-out"></div>
+  <div class="m3-motion-shared-x" id="mo-x-in"></div>
+  <div class="m3-motion-shared-x m3-motion--reverse" id="mo-x-rev"></div>
+  <div class="m3-motion-shared-y" id="mo-y-in"></div>
+  <div class="m3-motion-shared-z" id="mo-z-in"></div>
+  <div class="m3-motion-shared-z-out" id="mo-z-out"></div>
+  <div class="m3-motion-fade" id="mo-fade"></div>
+  <div class="m3-motion-fade-out" id="mo-fade-out"></div>
+</div>
 </body></html>`;
+
+// Material Motion's cross-fade split: the outgoing half of a 300ms pattern
+// owns the first 90ms, so 30% of the timeline is where one ends and the other
+// begins, and both read zero opacity there.
+const SPLIT = 0.3;
+
+// Drive one pattern's animation to a fraction of its own duration and read
+// back what the element computes.
+const samplePattern = ([id, fractions]) => {
+  const el = document.getElementById(id);
+  const anim = el.getAnimations()[0];
+  if (!anim) return null;
+  const d = anim.effect.getTiming().duration;
+  return {
+    duration: d,
+    at: fractions.map((f) => {
+      anim.currentTime = d * f;
+      const cs = getComputedStyle(el);
+      return { opacity: Math.round(parseFloat(cs.opacity) * 100) / 100, translate: cs.translate, scale: cs.scale };
+    }),
+  };
+};
 
 // One corner radius sampled every animation frame for `ms`.
 const sample = async ([id, corner, ms]) => {
@@ -36,6 +73,7 @@ async function run() {
   const server = await serve(ROOT, { '/m3x.css': fs.readFileSync(path.join(ROOT, 'dist/m3x.css'), 'utf8'), '/morph.html': PAGE });
   const browser = await launch();
   const r = {};
+  const patterns = {};
   try {
     const page = await browser.newPage({ viewport: { width: 900, height: 500 }, reducedMotion: 'no-preference' });
     await page.goto(`http://127.0.0.1:${server.port}/morph.html`);
@@ -56,6 +94,21 @@ async function run() {
         back = await page.evaluate(sample, [c.id, c.corner, 500]);
       }
       r[c.id] = { ...rest, go, back, target: c.target === 'pill' ? rest.height / 2 : c.target, action: c.action };
+    }
+
+    // The transition patterns, driven to points on their own timelines.
+    for (const [key, id, fractions] of [
+      ['ftIn', 'mo-ft-in', [0, SPLIT, 1]],
+      ['ftOut', 'mo-ft-out', [0, SPLIT]],
+      ['xIn', 'mo-x-in', [0, SPLIT, 1]],
+      ['xRev', 'mo-x-rev', [0]],
+      ['yIn', 'mo-y-in', [0, 1]],
+      ['zIn', 'mo-z-in', [0, 1]],
+      ['zOut', 'mo-z-out', [0, 1]],
+      ['fade', 'mo-fade', [0, 1]],
+      ['fadeOut', 'mo-fade-out', [0, 1]],
+    ]) {
+      patterns[key] = await page.evaluate(samplePattern, [id, fractions]);
     }
     await page.close();
   } finally {
@@ -80,7 +133,43 @@ async function run() {
     check(id, v.action === 'press' ? 'press' : 'select', v.go, v.radius, v.target);
     check(id, v.action === 'press' ? 'release' : 'deselect', v.back, v.target, v.radius);
   }
-  console.log(`morph: ${failures.length ? failures.length + ' failure(s)' : 'ok'} (${Object.entries(r).map(([k, v]) => `${k} ${v.radius}->${v.go[v.go.length - 1].toFixed(1)}->${v.back[v.back.length - 1].toFixed(1)}px, range ${Math.min(...v.go, ...v.back).toFixed(1)}..${Math.max(...v.go, ...v.back).toFixed(1)}`).join('; ')})`);
+
+  // --- transition patterns ----------------------------------------------------
+  // Every pattern is ONE animation carrying both halves of Material Motion's
+  // 90ms / 210ms cross-fade, so the sample at the split is where the outgoing
+  // half has finished and the incoming half has not started: both read 0.
+  const missing = Object.entries(patterns).filter(([, v]) => !v).map(([k]) => k);
+  expect(missing.length === 0, `transition patterns with no animation: ${missing.join(', ')}`);
+  if (!missing.length) {
+    const p = patterns;
+    // Fade through: 300ms, hidden until the split, growing from 92%.
+    expect(p.ftIn.duration === 300, `fade-through-in duration ${p.ftIn.duration}, expected 300`);
+    expect(p.ftIn.at[0].opacity === 0 && p.ftIn.at[1].opacity === 0 && p.ftIn.at[2].opacity === 1,
+      `fade-through-in opacity ${p.ftIn.at.map((x) => x.opacity).join('/')}, expected 0/0/1`);
+    expect(p.ftIn.at[0].scale === '0.92' && p.ftIn.at[2].scale === '1',
+      `fade-through-in scale ${p.ftIn.at[0].scale} -> ${p.ftIn.at[2].scale}, expected 0.92 -> 1`);
+    expect(p.ftOut.at[0].opacity === 1 && p.ftOut.at[1].opacity === 0,
+      `fade-through-out opacity ${p.ftOut.at.map((x) => x.opacity).join('/')}, expected 1/0 by the split`);
+    // Shared axis x and y: Material Motion's 30px, negated by --reverse.
+    expect(p.xIn.at[0].translate === '30px' && p.xIn.at[2].translate === '0px',
+      `shared-axis-x travel ${p.xIn.at[0].translate} -> ${p.xIn.at[2].translate}, expected 30px -> 0px`);
+    expect(p.xIn.at[1].opacity === 0, `shared-axis-x is visible at the split (${p.xIn.at[1].opacity})`);
+    expect(p.xRev.at[0].translate === '-30px', `shared-axis-x --reverse ${p.xRev.at[0].translate}, expected -30px`);
+    expect(p.yIn.at[0].translate === '0px 30px', `shared-axis-y travel ${p.yIn.at[0].translate}, expected "0px 30px"`);
+    // Shared axis z travels by scale: in from 80%, out past the viewer to 110%.
+    expect(p.zIn.at[0].scale === '0.8' && p.zIn.at[1].scale === '1',
+      `shared-axis-z-in scale ${p.zIn.at[0].scale} -> ${p.zIn.at[1].scale}, expected 0.8 -> 1`);
+    expect(p.zOut.at[0].scale === '1' && p.zOut.at[1].scale === '1.1',
+      `shared-axis-z-out scale ${p.zOut.at[0].scale} -> ${p.zOut.at[1].scale}, expected 1 -> 1.1`);
+    // The plain fade is asymmetric: in from 80% over 150ms, out faster.
+    expect(p.fade.duration === 150, `fade-in duration ${p.fade.duration}, expected 150`);
+    expect(p.fade.at[0].scale === '0.8' && p.fade.at[1].scale === '1',
+      `fade-in scale ${p.fade.at[0].scale} -> ${p.fade.at[1].scale}, expected 0.8 -> 1`);
+    expect(p.fadeOut.duration < p.fade.duration,
+      `fade-out (${p.fadeOut.duration}ms) should be faster than fade-in (${p.fade.duration}ms)`);
+  }
+
+  console.log(`morph: ${failures.length ? failures.length + ' failure(s)' : 'ok'} (${Object.entries(r).map(([k, v]) => `${k} ${v.radius}->${v.go[v.go.length - 1].toFixed(1)}->${v.back[v.back.length - 1].toFixed(1)}px, range ${Math.min(...v.go, ...v.back).toFixed(1)}..${Math.max(...v.go, ...v.back).toFixed(1)}`).join('; ')}; ${Object.keys(patterns).length} transition patterns)`);
   return failures;
 }
 

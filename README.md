@@ -62,6 +62,7 @@ via `@supports`:
 | Dense toolbar overflow | `@container` (Baseline 2023) | groups never collapse; `__more` stays hidden |
 | `@scope` refinements | none -- see below | slightly less isolation, identical rendering |
 | Anchor-positioned tooltips/menus, Popover menus, `:has()` selection states | per-feature `@supports`; every `:has()` / `:popover-open` rule stands alone in its selector list | hidden gracefully / static fallback / the non-`:has()` state |
+| Container transform | `@supports (view-transition-name: none)`, then `view-transition-name: auto` or `--m3-sys-view-transition-name` | the element does not participate; the navigation is instant |
 | Automatic text-field slot reservation | one `:has()` rule per slot | write the `.m3-field--leading-icon` / `--trailing-icon` / `--prefix` / `--suffix` modifier, which sets exactly the same value |
 
 `@scope` (Chrome 118, Safari 17.4, Firefox 140) carries **refinement, never
@@ -106,7 +107,7 @@ The **first statement** of the compiled CSS is exactly:
    layer keeps control of its own typography and link styling.
 6. `components` -- the full M3 catalog (`own` + `rules` sub-layers).
 7. `utilities` -- typescale classes (baseline and emphasized),
-   color/surface/shape/elevation utilities,
+   color/surface/shape/elevation utilities, M3's transition patterns,
    token-island context classes, the Bootstrap utility API and helpers
    (`own` + `rules` sub-layers).
 8. `overrides` -- **declared, always empty, owned by downstream consumers.**
@@ -622,6 +623,68 @@ resolves its shape tokens against half its own height (`min()` with a private
 `@media (hover: hover)`, so a tap on a touch screen never leaves a control
 stuck in its hover look. Bootstrap's explicit hover utilities
 (`.link-*-hover`, `.table-hover`, `.icon-link-hover`) keep stock semantics.
+
+---
+
+## Motion patterns
+
+The components transition their own properties. M3's **transition patterns**
+are the layer above that: how one piece of UI *replaces* another. All four
+are here, as classes.
+
+| Pattern | Class | Use it for | Timing |
+|---|---|---|---|
+| Fade through | `.m3-motion-fade-through` | unrelated content | 300ms; out fades, then in fades while growing from 92% |
+| Shared axis | `.m3-motion-shared-x` / `-y` / `-z` | a spatial or hierarchical relationship | 300ms; both travel one axis while cross-fading |
+| Fade | `.m3-motion-fade` | something arriving *on top* (a menu, a dialog) | 150ms in from 80%, faster out |
+| Container transform | `.m3-container-transform` | one container becoming another | the View Transition API, dressed in M3's motion |
+
+Each has an `-out` twin for the element that is leaving
+(`.m3-motion-fade-through-out`, `.m3-motion-shared-x-out`, …), and the shared
+axes take `.m3-motion--reverse` so a back navigation runs the way it came.
+
+```html
+<section class="m3-motion-shared-x">…</section>                       <!-- forward -->
+<section class="m3-motion-shared-x m3-motion--reverse">…</section>    <!-- back -->
+<section class="m3-motion-shared-x-out">…</section>                   <!-- leaving -->
+```
+
+Put the `-out` class on the outgoing element and remove it from the DOM on
+`animationend`.
+
+**One animation, both halves.** Material Motion's cross-fade is a 90ms / 210ms
+split: the outgoing element is *gone* before the incoming one starts, so they
+never both sit at half opacity. Rather than two animations and a delay, each
+pattern is one animation whose keyframes put that split at 30% of the
+timeline — so re-pointing `--md-sys-motion-duration-medium2` moves both halves
+together and they stay in step. Durations and easings are M3 tokens
+throughout; the shared axes' 30px travel is
+`--m3-sys-motion-axis-distance`.
+
+**Container transform** is the one pattern the web already has a mechanism
+for, so m3x drives that rather than reimplementing the morph:
+
+```html
+<a class="m3-container-transform" style="--m3-sys-view-transition-name: card-7">…</a>
+```
+
+A transition name must be unique per element and CSS cannot generate one, so
+the class takes it two ways: `--m3-sys-view-transition-name` if the element
+sets it (set it *on the element* — it inherits, and two participants sharing
+a name is not a transition), and otherwise `view-transition-name: auto`, which
+derives one from the element's `id`. Where neither is supported the
+declaration is dropped and the element simply doesn't participate.
+
+Put `.m3-view-transition` on `<html>` to run the default root transition on
+M3's emphasized easing, or `.m3-view-transition-fade-through` /
+`-shared-x` to run a named pattern across it. Cross-*document* transitions
+also need `@view-transition { navigation: auto; }`, which changes how
+navigation behaves — that's yours to opt into, not the library's.
+
+**Reduced motion.** Every pattern sits inside
+`prefers-reduced-motion: no-preference`, keyframes included, so under reduced
+motion the element is simply there. `test/spec.js` asserts exactly that, and
+`test/morph.js` samples the frames on a page without it.
 
 ---
 
@@ -1569,7 +1632,10 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
   icon button, and a selection change on a connected-group member, sampled
   every frame: the pill is half the height, the radius moves through visible
   intermediate values, never clamps toward square, and settles on the target
-  shape.
+  shape. It also drives each of M3's transition patterns to points on its own
+  timeline -- the 30% split where the outgoing half ends and the incoming one
+  begins, and both endpoints -- since those need a page without reduced
+  motion, which this suite already has.
 - **equivalence** (`test/equivalence.js`): every element of the fixture, 83
   computed longhands each, against a baseline committed in
   `test/fixtures/baseline.json`. The other suites assert intent; this one
@@ -1605,7 +1671,8 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
   inputs and hands the pointer to its handles, and that a vertical slider's
   rotated input lands flush on its wrapper; the rail's expanded width, its
   56px horizontal item, the icon going back to a glyph box, and the 40px
-  header gap; the four carousel layouts on a fixed track;
+  header gap; the four carousel layouts on a fixed track; that every
+  transition pattern is inert under reduced motion;
   the five tonal-elevation opacities and
   the surface each renders as, with the shadow and tint channels proven not to
   touch each other's property; the five-rung Expressive size ramp on

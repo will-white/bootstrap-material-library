@@ -3004,6 +3004,19 @@
             "css": "var(--md-sys-color-surface)"
           }
         }
+      },
+      "motion-axis-distance": {
+        "$type": "dimension",
+        "$value": "30px"
+      },
+      "view-transition-name": {
+        "$type": "dimension",
+        "$value": "auto",
+        "$extensions": {
+          "m3x": {
+            "css": "auto"
+          }
+        }
       }
     },
     "comp": {

@@ -1,0 +1,348 @@
+// ============================================================================
+// m3x motion transition patterns
+//
+// M3's four transition patterns, as CSS animations on M3's own easing and
+// duration tokens. They describe how one piece of UI REPLACES another, which
+// is the layer above the per-property transitions the components already use.
+//
+//   fade through     unrelated content: the outgoing element fades out, then
+//                    the incoming one fades in while growing from 92%
+//   shared axis      a spatial or hierarchical relationship: both elements
+//                    travel along one axis (x, y or z) while they cross-fade
+//   fade             an element entering ON TOP of what is already there
+//                    (a menu, a dialog): grow from 80% and fade in
+//   container transform  one container becomes another; the web's own
+//                    mechanism for this is the View Transition API, so that
+//                    is what m3x drives rather than reimplementing it
+//
+// TIMING. Every pattern runs 300ms, and the cross-fade inside it is Material
+// Motion's 90ms / 210ms split -- the outgoing element is gone before the
+// incoming one starts, so they never both show at half opacity. Rather than
+// two animations with a delay, each pattern is ONE animation whose keyframes
+// put that split at 30% of the timeline, which keeps the two halves in step
+// however the duration token is re-pointed.
+//
+// USAGE. Apply the class to the element that is arriving; apply the `--out`
+// class to the one leaving, and remove it from the DOM on `animationend`:
+//
+//   <section class="m3-motion-fade-through">...</section>
+//   <section class="m3-motion-shared-x">...</section>
+//   <section class="m3-motion-shared-x m3-motion--reverse">...</section>  (back)
+//   <section class="m3-motion-shared-x-out">...</section>
+//
+// Every pattern sits behind `prefers-reduced-motion: no-preference`; with
+// reduced motion the element simply appears.
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+$p: c.$prefix;
+$sys: c.$sys-prefix;
+
+// Material Motion's translation distance for the x and y shared axes.
+$axis-distance: 30px;
+
+// The z axis is a scale rather than a translation: forward grows into the
+// screen, back grows out of it.
+$z-in: 0.8;
+$z-out: 1.1;
+
+// The 90ms of a 300ms pattern that the outgoing half owns.
+$split: 30%;
+
+@mixin keyframes {
+  // --- fade through ---------------------------------------------------------
+  @keyframes #{$p}-fade-through-in {
+    0%,
+    #{$split} {
+      opacity: 0;
+      scale: 0.92;
+    }
+    100% {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+
+  @keyframes #{$p}-fade-through-out {
+    0% {
+      opacity: 1;
+    }
+    #{$split},
+    100% {
+      opacity: 0;
+    }
+  }
+
+  // --- shared axis, x and y -------------------------------------------------
+  // The distance is read from a private so one keyframe pair serves both
+  // directions: --reverse negates it.
+  @keyframes #{$p}-shared-axis-x-in {
+    0% {
+      opacity: 0;
+      translate: var(--_axis) 0;
+    }
+    #{$split} {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  @keyframes #{$p}-shared-axis-x-out {
+    0% {
+      opacity: 1;
+      translate: 0 0;
+    }
+    #{$split} {
+      opacity: 0;
+    }
+    100% {
+      opacity: 0;
+      translate: calc(-1 * var(--_axis)) 0;
+    }
+  }
+
+  @keyframes #{$p}-shared-axis-y-in {
+    0% {
+      opacity: 0;
+      translate: 0 var(--_axis);
+    }
+    #{$split} {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  @keyframes #{$p}-shared-axis-y-out {
+    0% {
+      opacity: 1;
+      translate: 0 0;
+    }
+    #{$split} {
+      opacity: 0;
+    }
+    100% {
+      opacity: 0;
+      translate: 0 calc(-1 * var(--_axis));
+    }
+  }
+
+  // --- shared axis, z -------------------------------------------------------
+  @keyframes #{$p}-shared-axis-z-in {
+    0% {
+      opacity: 0;
+      scale: var(--_z-from);
+    }
+    #{$split} {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+
+  @keyframes #{$p}-shared-axis-z-out {
+    0% {
+      opacity: 1;
+      scale: 1;
+    }
+    #{$split} {
+      opacity: 0;
+    }
+    100% {
+      opacity: 0;
+      scale: var(--_z-to);
+    }
+  }
+
+  // --- fade -----------------------------------------------------------------
+  // M3's plain fade is asymmetric: in from 80% over 150ms, out in half that.
+  // It is the pattern for something arriving on top of what is already there.
+  // The exit's 75ms is not a rung on M3's duration ramp, so it takes the
+  // shorter neighbour (short1, 50ms), which keeps the rule that matters --
+  // an exit is faster than its entrance -- and keeps both on the ramp.
+  @keyframes #{$p}-fade-in {
+    0% {
+      opacity: 0;
+      scale: 0.8;
+    }
+    100% {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+
+  @keyframes #{$p}-fade-out {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+}
+
+// One pattern. $name is the keyframe suffix; the duration and easing are
+// M3 tokens so a project that re-points its motion scheme moves these too.
+@mixin -pattern($name, $duration: "medium2", $easing: "emphasized") {
+  animation-name: #{$p}-#{$name};
+  animation-duration: var(--#{$sys}-sys-motion-duration-#{$duration});
+  animation-timing-function: var(--#{$sys}-sys-motion-easing-#{$easing});
+  animation-fill-mode: both;
+}
+
+@mixin classes {
+  // The patterns animate; with reduced motion the element is simply there,
+  // which is why the whole block sits inside the query rather than each rule
+  // carrying its own `animation: none` undo.
+  @media (prefers-reduced-motion: no-preference) {
+    @include keyframes;
+
+    .#{$p}-motion-fade-through {
+      @include -pattern("fade-through-in");
+    }
+
+    .#{$p}-motion-fade-through-out {
+      @include -pattern("fade-through-out", $easing: "emphasized-accelerate");
+    }
+
+    // The shared axes. --reverse flips the travel so a back navigation runs
+    // the way it came.
+    .#{$p}-motion-shared-x,
+    .#{$p}-motion-shared-x-out,
+    .#{$p}-motion-shared-y,
+    .#{$p}-motion-shared-y-out {
+      --_axis: var(--#{$p}-sys-motion-axis-distance, #{$axis-distance});
+    }
+
+    .#{$p}-motion-shared-x.#{$p}-motion--reverse,
+    .#{$p}-motion-shared-x-out.#{$p}-motion--reverse,
+    .#{$p}-motion-shared-y.#{$p}-motion--reverse,
+    .#{$p}-motion-shared-y-out.#{$p}-motion--reverse {
+      --_axis: calc(-1 * var(--#{$p}-sys-motion-axis-distance, #{$axis-distance}));
+    }
+
+    .#{$p}-motion-shared-x {
+      @include -pattern("shared-axis-x-in");
+    }
+
+    .#{$p}-motion-shared-x-out {
+      @include -pattern("shared-axis-x-out", $easing: "emphasized-accelerate");
+    }
+
+    .#{$p}-motion-shared-y {
+      @include -pattern("shared-axis-y-in");
+    }
+
+    .#{$p}-motion-shared-y-out {
+      @include -pattern("shared-axis-y-out", $easing: "emphasized-accelerate");
+    }
+
+    // Z travels by scale: forward grows in from 80%, and what it replaces
+    // grows past the viewer to 110%. --reverse swaps the two.
+    .#{$p}-motion-shared-z,
+    .#{$p}-motion-shared-z-out {
+      --_z-from: #{$z-in};
+      --_z-to: #{$z-out};
+    }
+
+    .#{$p}-motion-shared-z.#{$p}-motion--reverse,
+    .#{$p}-motion-shared-z-out.#{$p}-motion--reverse {
+      --_z-from: #{$z-out};
+      --_z-to: #{$z-in};
+    }
+
+    .#{$p}-motion-shared-z {
+      @include -pattern("shared-axis-z-in");
+    }
+
+    .#{$p}-motion-shared-z-out {
+      @include -pattern("shared-axis-z-out", $easing: "emphasized-accelerate");
+    }
+
+    .#{$p}-motion-fade {
+      @include -pattern("fade-in", $duration: "short3", $easing: "emphasized-decelerate");
+    }
+
+    .#{$p}-motion-fade-out {
+      @include -pattern(
+        "fade-out",
+        $duration: "short1",
+        $easing: "emphasized-accelerate"
+      );
+    }
+  }
+
+  // --- container transform (View Transitions) ---------------------------------
+  //
+  // M3's container transform is one container becoming another. The web has
+  // its own mechanism for that, so m3x names the participants and dresses the
+  // transition in M3's motion rather than reimplementing the morph.
+  //
+  //   <a class="m3-container-transform" id="card-7">
+  //
+  // A transition name has to be UNIQUE per element, which CSS cannot generate,
+  // so the class takes one two ways: --m3-sys-view-transition-name if the
+  // element sets it, and otherwise `auto`, which derives the name from the
+  // element's id. Set the variable ON THE ELEMENT -- it inherits, and two
+  // participants sharing a name is not a transition:
+  //
+  //   <a class="m3-container-transform" style="--m3-sys-view-transition-name: card-7">
+  //
+  // Where neither is supported the declaration is dropped and the element
+  // simply does not participate.
+  //
+  // Cross-DOCUMENT transitions additionally need
+  // `@view-transition { navigation: auto; }`, which changes how navigation
+  // behaves and is therefore the consumer's to opt into, not the library's.
+  // A named element must not fragment across lines or columns.
+  @supports (view-transition-name: none) {
+    .#{$p}-container-transform {
+      view-transition-name: var(--#{$p}-sys-view-transition-name, auto);
+    }
+
+    // Opt-in: put the class on <html> to dress the default root transition in
+    // M3's motion. Without it the browser's own cross-fade stands.
+    @media (prefers-reduced-motion: no-preference) {
+      :root.#{$p}-view-transition::view-transition-group(*) {
+        animation-duration: var(--#{$sys}-sys-motion-duration-medium4);
+        animation-timing-function: var(--#{$sys}-sys-motion-easing-emphasized);
+      }
+
+      :root.#{$p}-view-transition-fade-through::view-transition-old(root) {
+        animation-name: #{$p}-fade-through-out;
+        animation-duration: var(--#{$sys}-sys-motion-duration-medium2);
+        animation-timing-function: var(--#{$sys}-sys-motion-easing-emphasized-accelerate);
+      }
+
+      :root.#{$p}-view-transition-fade-through::view-transition-new(root) {
+        animation-name: #{$p}-fade-through-in;
+        animation-duration: var(--#{$sys}-sys-motion-duration-medium2);
+        animation-timing-function: var(--#{$sys}-sys-motion-easing-emphasized);
+      }
+
+      :root.#{$p}-view-transition-shared-x::view-transition-old(root) {
+        --_axis: var(--#{$p}-sys-motion-axis-distance, #{$axis-distance});
+        animation-name: #{$p}-shared-axis-x-out;
+        animation-duration: var(--#{$sys}-sys-motion-duration-medium2);
+        animation-timing-function: var(--#{$sys}-sys-motion-easing-emphasized-accelerate);
+      }
+
+      :root.#{$p}-view-transition-shared-x::view-transition-new(root) {
+        --_axis: var(--#{$p}-sys-motion-axis-distance, #{$axis-distance});
+        animation-name: #{$p}-shared-axis-x-in;
+        animation-duration: var(--#{$sys}-sys-motion-duration-medium2);
+        animation-timing-function: var(--#{$sys}-sys-motion-easing-emphasized);
+      }
+    }
+  }
+}

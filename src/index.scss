@@ -74,6 +74,7 @@
 @use "base/reset";
 @use "base/base";
 @use "utilities/utilities";
+@use "utilities/motion-patterns";
 @use "compat/bootstrap-vars";
 @use "compat/bootstrap-components";
 @use "compat/bootstrap-grid";
@@ -376,6 +377,7 @@ m.$ownership: "collect";
 
   @layer rules {
     @include utilities.styles;
+    @include motion-patterns.classes;
 
     // Bootstrap's utility API and helpers must beat every component layer
     // (.d-none on a .m3-card, .visually-hidden on a .btn), so they live here,

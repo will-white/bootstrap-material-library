@@ -641,6 +641,34 @@
       <tr><td><code>extra-long1&hellip;4</code></td><td>700 / 800 / 900 / 1000ms</td></tr>
     </table>
   </div>
+
+  <div class="cat-item cat-item--wide">
+    <h3 class="m3-title-medium">Transition patterns</h3>
+    <p class="cat-note m3-body-small">The layer above per-property transitions: how one piece of UI
+      <em>replaces</em> another. Material Motion&rsquo;s cross-fade is a 90ms&thinsp;/&thinsp;210ms split &mdash;
+      the outgoing element is gone before the incoming one starts, so they never both sit at half opacity. Each
+      pattern is <em>one</em> animation whose keyframes put that split at 30% of the timeline, so re-pointing the
+      duration token moves both halves together. Press a button to replay it.</p>
+    <div class="cat-specimen" style="align-items: flex-start; gap: var(--m3-sys-space-4);">
+      <div style="display: grid; gap: var(--m3-sys-space-2); justify-items: start;">
+        <button class="m3-btn m3-btn--tonal" type="button" data-motion="m3-motion-fade-through">Fade through</button>
+        <button class="m3-btn m3-btn--tonal" type="button" data-motion="m3-motion-shared-x">Shared axis X</button>
+        <button class="m3-btn m3-btn--tonal" type="button" data-motion="m3-motion-shared-x m3-motion--reverse">Shared axis X, back</button>
+        <button class="m3-btn m3-btn--tonal" type="button" data-motion="m3-motion-shared-y">Shared axis Y</button>
+        <button class="m3-btn m3-btn--tonal" type="button" data-motion="m3-motion-shared-z">Shared axis Z</button>
+        <button class="m3-btn m3-btn--tonal" type="button" data-motion="m3-motion-fade">Fade</button>
+      </div>
+      <div style="flex: 1 1 18rem; overflow: clip; border-radius: var(--md-sys-shape-corner-large);">
+        <div class="m3-card m3-card--filled" id="motion-stage">
+          <div class="m3-card__slot">
+            <h4 class="m3-title-medium">Second screen</h4>
+            <p class="m3-body-medium">Whichever pattern you pick runs on this card. With
+              <code>prefers-reduced-motion: reduce</code> it is simply here, keyframes and all.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <section class="cat-section" id="state">
@@ -2450,6 +2478,22 @@
       });
     });
   }
+</script>
+<script>
+  // Transition patterns: swap the class on the stage and let the animation
+  // restart. Nothing here is part of the library -- the classes are.
+  (function () {
+    var stage = document.getElementById("motion-stage");
+    if (!stage) return;
+    var base = stage.className;
+    document.querySelectorAll("[data-motion]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        stage.className = base;
+        void stage.offsetWidth;               // restart the animation
+        stage.className = base + " " + btn.dataset.motion;
+      });
+    });
+  })();
 </script>
 </body>
 </html>
