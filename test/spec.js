@@ -22,6 +22,28 @@ const BUTTON_RAMP = {
 // Icon buttons carry the same heights, square containers, and M3's icon ramp.
 const ICON_BUTTON_RAMP = { xs: [32, 20], '': [40, 24], medium: [56, 24], large: [96, 32], xl: [136, 40] };
 
+// M3 Expressive's emphasized typescale: the same fifteen styles at the same
+// size and line height, set heavier and re-tracked. Regular goes to Medium;
+// the styles that were already Medium (title-medium, title-small and every
+// label) go to Bold. role -> [weight, tracking]
+const EMPHASIZED = {
+  'display-large': [500, 'normal'],
+  'display-medium': [500, 'normal'],
+  'display-small': [500, 'normal'],
+  'headline-large': [500, 'normal'],
+  'headline-medium': [500, 'normal'],
+  'headline-small': [500, 'normal'],
+  'title-large': [500, 'normal'],
+  'title-medium': [700, '0.15px'],
+  'title-small': [700, '0.1px'],
+  'body-large': [500, '0.15px'],
+  'body-medium': [500, '0.25px'],
+  'body-small': [500, '0.4px'],
+  'label-large': [700, '0.1px'],
+  'label-medium': [700, '0.5px'],
+  'label-small': [700, '0.5px'],
+};
+
 const mod = (base, size) => (size ? `${base} ${base}--${size}` : base);
 const slug = (prefix, size) => prefix + (size || 'base');
 
@@ -62,6 +84,7 @@ ${Object.keys(BUTTON_RAMP).map((s) => `<div class="${mod('m3-split-button', s)}"
 <div class="m3-fab" id="fab">${ICON}</div>
 <div class="m3-card" id="card">Card</div>
 <div class="m3-nav-bar" id="navbar"><a class="m3-nav-bar__item" href="#">${ICON}<span class="m3-nav-bar__label">A</span></a></div>
+${Object.keys(EMPHASIZED).map((role) => `<p class="m3-${role}" id="ts-${role}">Aa</p><p class="m3-${role}-emphasized" id="tse-${role}">Aa</p>`).join('\n')}
 </body></html>`;
 
 // M3 foundation tokens: name -> expected computed value on :root.
@@ -116,7 +139,7 @@ async function run() {
     const page = await browser.newPage({ viewport: { width: 1600, height: 1200 }, reducedMotion: 'reduce' });
     await page.goto(`http://127.0.0.1:${server.port}/spec.html`);
     r = await page.evaluate(
-      ({ BUTTON_RAMP, ICON_BUTTON_RAMP, TOKENS }) => {
+      ({ BUTTON_RAMP, ICON_BUTTON_RAMP, TOKENS, EMPHASIZED }) => {
         const num = (v) => Math.round(parseFloat(v) * 100) / 100;
         const el = (id) => document.getElementById(id);
         const box = (id) => el(id).getBoundingClientRect();
@@ -203,9 +226,24 @@ async function run() {
         out.misc.fab = [num(box('fab').height), num(cs('fab').borderTopLeftRadius)];
         out.misc.cardRadius = num(cs('card').borderTopLeftRadius);
         out.misc.navBar = num(box('navbar').height);
+
+        // The emphasized scale, read off rendered specimens: weight and
+        // tracking are its own, while font, size and line height must come
+        // back identical to the baseline style they alias.
+        out.type = {};
+        for (const role of Object.keys(EMPHASIZED)) {
+          const base = cs('ts-' + role);
+          const em = cs('tse-' + role);
+          out.type[role] = {
+            weight: em.fontWeight,
+            tracking: em.letterSpacing,
+            aliased: [em.fontFamily === base.fontFamily, em.fontSize === base.fontSize, em.lineHeight === base.lineHeight],
+            baseWeight: base.fontWeight,
+          };
+        }
         return out;
       },
-      { BUTTON_RAMP, ICON_BUTTON_RAMP, TOKENS }
+      { BUTTON_RAMP, ICON_BUTTON_RAMP, TOKENS, EMPHASIZED }
     );
     await page.close();
   } finally {
@@ -226,6 +264,15 @@ async function run() {
   }
   for (const [size, [h, icon]] of Object.entries(ICON_BUTTON_RAMP)) {
     expect(eq(r.iconButtons[size], [h, icon, h]), `.m3-icon-btn${size ? '--' + size : ''} [h,icon,w] ${JSON.stringify(r.iconButtons[size])}, expected ${JSON.stringify([h, icon, h])}`);
+  }
+
+  for (const [role, [weight, tracking]] of Object.entries(EMPHASIZED)) {
+    const got = r.type[role];
+    expect(got.weight === String(weight), `.m3-${role}-emphasized weight ${got.weight}, expected ${weight}`);
+    expect(got.tracking === tracking, `.m3-${role}-emphasized tracking ${got.tracking}, expected ${tracking}`);
+    expect(eq(got.aliased, [true, true, true]), `.m3-${role}-emphasized [font,size,line-height] ${JSON.stringify(got.aliased)} should match .m3-${role}`);
+    // The point of the scale: emphasized is always heavier than baseline.
+    expect(Number(got.weight) > Number(got.baseWeight), `.m3-${role}-emphasized weight ${got.weight} should exceed baseline ${got.baseWeight}`);
   }
 
   // M3: filled active indicator and outlined outline are 1dp at rest, 3dp focused.
@@ -286,7 +333,7 @@ async function run() {
   expect(r.misc.navBar === 80, `navigation bar height ${r.misc.navBar}, expected 80`);
 
   if (!failures.length) {
-    console.log(`[spec] ${Object.keys(TOKENS).length} tokens, ${Object.keys(BUTTON_RAMP).length}-rung button/icon-button/split ramps, fields, chips, selection, progress (stop indicator + gap), tabs, tooltip, list, rail: ok`);
+    console.log(`[spec] ${Object.keys(TOKENS).length} tokens, ${Object.keys(BUTTON_RAMP).length}-rung button/icon-button/split ramps, ${Object.keys(EMPHASIZED).length} emphasized typescale styles, fields, chips, selection, progress (stop indicator + gap), tabs, tooltip, list, rail: ok`);
   }
   return failures;
 }

@@ -66,6 +66,9 @@
     .cat-frame--scroll { block-size: 15rem; overflow-y: auto; }
     .cat-pair { display: grid; gap: var(--m3-sys-space-2); }
     .cat-pair > small { color: var(--md-sys-color-on-surface-variant); }
+    .cat-emph { display: grid; gap: var(--m3-sys-space-4); }
+    .cat-emph__row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--m3-sys-space-4); align-items: baseline; }
+    .cat-emph__row > small { grid-column: 1 / -1; color: var(--md-sys-color-on-surface-variant); }
 
     /* Live capability read-out. Each badge says "fallback" until its own
        feature query matches, so the page reports what THIS browser does. */
@@ -508,6 +511,32 @@
     <div class="cat-pair"><small class="m3-label-small">.m3-label-small &mdash; 11/16 · 500</small>
       <span class="m3-label-small">Label small</span></div>
   </div></div>
+  <div class="cat-item cat-item--wide">
+    <h3 class="m3-title-medium">The emphasized cut</h3>
+    <p class="cat-lede m3-body-small">M3 Expressive gives all fifteen styles a heavier cut at the same size
+      and line height. Regular goes to Medium; the styles that were already Medium (title-medium, title-small
+      and every label) go to Bold. Baseline on the left, emphasized on the right. Its <code>-font</code>,
+      <code>-size</code> and <code>-line-height</code> tokens read the baseline style&rsquo;s, so re-pointing
+      one moves both &mdash; only weight and tracking are its own.</p>
+    <div class="cat-specimen cat-emph">
+    <div class="cat-emph__row"><small class="m3-label-small">.m3-display-small / .m3-display-small-emphasized &mdash; 400 → 500</small>
+      <span class="m3-display-small">Display small</span><span class="m3-display-small-emphasized">Display small</span></div>
+    <div class="cat-emph__row"><small class="m3-label-small">.m3-headline-medium / .m3-headline-medium-emphasized &mdash; 400 → 500</small>
+      <span class="m3-headline-medium">Headline medium</span><span class="m3-headline-medium-emphasized">Headline medium</span></div>
+    <div class="cat-emph__row"><small class="m3-label-small">.m3-title-large / .m3-title-large-emphasized &mdash; 400 → 500</small>
+      <span class="m3-title-large">Title large</span><span class="m3-title-large-emphasized">Title large</span></div>
+    <div class="cat-emph__row"><small class="m3-label-small">.m3-title-medium / .m3-title-medium-emphasized &mdash; 500 → 700</small>
+      <span class="m3-title-medium">Title medium</span><span class="m3-title-medium-emphasized">Title medium</span></div>
+    <div class="cat-emph__row"><small class="m3-label-small">.m3-body-large / .m3-body-large-emphasized &mdash; 400 → 500, tracking 0.5 → 0.15</small>
+      <span class="m3-body-large">Body large</span><span class="m3-body-large-emphasized">Body large</span></div>
+    <div class="cat-emph__row"><small class="m3-label-small">.m3-body-medium / .m3-body-medium-emphasized &mdash; 400 → 500, tracking 0.25</small>
+      <span class="m3-body-medium">Body medium</span><span class="m3-body-medium-emphasized">Body medium</span></div>
+    <div class="cat-emph__row"><small class="m3-label-small">.m3-label-large / .m3-label-large-emphasized &mdash; 500 → 700</small>
+      <span class="m3-label-large">Label large</span><span class="m3-label-large-emphasized">Label large</span></div>
+    <div class="cat-emph__row"><small class="m3-label-small">.m3-label-small / .m3-label-small-emphasized &mdash; 500 → 700</small>
+      <span class="m3-label-small">Label small</span><span class="m3-label-small-emphasized">Label small</span></div>
+    </div>
+  </div>
 </section>
 <section class="cat-section" id="shape">
   <header><h2 class="m3-headline-small">Shape</h2>

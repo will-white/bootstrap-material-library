@@ -104,7 +104,8 @@ The **first statement** of the compiled CSS is exactly:
    specificity, so class-carrying markup in the earlier `bootstrap-compat`
    layer keeps control of its own typography and link styling.
 6. `components` -- the full M3 catalog (`own` + `rules` sub-layers).
-7. `utilities` -- typescale classes, color/surface/shape/elevation utilities,
+7. `utilities` -- typescale classes (baseline and emphasized),
+   color/surface/shape/elevation utilities,
    token-island context classes, the Bootstrap utility API and helpers
    (`own` + `rules` sub-layers).
 8. `overrides` -- **declared, always empty, owned by downstream consumers.**
@@ -469,6 +470,71 @@ components.
 | `--m3-btn-outlined-label-color` | `primary` | |
 | `--m3-btn-outlined-outline-color` | `outline` | |
 | `--m3-btn-text-label-color` | `primary` | |
+
+---
+
+## Typography
+
+M3's typescale is fifteen styles across five roles -- `display`, `headline`,
+`title`, `body`, `label`, each in `-large` / `-medium` / `-small`. Every one
+is five tokens (`-font`, `-size`, `-line-height`, `-weight`, `-tracking`) and
+one utility class:
+
+```html
+<h1 class="m3-display-small">Inbox</h1>
+<p class="m3-body-medium">Twelve unread</p>
+```
+
+Sizes and line heights are converted to `rem` at build time, so a page that
+sets a root font size scales the whole grid. The font stack is never bundled
+or fetched: `--md-ref-typeface-plain` is Roboto if the system has it and
+`system-ui` otherwise.
+
+### The emphasized scale
+
+M3 Expressive adds an **emphasized** cut of all fifteen styles: the same
+style at the same size and line height, set heavier and re-tracked, for
+headlines, selected items and anywhere a focal point is wanted. Styles that
+were Regular go to Medium (500); the styles that were already Medium
+(`title-medium`, `title-small` and every `label`) go to Bold (700).
+
+```html
+<h2 class="m3-headline-medium-emphasized">This month</h2>
+<span class="m3-label-large-emphasized">Selected</span>
+```
+
+| Role | Baseline weight | Emphasized weight | Emphasized tracking |
+|---|---|---|---|
+| `display-large` / `-medium` / `-small` | 400 | 500 | normal |
+| `headline-large` / `-medium` / `-small` | 400 | 500 | normal |
+| `title-large` | 400 | 500 | normal |
+| `title-medium` | 500 | 700 | 0.15px |
+| `title-small` | 500 | 700 | 0.1px |
+| `body-large` | 400 | 500 | 0.15px |
+| `body-medium` | 400 | 500 | 0.25px |
+| `body-small` | 400 | 500 | 0.4px |
+| `label-large` | 500 | 700 | 0.1px |
+| `label-medium` / `-small` | 500 | 700 | 0.5px |
+
+Only weight and tracking are the emphasized style's own. Its `-font`,
+`-size` and `-line-height` tokens *read* the baseline style's tokens rather
+than repeating their values, so re-pointing one moves both:
+
+```css
+:root {
+  /* Both .m3-display-large and .m3-display-large-emphasized follow. */
+  --md-sys-typescale-display-large-size: 3rem;
+}
+```
+
+An emphasized style is only a heavier cut of one style, not a sixteenth
+style, and the alias keeps that true. `test/spec.js` asserts all fifteen
+weights and trackings, and that each emphasized style's font, size and line
+height come back identical to its baseline.
+
+Reaching for the emphasized cut needs a variable font or the matching static
+weights installed; with only one weight available the browser synthesises
+the difference, which is legible but not the designed cut.
 
 ---
 
@@ -1241,8 +1307,11 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
   tokens' reason for existing is documented rather than latent.
 - **spec** (`test/spec.js`): M3's published numbers asserted against what the
   stylesheet computes in a browser, not against what the Sass declares --
-  typescale, state-layer opacities, the focus indicator, the shape scale, the
-  easing and duration ramps; the five-rung Expressive size ramp on `.m3-btn`,
+  typescale (including all fifteen emphasized weights and trackings, and that
+  each emphasized style's font, size and line height still resolve to its
+  baseline style's), state-layer opacities, the focus indicator, the shape
+  scale, the easing and duration ramps; the five-rung Expressive size ramp on
+  `.m3-btn`,
   `.m3-icon-btn` and `.m3-split-button`; the 1dp/3dp resting and focused text
   field indicators; chip label space; checkbox, radio, switch and slider
   geometry; the linear progress stop indicator and active-to-track gap; tab

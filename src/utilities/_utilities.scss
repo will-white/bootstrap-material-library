@@ -59,8 +59,9 @@ $-text-roles: (
 @mixin styles {
   $p: c.$prefix;
 
-  // --- typescale: .m3-display-large ... .m3-label-small ---------------------
-  @each $role, $def in typography.$scale {
+  // --- typescale: .m3-display-large ... .m3-label-small, plus the
+  //     emphasized scale (.m3-headline-large-emphasized ...) ----------------
+  @each $role in typography.roles() {
     .#{$p}-#{$role} {
       @include m.typescale($role);
     }

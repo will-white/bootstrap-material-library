@@ -28,6 +28,44 @@ $scale: (
   "label-small": (11, 16, 500, 0.5),
 );
 
+// M3 Expressive's EMPHASIZED scale: the same fifteen styles at the same size
+// and line height, set heavier and re-tracked, for headlines, selected items
+// and anywhere a focal point is wanted. Regular goes to Medium; the styles
+// that were already Medium (title-medium, title-small, and every label) go to
+// Bold. Values from Compose's TypeScaleTokens.
+//
+// role -> (weight, tracking px)
+$emphasized: (
+  "display-large": (500, 0),
+  "display-medium": (500, 0),
+  "display-small": (500, 0),
+  "headline-large": (500, 0),
+  "headline-medium": (500, 0),
+  "headline-small": (500, 0),
+  "title-large": (500, 0),
+  "title-medium": (700, 0.15),
+  "title-small": (700, 0.1),
+  "body-large": (500, 0.15),
+  "body-medium": (500, 0.25),
+  "body-small": (500, 0.4),
+  "label-large": (700, 0.1),
+  "label-medium": (700, 0.5),
+  "label-small": (700, 0.5),
+);
+
+// Every role the library can be asked for, baseline and emphasized, so the
+// utilities and the token export agree on one list.
+@function roles() {
+  $out: ();
+  @each $role, $def in $scale {
+    $out: list.append($out, $role);
+  }
+  @each $role, $def in $emphasized {
+    $out: list.append($out, "#{$role}-emphasized");
+  }
+  @return $out;
+}
+
 @mixin tokens {
   --#{config.$sys-prefix}-ref-typeface-plain: #{config.$font-family-plain};
   --#{config.$sys-prefix}-ref-typeface-brand: #{config.$font-family-brand};
@@ -45,6 +83,25 @@ $scale: (
       --#{config.$sys-prefix}-sys-typescale-#{$role}-tracking: normal;
     } @else {
       --#{config.$sys-prefix}-sys-typescale-#{$role}-tracking: #{$tracking * 1px};
+    }
+  }
+
+  // The emphasized scale. Font, size and line height READ the baseline
+  // token rather than repeating its value: an emphasized style is the same
+  // style set heavier, so re-pointing `display-large-size` has to move both
+  // or they stop being one style. Only weight and tracking are its own.
+  @each $role, $def in $emphasized {
+    $weight: list.nth($def, 1);
+    $tracking: list.nth($def, 2);
+    $base: --#{config.$sys-prefix}-sys-typescale-#{$role};
+    --#{config.$sys-prefix}-sys-typescale-#{$role}-emphasized-font: var(#{$base}-font);
+    --#{config.$sys-prefix}-sys-typescale-#{$role}-emphasized-size: var(#{$base}-size);
+    --#{config.$sys-prefix}-sys-typescale-#{$role}-emphasized-line-height: var(#{$base}-line-height);
+    --#{config.$sys-prefix}-sys-typescale-#{$role}-emphasized-weight: #{$weight};
+    @if $tracking == 0 {
+      --#{config.$sys-prefix}-sys-typescale-#{$role}-emphasized-tracking: normal;
+    } @else {
+      --#{config.$sys-prefix}-sys-typescale-#{$role}-emphasized-tracking: #{$tracking * 1px};
     }
   }
 }

@@ -1291,6 +1291,566 @@
         "label-small-tracking": {
           "$type": "dimension",
           "$value": "0.5px"
+        },
+        "display-large-emphasized-font": {
+          "$value": "{md.sys.typescale.display-large-font}",
+          "$type": "fontFamily",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-display-large-font)"
+            }
+          }
+        },
+        "display-large-emphasized-size": {
+          "$value": "{md.sys.typescale.display-large-size}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-display-large-size)"
+            }
+          }
+        },
+        "display-large-emphasized-line-height": {
+          "$value": "{md.sys.typescale.display-large-line-height}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-display-large-line-height)"
+            }
+          }
+        },
+        "display-large-emphasized-weight": {
+          "$type": "number",
+          "$value": 500
+        },
+        "display-large-emphasized-tracking": {
+          "$type": "dimension",
+          "$value": "normal",
+          "$extensions": {
+            "m3x": {
+              "css": "normal"
+            }
+          }
+        },
+        "display-medium-emphasized-font": {
+          "$value": "{md.sys.typescale.display-medium-font}",
+          "$type": "fontFamily",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-display-medium-font)"
+            }
+          }
+        },
+        "display-medium-emphasized-size": {
+          "$value": "{md.sys.typescale.display-medium-size}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-display-medium-size)"
+            }
+          }
+        },
+        "display-medium-emphasized-line-height": {
+          "$value": "{md.sys.typescale.display-medium-line-height}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-display-medium-line-height)"
+            }
+          }
+        },
+        "display-medium-emphasized-weight": {
+          "$type": "number",
+          "$value": 500
+        },
+        "display-medium-emphasized-tracking": {
+          "$type": "dimension",
+          "$value": "normal",
+          "$extensions": {
+            "m3x": {
+              "css": "normal"
+            }
+          }
+        },
+        "display-small-emphasized-font": {
+          "$value": "{md.sys.typescale.display-small-font}",
+          "$type": "fontFamily",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-display-small-font)"
+            }
+          }
+        },
+        "display-small-emphasized-size": {
+          "$value": "{md.sys.typescale.display-small-size}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-display-small-size)"
+            }
+          }
+        },
+        "display-small-emphasized-line-height": {
+          "$value": "{md.sys.typescale.display-small-line-height}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-display-small-line-height)"
+            }
+          }
+        },
+        "display-small-emphasized-weight": {
+          "$type": "number",
+          "$value": 500
+        },
+        "display-small-emphasized-tracking": {
+          "$type": "dimension",
+          "$value": "normal",
+          "$extensions": {
+            "m3x": {
+              "css": "normal"
+            }
+          }
+        },
+        "headline-large-emphasized-font": {
+          "$value": "{md.sys.typescale.headline-large-font}",
+          "$type": "fontFamily",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-headline-large-font)"
+            }
+          }
+        },
+        "headline-large-emphasized-size": {
+          "$value": "{md.sys.typescale.headline-large-size}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-headline-large-size)"
+            }
+          }
+        },
+        "headline-large-emphasized-line-height": {
+          "$value": "{md.sys.typescale.headline-large-line-height}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-headline-large-line-height)"
+            }
+          }
+        },
+        "headline-large-emphasized-weight": {
+          "$type": "number",
+          "$value": 500
+        },
+        "headline-large-emphasized-tracking": {
+          "$type": "dimension",
+          "$value": "normal",
+          "$extensions": {
+            "m3x": {
+              "css": "normal"
+            }
+          }
+        },
+        "headline-medium-emphasized-font": {
+          "$value": "{md.sys.typescale.headline-medium-font}",
+          "$type": "fontFamily",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-headline-medium-font)"
+            }
+          }
+        },
+        "headline-medium-emphasized-size": {
+          "$value": "{md.sys.typescale.headline-medium-size}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-headline-medium-size)"
+            }
+          }
+        },
+        "headline-medium-emphasized-line-height": {
+          "$value": "{md.sys.typescale.headline-medium-line-height}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-headline-medium-line-height)"
+            }
+          }
+        },
+        "headline-medium-emphasized-weight": {
+          "$type": "number",
+          "$value": 500
+        },
+        "headline-medium-emphasized-tracking": {
+          "$type": "dimension",
+          "$value": "normal",
+          "$extensions": {
+            "m3x": {
+              "css": "normal"
+            }
+          }
+        },
+        "headline-small-emphasized-font": {
+          "$value": "{md.sys.typescale.headline-small-font}",
+          "$type": "fontFamily",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-headline-small-font)"
+            }
+          }
+        },
+        "headline-small-emphasized-size": {
+          "$value": "{md.sys.typescale.headline-small-size}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-headline-small-size)"
+            }
+          }
+        },
+        "headline-small-emphasized-line-height": {
+          "$value": "{md.sys.typescale.headline-small-line-height}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-headline-small-line-height)"
+            }
+          }
+        },
+        "headline-small-emphasized-weight": {
+          "$type": "number",
+          "$value": 500
+        },
+        "headline-small-emphasized-tracking": {
+          "$type": "dimension",
+          "$value": "normal",
+          "$extensions": {
+            "m3x": {
+              "css": "normal"
+            }
+          }
+        },
+        "title-large-emphasized-font": {
+          "$value": "{md.sys.typescale.title-large-font}",
+          "$type": "fontFamily",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-title-large-font)"
+            }
+          }
+        },
+        "title-large-emphasized-size": {
+          "$value": "{md.sys.typescale.title-large-size}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-title-large-size)"
+            }
+          }
+        },
+        "title-large-emphasized-line-height": {
+          "$value": "{md.sys.typescale.title-large-line-height}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-title-large-line-height)"
+            }
+          }
+        },
+        "title-large-emphasized-weight": {
+          "$type": "number",
+          "$value": 500
+        },
+        "title-large-emphasized-tracking": {
+          "$type": "dimension",
+          "$value": "normal",
+          "$extensions": {
+            "m3x": {
+              "css": "normal"
+            }
+          }
+        },
+        "title-medium-emphasized-font": {
+          "$value": "{md.sys.typescale.title-medium-font}",
+          "$type": "fontFamily",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-title-medium-font)"
+            }
+          }
+        },
+        "title-medium-emphasized-size": {
+          "$value": "{md.sys.typescale.title-medium-size}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-title-medium-size)"
+            }
+          }
+        },
+        "title-medium-emphasized-line-height": {
+          "$value": "{md.sys.typescale.title-medium-line-height}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-title-medium-line-height)"
+            }
+          }
+        },
+        "title-medium-emphasized-weight": {
+          "$type": "number",
+          "$value": 700
+        },
+        "title-medium-emphasized-tracking": {
+          "$type": "dimension",
+          "$value": "0.15px"
+        },
+        "title-small-emphasized-font": {
+          "$value": "{md.sys.typescale.title-small-font}",
+          "$type": "fontFamily",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-title-small-font)"
+            }
+          }
+        },
+        "title-small-emphasized-size": {
+          "$value": "{md.sys.typescale.title-small-size}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-title-small-size)"
+            }
+          }
+        },
+        "title-small-emphasized-line-height": {
+          "$value": "{md.sys.typescale.title-small-line-height}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-title-small-line-height)"
+            }
+          }
+        },
+        "title-small-emphasized-weight": {
+          "$type": "number",
+          "$value": 700
+        },
+        "title-small-emphasized-tracking": {
+          "$type": "dimension",
+          "$value": "0.1px"
+        },
+        "body-large-emphasized-font": {
+          "$value": "{md.sys.typescale.body-large-font}",
+          "$type": "fontFamily",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-body-large-font)"
+            }
+          }
+        },
+        "body-large-emphasized-size": {
+          "$value": "{md.sys.typescale.body-large-size}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-body-large-size)"
+            }
+          }
+        },
+        "body-large-emphasized-line-height": {
+          "$value": "{md.sys.typescale.body-large-line-height}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-body-large-line-height)"
+            }
+          }
+        },
+        "body-large-emphasized-weight": {
+          "$type": "number",
+          "$value": 500
+        },
+        "body-large-emphasized-tracking": {
+          "$type": "dimension",
+          "$value": "0.15px"
+        },
+        "body-medium-emphasized-font": {
+          "$value": "{md.sys.typescale.body-medium-font}",
+          "$type": "fontFamily",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-body-medium-font)"
+            }
+          }
+        },
+        "body-medium-emphasized-size": {
+          "$value": "{md.sys.typescale.body-medium-size}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-body-medium-size)"
+            }
+          }
+        },
+        "body-medium-emphasized-line-height": {
+          "$value": "{md.sys.typescale.body-medium-line-height}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-body-medium-line-height)"
+            }
+          }
+        },
+        "body-medium-emphasized-weight": {
+          "$type": "number",
+          "$value": 500
+        },
+        "body-medium-emphasized-tracking": {
+          "$type": "dimension",
+          "$value": "0.25px"
+        },
+        "body-small-emphasized-font": {
+          "$value": "{md.sys.typescale.body-small-font}",
+          "$type": "fontFamily",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-body-small-font)"
+            }
+          }
+        },
+        "body-small-emphasized-size": {
+          "$value": "{md.sys.typescale.body-small-size}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-body-small-size)"
+            }
+          }
+        },
+        "body-small-emphasized-line-height": {
+          "$value": "{md.sys.typescale.body-small-line-height}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-body-small-line-height)"
+            }
+          }
+        },
+        "body-small-emphasized-weight": {
+          "$type": "number",
+          "$value": 500
+        },
+        "body-small-emphasized-tracking": {
+          "$type": "dimension",
+          "$value": "0.4px"
+        },
+        "label-large-emphasized-font": {
+          "$value": "{md.sys.typescale.label-large-font}",
+          "$type": "fontFamily",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-label-large-font)"
+            }
+          }
+        },
+        "label-large-emphasized-size": {
+          "$value": "{md.sys.typescale.label-large-size}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-label-large-size)"
+            }
+          }
+        },
+        "label-large-emphasized-line-height": {
+          "$value": "{md.sys.typescale.label-large-line-height}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-label-large-line-height)"
+            }
+          }
+        },
+        "label-large-emphasized-weight": {
+          "$type": "number",
+          "$value": 700
+        },
+        "label-large-emphasized-tracking": {
+          "$type": "dimension",
+          "$value": "0.1px"
+        },
+        "label-medium-emphasized-font": {
+          "$value": "{md.sys.typescale.label-medium-font}",
+          "$type": "fontFamily",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-label-medium-font)"
+            }
+          }
+        },
+        "label-medium-emphasized-size": {
+          "$value": "{md.sys.typescale.label-medium-size}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-label-medium-size)"
+            }
+          }
+        },
+        "label-medium-emphasized-line-height": {
+          "$value": "{md.sys.typescale.label-medium-line-height}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-label-medium-line-height)"
+            }
+          }
+        },
+        "label-medium-emphasized-weight": {
+          "$type": "number",
+          "$value": 700
+        },
+        "label-medium-emphasized-tracking": {
+          "$type": "dimension",
+          "$value": "0.5px"
+        },
+        "label-small-emphasized-font": {
+          "$value": "{md.sys.typescale.label-small-font}",
+          "$type": "fontFamily",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-label-small-font)"
+            }
+          }
+        },
+        "label-small-emphasized-size": {
+          "$value": "{md.sys.typescale.label-small-size}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-label-small-size)"
+            }
+          }
+        },
+        "label-small-emphasized-line-height": {
+          "$value": "{md.sys.typescale.label-small-line-height}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-typescale-label-small-line-height)"
+            }
+          }
+        },
+        "label-small-emphasized-weight": {
+          "$type": "number",
+          "$value": 700
+        },
+        "label-small-emphasized-tracking": {
+          "$type": "dimension",
+          "$value": "0.5px"
         }
       },
       "shape": {

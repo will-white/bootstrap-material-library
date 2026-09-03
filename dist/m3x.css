@@ -746,6 +746,81 @@
     --md-sys-typescale-label-small-line-height: 1rem;
     --md-sys-typescale-label-small-weight: 500;
     --md-sys-typescale-label-small-tracking: 0.5px;
+    --md-sys-typescale-display-large-emphasized-font: var(--md-sys-typescale-display-large-font);
+    --md-sys-typescale-display-large-emphasized-size: var(--md-sys-typescale-display-large-size);
+    --md-sys-typescale-display-large-emphasized-line-height: var(--md-sys-typescale-display-large-line-height);
+    --md-sys-typescale-display-large-emphasized-weight: 500;
+    --md-sys-typescale-display-large-emphasized-tracking: normal;
+    --md-sys-typescale-display-medium-emphasized-font: var(--md-sys-typescale-display-medium-font);
+    --md-sys-typescale-display-medium-emphasized-size: var(--md-sys-typescale-display-medium-size);
+    --md-sys-typescale-display-medium-emphasized-line-height: var(--md-sys-typescale-display-medium-line-height);
+    --md-sys-typescale-display-medium-emphasized-weight: 500;
+    --md-sys-typescale-display-medium-emphasized-tracking: normal;
+    --md-sys-typescale-display-small-emphasized-font: var(--md-sys-typescale-display-small-font);
+    --md-sys-typescale-display-small-emphasized-size: var(--md-sys-typescale-display-small-size);
+    --md-sys-typescale-display-small-emphasized-line-height: var(--md-sys-typescale-display-small-line-height);
+    --md-sys-typescale-display-small-emphasized-weight: 500;
+    --md-sys-typescale-display-small-emphasized-tracking: normal;
+    --md-sys-typescale-headline-large-emphasized-font: var(--md-sys-typescale-headline-large-font);
+    --md-sys-typescale-headline-large-emphasized-size: var(--md-sys-typescale-headline-large-size);
+    --md-sys-typescale-headline-large-emphasized-line-height: var(--md-sys-typescale-headline-large-line-height);
+    --md-sys-typescale-headline-large-emphasized-weight: 500;
+    --md-sys-typescale-headline-large-emphasized-tracking: normal;
+    --md-sys-typescale-headline-medium-emphasized-font: var(--md-sys-typescale-headline-medium-font);
+    --md-sys-typescale-headline-medium-emphasized-size: var(--md-sys-typescale-headline-medium-size);
+    --md-sys-typescale-headline-medium-emphasized-line-height: var(--md-sys-typescale-headline-medium-line-height);
+    --md-sys-typescale-headline-medium-emphasized-weight: 500;
+    --md-sys-typescale-headline-medium-emphasized-tracking: normal;
+    --md-sys-typescale-headline-small-emphasized-font: var(--md-sys-typescale-headline-small-font);
+    --md-sys-typescale-headline-small-emphasized-size: var(--md-sys-typescale-headline-small-size);
+    --md-sys-typescale-headline-small-emphasized-line-height: var(--md-sys-typescale-headline-small-line-height);
+    --md-sys-typescale-headline-small-emphasized-weight: 500;
+    --md-sys-typescale-headline-small-emphasized-tracking: normal;
+    --md-sys-typescale-title-large-emphasized-font: var(--md-sys-typescale-title-large-font);
+    --md-sys-typescale-title-large-emphasized-size: var(--md-sys-typescale-title-large-size);
+    --md-sys-typescale-title-large-emphasized-line-height: var(--md-sys-typescale-title-large-line-height);
+    --md-sys-typescale-title-large-emphasized-weight: 500;
+    --md-sys-typescale-title-large-emphasized-tracking: normal;
+    --md-sys-typescale-title-medium-emphasized-font: var(--md-sys-typescale-title-medium-font);
+    --md-sys-typescale-title-medium-emphasized-size: var(--md-sys-typescale-title-medium-size);
+    --md-sys-typescale-title-medium-emphasized-line-height: var(--md-sys-typescale-title-medium-line-height);
+    --md-sys-typescale-title-medium-emphasized-weight: 700;
+    --md-sys-typescale-title-medium-emphasized-tracking: 0.15px;
+    --md-sys-typescale-title-small-emphasized-font: var(--md-sys-typescale-title-small-font);
+    --md-sys-typescale-title-small-emphasized-size: var(--md-sys-typescale-title-small-size);
+    --md-sys-typescale-title-small-emphasized-line-height: var(--md-sys-typescale-title-small-line-height);
+    --md-sys-typescale-title-small-emphasized-weight: 700;
+    --md-sys-typescale-title-small-emphasized-tracking: 0.1px;
+    --md-sys-typescale-body-large-emphasized-font: var(--md-sys-typescale-body-large-font);
+    --md-sys-typescale-body-large-emphasized-size: var(--md-sys-typescale-body-large-size);
+    --md-sys-typescale-body-large-emphasized-line-height: var(--md-sys-typescale-body-large-line-height);
+    --md-sys-typescale-body-large-emphasized-weight: 500;
+    --md-sys-typescale-body-large-emphasized-tracking: 0.15px;
+    --md-sys-typescale-body-medium-emphasized-font: var(--md-sys-typescale-body-medium-font);
+    --md-sys-typescale-body-medium-emphasized-size: var(--md-sys-typescale-body-medium-size);
+    --md-sys-typescale-body-medium-emphasized-line-height: var(--md-sys-typescale-body-medium-line-height);
+    --md-sys-typescale-body-medium-emphasized-weight: 500;
+    --md-sys-typescale-body-medium-emphasized-tracking: 0.25px;
+    --md-sys-typescale-body-small-emphasized-font: var(--md-sys-typescale-body-small-font);
+    --md-sys-typescale-body-small-emphasized-size: var(--md-sys-typescale-body-small-size);
+    --md-sys-typescale-body-small-emphasized-line-height: var(--md-sys-typescale-body-small-line-height);
+    --md-sys-typescale-body-small-emphasized-weight: 500;
+    --md-sys-typescale-body-small-emphasized-tracking: 0.4px;
+    --md-sys-typescale-label-large-emphasized-font: var(--md-sys-typescale-label-large-font);
+    --md-sys-typescale-label-large-emphasized-size: var(--md-sys-typescale-label-large-size);
+    --md-sys-typescale-label-large-emphasized-line-height: var(--md-sys-typescale-label-large-line-height);
+    --md-sys-typescale-label-large-emphasized-weight: 700;
+    --md-sys-typescale-label-large-emphasized-tracking: 0.1px;
+    --md-sys-typescale-label-medium-emphasized-font: var(--md-sys-typescale-label-medium-font);
+    --md-sys-typescale-label-medium-emphasized-size: var(--md-sys-typescale-label-medium-size);
+    --md-sys-typescale-label-medium-emphasized-line-height: var(--md-sys-typescale-label-medium-line-height);
+    --md-sys-typescale-label-medium-emphasized-weight: 700;
+    --md-sys-typescale-label-medium-emphasized-tracking: 0.5px;
+    --md-sys-typescale-label-small-emphasized-font: var(--md-sys-typescale-label-small-font);
+    --md-sys-typescale-label-small-emphasized-size: var(--md-sys-typescale-label-small-size);
+    --md-sys-typescale-label-small-emphasized-line-height: var(--md-sys-typescale-label-small-line-height);
+    --md-sys-typescale-label-small-emphasized-weight: 700;
+    --md-sys-typescale-label-small-emphasized-tracking: 0.5px;
     --md-sys-shape-corner-none: 0px;
     --md-sys-shape-corner-extra-small: 0.25rem;
     --md-sys-shape-corner-small: 0.5rem;
@@ -16805,6 +16880,111 @@
       line-height: var(--md-sys-typescale-label-small-line-height);
       font-weight: var(--md-sys-typescale-label-small-weight);
       letter-spacing: var(--md-sys-typescale-label-small-tracking);
+    }
+    .m3-display-large-emphasized {
+      font-family: var(--md-sys-typescale-display-large-emphasized-font);
+      font-size: var(--md-sys-typescale-display-large-emphasized-size);
+      line-height: var(--md-sys-typescale-display-large-emphasized-line-height);
+      font-weight: var(--md-sys-typescale-display-large-emphasized-weight);
+      letter-spacing: var(--md-sys-typescale-display-large-emphasized-tracking);
+    }
+    .m3-display-medium-emphasized {
+      font-family: var(--md-sys-typescale-display-medium-emphasized-font);
+      font-size: var(--md-sys-typescale-display-medium-emphasized-size);
+      line-height: var(--md-sys-typescale-display-medium-emphasized-line-height);
+      font-weight: var(--md-sys-typescale-display-medium-emphasized-weight);
+      letter-spacing: var(--md-sys-typescale-display-medium-emphasized-tracking);
+    }
+    .m3-display-small-emphasized {
+      font-family: var(--md-sys-typescale-display-small-emphasized-font);
+      font-size: var(--md-sys-typescale-display-small-emphasized-size);
+      line-height: var(--md-sys-typescale-display-small-emphasized-line-height);
+      font-weight: var(--md-sys-typescale-display-small-emphasized-weight);
+      letter-spacing: var(--md-sys-typescale-display-small-emphasized-tracking);
+    }
+    .m3-headline-large-emphasized {
+      font-family: var(--md-sys-typescale-headline-large-emphasized-font);
+      font-size: var(--md-sys-typescale-headline-large-emphasized-size);
+      line-height: var(--md-sys-typescale-headline-large-emphasized-line-height);
+      font-weight: var(--md-sys-typescale-headline-large-emphasized-weight);
+      letter-spacing: var(--md-sys-typescale-headline-large-emphasized-tracking);
+    }
+    .m3-headline-medium-emphasized {
+      font-family: var(--md-sys-typescale-headline-medium-emphasized-font);
+      font-size: var(--md-sys-typescale-headline-medium-emphasized-size);
+      line-height: var(--md-sys-typescale-headline-medium-emphasized-line-height);
+      font-weight: var(--md-sys-typescale-headline-medium-emphasized-weight);
+      letter-spacing: var(--md-sys-typescale-headline-medium-emphasized-tracking);
+    }
+    .m3-headline-small-emphasized {
+      font-family: var(--md-sys-typescale-headline-small-emphasized-font);
+      font-size: var(--md-sys-typescale-headline-small-emphasized-size);
+      line-height: var(--md-sys-typescale-headline-small-emphasized-line-height);
+      font-weight: var(--md-sys-typescale-headline-small-emphasized-weight);
+      letter-spacing: var(--md-sys-typescale-headline-small-emphasized-tracking);
+    }
+    .m3-title-large-emphasized {
+      font-family: var(--md-sys-typescale-title-large-emphasized-font);
+      font-size: var(--md-sys-typescale-title-large-emphasized-size);
+      line-height: var(--md-sys-typescale-title-large-emphasized-line-height);
+      font-weight: var(--md-sys-typescale-title-large-emphasized-weight);
+      letter-spacing: var(--md-sys-typescale-title-large-emphasized-tracking);
+    }
+    .m3-title-medium-emphasized {
+      font-family: var(--md-sys-typescale-title-medium-emphasized-font);
+      font-size: var(--md-sys-typescale-title-medium-emphasized-size);
+      line-height: var(--md-sys-typescale-title-medium-emphasized-line-height);
+      font-weight: var(--md-sys-typescale-title-medium-emphasized-weight);
+      letter-spacing: var(--md-sys-typescale-title-medium-emphasized-tracking);
+    }
+    .m3-title-small-emphasized {
+      font-family: var(--md-sys-typescale-title-small-emphasized-font);
+      font-size: var(--md-sys-typescale-title-small-emphasized-size);
+      line-height: var(--md-sys-typescale-title-small-emphasized-line-height);
+      font-weight: var(--md-sys-typescale-title-small-emphasized-weight);
+      letter-spacing: var(--md-sys-typescale-title-small-emphasized-tracking);
+    }
+    .m3-body-large-emphasized {
+      font-family: var(--md-sys-typescale-body-large-emphasized-font);
+      font-size: var(--md-sys-typescale-body-large-emphasized-size);
+      line-height: var(--md-sys-typescale-body-large-emphasized-line-height);
+      font-weight: var(--md-sys-typescale-body-large-emphasized-weight);
+      letter-spacing: var(--md-sys-typescale-body-large-emphasized-tracking);
+    }
+    .m3-body-medium-emphasized {
+      font-family: var(--md-sys-typescale-body-medium-emphasized-font);
+      font-size: var(--md-sys-typescale-body-medium-emphasized-size);
+      line-height: var(--md-sys-typescale-body-medium-emphasized-line-height);
+      font-weight: var(--md-sys-typescale-body-medium-emphasized-weight);
+      letter-spacing: var(--md-sys-typescale-body-medium-emphasized-tracking);
+    }
+    .m3-body-small-emphasized {
+      font-family: var(--md-sys-typescale-body-small-emphasized-font);
+      font-size: var(--md-sys-typescale-body-small-emphasized-size);
+      line-height: var(--md-sys-typescale-body-small-emphasized-line-height);
+      font-weight: var(--md-sys-typescale-body-small-emphasized-weight);
+      letter-spacing: var(--md-sys-typescale-body-small-emphasized-tracking);
+    }
+    .m3-label-large-emphasized {
+      font-family: var(--md-sys-typescale-label-large-emphasized-font);
+      font-size: var(--md-sys-typescale-label-large-emphasized-size);
+      line-height: var(--md-sys-typescale-label-large-emphasized-line-height);
+      font-weight: var(--md-sys-typescale-label-large-emphasized-weight);
+      letter-spacing: var(--md-sys-typescale-label-large-emphasized-tracking);
+    }
+    .m3-label-medium-emphasized {
+      font-family: var(--md-sys-typescale-label-medium-emphasized-font);
+      font-size: var(--md-sys-typescale-label-medium-emphasized-size);
+      line-height: var(--md-sys-typescale-label-medium-emphasized-line-height);
+      font-weight: var(--md-sys-typescale-label-medium-emphasized-weight);
+      letter-spacing: var(--md-sys-typescale-label-medium-emphasized-tracking);
+    }
+    .m3-label-small-emphasized {
+      font-family: var(--md-sys-typescale-label-small-emphasized-font);
+      font-size: var(--md-sys-typescale-label-small-emphasized-size);
+      line-height: var(--md-sys-typescale-label-small-emphasized-line-height);
+      font-weight: var(--md-sys-typescale-label-small-emphasized-weight);
+      letter-spacing: var(--md-sys-typescale-label-small-emphasized-tracking);
     }
     .m3-bg-primary {
       background-color: var(--md-sys-color-primary);
