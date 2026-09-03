@@ -27,32 +27,41 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-dialog-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container-high);
-  --#{c.$prefix}-dialog-content-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-dialog-shape: var(--#{c.$sys-prefix}-sys-shape-corner-extra-large);
-  --#{c.$prefix}-dialog-padding: var(--#{c.$prefix}-sys-space-5);
-  --#{c.$prefix}-dialog-min-width: #{fn.rem(280)};
-  --#{c.$prefix}-dialog-max-width: #{fn.rem(560)};
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "dialog-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-high),
+  "dialog-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "dialog-shape": var(--#{c.$sys-prefix}-sys-shape-corner-extra-large),
+  "dialog-padding": var(--#{c.$prefix}-sys-space-5),
+  "dialog-min-width": #{fn.rem(280)},
+  "dialog-max-width": #{fn.rem(560)},
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // The dialog surface. Also aliased under Bootstrap's .modal-content.
 @mixin container {
   @include m.own-box;
-  background-color: var(--#{c.$prefix}-dialog-container-color);
-  color: var(--#{c.$prefix}-dialog-content-color);
+  background-color: #{v("dialog-container-color")};
+  color: #{v("dialog-content-color")};
   border: none;
-  border-radius: var(--#{c.$prefix}-dialog-shape);
-  padding: var(--#{c.$prefix}-dialog-padding);
+  border-radius: #{v("dialog-shape")};
+  padding: #{v("dialog-padding")};
   @include m.elevation(3);
 }
 
 // Native <dialog> element behavior on top of the surface.
 @mixin native {
   @include container;
-  min-inline-size: var(--#{c.$prefix}-dialog-min-width);
+  min-inline-size: #{v("dialog-min-width")};
   max-inline-size: min(
-    var(--#{c.$prefix}-dialog-max-width),
+    #{v("dialog-max-width")},
     calc(100% - var(--#{c.$prefix}-sys-space-6))
   );
   max-block-size: calc(100% - var(--#{c.$prefix}-sys-space-6));
@@ -112,7 +121,7 @@
   @include m.own-box;
   display: block;
   @include m.typescale("headline-small");
-  color: var(--#{c.$prefix}-dialog-content-color);
+  color: #{v("dialog-content-color")};
   margin-block-end: var(--#{c.$prefix}-sys-space-4);
 }
 
@@ -150,7 +159,7 @@
     h2,
     h3 {
       @include m.typescale("headline-small");
-      color: var(--#{c.$prefix}-dialog-content-color);
+      color: #{v("dialog-content-color")};
     }
 
     p {

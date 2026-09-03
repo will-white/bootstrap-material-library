@@ -27,14 +27,23 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-search-height: #{fn.rem(56)};
-  --#{c.$prefix}-search-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container-high);
-  --#{c.$prefix}-search-content-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-search-placeholder-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-search-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
-  --#{c.$prefix}-search-panel-shape: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "search-height": #{fn.rem(56)},
+  "search-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-high),
+  "search-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "search-placeholder-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "search-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
+  "search-panel-shape": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // The bar itself: positioning context for the panel, flex row for the input
 // (and any leading/trailing icon slots the consumer adds).
@@ -44,9 +53,9 @@
   display: flex;
   align-items: center;
   gap: var(--#{c.$prefix}-sys-space-2);
-  @include m.control-height(--#{c.$prefix}-search-height);
-  border-radius: var(--#{c.$prefix}-search-shape);
-  background-color: var(--#{c.$prefix}-search-container-color);
+  @include m.control-height(v("search-height"));
+  border-radius: #{v("search-shape")};
+  background-color: #{v("search-container-color")};
   padding-inline: var(--#{c.$prefix}-sys-space-4);
   @include m.focus-ring-within;
   @include m.transition((background-color));
@@ -54,9 +63,9 @@
   @include m.hover {
     background-color: color-mix(
       in srgb,
-      var(--#{c.$prefix}-search-content-color)
+      #{v("search-content-color")}
         var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity),
-      var(--#{c.$prefix}-search-container-color)
+      #{v("search-container-color")}
     );
   }
 }
@@ -68,7 +77,7 @@
   flex: 1 1 auto;
   background-color: transparent;
   border: none;
-  color: var(--#{c.$prefix}-search-content-color);
+  color: #{v("search-content-color")};
   @include m.typescale("body-large");
   min-inline-size: var(--#{c.$prefix}-sys-space-none);
   cursor: text;
@@ -79,7 +88,7 @@
   }
 
   &::placeholder {
-    color: var(--#{c.$prefix}-search-placeholder-color);
+    color: #{v("search-placeholder-color")};
     opacity: var(--#{c.$prefix}-sys-opacity-full);
   }
 
@@ -96,13 +105,13 @@
 @mixin panel {
   @include m.own-box;
   @include m.typescale("body-medium");
-  color: var(--#{c.$prefix}-search-content-color);
+  color: #{v("search-content-color")};
   position: absolute;
   inset-block-start: 100%;
   inset-inline: var(--#{c.$prefix}-sys-space-none);
   margin-block-start: var(--#{c.$prefix}-sys-space-1);
-  background-color: var(--#{c.$prefix}-search-container-color);
-  border-radius: var(--#{c.$prefix}-search-panel-shape);
+  background-color: #{v("search-container-color")};
+  border-radius: #{v("search-panel-shape")};
   @include m.elevation(2);
   padding-block: var(--#{c.$prefix}-sys-space-2);
   display: none;

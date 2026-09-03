@@ -48,17 +48,26 @@
 @use "navigation-rail" as rail;
 @use "navigation-drawer" as drawer;
 
-@mixin tokens {
-  --#{c.$prefix}-layout-padding: var(--#{c.$prefix}-sys-space-4);
-  --#{c.$prefix}-layout-pane-gap: var(--#{c.$prefix}-sys-space-6);
-  --#{c.$prefix}-layout-list-width: #{fn.rem(360)};
-  --#{c.$prefix}-layout-supporting-width: #{fn.rem(360)};
-  --#{c.$prefix}-layout-feed-min: #{fn.rem(280)};
-  --#{c.$prefix}-pane-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container-low);
-  --#{c.$prefix}-pane-content-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-pane-shape: var(--#{c.$sys-prefix}-sys-shape-corner-large);
-  --#{c.$prefix}-pane-padding: var(--#{c.$prefix}-sys-space-4);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "layout-padding": var(--#{c.$prefix}-sys-space-4),
+  "layout-pane-gap": var(--#{c.$prefix}-sys-space-6),
+  "layout-list-width": #{fn.rem(360)},
+  "layout-supporting-width": #{fn.rem(360)},
+  "layout-feed-min": #{fn.rem(280)},
+  "pane-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-low),
+  "pane-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "pane-shape": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+  "pane-padding": var(--#{c.$prefix}-sys-space-4),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // --- window size classes ----------------------------------------------------
 
@@ -114,9 +123,9 @@
   @include m.own-box;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--#{c.$prefix}-layout-pane-gap);
+  gap: #{v("layout-pane-gap")};
   align-items: start;
-  padding: var(--#{c.$prefix}-layout-padding);
+  padding: #{v("layout-padding")};
 
   @include at("medium") {
     --#{c.$prefix}-layout-padding: var(--#{c.$prefix}-sys-space-6);
@@ -126,14 +135,14 @@
 // List-detail: one pane at a time on compact/medium, both from expanded.
 @mixin list-detail {
   @include at("expanded") {
-    grid-template-columns: var(--#{c.$prefix}-layout-list-width) minmax(0, 1fr);
+    grid-template-columns: #{v("layout-list-width")} minmax(0, 1fr);
   }
 }
 
 // Supporting pane: main content with a trailing supporting pane from expanded.
 @mixin supporting-pane {
   @include at("expanded") {
-    grid-template-columns: minmax(0, 1fr) var(--#{c.$prefix}-layout-supporting-width);
+    grid-template-columns: minmax(0, 1fr) #{v("layout-supporting-width")};
   }
 }
 
@@ -141,7 +150,7 @@
 @mixin feed {
   grid-template-columns: repeat(
     auto-fill,
-    minmax(min(100%, var(--#{c.$prefix}-layout-feed-min)), 1fr)
+    minmax(min(100%, #{v("layout-feed-min")}), 1fr)
   );
 }
 
@@ -149,10 +158,10 @@
   @include m.own-box;
   display: block;
   min-inline-size: 0;
-  padding: var(--#{c.$prefix}-pane-padding);
-  border-radius: var(--#{c.$prefix}-pane-shape);
-  background-color: var(--#{c.$prefix}-pane-container-color);
-  color: var(--#{c.$prefix}-pane-content-color);
+  padding: #{v("pane-padding")};
+  border-radius: #{v("pane-shape")};
+  background-color: #{v("pane-container-color")};
+  color: #{v("pane-content-color")};
 }
 
 // --- adaptive navigation ----------------------------------------------------
@@ -164,16 +173,16 @@
   min-block-size: 100vh;
   min-block-size: 100dvh;
   padding-block-end: calc(
-    var(--#{c.$prefix}-nav-bar-height) + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
+    #{nav-bar.v("nav-bar-height")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
   );
 
   @include at("medium") {
     padding-block-end: var(--#{c.$prefix}-sys-space-none);
-    padding-inline-start: var(--#{c.$prefix}-rail-width);
+    padding-inline-start: #{rail.v("rail-width")};
   }
 
   @include at("large") {
-    padding-inline-start: var(--#{c.$prefix}-drawer-width);
+    padding-inline-start: #{drawer.v("drawer-width")};
   }
 }
 

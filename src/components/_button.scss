@@ -71,73 +71,81 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-btn-height: #{fn.rem(40)};
-  --#{c.$prefix}-btn-height-xs: #{fn.rem(32)};
-  --#{c.$prefix}-btn-height-medium: #{fn.rem(56)};
-  --#{c.$prefix}-btn-height-large: #{fn.rem(96)};
-  --#{c.$prefix}-btn-height-xl: #{fn.rem(136)};
-  --#{c.$prefix}-btn-height-small: #{fn.rem(32)};
-  --#{c.$prefix}-btn-height-bootstrap-large: #{fn.rem(48)};
-  --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-sys-space-4);
-  --#{c.$prefix}-btn-padding-inline-xs: var(--#{c.$prefix}-sys-space-3);
-  --#{c.$prefix}-btn-padding-inline-medium: var(--#{c.$prefix}-sys-space-5);
-  --#{c.$prefix}-btn-padding-inline-large: var(--#{c.$prefix}-sys-space-7);
-  --#{c.$prefix}-btn-padding-inline-xl: #{fn.rem(64)};
-  --#{c.$prefix}-btn-padding-inline-small: var(--#{c.$prefix}-sys-space-4);
-  --#{c.$prefix}-btn-padding-inline-bootstrap-large: var(--#{c.$prefix}-sys-space-6);
-  --#{c.$prefix}-btn-icon-gap: var(--#{c.$prefix}-sys-space-2);
-  --#{c.$prefix}-btn-icon-size: #{fn.rem(20)};
-  --#{c.$prefix}-btn-icon-size-xs: #{fn.rem(20)};
-  --#{c.$prefix}-btn-icon-size-medium: var(--#{c.$prefix}-sys-icon-size);
-  --#{c.$prefix}-btn-icon-size-large: #{fn.rem(32)};
-  --#{c.$prefix}-btn-icon-size-xl: #{fn.rem(40)};
-  --#{c.$prefix}-btn-icon-size-small: var(--#{c.$prefix}-sys-icon-size-small);
-  // opsz axis of a child .m3-icon: the icon size in px (axis minimum 20).
-  --#{c.$prefix}-btn-icon-optical-size: 20;
-  --#{c.$prefix}-btn-icon-optical-size-medium: 24;
-  --#{c.$prefix}-btn-icon-optical-size-large: 32;
-  --#{c.$prefix}-btn-icon-optical-size-xl: 40;
-  --#{c.$prefix}-btn-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
-  --#{c.$prefix}-btn-shape-square: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
-  --#{c.$prefix}-btn-shape-square-medium: var(--#{c.$sys-prefix}-sys-shape-corner-large);
-  --#{c.$prefix}-btn-shape-square-large: var(--#{c.$sys-prefix}-sys-shape-corner-extra-large);
-  --#{c.$prefix}-btn-shape-pressed: var(--#{c.$sys-prefix}-sys-shape-corner-small);
-  --#{c.$prefix}-btn-shape-pressed-medium: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
-  --#{c.$prefix}-btn-shape-pressed-large: var(--#{c.$sys-prefix}-sys-shape-corner-large);
-  --#{c.$prefix}-btn-shape-selected: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
-  --#{c.$prefix}-btn-shape-selected-medium: var(--#{c.$sys-prefix}-sys-shape-corner-large);
-  --#{c.$prefix}-btn-shape-selected-large: var(--#{c.$sys-prefix}-sys-shape-corner-extra-large);
-  --#{c.$prefix}-btn-outline-width: var(--#{c.$prefix}-sys-stroke-hairline);
-  --#{c.$prefix}-btn-container-color: var(--#{c.$sys-prefix}-sys-color-primary);
-  --#{c.$prefix}-btn-label-color: var(--#{c.$sys-prefix}-sys-color-on-primary);
-  --#{c.$prefix}-btn-tonal-container-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
-  --#{c.$prefix}-btn-tonal-label-color: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
-  --#{c.$prefix}-btn-elevated-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container-low);
-  --#{c.$prefix}-btn-elevated-label-color: var(--#{c.$sys-prefix}-sys-color-primary);
-  --#{c.$prefix}-btn-outlined-label-color: var(--#{c.$sys-prefix}-sys-color-primary);
-  --#{c.$prefix}-btn-outlined-outline-color: var(--#{c.$sys-prefix}-sys-color-outline);
-  --#{c.$prefix}-btn-text-label-color: var(--#{c.$sys-prefix}-sys-color-primary);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "btn-height": #{fn.rem(40)},
+  "btn-height-xs": #{fn.rem(32)},
+  "btn-height-medium": #{fn.rem(56)},
+  "btn-height-large": #{fn.rem(96)},
+  "btn-height-xl": #{fn.rem(136)},
+  "btn-height-small": #{fn.rem(32)},
+  "btn-height-bootstrap-large": #{fn.rem(48)},
+  "btn-padding-inline": var(--#{c.$prefix}-sys-space-4),
+  "btn-padding-inline-xs": var(--#{c.$prefix}-sys-space-3),
+  "btn-padding-inline-medium": var(--#{c.$prefix}-sys-space-5),
+  "btn-padding-inline-large": var(--#{c.$prefix}-sys-space-7),
+  "btn-padding-inline-xl": #{fn.rem(64)},
+  "btn-padding-inline-small": var(--#{c.$prefix}-sys-space-4),
+  "btn-padding-inline-bootstrap-large": var(--#{c.$prefix}-sys-space-6),
+  "btn-icon-gap": var(--#{c.$prefix}-sys-space-2),
+  "btn-icon-size": #{fn.rem(20)},
+  "btn-icon-size-xs": #{fn.rem(20)},
+  "btn-icon-size-medium": var(--#{c.$prefix}-sys-icon-size),
+  "btn-icon-size-large": #{fn.rem(32)},
+  "btn-icon-size-xl": #{fn.rem(40)},
+  "btn-icon-size-small": var(--#{c.$prefix}-sys-icon-size-small),
+  "btn-icon-optical-size": 20,
+  "btn-icon-optical-size-medium": 24,
+  "btn-icon-optical-size-large": 32,
+  "btn-icon-optical-size-xl": 40,
+  "btn-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
+  "btn-shape-square": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "btn-shape-square-medium": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+  "btn-shape-square-large": var(--#{c.$sys-prefix}-sys-shape-corner-extra-large),
+  "btn-shape-pressed": var(--#{c.$sys-prefix}-sys-shape-corner-small),
+  "btn-shape-pressed-medium": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "btn-shape-pressed-large": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+  "btn-shape-selected": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "btn-shape-selected-medium": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+  "btn-shape-selected-large": var(--#{c.$sys-prefix}-sys-shape-corner-extra-large),
+  "btn-outline-width": var(--#{c.$prefix}-sys-stroke-hairline),
+  "btn-container-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "btn-label-color": var(--#{c.$sys-prefix}-sys-color-on-primary),
+  "btn-tonal-container-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
+  "btn-tonal-label-color": var(--#{c.$sys-prefix}-sys-color-on-secondary-container),
+  "btn-elevated-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-low),
+  "btn-elevated-label-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "btn-outlined-label-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "btn-outlined-outline-color": var(--#{c.$sys-prefix}-sys-color-outline),
+  "btn-text-label-color": var(--#{c.$sys-prefix}-sys-color-primary),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // Structure + state machinery shared by every variant (and by Bootstrap's
 // .btn). Variants only re-point the tier-4 private variables.
 @mixin base($check: ".#{c.$prefix}-btn-check") {
   @include m.own-box;
   // Default look when no variant class is present: filled.
-  --_container: var(--#{c.$prefix}-btn-container-color);
-  --_content: var(--#{c.$prefix}-btn-label-color);
+  --_container: #{v("btn-container-color")};
+  --_content: #{v("btn-label-color")};
 
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--#{c.$prefix}-btn-icon-gap);
-  @include m.control-height(--#{c.$prefix}-btn-height);
-  @include m.pill-radius(--#{c.$prefix}-btn-height);
-  padding-inline: var(--#{c.$prefix}-btn-padding-inline);
+  gap: #{v("btn-icon-gap")};
+  @include m.control-height(v("btn-height"));
+  @include m.pill-radius(v("btn-height"));
+  padding-inline: #{v("btn-padding-inline")};
   border: none;
-  border-radius: m.pill(var(--#{c.$prefix}-btn-shape));
+  border-radius: m.pill(#{v("btn-shape")});
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
@@ -158,10 +166,10 @@
   > svg,
   > img,
   > .#{c.$prefix}-icon {
-    inline-size: var(--#{c.$prefix}-btn-icon-size);
-    font-size: var(--#{c.$prefix}-btn-icon-size);
-    block-size: var(--#{c.$prefix}-btn-icon-size);
-    --#{c.$prefix}-icon-optical-size: var(--#{c.$prefix}-btn-icon-optical-size);
+    inline-size: #{v("btn-icon-size")};
+    font-size: #{v("btn-icon-size")};
+    block-size: #{v("btn-icon-size")};
+    --#{c.$prefix}-icon-optical-size: #{v("btn-icon-optical-size")};
   }
 
   // M3 Expressive shape morphs: squarer while pressed, squarer still while
@@ -169,12 +177,12 @@
   // Every animated radius goes through m.pill() so "full" is a finite,
   // interpolable half-height (see the mixins).
   &:active {
-    border-radius: m.pill(var(--#{c.$prefix}-btn-shape-pressed));
+    border-radius: m.pill(#{v("btn-shape-pressed")});
   }
   &[aria-pressed="true"],
   #{$check}:checked + & {
     --#{c.$prefix}-icon-fill: 1;
-    border-radius: m.pill(var(--#{c.$prefix}-btn-shape-selected));
+    border-radius: m.pill(#{v("btn-shape-selected")});
   }
 
   &:disabled,
@@ -184,8 +192,8 @@
 }
 
 @mixin filled {
-  --_container: var(--#{c.$prefix}-btn-container-color);
-  --_content: var(--#{c.$prefix}-btn-label-color);
+  --_container: #{v("btn-container-color")};
+  --_content: #{v("btn-label-color")};
 
   // M3: filled buttons lift to level 1 on hover, back to 0 when pressed.
   @include m.hover {
@@ -197,8 +205,8 @@
 }
 
 @mixin tonal {
-  --_container: var(--#{c.$prefix}-btn-tonal-container-color);
-  --_content: var(--#{c.$prefix}-btn-tonal-label-color);
+  --_container: #{v("btn-tonal-container-color")};
+  --_content: #{v("btn-tonal-label-color")};
 
   @include m.hover {
     @include m.elevation(1);
@@ -209,8 +217,8 @@
 }
 
 @mixin elevated {
-  --_container: var(--#{c.$prefix}-btn-elevated-container-color);
-  --_content: var(--#{c.$prefix}-btn-elevated-label-color);
+  --_container: #{v("btn-elevated-container-color")};
+  --_content: #{v("btn-elevated-label-color")};
   @include m.elevation(1);
 
   @include m.hover {
@@ -225,9 +233,9 @@
 
 @mixin outlined {
   --_container: transparent;
-  --_content: var(--#{c.$prefix}-btn-outlined-label-color);
-  border: var(--#{c.$prefix}-btn-outline-width) solid
-    var(--#{c.$prefix}-btn-outlined-outline-color);
+  --_content: #{v("btn-outlined-label-color")};
+  border: #{v("btn-outline-width")} solid
+    #{v("btn-outlined-outline-color")};
 
   &:disabled,
   &.disabled {
@@ -243,7 +251,7 @@
 
 @mixin text-variant {
   --_container: transparent;
-  --_content: var(--#{c.$prefix}-btn-text-label-color);
+  --_content: #{v("btn-text-label-color")};
   padding-inline: var(--#{c.$prefix}-sys-space-3);
 
   &:disabled,
@@ -259,41 +267,41 @@
 // plus the square-shape token --square reads, so a size and --square compose
 // on one element.
 @mixin xs {
-  --#{c.$prefix}-btn-height: var(--#{c.$prefix}-btn-height-xs);
-  --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-btn-padding-inline-xs);
-  --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-xs);
+  --#{c.$prefix}-btn-height: #{v("btn-height-xs")};
+  --#{c.$prefix}-btn-padding-inline: #{v("btn-padding-inline-xs")};
+  --#{c.$prefix}-btn-icon-size: #{v("btn-icon-size-xs")};
 }
 
 @mixin medium {
-  --#{c.$prefix}-btn-height: var(--#{c.$prefix}-btn-height-medium);
-  --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-btn-padding-inline-medium);
-  --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-medium);
-  --#{c.$prefix}-btn-icon-optical-size: var(--#{c.$prefix}-btn-icon-optical-size-medium);
-  --#{c.$prefix}-btn-shape-square: var(--#{c.$prefix}-btn-shape-square-medium);
-  --#{c.$prefix}-btn-shape-pressed: var(--#{c.$prefix}-btn-shape-pressed-medium);
-  --#{c.$prefix}-btn-shape-selected: var(--#{c.$prefix}-btn-shape-selected-medium);
+  --#{c.$prefix}-btn-height: #{v("btn-height-medium")};
+  --#{c.$prefix}-btn-padding-inline: #{v("btn-padding-inline-medium")};
+  --#{c.$prefix}-btn-icon-size: #{v("btn-icon-size-medium")};
+  --#{c.$prefix}-btn-icon-optical-size: #{v("btn-icon-optical-size-medium")};
+  --#{c.$prefix}-btn-shape-square: #{v("btn-shape-square-medium")};
+  --#{c.$prefix}-btn-shape-pressed: #{v("btn-shape-pressed-medium")};
+  --#{c.$prefix}-btn-shape-selected: #{v("btn-shape-selected-medium")};
   @include m.typescale("title-medium");
 }
 
 @mixin large {
-  --#{c.$prefix}-btn-height: var(--#{c.$prefix}-btn-height-large);
-  --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-btn-padding-inline-large);
-  --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-large);
-  --#{c.$prefix}-btn-icon-optical-size: var(--#{c.$prefix}-btn-icon-optical-size-large);
-  --#{c.$prefix}-btn-shape-square: var(--#{c.$prefix}-btn-shape-square-large);
-  --#{c.$prefix}-btn-shape-pressed: var(--#{c.$prefix}-btn-shape-pressed-large);
-  --#{c.$prefix}-btn-shape-selected: var(--#{c.$prefix}-btn-shape-selected-large);
+  --#{c.$prefix}-btn-height: #{v("btn-height-large")};
+  --#{c.$prefix}-btn-padding-inline: #{v("btn-padding-inline-large")};
+  --#{c.$prefix}-btn-icon-size: #{v("btn-icon-size-large")};
+  --#{c.$prefix}-btn-icon-optical-size: #{v("btn-icon-optical-size-large")};
+  --#{c.$prefix}-btn-shape-square: #{v("btn-shape-square-large")};
+  --#{c.$prefix}-btn-shape-pressed: #{v("btn-shape-pressed-large")};
+  --#{c.$prefix}-btn-shape-selected: #{v("btn-shape-selected-large")};
   @include m.typescale("headline-small");
 }
 
 @mixin xl {
-  --#{c.$prefix}-btn-height: var(--#{c.$prefix}-btn-height-xl);
-  --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-btn-padding-inline-xl);
-  --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-xl);
-  --#{c.$prefix}-btn-icon-optical-size: var(--#{c.$prefix}-btn-icon-optical-size-xl);
-  --#{c.$prefix}-btn-shape-square: var(--#{c.$prefix}-btn-shape-square-large);
-  --#{c.$prefix}-btn-shape-pressed: var(--#{c.$prefix}-btn-shape-pressed-large);
-  --#{c.$prefix}-btn-shape-selected: var(--#{c.$prefix}-btn-shape-selected-large);
+  --#{c.$prefix}-btn-height: #{v("btn-height-xl")};
+  --#{c.$prefix}-btn-padding-inline: #{v("btn-padding-inline-xl")};
+  --#{c.$prefix}-btn-icon-size: #{v("btn-icon-size-xl")};
+  --#{c.$prefix}-btn-icon-optical-size: #{v("btn-icon-optical-size-xl")};
+  --#{c.$prefix}-btn-shape-square: #{v("btn-shape-square-large")};
+  --#{c.$prefix}-btn-shape-pressed: #{v("btn-shape-pressed-large")};
+  --#{c.$prefix}-btn-shape-selected: #{v("btn-shape-selected-large")};
   @include m.typescale("headline-large");
 }
 
@@ -302,24 +310,24 @@
 // metrics so a re-skinned Bootstrap page keeps its layout. .m3-btn--small is
 // kept as the alias of the 32px size (as .m3-icon-btn--small is).
 @mixin small {
-  --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-small);
-  @include m.control-height(--#{c.$prefix}-btn-height-small);
-  padding-inline: var(--#{c.$prefix}-btn-padding-inline-small);
+  --#{c.$prefix}-btn-icon-size: #{v("btn-icon-size-small")};
+  @include m.control-height(v("btn-height-small"));
+  padding-inline: #{v("btn-padding-inline-small")};
   @include m.typescale("label-medium");
 }
 
 @mixin bootstrap-large {
-  --#{c.$prefix}-btn-shape-square: var(--#{c.$prefix}-btn-shape-square-medium);
-  --#{c.$prefix}-btn-shape-pressed: var(--#{c.$prefix}-btn-shape-pressed-medium);
-  --#{c.$prefix}-btn-shape-selected: var(--#{c.$prefix}-btn-shape-selected-medium);
-  @include m.control-height(--#{c.$prefix}-btn-height-bootstrap-large);
-  padding-inline: var(--#{c.$prefix}-btn-padding-inline-bootstrap-large);
+  --#{c.$prefix}-btn-shape-square: #{v("btn-shape-square-medium")};
+  --#{c.$prefix}-btn-shape-pressed: #{v("btn-shape-pressed-medium")};
+  --#{c.$prefix}-btn-shape-selected: #{v("btn-shape-selected-medium")};
+  @include m.control-height(v("btn-height-bootstrap-large"));
+  padding-inline: #{v("btn-padding-inline-bootstrap-large")};
 }
 
 // Square shape (M3 Expressive "square" buttons): the radius follows the
 // size via the --m3-btn-shape-square token the size modifiers re-point.
 @mixin square($check: ".#{c.$prefix}-btn-check") {
-  border-radius: m.pill(var(--#{c.$prefix}-btn-shape-square));
+  border-radius: m.pill(#{v("btn-shape-square")});
 
   // Square toggles morph the other way: round when selected.
   &[aria-pressed="true"],

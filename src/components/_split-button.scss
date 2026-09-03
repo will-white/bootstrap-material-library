@@ -83,68 +83,73 @@
 @use "../config" as c;
 @use "../functions" as fn;
 @use "../mixins" as m;
+@use "button";
 
-@mixin tokens {
-  --#{c.$prefix}-split-button-gap: #{fn.rem(2)};
-  --#{c.$prefix}-split-button-min-width: #{fn.rem(48)};
-  --#{c.$prefix}-split-button-menu-offset: var(--#{c.$prefix}-sys-space-1);
-  // Size small (the default).
-  --#{c.$prefix}-split-button-height: #{fn.rem(40)};
-  --#{c.$prefix}-split-button-inner-shape: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
-  --#{c.$prefix}-split-button-inner-shape-active: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
-  --#{c.$prefix}-split-button-action-padding-start: #{fn.rem(16)};
-  --#{c.$prefix}-split-button-action-padding-end: #{fn.rem(12)};
-  --#{c.$prefix}-split-button-toggle-width: #{fn.rem(48)};
-  --#{c.$prefix}-split-button-toggle-padding-inline: #{fn.rem(13)};
-  --#{c.$prefix}-split-button-chevron-size: var(--#{c.$prefix}-sys-chevron-size);
-  --#{c.$prefix}-split-button-chevron-stroke: var(--#{c.$prefix}-sys-stroke-thick);
-  // Extra small.
-  --#{c.$prefix}-split-button-height-xs: #{fn.rem(32)};
-  --#{c.$prefix}-split-button-inner-shape-xs: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
-  --#{c.$prefix}-split-button-inner-shape-active-xs: var(--#{c.$sys-prefix}-sys-shape-corner-small);
-  --#{c.$prefix}-split-button-action-padding-start-xs: #{fn.rem(12)};
-  --#{c.$prefix}-split-button-action-padding-end-xs: #{fn.rem(10)};
-  --#{c.$prefix}-split-button-toggle-width-xs: #{fn.rem(48)};
-  --#{c.$prefix}-split-button-toggle-padding-inline-xs: #{fn.rem(13)};
-  --#{c.$prefix}-split-button-chevron-size-xs: var(--#{c.$prefix}-sys-chevron-size);
-  // Medium.
-  --#{c.$prefix}-split-button-height-medium: #{fn.rem(56)};
-  --#{c.$prefix}-split-button-inner-shape-medium: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
-  --#{c.$prefix}-split-button-inner-shape-active-medium: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
-  --#{c.$prefix}-split-button-action-padding-start-medium: #{fn.rem(24)};
-  --#{c.$prefix}-split-button-action-padding-end-medium: #{fn.rem(24)};
-  --#{c.$prefix}-split-button-toggle-width-medium: #{fn.rem(56)};
-  --#{c.$prefix}-split-button-toggle-padding-inline-medium: #{fn.rem(15)};
-  --#{c.$prefix}-split-button-chevron-size-medium: #{fn.rem(12)};
-  // Large.
-  --#{c.$prefix}-split-button-height-large: #{fn.rem(96)};
-  --#{c.$prefix}-split-button-inner-shape-large: var(--#{c.$sys-prefix}-sys-shape-corner-small);
-  --#{c.$prefix}-split-button-inner-shape-active-large: var(--#{c.$sys-prefix}-sys-shape-corner-large-increased);
-  --#{c.$prefix}-split-button-action-padding-start-large: #{fn.rem(48)};
-  --#{c.$prefix}-split-button-action-padding-end-large: #{fn.rem(48)};
-  --#{c.$prefix}-split-button-toggle-width-large: #{fn.rem(96)};
-  --#{c.$prefix}-split-button-toggle-padding-inline-large: #{fn.rem(29)};
-  --#{c.$prefix}-split-button-chevron-size-large: #{fn.rem(16)};
-  // Extra large.
-  --#{c.$prefix}-split-button-height-xl: #{fn.rem(136)};
-  --#{c.$prefix}-split-button-inner-shape-xl: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
-  --#{c.$prefix}-split-button-inner-shape-active-xl: var(--#{c.$sys-prefix}-sys-shape-corner-large-increased);
-  --#{c.$prefix}-split-button-action-padding-start-xl: #{fn.rem(64)};
-  --#{c.$prefix}-split-button-action-padding-end-xl: #{fn.rem(64)};
-  --#{c.$prefix}-split-button-toggle-width-xl: #{fn.rem(136)};
-  --#{c.$prefix}-split-button-toggle-padding-inline-xl: #{fn.rem(43)};
-  --#{c.$prefix}-split-button-chevron-size-xl: #{fn.rem(20)};
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "split-button-gap": #{fn.rem(2)},
+  "split-button-min-width": #{fn.rem(48)},
+  "split-button-menu-offset": var(--#{c.$prefix}-sys-space-1),
+  "split-button-height": #{fn.rem(40)},
+  "split-button-inner-shape": var(--#{c.$sys-prefix}-sys-shape-corner-extra-small),
+  "split-button-inner-shape-active": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "split-button-action-padding-start": #{fn.rem(16)},
+  "split-button-action-padding-end": #{fn.rem(12)},
+  "split-button-toggle-width": #{fn.rem(48)},
+  "split-button-toggle-padding-inline": #{fn.rem(13)},
+  "split-button-chevron-size": var(--#{c.$prefix}-sys-chevron-size),
+  "split-button-chevron-stroke": var(--#{c.$prefix}-sys-stroke-thick),
+  "split-button-height-xs": #{fn.rem(32)},
+  "split-button-inner-shape-xs": var(--#{c.$sys-prefix}-sys-shape-corner-extra-small),
+  "split-button-inner-shape-active-xs": var(--#{c.$sys-prefix}-sys-shape-corner-small),
+  "split-button-action-padding-start-xs": #{fn.rem(12)},
+  "split-button-action-padding-end-xs": #{fn.rem(10)},
+  "split-button-toggle-width-xs": #{fn.rem(48)},
+  "split-button-toggle-padding-inline-xs": #{fn.rem(13)},
+  "split-button-chevron-size-xs": var(--#{c.$prefix}-sys-chevron-size),
+  "split-button-height-medium": #{fn.rem(56)},
+  "split-button-inner-shape-medium": var(--#{c.$sys-prefix}-sys-shape-corner-extra-small),
+  "split-button-inner-shape-active-medium": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "split-button-action-padding-start-medium": #{fn.rem(24)},
+  "split-button-action-padding-end-medium": #{fn.rem(24)},
+  "split-button-toggle-width-medium": #{fn.rem(56)},
+  "split-button-toggle-padding-inline-medium": #{fn.rem(15)},
+  "split-button-chevron-size-medium": #{fn.rem(12)},
+  "split-button-height-large": #{fn.rem(96)},
+  "split-button-inner-shape-large": var(--#{c.$sys-prefix}-sys-shape-corner-small),
+  "split-button-inner-shape-active-large": var(--#{c.$sys-prefix}-sys-shape-corner-large-increased),
+  "split-button-action-padding-start-large": #{fn.rem(48)},
+  "split-button-action-padding-end-large": #{fn.rem(48)},
+  "split-button-toggle-width-large": #{fn.rem(96)},
+  "split-button-toggle-padding-inline-large": #{fn.rem(29)},
+  "split-button-chevron-size-large": #{fn.rem(16)},
+  "split-button-height-xl": #{fn.rem(136)},
+  "split-button-inner-shape-xl": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "split-button-inner-shape-active-xl": var(--#{c.$sys-prefix}-sys-shape-corner-large-increased),
+  "split-button-action-padding-start-xl": #{fn.rem(64)},
+  "split-button-action-padding-end-xl": #{fn.rem(64)},
+  "split-button-toggle-width-xl": #{fn.rem(136)},
+  "split-button-toggle-padding-inline-xl": #{fn.rem(43)},
+  "split-button-chevron-size-xl": #{fn.rem(20)},
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // The wrapper: lays the two halves across the seam and hands them the
 // height. The popover menu after them is out of flow (top layer) whenever it
 // is open.
 @mixin base {
   @include m.own-box;
-  --#{c.$prefix}-btn-height: var(--#{c.$prefix}-split-button-height);
+  --#{c.$prefix}-btn-height: #{v("split-button-height")};
   display: inline-flex;
   align-items: center;
-  gap: var(--#{c.$prefix}-split-button-gap);
+  gap: #{v("split-button-gap")};
   vertical-align: middle;
 }
 
@@ -155,11 +160,11 @@
 @mixin action {
   @include m.own-box;
   display: inline-flex;
-  min-inline-size: var(--#{c.$prefix}-split-button-min-width);
-  padding-inline: var(--#{c.$prefix}-split-button-action-padding-start)
-    var(--#{c.$prefix}-split-button-action-padding-end);
-  border-start-end-radius: var(--#{c.$prefix}-split-button-inner-shape);
-  border-end-end-radius: var(--#{c.$prefix}-split-button-inner-shape);
+  min-inline-size: #{v("split-button-min-width")};
+  padding-inline: #{v("split-button-action-padding-start")}
+    #{v("split-button-action-padding-end")};
+  border-start-end-radius: #{v("split-button-inner-shape")};
+  border-end-end-radius: #{v("split-button-inner-shape")};
   @include m.transition(
     (background-color, color, box-shadow, border-color),
     $spring-properties: (border-radius),
@@ -167,12 +172,12 @@
   );
 
   @include m.hover {
-    border-start-end-radius: var(--#{c.$prefix}-split-button-inner-shape-active);
-    border-end-end-radius: var(--#{c.$prefix}-split-button-inner-shape-active);
+    border-start-end-radius: #{v("split-button-inner-shape-active")};
+    border-end-end-radius: #{v("split-button-inner-shape-active")};
   }
   &:active {
-    border-start-end-radius: var(--#{c.$prefix}-split-button-inner-shape-active);
-    border-end-end-radius: var(--#{c.$prefix}-split-button-inner-shape-active);
+    border-start-end-radius: #{v("split-button-inner-shape-active")};
+    border-end-end-radius: #{v("split-button-inner-shape-active")};
   }
 }
 
@@ -183,10 +188,10 @@
 @mixin toggle {
   @include m.own-box;
   display: inline-flex;
-  min-inline-size: var(--#{c.$prefix}-split-button-toggle-width);
-  padding-inline: var(--#{c.$prefix}-split-button-toggle-padding-inline);
-  border-start-start-radius: var(--#{c.$prefix}-split-button-inner-shape);
-  border-end-start-radius: var(--#{c.$prefix}-split-button-inner-shape);
+  min-inline-size: #{v("split-button-toggle-width")};
+  padding-inline: #{v("split-button-toggle-padding-inline")};
+  border-start-start-radius: #{v("split-button-inner-shape")};
+  border-end-start-radius: #{v("split-button-inner-shape")};
   @include m.transition(
     (background-color, color, box-shadow, border-color),
     $spring-properties: (border-radius),
@@ -194,12 +199,12 @@
   );
 
   @include m.hover {
-    border-start-start-radius: var(--#{c.$prefix}-split-button-inner-shape-active);
-    border-end-start-radius: var(--#{c.$prefix}-split-button-inner-shape-active);
+    border-start-start-radius: #{v("split-button-inner-shape-active")};
+    border-end-start-radius: #{v("split-button-inner-shape-active")};
   }
   &:active {
-    border-start-start-radius: var(--#{c.$prefix}-split-button-inner-shape-active);
-    border-end-start-radius: var(--#{c.$prefix}-split-button-inner-shape-active);
+    border-start-start-radius: #{v("split-button-inner-shape-active")};
+    border-end-start-radius: #{v("split-button-inner-shape-active")};
   }
 
   &::after {
@@ -208,8 +213,8 @@
     display: block;
     flex: none;
     @include m.chevron-icon(
-      var(--#{c.$prefix}-split-button-chevron-size),
-      var(--#{c.$prefix}-split-button-chevron-stroke)
+      #{v("split-button-chevron-size")},
+      #{v("split-button-chevron-stroke")}
     );
     margin-inline-start: var(--#{c.$prefix}-sys-space-none);
     // Optical centering: the rotated L's visual center sits below the box
@@ -269,18 +274,18 @@
 
 // Variants re-point the filled button tokens both halves read by default.
 @mixin tonal {
-  --#{c.$prefix}-btn-container-color: var(--#{c.$prefix}-btn-tonal-container-color);
-  --#{c.$prefix}-btn-label-color: var(--#{c.$prefix}-btn-tonal-label-color);
+  --#{c.$prefix}-btn-container-color: #{button.v("btn-tonal-container-color")};
+  --#{c.$prefix}-btn-label-color: #{button.v("btn-tonal-label-color")};
 }
 
 @mixin outlined {
   --#{c.$prefix}-btn-container-color: transparent;
-  --#{c.$prefix}-btn-label-color: var(--#{c.$prefix}-btn-outlined-label-color);
+  --#{c.$prefix}-btn-label-color: #{button.v("btn-outlined-label-color")};
 
   > .#{c.$prefix}-split-button__action,
   > .#{c.$prefix}-split-button__toggle {
-    border: var(--#{c.$prefix}-btn-outline-width) solid
-      var(--#{c.$prefix}-btn-outlined-outline-color);
+    border: #{button.v("btn-outline-width")} solid
+      #{button.v("btn-outlined-outline-color")};
 
     &:disabled,
     &.disabled {
@@ -296,8 +301,8 @@
 }
 
 @mixin elevated {
-  --#{c.$prefix}-btn-container-color: var(--#{c.$prefix}-btn-elevated-container-color);
-  --#{c.$prefix}-btn-label-color: var(--#{c.$prefix}-btn-elevated-label-color);
+  --#{c.$prefix}-btn-container-color: #{button.v("btn-elevated-container-color")};
+  --#{c.$prefix}-btn-label-color: #{button.v("btn-elevated-label-color")};
 
   > .#{c.$prefix}-split-button__action,
   > .#{c.$prefix}-split-button__toggle {
@@ -317,38 +322,23 @@
 // Sizes: re-point the per-size tokens (and the button's icon size and
 // typescale, as the button sizes do) on the root; the halves read them.
 @mixin -size($suffix) {
-  --#{c.$prefix}-split-button-height: var(--#{c.$prefix}-split-button-height-#{$suffix});
-  --#{c.$prefix}-split-button-inner-shape: var(
-    --#{c.$prefix}-split-button-inner-shape-#{$suffix}
-  );
-  --#{c.$prefix}-split-button-inner-shape-active: var(
-    --#{c.$prefix}-split-button-inner-shape-active-#{$suffix}
-  );
-  --#{c.$prefix}-split-button-action-padding-start: var(
-    --#{c.$prefix}-split-button-action-padding-start-#{$suffix}
-  );
-  --#{c.$prefix}-split-button-action-padding-end: var(
-    --#{c.$prefix}-split-button-action-padding-end-#{$suffix}
-  );
-  --#{c.$prefix}-split-button-toggle-width: var(
-    --#{c.$prefix}-split-button-toggle-width-#{$suffix}
-  );
-  --#{c.$prefix}-split-button-toggle-padding-inline: var(
-    --#{c.$prefix}-split-button-toggle-padding-inline-#{$suffix}
-  );
-  --#{c.$prefix}-split-button-chevron-size: var(
-    --#{c.$prefix}-split-button-chevron-size-#{$suffix}
-  );
+  @each $name in (
+    "height", "inner-shape", "inner-shape-active", "action-padding-start",
+    "action-padding-end", "toggle-width", "toggle-padding-inline",
+    "chevron-size"
+  ) {
+    --#{c.$prefix}-split-button-#{$name}: #{v("split-button-#{$name}-#{$suffix}")};
+  }
 }
 
 @mixin xs {
   @include -size("xs");
-  --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-xs);
+  --#{c.$prefix}-btn-icon-size: #{button.v("btn-icon-size-xs")};
 }
 
 @mixin medium {
   @include -size("medium");
-  --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-medium);
+  --#{c.$prefix}-btn-icon-size: #{button.v("btn-icon-size-medium")};
 
   > .#{c.$prefix}-split-button__action {
     @include m.typescale("title-medium");
@@ -357,7 +347,7 @@
 
 @mixin large {
   @include -size("large");
-  --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-large);
+  --#{c.$prefix}-btn-icon-size: #{button.v("btn-icon-size-large")};
   --#{c.$prefix}-split-button-chevron-stroke: var(--#{c.$prefix}-sys-stroke-heavy);
 
   > .#{c.$prefix}-split-button__action {
@@ -367,7 +357,7 @@
 
 @mixin xl {
   @include -size("xl");
-  --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-xl);
+  --#{c.$prefix}-btn-icon-size: #{button.v("btn-icon-size-xl")};
   --#{c.$prefix}-split-button-chevron-stroke: var(--#{c.$prefix}-sys-stroke-heavy);
 
   > .#{c.$prefix}-split-button__action {
@@ -382,7 +372,7 @@
   @supports (position-area: block-end) {
     inset: auto;
     margin: var(--#{c.$prefix}-sys-space-none);
-    margin-block-start: var(--#{c.$prefix}-split-button-menu-offset);
+    margin-block-start: #{v("split-button-menu-offset")};
     position-area: block-end span-inline-start;
     position-try-fallbacks: flip-block;
   }

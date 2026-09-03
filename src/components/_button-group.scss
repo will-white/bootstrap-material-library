@@ -49,34 +49,45 @@
 @use "../config" as c;
 @use "../functions" as fn;
 @use "../mixins" as m;
+@use "button";
+@use "icon-button";
 
 // Selector list of everything that counts as a member.
 $members: ".#{c.$prefix}-btn, .#{c.$prefix}-icon-btn";
 
-@mixin tokens {
-  --#{c.$prefix}-button-group-gap: var(--#{c.$prefix}-sys-space-2);
-  --#{c.$prefix}-button-group-connected-gap: #{fn.rem(2)};
-  --#{c.$prefix}-button-group-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
-  --#{c.$prefix}-button-group-inner-shape: var(--#{c.$sys-prefix}-sys-shape-corner-small);
-  --#{c.$prefix}-button-group-selected-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
-  --#{c.$prefix}-button-group-selected-container-color: var(--#{c.$sys-prefix}-sys-color-primary);
-  --#{c.$prefix}-button-group-selected-label-color: var(--#{c.$sys-prefix}-sys-color-on-primary);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "button-group-gap": var(--#{c.$prefix}-sys-space-2),
+  "button-group-connected-gap": #{fn.rem(2)},
+  "button-group-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
+  "button-group-inner-shape": var(--#{c.$sys-prefix}-sys-shape-corner-small),
+  "button-group-selected-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
+  "button-group-selected-container-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "button-group-selected-label-color": var(--#{c.$sys-prefix}-sys-color-on-primary),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // Standard group: a row of members that keep their own shapes.
 @mixin base($members: $members, $check: ".#{c.$prefix}-btn-check") {
   @include m.own-box;
   display: inline-flex;
   align-items: center;
-  gap: var(--#{c.$prefix}-button-group-gap);
+  gap: #{v("button-group-gap")};
   vertical-align: middle;
 
   // Selected member (either kind of group): primary container. Outlined
   // members drop their outline color so the fill reads as one shape.
   > :is(#{$members}):is([aria-pressed="true"], .active),
   > #{$check}:checked + :is(#{$members}) {
-    --_container: var(--#{c.$prefix}-button-group-selected-container-color);
-    --_content: var(--#{c.$prefix}-button-group-selected-label-color);
+    --_container: #{v("button-group-selected-container-color")};
+    --_content: #{v("button-group-selected-label-color")};
     border-color: transparent;
   }
 }
@@ -87,27 +98,27 @@ $members: ".#{c.$prefix}-btn, .#{c.$prefix}-icon-btn";
 // member's own shape modifier; the selected rules are emitted last so they
 // win the equal-specificity ties against the inner-corner rules.
 @mixin connected($members: $members, $check: ".#{c.$prefix}-btn-check") {
-  gap: var(--#{c.$prefix}-button-group-connected-gap);
+  gap: #{v("button-group-connected-gap")};
 
   // Members are buttons, so --_pill-radius (half their height) is theirs;
   // m.pill() keeps the "full" outer and selected shapes animatable.
   > :is(#{$members}) {
-    border-radius: m.pill(var(--#{c.$prefix}-button-group-shape));
+    border-radius: m.pill(#{v("button-group-shape")});
   }
 
   > :is(#{$members}) ~ :is(#{$members}) {
-    border-start-start-radius: var(--#{c.$prefix}-button-group-inner-shape);
-    border-end-start-radius: var(--#{c.$prefix}-button-group-inner-shape);
+    border-start-start-radius: #{v("button-group-inner-shape")};
+    border-end-start-radius: #{v("button-group-inner-shape")};
   }
 
   > :is(#{$members}):not(:last-child) {
-    border-start-end-radius: var(--#{c.$prefix}-button-group-inner-shape);
-    border-end-end-radius: var(--#{c.$prefix}-button-group-inner-shape);
+    border-start-end-radius: #{v("button-group-inner-shape")};
+    border-end-end-radius: #{v("button-group-inner-shape")};
   }
 
   > :is(#{$members}):is([aria-pressed="true"], .active),
   > #{$check}:checked + :is(#{$members}) {
-    border-radius: m.pill(var(--#{c.$prefix}-button-group-selected-shape));
+    border-radius: m.pill(#{v("button-group-selected-shape")});
   }
 
   // Hit areas keep their 48dp block-axis overhang but never cross the seam:
@@ -143,17 +154,17 @@ $members: ".#{c.$prefix}-btn, .#{c.$prefix}-icon-btn";
 // Sizes: re-point the tokens the members read. Icon buttons follow the
 // button height of the size so both kinds of member share one height.
 @mixin size-xs {
-  --#{c.$prefix}-btn-height: var(--#{c.$prefix}-btn-height-xs);
-  --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-btn-padding-inline-xs);
-  --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-xs);
-  --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-btn-height-xs);
-  --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-icon-btn-icon-size-xs);
+  --#{c.$prefix}-btn-height: #{button.v("btn-height-xs")};
+  --#{c.$prefix}-btn-padding-inline: #{button.v("btn-padding-inline-xs")};
+  --#{c.$prefix}-btn-icon-size: #{button.v("btn-icon-size-xs")};
+  --#{c.$prefix}-icon-btn-size: #{button.v("btn-height-xs")};
+  --#{c.$prefix}-icon-btn-icon-size: #{icon-button.v("icon-btn-icon-size-xs")};
 }
 
 @mixin size-small {
-  --#{c.$prefix}-btn-height: var(--#{c.$prefix}-btn-height-small);
-  --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-btn-padding-inline-small);
-  --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-btn-height-small);
+  --#{c.$prefix}-btn-height: #{button.v("btn-height-small")};
+  --#{c.$prefix}-btn-padding-inline: #{button.v("btn-padding-inline-small")};
+  --#{c.$prefix}-icon-btn-size: #{button.v("btn-height-small")};
   --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-sys-icon-size-small);
 
   > .#{c.$prefix}-btn {
@@ -162,10 +173,10 @@ $members: ".#{c.$prefix}-btn, .#{c.$prefix}-icon-btn";
 }
 
 @mixin size-medium {
-  --#{c.$prefix}-btn-height: var(--#{c.$prefix}-btn-height-medium);
-  --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-btn-padding-inline-medium);
-  --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-medium);
-  --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-btn-height-medium);
+  --#{c.$prefix}-btn-height: #{button.v("btn-height-medium")};
+  --#{c.$prefix}-btn-padding-inline: #{button.v("btn-padding-inline-medium")};
+  --#{c.$prefix}-btn-icon-size: #{button.v("btn-icon-size-medium")};
+  --#{c.$prefix}-icon-btn-size: #{button.v("btn-height-medium")};
 
   > .#{c.$prefix}-btn {
     @include m.typescale("title-medium");
@@ -173,17 +184,17 @@ $members: ".#{c.$prefix}-btn, .#{c.$prefix}-icon-btn";
 }
 
 @mixin size-large {
-  --#{c.$prefix}-btn-height: var(--#{c.$prefix}-btn-height-large);
-  --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-btn-padding-inline-large);
-  --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-btn-height-large);
+  --#{c.$prefix}-btn-height: #{button.v("btn-height-large")};
+  --#{c.$prefix}-btn-padding-inline: #{button.v("btn-padding-inline-large")};
+  --#{c.$prefix}-icon-btn-size: #{button.v("btn-height-large")};
 }
 
 @mixin size-xl {
-  --#{c.$prefix}-btn-height: var(--#{c.$prefix}-btn-height-xl);
-  --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-btn-padding-inline-xl);
-  --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-xl);
-  --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-btn-height-xl);
-  --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-icon-btn-icon-size-large);
+  --#{c.$prefix}-btn-height: #{button.v("btn-height-xl")};
+  --#{c.$prefix}-btn-padding-inline: #{button.v("btn-padding-inline-xl")};
+  --#{c.$prefix}-btn-icon-size: #{button.v("btn-icon-size-xl")};
+  --#{c.$prefix}-icon-btn-size: #{button.v("btn-height-xl")};
+  --#{c.$prefix}-icon-btn-icon-size: #{icon-button.v("icon-btn-icon-size-large")};
 
   > .#{c.$prefix}-btn {
     @include m.typescale("headline-small");

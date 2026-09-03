@@ -20,14 +20,23 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-radio-size: #{fn.rem(20)};
-  --#{c.$prefix}-radio-outline-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-radio-selected-color: var(--#{c.$sys-prefix}-sys-color-primary);
-  --#{c.$prefix}-radio-dot-size: #{fn.rem(10)};
-  --#{c.$prefix}-radio-state-layer-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-radio-selected-state-layer-color: var(--#{c.$sys-prefix}-sys-color-primary);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "radio-size": #{fn.rem(20)},
+  "radio-outline-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "radio-selected-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "radio-dot-size": #{fn.rem(10)},
+  "radio-state-layer-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "radio-selected-state-layer-color": var(--#{c.$sys-prefix}-sys-color-primary),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // The whole control: ring on the input's own border, dot on ::after,
 // touch target + circular hover state layer on ::before.
@@ -37,15 +46,15 @@
 @mixin control {
   @include m.own-box;
   // 40dp state layer: on-surface unselected, primary selected; pressed swaps.
-  --_layer-color: var(--#{c.$prefix}-radio-state-layer-color);
+  --_layer-color: #{v("radio-state-layer-color")};
 
   appearance: none;
-  inline-size: var(--#{c.$prefix}-radio-size);
-  block-size: var(--#{c.$prefix}-radio-size);
-  border: var(--#{c.$prefix}-sys-stroke-thick) solid var(--#{c.$prefix}-radio-outline-color);
+  inline-size: #{v("radio-size")};
+  block-size: #{v("radio-size")};
+  border: var(--#{c.$prefix}-sys-stroke-thick) solid #{v("radio-outline-color")};
   border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   @include m.typescale("body-medium");
-  color: var(--#{c.$prefix}-radio-outline-color);
+  color: #{v("radio-outline-color")};
   display: inline-grid;
   place-content: center;
   cursor: pointer;
@@ -55,7 +64,7 @@
   @include m.selection-layer;
 
   &:active {
-    --_layer-color: var(--#{c.$prefix}-radio-selected-state-layer-color);
+    --_layer-color: #{v("radio-selected-state-layer-color")};
   }
 
   // Selection dot, scaled in from the center when checked.
@@ -63,10 +72,10 @@
     @include m.own-pseudo;
     content: "";
     grid-area: 1 / 1;
-    inline-size: var(--#{c.$prefix}-radio-dot-size);
-    block-size: var(--#{c.$prefix}-radio-dot-size);
+    inline-size: #{v("radio-dot-size")};
+    block-size: #{v("radio-dot-size")};
     border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
-    background-color: var(--#{c.$prefix}-radio-selected-color);
+    background-color: #{v("radio-selected-color")};
     scale: 0;
     @include m.transition(
       scale,
@@ -76,11 +85,11 @@
   }
 
   &:checked {
-    --_layer-color: var(--#{c.$prefix}-radio-selected-state-layer-color);
-    border-color: var(--#{c.$prefix}-radio-selected-color);
+    --_layer-color: #{v("radio-selected-state-layer-color")};
+    border-color: #{v("radio-selected-color")};
 
     &:active {
-      --_layer-color: var(--#{c.$prefix}-radio-state-layer-color);
+      --_layer-color: #{v("radio-state-layer-color")};
     }
 
     &::after {

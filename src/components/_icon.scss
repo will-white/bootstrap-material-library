@@ -32,12 +32,21 @@
 
 $blank-face: "m3x-icon-blank";
 
-@mixin tokens {
-  --#{c.$prefix}-icon-font: "Material Symbols Outlined";
-  --#{c.$prefix}-icon-weight: 400;
-  --#{c.$prefix}-icon-grade: 0;
-  --#{c.$prefix}-icon-optical-size: 24;
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "icon-font": "Material Symbols Outlined",
+  "icon-weight": 400,
+  "icon-grade": 0,
+  "icon-optical-size": 24,
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 @mixin properties {
   @property --#{c.$prefix}-icon-fill {
@@ -66,9 +75,9 @@ $blank-face: "m3x-icon-blank";
   vertical-align: middle;
   text-align: center;
   @if c.$icon-blank-fallback {
-    font-family: var(--#{c.$prefix}-icon-font), $blank-face;
+    font-family: #{v("icon-font")}, $blank-face;
   } @else {
-    font-family: var(--#{c.$prefix}-icon-font);
+    font-family: #{v("icon-font")};
   }
   font-size: var(--#{c.$prefix}-sys-icon-size);
   font-weight: normal;
@@ -87,9 +96,9 @@ $blank-face: "m3x-icon-blank";
   color: inherit;
   font-variation-settings:
     "FILL" var(--#{c.$prefix}-icon-fill, 0),
-    "wght" var(--#{c.$prefix}-icon-weight),
-    "GRAD" var(--#{c.$prefix}-icon-grade),
-    "opsz" var(--#{c.$prefix}-icon-optical-size);
+    "wght" #{v("icon-weight")},
+    "GRAD" #{v("icon-grade")},
+    "opsz" #{v("icon-optical-size")};
   @include m.transition((font-variation-settings));
 }
 

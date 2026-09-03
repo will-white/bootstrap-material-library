@@ -57,45 +57,53 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-icon-btn-size: #{fn.rem(40)};
-  --#{c.$prefix}-icon-btn-size-small: #{fn.rem(32)};
-  --#{c.$prefix}-icon-btn-size-xs: #{fn.rem(32)};
-  --#{c.$prefix}-icon-btn-size-medium: #{fn.rem(56)};
-  --#{c.$prefix}-icon-btn-size-large: #{fn.rem(96)};
-  --#{c.$prefix}-icon-btn-size-xl: #{fn.rem(136)};
-  --#{c.$prefix}-icon-btn-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
-  --#{c.$prefix}-icon-btn-shape-square: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
-  --#{c.$prefix}-icon-btn-shape-square-medium: var(--#{c.$sys-prefix}-sys-shape-corner-large);
-  --#{c.$prefix}-icon-btn-shape-square-large: var(--#{c.$sys-prefix}-sys-shape-corner-extra-large);
-  --#{c.$prefix}-icon-btn-shape-pressed: var(--#{c.$sys-prefix}-sys-shape-corner-small);
-  --#{c.$prefix}-icon-btn-shape-pressed-medium: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
-  --#{c.$prefix}-icon-btn-shape-pressed-large: var(--#{c.$sys-prefix}-sys-shape-corner-large);
-  --#{c.$prefix}-icon-btn-shape-selected: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
-  --#{c.$prefix}-icon-btn-shape-selected-medium: var(--#{c.$sys-prefix}-sys-shape-corner-large);
-  --#{c.$prefix}-icon-btn-shape-selected-large: var(--#{c.$sys-prefix}-sys-shape-corner-extra-large);
-  --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-sys-icon-size);
-  --#{c.$prefix}-icon-btn-icon-size-xs: #{fn.rem(20)};
-  --#{c.$prefix}-icon-btn-icon-size-large: #{fn.rem(32)};
-  --#{c.$prefix}-icon-btn-icon-size-xl: #{fn.rem(40)};
-  // opsz axis of a child .m3-icon: the icon size in px (axis minimum 20).
-  --#{c.$prefix}-icon-btn-icon-optical-size: 24;
-  --#{c.$prefix}-icon-btn-icon-optical-size-xs: 20;
-  --#{c.$prefix}-icon-btn-icon-optical-size-large: 32;
-  --#{c.$prefix}-icon-btn-icon-optical-size-xl: 40;
-  --#{c.$prefix}-icon-btn-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-icon-btn-selected-color: var(--#{c.$sys-prefix}-sys-color-primary);
-  --#{c.$prefix}-icon-btn-selected-container-color: transparent;
-  --#{c.$prefix}-icon-btn-filled-container-color: var(--#{c.$sys-prefix}-sys-color-primary);
-  --#{c.$prefix}-icon-btn-filled-color: var(--#{c.$sys-prefix}-sys-color-on-primary);
-  --#{c.$prefix}-icon-btn-tonal-container-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
-  --#{c.$prefix}-icon-btn-tonal-color: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
-  --#{c.$prefix}-icon-btn-outlined-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-icon-btn-outline-width: var(--#{c.$prefix}-sys-stroke-hairline);
-  --#{c.$prefix}-icon-btn-outline-color: var(--#{c.$sys-prefix}-sys-color-outline);
-  --#{c.$prefix}-icon-btn-outlined-selected-container-color: var(--#{c.$sys-prefix}-sys-color-inverse-surface);
-  --#{c.$prefix}-icon-btn-outlined-selected-color: var(--#{c.$sys-prefix}-sys-color-inverse-on-surface);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "icon-btn-size": #{fn.rem(40)},
+  "icon-btn-size-small": #{fn.rem(32)},
+  "icon-btn-size-xs": #{fn.rem(32)},
+  "icon-btn-size-medium": #{fn.rem(56)},
+  "icon-btn-size-large": #{fn.rem(96)},
+  "icon-btn-size-xl": #{fn.rem(136)},
+  "icon-btn-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
+  "icon-btn-shape-square": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "icon-btn-shape-square-medium": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+  "icon-btn-shape-square-large": var(--#{c.$sys-prefix}-sys-shape-corner-extra-large),
+  "icon-btn-shape-pressed": var(--#{c.$sys-prefix}-sys-shape-corner-small),
+  "icon-btn-shape-pressed-medium": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "icon-btn-shape-pressed-large": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+  "icon-btn-shape-selected": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "icon-btn-shape-selected-medium": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+  "icon-btn-shape-selected-large": var(--#{c.$sys-prefix}-sys-shape-corner-extra-large),
+  "icon-btn-icon-size": var(--#{c.$prefix}-sys-icon-size),
+  "icon-btn-icon-size-xs": #{fn.rem(20)},
+  "icon-btn-icon-size-large": #{fn.rem(32)},
+  "icon-btn-icon-size-xl": #{fn.rem(40)},
+  "icon-btn-icon-optical-size": 24,
+  "icon-btn-icon-optical-size-xs": 20,
+  "icon-btn-icon-optical-size-large": 32,
+  "icon-btn-icon-optical-size-xl": 40,
+  "icon-btn-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "icon-btn-selected-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "icon-btn-selected-container-color": transparent,
+  "icon-btn-filled-container-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "icon-btn-filled-color": var(--#{c.$sys-prefix}-sys-color-on-primary),
+  "icon-btn-tonal-container-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
+  "icon-btn-tonal-color": var(--#{c.$sys-prefix}-sys-color-on-secondary-container),
+  "icon-btn-outlined-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "icon-btn-outline-width": var(--#{c.$prefix}-sys-stroke-hairline),
+  "icon-btn-outline-color": var(--#{c.$sys-prefix}-sys-color-outline),
+  "icon-btn-outlined-selected-container-color": var(--#{c.$sys-prefix}-sys-color-inverse-surface),
+  "icon-btn-outlined-selected-color": var(--#{c.$sys-prefix}-sys-color-inverse-on-surface),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // Square structure + state machinery shared by every variant (and by the
 // Bootstrap re-skin of .btn-close / .navbar-toggler). The default look with
@@ -107,21 +115,21 @@
   text-align: center;
   @include m.typescale("label-large");
   --_container: transparent;
-  --_content: var(--#{c.$prefix}-icon-btn-color);
+  --_content: #{v("icon-btn-color")};
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  @include m.control-height(--#{c.$prefix}-icon-btn-size);
+  @include m.control-height(v("icon-btn-size"));
   // Width mirrors the density-adjusted height so the control stays square.
   inline-size: calc(
-    var(--#{c.$prefix}-icon-btn-size) + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
+    #{v("icon-btn-size")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
   );
   padding: var(--#{c.$prefix}-sys-space-none);
   border: none;
-  @include m.pill-radius(--#{c.$prefix}-icon-btn-size);
-  border-radius: m.pill(var(--#{c.$prefix}-icon-btn-shape));
+  @include m.pill-radius(v("icon-btn-size"));
+  border-radius: m.pill(#{v("icon-btn-shape")});
   cursor: pointer;
   user-select: none;
   text-decoration: none;
@@ -140,27 +148,27 @@
   > svg,
   > img,
   > .#{c.$prefix}-icon {
-    inline-size: var(--#{c.$prefix}-icon-btn-icon-size);
-    font-size: var(--#{c.$prefix}-icon-btn-icon-size);
-    block-size: var(--#{c.$prefix}-icon-btn-icon-size);
-    --#{c.$prefix}-icon-optical-size: var(--#{c.$prefix}-icon-btn-icon-optical-size);
+    inline-size: #{v("icon-btn-icon-size")};
+    font-size: #{v("icon-btn-icon-size")};
+    block-size: #{v("icon-btn-icon-size")};
+    --#{c.$prefix}-icon-optical-size: #{v("icon-btn-icon-optical-size")};
   }
 
   // M3 Expressive shape morphs (see button.scss); m.pill() keeps "full"
   // finite so the spring interpolates.
   &:active {
-    border-radius: m.pill(var(--#{c.$prefix}-icon-btn-shape-pressed));
+    border-radius: m.pill(#{v("icon-btn-shape-pressed")});
   }
   &[aria-pressed="true"],
   #{$check}:checked + & {
     --#{c.$prefix}-icon-fill: 1;
-    border-radius: m.pill(var(--#{c.$prefix}-icon-btn-shape-selected));
+    border-radius: m.pill(#{v("icon-btn-shape-selected")});
   }
 
   &[aria-pressed="true"] {
     --#{c.$prefix}-icon-fill: 1;
-    --_container: var(--#{c.$prefix}-icon-btn-selected-container-color);
-    --_content: var(--#{c.$prefix}-icon-btn-selected-color);
+    --_container: #{v("icon-btn-selected-container-color")};
+    --_content: #{v("icon-btn-selected-color")};
   }
 
   &:disabled,
@@ -172,12 +180,12 @@
 // Standard (no container): also usable standalone by the compat layer.
 @mixin standard {
   --_container: transparent;
-  --_content: var(--#{c.$prefix}-icon-btn-color);
+  --_content: #{v("icon-btn-color")};
 
   &[aria-pressed="true"] {
     --#{c.$prefix}-icon-fill: 1;
-    --_container: var(--#{c.$prefix}-icon-btn-selected-container-color);
-    --_content: var(--#{c.$prefix}-icon-btn-selected-color);
+    --_container: #{v("icon-btn-selected-container-color")};
+    --_content: #{v("icon-btn-selected-color")};
   }
 
   &:disabled,
@@ -187,14 +195,14 @@
 }
 
 @mixin filled {
-  --_container: var(--#{c.$prefix}-icon-btn-filled-container-color);
-  --_content: var(--#{c.$prefix}-icon-btn-filled-color);
+  --_container: #{v("icon-btn-filled-container-color")};
+  --_content: #{v("icon-btn-filled-color")};
 
   // Re-assert container and content so base's standard selected treatment
   // cannot win by specificity on toggle (aria-pressed) filled icon buttons.
   &[aria-pressed="true"] {
-    --_container: var(--#{c.$prefix}-icon-btn-filled-container-color);
-    --_content: var(--#{c.$prefix}-icon-btn-filled-color);
+    --_container: #{v("icon-btn-filled-container-color")};
+    --_content: #{v("icon-btn-filled-color")};
   }
 
   &:disabled,
@@ -204,12 +212,12 @@
 }
 
 @mixin tonal {
-  --_container: var(--#{c.$prefix}-icon-btn-tonal-container-color);
-  --_content: var(--#{c.$prefix}-icon-btn-tonal-color);
+  --_container: #{v("icon-btn-tonal-container-color")};
+  --_content: #{v("icon-btn-tonal-color")};
 
   &[aria-pressed="true"] {
-    --_container: var(--#{c.$prefix}-icon-btn-tonal-container-color);
-    --_content: var(--#{c.$prefix}-icon-btn-tonal-color);
+    --_container: #{v("icon-btn-tonal-container-color")};
+    --_content: #{v("icon-btn-tonal-color")};
   }
 
   &:disabled,
@@ -220,13 +228,13 @@
 
 @mixin outlined {
   --_container: transparent;
-  --_content: var(--#{c.$prefix}-icon-btn-outlined-color);
-  border: var(--#{c.$prefix}-icon-btn-outline-width) solid
-    var(--#{c.$prefix}-icon-btn-outline-color);
+  --_content: #{v("icon-btn-outlined-color")};
+  border: #{v("icon-btn-outline-width")} solid
+    #{v("icon-btn-outline-color")};
 
   &[aria-pressed="true"] {
-    --_container: var(--#{c.$prefix}-icon-btn-outlined-selected-container-color);
-    --_content: var(--#{c.$prefix}-icon-btn-outlined-selected-color);
+    --_container: #{v("icon-btn-outlined-selected-container-color")};
+    --_content: #{v("icon-btn-outlined-selected-color")};
     border-color: transparent;
   }
 
@@ -244,11 +252,11 @@
 
 @mixin small {
   --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-sys-icon-size-small);
-  --#{c.$prefix}-icon-btn-icon-optical-size: var(--#{c.$prefix}-icon-btn-icon-optical-size-xs);
-  @include m.control-height(--#{c.$prefix}-icon-btn-size-small);
-  @include m.pill-radius(--#{c.$prefix}-icon-btn-size-small);
+  --#{c.$prefix}-icon-btn-icon-optical-size: #{v("icon-btn-icon-optical-size-xs")};
+  @include m.control-height(v("icon-btn-size-small"));
+  @include m.pill-radius(v("icon-btn-size-small"));
   inline-size: calc(
-    var(--#{c.$prefix}-icon-btn-size-small) + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
+    #{v("icon-btn-size-small")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
   );
 }
 
@@ -257,40 +265,40 @@
 // square-shape token --square reads); a size and --square compose on one
 // element. small above predates the Expressive scale and keeps its form.
 @mixin xs {
-  --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-icon-btn-size-xs);
-  --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-icon-btn-icon-size-xs);
-  --#{c.$prefix}-icon-btn-icon-optical-size: var(--#{c.$prefix}-icon-btn-icon-optical-size-xs);
+  --#{c.$prefix}-icon-btn-size: #{v("icon-btn-size-xs")};
+  --#{c.$prefix}-icon-btn-icon-size: #{v("icon-btn-icon-size-xs")};
+  --#{c.$prefix}-icon-btn-icon-optical-size: #{v("icon-btn-icon-optical-size-xs")};
 }
 
 @mixin medium {
-  --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-icon-btn-size-medium);
-  --#{c.$prefix}-icon-btn-shape-square: var(--#{c.$prefix}-icon-btn-shape-square-medium);
-  --#{c.$prefix}-icon-btn-shape-pressed: var(--#{c.$prefix}-icon-btn-shape-pressed-medium);
-  --#{c.$prefix}-icon-btn-shape-selected: var(--#{c.$prefix}-icon-btn-shape-selected-medium);
+  --#{c.$prefix}-icon-btn-size: #{v("icon-btn-size-medium")};
+  --#{c.$prefix}-icon-btn-shape-square: #{v("icon-btn-shape-square-medium")};
+  --#{c.$prefix}-icon-btn-shape-pressed: #{v("icon-btn-shape-pressed-medium")};
+  --#{c.$prefix}-icon-btn-shape-selected: #{v("icon-btn-shape-selected-medium")};
 }
 
 @mixin large {
-  --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-icon-btn-size-large);
-  --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-icon-btn-icon-size-large);
-  --#{c.$prefix}-icon-btn-icon-optical-size: var(--#{c.$prefix}-icon-btn-icon-optical-size-large);
-  --#{c.$prefix}-icon-btn-shape-square: var(--#{c.$prefix}-icon-btn-shape-square-large);
-  --#{c.$prefix}-icon-btn-shape-pressed: var(--#{c.$prefix}-icon-btn-shape-pressed-large);
-  --#{c.$prefix}-icon-btn-shape-selected: var(--#{c.$prefix}-icon-btn-shape-selected-large);
+  --#{c.$prefix}-icon-btn-size: #{v("icon-btn-size-large")};
+  --#{c.$prefix}-icon-btn-icon-size: #{v("icon-btn-icon-size-large")};
+  --#{c.$prefix}-icon-btn-icon-optical-size: #{v("icon-btn-icon-optical-size-large")};
+  --#{c.$prefix}-icon-btn-shape-square: #{v("icon-btn-shape-square-large")};
+  --#{c.$prefix}-icon-btn-shape-pressed: #{v("icon-btn-shape-pressed-large")};
+  --#{c.$prefix}-icon-btn-shape-selected: #{v("icon-btn-shape-selected-large")};
 }
 
 @mixin xl {
-  --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-icon-btn-size-xl);
-  --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-icon-btn-icon-size-xl);
-  --#{c.$prefix}-icon-btn-icon-optical-size: var(--#{c.$prefix}-icon-btn-icon-optical-size-xl);
-  --#{c.$prefix}-icon-btn-shape-square: var(--#{c.$prefix}-icon-btn-shape-square-large);
-  --#{c.$prefix}-icon-btn-shape-pressed: var(--#{c.$prefix}-icon-btn-shape-pressed-large);
-  --#{c.$prefix}-icon-btn-shape-selected: var(--#{c.$prefix}-icon-btn-shape-selected-large);
+  --#{c.$prefix}-icon-btn-size: #{v("icon-btn-size-xl")};
+  --#{c.$prefix}-icon-btn-icon-size: #{v("icon-btn-icon-size-xl")};
+  --#{c.$prefix}-icon-btn-icon-optical-size: #{v("icon-btn-icon-optical-size-xl")};
+  --#{c.$prefix}-icon-btn-shape-square: #{v("icon-btn-shape-square-large")};
+  --#{c.$prefix}-icon-btn-shape-pressed: #{v("icon-btn-shape-pressed-large")};
+  --#{c.$prefix}-icon-btn-shape-selected: #{v("icon-btn-shape-selected-large")};
 }
 
 // Square shape: the radius follows the size via the --m3-icon-btn-shape-square
 // token the size modifiers re-point.
 @mixin square($check: ".#{c.$prefix}-btn-check") {
-  border-radius: m.pill(var(--#{c.$prefix}-icon-btn-shape-square));
+  border-radius: m.pill(#{v("icon-btn-shape-square")});
 
   // Square toggles morph the other way: round when selected.
   &[aria-pressed="true"],

@@ -310,8 +310,8 @@ $-themes: (
 
   .btn.active,
   .btn.show {
-    --_container: var(--#{c.$prefix}-btn-tonal-container-color);
-    --_content: var(--#{c.$prefix}-btn-tonal-label-color);
+    --_container: #{button.v("btn-tonal-container-color")};
+    --_content: #{button.v("btn-tonal-label-color")};
   }
 
   // Horizontal groups render as M3 Expressive connected button groups (2px
@@ -363,8 +363,8 @@ $-themes: (
 
   .btn-group > .btn.dropdown-toggle-split {
     @include split-button.toggle;
-    border-start-end-radius: var(--#{c.$prefix}-btn-shape);
-    border-end-end-radius: var(--#{c.$prefix}-btn-shape);
+    border-start-end-radius: #{button.v("btn-shape")};
+    border-end-end-radius: #{button.v("btn-shape")};
   }
 
   // Bootstrap controls inside a dense m3x toolbar: .btn / .btn-group /
@@ -384,8 +384,8 @@ $-themes: (
   // a .btn-group the group's selected rule (primary) wins on specificity.
   .btn-check:checked + .btn,
   .btn-check:active + .btn {
-    --_container: var(--#{c.$prefix}-btn-tonal-container-color);
-    --_content: var(--#{c.$prefix}-btn-tonal-label-color);
+    --_container: #{button.v("btn-tonal-container-color")};
+    --_content: #{button.v("btn-tonal-label-color")};
   }
 
   // ==========================================================================
@@ -517,7 +517,7 @@ $-themes: (
   .card-body {
     @include m.own-box;
     display: block;
-    padding: var(--#{c.$prefix}-card-padding);
+    padding: #{card.v("card-padding")};
     flex: 1 1 auto;
   }
 
@@ -550,20 +550,20 @@ $-themes: (
   .card-header {
     @include m.own-box;
     display: block;
-    padding: var(--#{c.$prefix}-sys-space-3) var(--#{c.$prefix}-card-padding);
+    padding: var(--#{c.$prefix}-sys-space-3) #{card.v("card-padding")};
     background-color: var(--#{c.$sys-prefix}-sys-color-surface-container-low);
-    border-block-end: var(--#{c.$prefix}-card-outline-width) solid
-      var(--#{c.$prefix}-card-outline-color);
+    border-block-end: #{card.v("card-outline-width")} solid
+      #{card.v("card-outline-color")};
     @include m.typescale("title-medium");
   }
 
   .card-footer {
     @include m.own-box;
     display: block;
-    padding: var(--#{c.$prefix}-sys-space-3) var(--#{c.$prefix}-card-padding);
+    padding: var(--#{c.$prefix}-sys-space-3) #{card.v("card-padding")};
     background-color: var(--#{c.$sys-prefix}-sys-color-surface-container-low);
-    border-block-start: var(--#{c.$prefix}-card-outline-width) solid
-      var(--#{c.$prefix}-card-outline-color);
+    border-block-start: #{card.v("card-outline-width")} solid
+      #{card.v("card-outline-color")};
   }
 
   .card-img-top,
@@ -695,7 +695,7 @@ $-themes: (
 
   .list-group-item {
     @include list-component.item;
-    --_container: var(--#{c.$prefix}-list-container-color);
+    --_container: #{list-component.v("list-container-color")};
     border: var(--#{c.$prefix}-sys-stroke-hairline) solid var(--#{c.$sys-prefix}-sys-color-outline-variant);
 
     + .list-group-item {
@@ -715,13 +715,13 @@ $-themes: (
     &.disabled,
     &:disabled {
       @include m.disabled-bare;
-      --_container: var(--#{c.$prefix}-list-container-color);
+      --_container: #{list-component.v("list-container-color")};
     }
   }
 
   .list-group-item-action {
     @include list-component.item-interactive;
-    --_container: var(--#{c.$prefix}-list-container-color);
+    --_container: #{list-component.v("list-container-color")};
   }
 
   .list-group-item.active {
@@ -868,7 +868,7 @@ $-themes: (
     @include m.own-box;
     display: block;
     padding: var(--#{c.$prefix}-sys-space-2) var(--#{c.$prefix}-sys-space-4);
-    color: var(--#{c.$prefix}-tabs-label-color);
+    color: #{tabs.v("tabs-label-color")};
     text-decoration: none;
     cursor: pointer;
     border: none;
@@ -945,7 +945,7 @@ $-themes: (
   .navbar {
     @include top-app-bar.bar;
     block-size: auto;
-    @include m.control-min-height(--#{c.$prefix}-top-app-bar-height);
+    @include m.control-min-height(top-app-bar.v("top-app-bar-height"));
     flex-wrap: wrap;
     padding-inline: var(--#{c.$prefix}-sys-space-4);
   }
@@ -966,7 +966,7 @@ $-themes: (
     flex: none;
     text-decoration: none;
     cursor: pointer;
-    color: var(--#{c.$prefix}-top-app-bar-content-color);
+    color: #{top-app-bar.v("top-app-bar-content-color")};
   }
 
   .navbar-nav {
@@ -1108,7 +1108,7 @@ $-themes: (
     align-items: center;
     justify-content: space-between;
     gap: var(--#{c.$prefix}-sys-space-2);
-    padding: var(--#{c.$prefix}-dialog-padding);
+    padding: #{dialog.v("dialog-padding")};
     padding-block-end: var(--#{c.$prefix}-sys-space-2);
   }
 
@@ -1122,14 +1122,14 @@ $-themes: (
     display: block;
     @include dialog.content;
     flex: 1 1 auto;
-    padding: var(--#{c.$prefix}-sys-space-2) var(--#{c.$prefix}-dialog-padding);
+    padding: var(--#{c.$prefix}-sys-space-2) #{dialog.v("dialog-padding")};
   }
 
   .modal-footer {
     @include m.own-box;
     @include dialog.actions;
     margin-block-start: var(--#{c.$prefix}-sys-space-none);
-    padding: var(--#{c.$prefix}-dialog-padding);
+    padding: #{dialog.v("dialog-padding")};
     padding-block-start: var(--#{c.$prefix}-sys-space-2);
     flex-wrap: wrap;
   }
@@ -1205,7 +1205,7 @@ $-themes: (
   .offcanvas-start {
     inset-block: var(--#{c.$prefix}-sys-space-none);
     inset-inline-start: var(--#{c.$prefix}-sys-space-none);
-    inline-size: var(--#{c.$prefix}-sheet-side-width);
+    inline-size: #{sheet.v("sheet-side-width")};
     translate: -100% 0;
     border-start-end-radius: var(--#{c.$sys-prefix}-sys-shape-corner-large);
     border-end-end-radius: var(--#{c.$sys-prefix}-sys-shape-corner-large);
@@ -1214,7 +1214,7 @@ $-themes: (
   .offcanvas-end {
     inset-block: var(--#{c.$prefix}-sys-space-none);
     inset-inline-end: var(--#{c.$prefix}-sys-space-none);
-    inline-size: var(--#{c.$prefix}-sheet-side-width);
+    inline-size: #{sheet.v("sheet-side-width")};
     translate: 100% 0;
     border-start-start-radius: var(--#{c.$sys-prefix}-sys-shape-corner-large);
     border-end-start-radius: var(--#{c.$sys-prefix}-sys-shape-corner-large);
@@ -1225,8 +1225,8 @@ $-themes: (
     inset-block-start: var(--#{c.$prefix}-sys-space-none);
     block-size: var(--bs-offcanvas-height);
     translate: 0 -100%;
-    border-end-start-radius: var(--#{c.$prefix}-sheet-shape);
-    border-end-end-radius: var(--#{c.$prefix}-sheet-shape);
+    border-end-start-radius: #{sheet.v("sheet-shape")};
+    border-end-end-radius: #{sheet.v("sheet-shape")};
   }
 
   .offcanvas-bottom {
@@ -1234,8 +1234,8 @@ $-themes: (
     inset-block-end: var(--#{c.$prefix}-sys-space-none);
     block-size: var(--bs-offcanvas-height);
     translate: 0 100%;
-    border-start-start-radius: var(--#{c.$prefix}-sheet-shape);
-    border-start-end-radius: var(--#{c.$prefix}-sheet-shape);
+    border-start-start-radius: #{sheet.v("sheet-shape")};
+    border-start-end-radius: #{sheet.v("sheet-shape")};
   }
 
   .offcanvas-header {
@@ -1438,7 +1438,7 @@ $-themes: (
   .progress-stacked {
     @include m.own-box;
     display: flex;
-    block-size: var(--#{c.$prefix}-progress-thickness);
+    block-size: #{progress.v("progress-thickness")};
     border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
     overflow: clip;
 
@@ -1540,15 +1540,15 @@ $-themes: (
     border-block-end: var(--#{c.$prefix}-sys-stroke-hairline) solid
       color-mix(
         in srgb,
-        var(--#{c.$prefix}-snackbar-content-color) 20%,
+        #{snackbar.v("snackbar-content-color")} 20%,
         transparent
       );
     @include m.typescale("title-small");
-    color: var(--#{c.$prefix}-snackbar-content-color);
+    color: #{snackbar.v("snackbar-content-color")};
 
     .btn-close {
       margin-inline-start: auto;
-      --_content: var(--#{c.$prefix}-snackbar-content-color);
+      --_content: #{snackbar.v("snackbar-content-color")};
     }
   }
 
@@ -1675,7 +1675,7 @@ $-themes: (
   textarea.form-control {
     block-size: auto;
     min-block-size: calc(
-      var(--#{c.$prefix}-field-height) + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
+      #{field.v("field-height")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
     );
     resize: vertical;
 
@@ -1694,14 +1694,14 @@ $-themes: (
 
   .form-control-sm {
     min-block-size: calc(
-      var(--#{c.$prefix}-field-height) + var(--#{c.$prefix}-sys-density) *
+      #{field.v("field-height")} + var(--#{c.$prefix}-sys-density) *
         var(--#{c.$prefix}-sys-density-step) - var(--#{c.$prefix}-sys-space-2)
     );
   }
 
   .form-control-lg {
     min-block-size: calc(
-      var(--#{c.$prefix}-field-height) + var(--#{c.$prefix}-sys-density) *
+      #{field.v("field-height")} + var(--#{c.$prefix}-sys-density) *
         var(--#{c.$prefix}-sys-density-step) + var(--#{c.$prefix}-sys-space-2)
     );
   }
@@ -1747,14 +1747,14 @@ $-themes: (
 
   .form-select-sm {
     min-block-size: calc(
-      var(--#{c.$prefix}-field-height) + var(--#{c.$prefix}-sys-density) *
+      #{field.v("field-height")} + var(--#{c.$prefix}-sys-density) *
         var(--#{c.$prefix}-sys-density-step) - var(--#{c.$prefix}-sys-space-2)
     );
   }
 
   .form-select-lg {
     min-block-size: calc(
-      var(--#{c.$prefix}-field-height) + var(--#{c.$prefix}-sys-density) *
+      #{field.v("field-height")} + var(--#{c.$prefix}-sys-density) *
         var(--#{c.$prefix}-sys-density-step) + var(--#{c.$prefix}-sys-space-2)
     );
   }
@@ -1839,9 +1839,9 @@ $-themes: (
     display: flex;
     align-items: center;
     padding-inline: var(--#{c.$prefix}-sys-space-4);
-    background-color: var(--#{c.$prefix}-field-container-color);
-    border-block-end: var(--#{c.$prefix}-field-indicator-width) solid
-      var(--#{c.$prefix}-field-indicator-color);
+    background-color: #{field.v("field-container-color")};
+    border-block-end: #{field.v("field-indicator-width")} solid
+      #{field.v("field-indicator-color")};
     color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
     @include m.typescale("body-large");
     white-space: nowrap;
@@ -1919,23 +1919,23 @@ $-themes: (
   }
 
   .form-check-input.is-invalid {
-    border-color: var(--#{c.$prefix}-field-error-color);
+    border-color: #{field.v("field-error-color")};
   }
 
   .form-check-input:user-invalid {
-    border-color: var(--#{c.$prefix}-field-error-color);
+    border-color: #{field.v("field-error-color")};
   }
 
   .form-check-input:user-invalid ~ .form-check-label {
-    color: var(--#{c.$prefix}-field-error-color);
+    color: #{field.v("field-error-color")};
   }
 
   .was-validated .form-check-input:invalid {
-    border-color: var(--#{c.$prefix}-field-error-color);
+    border-color: #{field.v("field-error-color")};
   }
 
   .form-check-input.is-invalid ~ .form-check-label {
-    color: var(--#{c.$prefix}-field-error-color);
+    color: #{field.v("field-error-color")};
   }
 
   // ==========================================================================
@@ -1958,7 +1958,7 @@ $-themes: (
     position: relative;
     inline-size: 100%;
     overflow: hidden;
-    border-radius: var(--#{c.$prefix}-carousel-shape);
+    border-radius: #{carousel.v("carousel-shape")};
   }
 
   .carousel-item {
@@ -2067,7 +2067,7 @@ $-themes: (
       display: inline-block;
 
       &.active {
-        background-color: var(--#{c.$prefix}-carousel-indicator-active-color);
+        background-color: #{carousel.v("carousel-indicator-active-color")};
       }
     }
   }

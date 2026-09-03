@@ -29,22 +29,31 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-switch-width: #{fn.rem(52)};
-  --#{c.$prefix}-switch-height: #{fn.rem(32)};
-  --#{c.$prefix}-switch-track-color: var(--#{c.$sys-prefix}-sys-color-surface-container-highest);
-  --#{c.$prefix}-switch-outline-color: var(--#{c.$sys-prefix}-sys-color-outline);
-  --#{c.$prefix}-switch-handle-color: var(--#{c.$sys-prefix}-sys-color-outline);
-  --#{c.$prefix}-switch-handle-size: #{fn.rem(16)};
-  --#{c.$prefix}-switch-hover-handle-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-switch-selected-track-color: var(--#{c.$sys-prefix}-sys-color-primary);
-  --#{c.$prefix}-switch-selected-handle-color: var(--#{c.$sys-prefix}-sys-color-on-primary);
-  --#{c.$prefix}-switch-selected-handle-size: #{fn.rem(24)};
-  --#{c.$prefix}-switch-selected-hover-handle-color: var(--#{c.$sys-prefix}-sys-color-primary-container);
-  --#{c.$prefix}-switch-pressed-handle-size: #{fn.rem(28)};
-  --#{c.$prefix}-switch-state-layer-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-switch-selected-state-layer-color: var(--#{c.$sys-prefix}-sys-color-primary);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "switch-width": #{fn.rem(52)},
+  "switch-height": #{fn.rem(32)},
+  "switch-track-color": var(--#{c.$sys-prefix}-sys-color-surface-container-highest),
+  "switch-outline-color": var(--#{c.$sys-prefix}-sys-color-outline),
+  "switch-handle-color": var(--#{c.$sys-prefix}-sys-color-outline),
+  "switch-handle-size": #{fn.rem(16)},
+  "switch-hover-handle-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "switch-selected-track-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "switch-selected-handle-color": var(--#{c.$sys-prefix}-sys-color-on-primary),
+  "switch-selected-handle-size": #{fn.rem(24)},
+  "switch-selected-hover-handle-color": var(--#{c.$sys-prefix}-sys-color-primary-container),
+  "switch-pressed-handle-size": #{fn.rem(28)},
+  "switch-state-layer-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "switch-selected-state-layer-color": var(--#{c.$sys-prefix}-sys-color-primary),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // The whole control: the checkbox itself is the track, ::before is the
 // handle, ::after is the touch target. Fixed geometry -- the handle offsets
@@ -54,16 +63,16 @@
   @include m.own-box;
   display: inline-block;
   appearance: none;
-  inline-size: var(--#{c.$prefix}-switch-width);
-  block-size: var(--#{c.$prefix}-switch-height);
+  inline-size: #{v("switch-width")};
+  block-size: #{v("switch-height")};
   flex: none;
   position: relative;
   margin: var(--#{c.$prefix}-sys-space-none);
-  border: var(--#{c.$prefix}-sys-stroke-thick) solid var(--#{c.$prefix}-switch-outline-color);
+  border: var(--#{c.$prefix}-sys-stroke-thick) solid #{v("switch-outline-color")};
   border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
-  background-color: var(--#{c.$prefix}-switch-track-color);
+  background-color: #{v("switch-track-color")};
   @include m.typescale("body-medium");
-  color: var(--#{c.$prefix}-switch-handle-color);
+  color: #{v("switch-handle-color")};
   cursor: pointer;
   @include m.focus-ring;
   @include m.transition((background-color, border-color));
@@ -72,13 +81,13 @@
   // Handle geometry is driven by privates so the pressed size (28dp) and
   // the selected size (24dp) reuse one offset formula: (track height -
   // handle) / 2, pulled back by the border the track just consumed.
-  --_handle: var(--#{c.$prefix}-switch-handle-size);
+  --_handle: #{v("switch-handle-size")};
   // The state layer (r = 20dp) overhangs the 32dp track by 4dp on each side,
   // so the touch pseudo is widened by that much and the handle centers are
   // measured inside it.
   --_overhang: var(--#{c.$prefix}-sys-space-1);
-  --_handle-x: calc(var(--#{c.$prefix}-switch-height) / 2 + var(--_overhang));
-  --_layer-color: var(--#{c.$prefix}-switch-state-layer-color);
+  --_handle-x: calc(#{v("switch-height")} / 2 + var(--_overhang));
+  --_layer-color: #{v("switch-state-layer-color")};
   --_layer-opacity: var(--#{c.$sys-prefix}-sys-state-none);
 
   &::before {
@@ -88,10 +97,10 @@
     inline-size: var(--_handle);
     block-size: var(--_handle);
     border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
-    background-color: var(--#{c.$prefix}-switch-handle-color);
+    background-color: #{v("switch-handle-color")};
     inset-block-start: 50%;
     inset-inline-start: calc(
-      (var(--#{c.$prefix}-switch-height) - var(--_handle)) / 2 - var(--#{c.$prefix}-sys-stroke-thick)
+      (#{v("switch-height")} - var(--_handle)) / 2 - var(--#{c.$prefix}-sys-stroke-thick)
     );
     translate: 0 -50%;
     @include m.transition(
@@ -121,37 +130,37 @@
   }
   &:active {
     --_layer-opacity: var(--#{c.$sys-prefix}-sys-state-pressed-state-layer-opacity);
-    --_handle: var(--#{c.$prefix}-switch-pressed-handle-size);
+    --_handle: #{v("switch-pressed-handle-size")};
   }
 
   @media (hover: hover) {
     &:hover:not(:disabled)::before {
-      background-color: var(--#{c.$prefix}-switch-hover-handle-color);
+      background-color: #{v("switch-hover-handle-color")};
     }
   }
 
   &:checked {
-    --_handle: var(--#{c.$prefix}-switch-selected-handle-size);
-    --_handle-x: calc(100% - var(--#{c.$prefix}-switch-height) / 2 - var(--_overhang));
-    --_layer-color: var(--#{c.$prefix}-switch-selected-state-layer-color);
-    background-color: var(--#{c.$prefix}-switch-selected-track-color);
-    border-color: var(--#{c.$prefix}-switch-selected-track-color);
+    --_handle: #{v("switch-selected-handle-size")};
+    --_handle-x: calc(100% - #{v("switch-height")} / 2 - var(--_overhang));
+    --_layer-color: #{v("switch-selected-state-layer-color")};
+    background-color: #{v("switch-selected-track-color")};
+    border-color: #{v("switch-selected-track-color")};
 
     &:active {
-      --_handle: var(--#{c.$prefix}-switch-pressed-handle-size);
+      --_handle: #{v("switch-pressed-handle-size")};
     }
 
     &::before {
-      background-color: var(--#{c.$prefix}-switch-selected-handle-color);
+      background-color: #{v("switch-selected-handle-color")};
       inset-inline-start: calc(
-        100% - var(--_handle) - (var(--#{c.$prefix}-switch-height) - var(--_handle)) / 2 +
+        100% - var(--_handle) - (#{v("switch-height")} - var(--_handle)) / 2 +
           var(--#{c.$prefix}-sys-stroke-thick)
       );
     }
 
     @media (hover: hover) {
       &:hover:not(:disabled)::before {
-        background-color: var(--#{c.$prefix}-switch-selected-hover-handle-color);
+        background-color: #{v("switch-selected-hover-handle-color")};
       }
     }
   }

@@ -36,15 +36,24 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-top-app-bar-height: #{fn.rem(64)};
-  --#{c.$prefix}-top-app-bar-height-medium: #{fn.rem(112)};
-  --#{c.$prefix}-top-app-bar-height-large: #{fn.rem(152)};
-  --#{c.$prefix}-top-app-bar-container-color: var(--#{c.$sys-prefix}-sys-color-surface);
-  --#{c.$prefix}-top-app-bar-content-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-top-app-bar-scrolled-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container);
-  --#{c.$prefix}-top-app-bar-scroll-range: #{fn.rem(64)};
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "top-app-bar-height": #{fn.rem(64)},
+  "top-app-bar-height-medium": #{fn.rem(112)},
+  "top-app-bar-height-large": #{fn.rem(152)},
+  "top-app-bar-container-color": var(--#{c.$sys-prefix}-sys-color-surface),
+  "top-app-bar-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "top-app-bar-scrolled-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container),
+  "top-app-bar-scroll-range": #{fn.rem(64)},
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // Bar container (also emitted for Bootstrap's .navbar).
 @mixin bar {
@@ -53,9 +62,9 @@
   align-items: center;
   gap: var(--#{c.$prefix}-sys-space-2);
   padding-inline: var(--#{c.$prefix}-sys-space-2);
-  background-color: var(--#{c.$prefix}-top-app-bar-container-color);
-  color: var(--#{c.$prefix}-top-app-bar-content-color);
-  @include m.control-height(--#{c.$prefix}-top-app-bar-height);
+  background-color: #{v("top-app-bar-container-color")};
+  color: #{v("top-app-bar-content-color")};
+  @include m.control-height(v("top-app-bar-height"));
 }
 
 // Headline slot (also emitted for Bootstrap's .navbar-brand).
@@ -63,7 +72,7 @@
   @include m.own-box;
   display: block;
   @include m.typescale("title-large");
-  color: var(--#{c.$prefix}-top-app-bar-content-color);
+  color: #{v("top-app-bar-content-color")};
   flex: 1 1 auto;
   white-space: nowrap;
   overflow: hidden;
@@ -84,7 +93,7 @@
 
 // Medium variant: taller bar, title wraps onto its own bottom row.
 @mixin medium($title: ".#{c.$prefix}-top-app-bar__title") {
-  @include m.control-height(--#{c.$prefix}-top-app-bar-height-medium);
+  @include m.control-height(v("top-app-bar-height-medium"));
   flex-wrap: wrap;
   align-content: space-between;
   padding-block-end: var(--#{c.$prefix}-sys-space-4);
@@ -99,7 +108,7 @@
 
 // Large variant: same wrap layout as medium, taller with a bigger headline.
 @mixin large($title: ".#{c.$prefix}-top-app-bar__title") {
-  @include m.control-height(--#{c.$prefix}-top-app-bar-height-large);
+  @include m.control-height(v("top-app-bar-height-large"));
   flex-wrap: wrap;
   align-content: space-between;
   padding-block-end: var(--#{c.$prefix}-sys-space-4);
@@ -121,7 +130,7 @@
 
 // On-scroll container color, as a class (fallback / script-driven).
 @mixin scrolled {
-  background-color: var(--#{c.$prefix}-top-app-bar-scrolled-container-color);
+  background-color: #{v("top-app-bar-scrolled-container-color")};
 }
 
 // On-scroll container color driven by the nearest scroll container.
@@ -131,21 +140,21 @@
     animation-timing-function: linear;
     animation-fill-mode: both;
     animation-timeline: scroll(nearest block);
-    animation-range: 0 var(--#{c.$prefix}-top-app-bar-scroll-range);
+    animation-range: 0 #{v("top-app-bar-scroll-range")};
   }
 }
 
 // Medium/large bars collapse to the small height over their extra height,
 // the headline fading out over the first half of that distance.
-@mixin collapse($height-token, $title: ".#{c.$prefix}-top-app-bar__title") {
+@mixin collapse($height, $title: ".#{c.$prefix}-top-app-bar__title") {
   @supports (animation-timeline: scroll()) {
     overflow: clip;
     animation-name: #{c.$prefix}-top-app-bar-scroll, #{c.$prefix}-top-app-bar-collapse;
     animation-timing-function: linear;
     animation-fill-mode: both;
     animation-timeline: scroll(nearest block);
-    animation-range: 0 var(--#{c.$prefix}-top-app-bar-scroll-range),
-      0 calc(var(#{$height-token}) - var(--#{c.$prefix}-top-app-bar-height));
+    animation-range: 0 #{v("top-app-bar-scroll-range")},
+      0 calc(#{$height} - #{v("top-app-bar-height")});
 
     #{$title} {
       animation-name: #{c.$prefix}-top-app-bar-title-fade;
@@ -153,7 +162,7 @@
       animation-fill-mode: both;
       animation-timeline: scroll(nearest block);
       animation-range: 0
-        calc((var(#{$height-token}) - var(--#{c.$prefix}-top-app-bar-height)) / 2);
+        calc((#{$height} - #{v("top-app-bar-height")}) / 2);
     }
   }
 }
@@ -161,14 +170,14 @@
 @mixin keyframes {
   @keyframes #{c.$prefix}-top-app-bar-scroll {
     to {
-      background-color: var(--#{c.$prefix}-top-app-bar-scrolled-container-color);
+      background-color: #{v("top-app-bar-scrolled-container-color")};
     }
   }
 
   @keyframes #{c.$prefix}-top-app-bar-collapse {
     to {
       block-size: calc(
-        var(--#{c.$prefix}-top-app-bar-height) + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
+        #{v("top-app-bar-height")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
       );
       padding-block-end: var(--#{c.$prefix}-sys-space-none);
     }
@@ -214,11 +223,11 @@
   }
 
   .#{$p}-top-app-bar--sticky.#{$p}-top-app-bar--medium {
-    @include collapse(--#{$p}-top-app-bar-height-medium);
+    @include collapse(v("top-app-bar-height-medium"));
   }
 
   .#{$p}-top-app-bar--sticky.#{$p}-top-app-bar--large {
-    @include collapse(--#{$p}-top-app-bar-height-large);
+    @include collapse(v("top-app-bar-height-large"));
   }
 
   @include keyframes;

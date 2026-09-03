@@ -41,29 +41,38 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-fab-size: #{fn.rem(56)};
-  --#{c.$prefix}-fab-size-small: #{fn.rem(40)};
-  --#{c.$prefix}-fab-size-medium: #{fn.rem(80)};
-  --#{c.$prefix}-fab-size-large: #{fn.rem(96)};
-  --#{c.$prefix}-fab-shape: var(--#{c.$sys-prefix}-sys-shape-corner-large);
-  --#{c.$prefix}-fab-shape-small: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
-  --#{c.$prefix}-fab-shape-medium: var(--#{c.$sys-prefix}-sys-shape-corner-large);
-  --#{c.$prefix}-fab-shape-large: var(--#{c.$sys-prefix}-sys-shape-corner-extra-large);
-  --#{c.$prefix}-fab-container-color: var(--#{c.$sys-prefix}-sys-color-primary-container);
-  --#{c.$prefix}-fab-content-color: var(--#{c.$sys-prefix}-sys-color-on-primary-container);
-  --#{c.$prefix}-fab-secondary-container-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
-  --#{c.$prefix}-fab-secondary-content-color: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
-  --#{c.$prefix}-fab-tertiary-container-color: var(--#{c.$sys-prefix}-sys-color-tertiary-container);
-  --#{c.$prefix}-fab-tertiary-content-color: var(--#{c.$sys-prefix}-sys-color-on-tertiary-container);
-  --#{c.$prefix}-fab-surface-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container-high);
-  --#{c.$prefix}-fab-surface-content-color: var(--#{c.$sys-prefix}-sys-color-primary);
-  --#{c.$prefix}-fab-icon-size: var(--#{c.$prefix}-sys-icon-size);
-  --#{c.$prefix}-fab-icon-size-medium: #{fn.rem(28)};
-  --#{c.$prefix}-fab-icon-size-large: #{fn.rem(36)};
-  --#{c.$prefix}-fab-padding-inline: var(--#{c.$prefix}-sys-space-4);
-  --#{c.$prefix}-fab-icon-gap: var(--#{c.$prefix}-sys-space-2);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "fab-size": #{fn.rem(56)},
+  "fab-size-small": #{fn.rem(40)},
+  "fab-size-medium": #{fn.rem(80)},
+  "fab-size-large": #{fn.rem(96)},
+  "fab-shape": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+  "fab-shape-small": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "fab-shape-medium": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+  "fab-shape-large": var(--#{c.$sys-prefix}-sys-shape-corner-extra-large),
+  "fab-container-color": var(--#{c.$sys-prefix}-sys-color-primary-container),
+  "fab-content-color": var(--#{c.$sys-prefix}-sys-color-on-primary-container),
+  "fab-secondary-container-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
+  "fab-secondary-content-color": var(--#{c.$sys-prefix}-sys-color-on-secondary-container),
+  "fab-tertiary-container-color": var(--#{c.$sys-prefix}-sys-color-tertiary-container),
+  "fab-tertiary-content-color": var(--#{c.$sys-prefix}-sys-color-on-tertiary-container),
+  "fab-surface-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-high),
+  "fab-surface-content-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "fab-icon-size": var(--#{c.$prefix}-sys-icon-size),
+  "fab-icon-size-medium": #{fn.rem(28)},
+  "fab-icon-size-large": #{fn.rem(36)},
+  "fab-padding-inline": var(--#{c.$prefix}-sys-space-4),
+  "fab-icon-gap": var(--#{c.$prefix}-sys-space-2),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // Structure + state machinery. Size modifiers re-include control-height with
 // their own size token and mirror it on width with the same density calc.
@@ -71,19 +80,19 @@
   @include m.own-box;
   text-align: center;
   @include m.typescale("label-large");
-  --_container: var(--#{c.$prefix}-fab-container-color);
-  --_content: var(--#{c.$prefix}-fab-content-color);
+  --_container: #{v("fab-container-color")};
+  --_content: #{v("fab-content-color")};
 
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  @include m.control-height(--#{c.$prefix}-fab-size);
+  @include m.control-height(v("fab-size"));
   width: calc(
-    var(--#{c.$prefix}-fab-size) + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
+    #{v("fab-size")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
   );
   border: none;
-  border-radius: var(--#{c.$prefix}-fab-shape);
+  border-radius: #{v("fab-shape")};
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
@@ -103,9 +112,9 @@
   > svg,
   > img,
   > .#{c.$prefix}-icon {
-    inline-size: var(--#{c.$prefix}-fab-icon-size);
-    font-size: var(--#{c.$prefix}-fab-icon-size);
-    block-size: var(--#{c.$prefix}-fab-icon-size);
+    inline-size: #{v("fab-icon-size")};
+    font-size: #{v("fab-icon-size")};
+    block-size: #{v("fab-icon-size")};
     --#{c.$prefix}-icon-optical-size: 24;
   }
 
@@ -116,74 +125,74 @@
 }
 
 @mixin small {
-  @include m.control-height(--#{c.$prefix}-fab-size-small);
+  @include m.control-height(v("fab-size-small"));
   width: calc(
-    var(--#{c.$prefix}-fab-size-small) + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
+    #{v("fab-size-small")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
   );
-  border-radius: var(--#{c.$prefix}-fab-shape-small);
+  border-radius: #{v("fab-shape-small")};
   // 40px container: expand the hit area to the accessibility floor.
   @include m.touch-target;
 }
 
 @mixin medium {
-  @include m.control-height(--#{c.$prefix}-fab-size-medium);
+  @include m.control-height(v("fab-size-medium"));
   width: calc(
-    var(--#{c.$prefix}-fab-size-medium) + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
+    #{v("fab-size-medium")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
   );
-  border-radius: var(--#{c.$prefix}-fab-shape-medium);
+  border-radius: #{v("fab-shape-medium")};
 
   > svg,
   > img,
   > .#{c.$prefix}-icon {
-    inline-size: var(--#{c.$prefix}-fab-icon-size-medium);
-    font-size: var(--#{c.$prefix}-fab-icon-size-medium);
-    block-size: var(--#{c.$prefix}-fab-icon-size-medium);
+    inline-size: #{v("fab-icon-size-medium")};
+    font-size: #{v("fab-icon-size-medium")};
+    block-size: #{v("fab-icon-size-medium")};
     --#{c.$prefix}-icon-optical-size: 28;
   }
 }
 
 @mixin large {
-  @include m.control-height(--#{c.$prefix}-fab-size-large);
+  @include m.control-height(v("fab-size-large"));
   width: calc(
-    var(--#{c.$prefix}-fab-size-large) + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
+    #{v("fab-size-large")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
   );
-  border-radius: var(--#{c.$prefix}-fab-shape-large);
+  border-radius: #{v("fab-shape-large")};
 
   > svg,
   > img,
   > .#{c.$prefix}-icon {
-    inline-size: var(--#{c.$prefix}-fab-icon-size-large);
-    font-size: var(--#{c.$prefix}-fab-icon-size-large);
-    block-size: var(--#{c.$prefix}-fab-icon-size-large);
+    inline-size: #{v("fab-icon-size-large")};
+    font-size: #{v("fab-icon-size-large")};
+    block-size: #{v("fab-icon-size-large")};
     --#{c.$prefix}-icon-optical-size: 36;
   }
 }
 
 // Color variants re-point the tier-4 privates only; elevation is the base's.
 @mixin primary {
-  --_container: var(--#{c.$prefix}-fab-container-color);
-  --_content: var(--#{c.$prefix}-fab-content-color);
+  --_container: #{v("fab-container-color")};
+  --_content: #{v("fab-content-color")};
 }
 
 @mixin secondary {
-  --_container: var(--#{c.$prefix}-fab-secondary-container-color);
-  --_content: var(--#{c.$prefix}-fab-secondary-content-color);
+  --_container: #{v("fab-secondary-container-color")};
+  --_content: #{v("fab-secondary-content-color")};
 }
 
 @mixin tertiary {
-  --_container: var(--#{c.$prefix}-fab-tertiary-container-color);
-  --_content: var(--#{c.$prefix}-fab-tertiary-content-color);
+  --_container: #{v("fab-tertiary-container-color")};
+  --_content: #{v("fab-tertiary-content-color")};
 }
 
 @mixin surface {
-  --_container: var(--#{c.$prefix}-fab-surface-container-color);
-  --_content: var(--#{c.$prefix}-fab-surface-content-color);
+  --_container: #{v("fab-surface-container-color")};
+  --_content: #{v("fab-surface-content-color")};
 }
 
 @mixin extended {
   width: auto;
-  padding-inline: var(--#{c.$prefix}-fab-padding-inline);
-  gap: var(--#{c.$prefix}-fab-icon-gap);
+  padding-inline: #{v("fab-padding-inline")};
+  gap: #{v("fab-icon-gap")};
 
   .#{c.$prefix}-fab__label {
     @include m.own-box;

@@ -20,48 +20,57 @@
 @use "../config" as c;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-card-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container-low);
-  --#{c.$prefix}-card-filled-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container-highest);
-  --#{c.$prefix}-card-outlined-container-color: var(--#{c.$sys-prefix}-sys-color-surface);
-  --#{c.$prefix}-card-content-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-card-shape: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
-  --#{c.$prefix}-card-padding: var(--#{c.$prefix}-sys-space-4);
-  --#{c.$prefix}-card-outline-color: var(--#{c.$sys-prefix}-sys-color-outline-variant);
-  --#{c.$prefix}-card-outline-width: var(--#{c.$prefix}-sys-stroke-hairline);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "card-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-low),
+  "card-filled-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-highest),
+  "card-outlined-container-color": var(--#{c.$sys-prefix}-sys-color-surface),
+  "card-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "card-shape": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "card-padding": var(--#{c.$prefix}-sys-space-4),
+  "card-outline-color": var(--#{c.$sys-prefix}-sys-color-outline-variant),
+  "card-outline-width": var(--#{c.$prefix}-sys-stroke-hairline),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // Structural container, default = elevated look.
 @mixin container {
   @include m.own-box;
-  --_container: var(--#{c.$prefix}-card-container-color);
-  --_content: var(--#{c.$prefix}-card-content-color);
+  --_container: #{v("card-container-color")};
+  --_content: #{v("card-content-color")};
 
   display: flex;
   flex-direction: column;
   position: relative;
   background-color: var(--_container);
   color: var(--_content);
-  border-radius: var(--#{c.$prefix}-card-shape);
+  border-radius: #{v("card-shape")};
   overflow: clip;
   @include m.elevation(1);
 }
 
 @mixin elevated {
-  --_container: var(--#{c.$prefix}-card-container-color);
+  --_container: #{v("card-container-color")};
   @include m.elevation(1);
 }
 
 @mixin filled {
-  --_container: var(--#{c.$prefix}-card-filled-container-color);
+  --_container: #{v("card-filled-container-color")};
   box-shadow: none;
 }
 
 @mixin outlined {
-  --_container: var(--#{c.$prefix}-card-outlined-container-color);
+  --_container: #{v("card-outlined-container-color")};
   box-shadow: none;
-  border: var(--#{c.$prefix}-card-outline-width) solid
-    var(--#{c.$prefix}-card-outline-color);
+  border: #{v("card-outline-width")} solid
+    #{v("card-outline-color")};
 }
 
 // Interactive cards (<a class="m3-card m3-card--interactive">): full state
@@ -91,7 +100,7 @@
   #{$root}__slot {
     @include m.own-region;
     display: block;
-    padding: var(--#{c.$prefix}-card-padding);
+    padding: #{v("card-padding")};
     flex: 1 1 auto;
   }
 
@@ -100,7 +109,7 @@
     display: flex;
     gap: var(--#{c.$prefix}-sys-space-2);
     justify-content: flex-end;
-    padding: var(--#{c.$prefix}-card-padding);
+    padding: #{v("card-padding")};
     padding-block-start: var(--#{c.$prefix}-sys-space-none);
   }
 }

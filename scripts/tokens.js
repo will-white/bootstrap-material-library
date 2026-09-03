@@ -58,9 +58,9 @@ function componentStems() {
   const stems = new Map();
   for (const file of fs.readdirSync(dir).filter((f) => f.endsWith('.scss'))) {
     const src = fs.readFileSync(path.join(dir, file), 'utf8');
-    const block = /@mixin tokens\s*\{([\s\S]*?)\n\}/.exec(src);
+    const block = /\$tokens:\s*\(([\s\S]*?)\n\);/.exec(src);
     if (!block) continue;
-    const names = [...block[1].matchAll(/--#\{c\.\$prefix\}-([a-z0-9-]+):/g)].map((m) => m[1].split('-'));
+    const names = [...block[1].matchAll(/"([a-z0-9-]+)":/g)].map((m) => m[1].split('-'));
     const groups = new Map();
     for (const segs of names) {
       if (!groups.has(segs[0])) groups.set(segs[0], []);
@@ -84,6 +84,49 @@ function componentStems() {
   return [...stems.keys()].sort((a, b) => b.length - a.length);
 }
 const STEMS = componentStems();
+
+// Component tokens carry their default as the fallback of the var() that
+// reads them, rather than as a :root declaration (see the token architecture
+// in the README), so collect them from every read site. Each token's default
+// has one source in Sass, so every site agrees; a disagreement is a bug and
+// is reported rather than silently picking one.
+{
+  const seen = new Map();
+  const re = /var\(\s*(--[a-z0-9-]+)\s*,\s*/gi;
+  let m;
+  while ((m = re.exec(css)) !== null) {
+    const prop = m[1];
+    if (decls.has(prop)) continue;
+    if (!prop.startsWith(`--${LIB}-`) && !prop.startsWith(`--${SYS}-`)) continue;
+    // Walk to the matching close paren so nested var()/calc() come along.
+    let i = re.lastIndex, depth = 1, out = '';
+    while (i < css.length && depth > 0) {
+      const ch = css[i];
+      if (ch === '(') depth++;
+      else if (ch === ')') { depth--; if (!depth) break; }
+      out += ch;
+      i++;
+    }
+    const value = out.replace(/\s+/g, ' ').trim();
+    if (!value) continue;
+    const prior = seen.get(prop);
+    if (prior === undefined) seen.set(prop, value);
+    else if (prior !== value) seen.set(prop, null); // disagreement
+  }
+  for (const [prop, value] of seen) {
+    // A default that resolves to a private is not a default: this is a
+    // deprecated short name read as the fallback of its namespaced canonical
+    // (--m3-swatch behind --m3-color-palette-swatch-color), so the export
+    // describes the canonical only.
+    if (typeof value === 'string' && /var\(\s*--_/.test(value)) continue;
+    if (value === null) {
+      console.warn(`  ! ${prop} has more than one default across its read sites`);
+      continue;
+    }
+    decls.set(prop, value);
+  }
+}
+
 
 // $legacy-global-aliases emits the pre-1.0 name of every library global next
 // to the current one. They are the same token under an older name, and they

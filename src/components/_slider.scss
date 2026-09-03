@@ -85,24 +85,38 @@
 //     mixins instead.
 // ============================================================================
 
+@use "sass:map";
 @use "../config" as c;
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-slider-track-height: #{fn.rem(16)};
-  --#{c.$prefix}-slider-track-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
-  --#{c.$prefix}-slider-active-color: var(--#{c.$sys-prefix}-sys-color-primary);
-  --#{c.$prefix}-slider-thumb-width: #{fn.rem(4)};
-  --#{c.$prefix}-slider-thumb-width-pressed: #{fn.rem(2)};
-  --#{c.$prefix}-slider-thumb-size: #{fn.rem(44)};
-  --#{c.$prefix}-slider-thumb-height: var(--#{c.$prefix}-slider-thumb-size);
-  --#{c.$prefix}-slider-gap: #{fn.rem(6)};
-  --#{c.$prefix}-slider-gap-color: var(--#{c.$sys-prefix}-sys-color-surface);
-  --#{c.$prefix}-slider-stop-size: #{fn.rem(4)};
-  --#{c.$prefix}-slider-stop-color: var(--#{c.$sys-prefix}-sys-color-primary);
-  --#{c.$prefix}-slider-ticks: 10;
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "slider-track-height": #{fn.rem(16)},
+  "slider-track-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
+  "slider-active-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "slider-thumb-width": #{fn.rem(4)},
+  "slider-thumb-width-pressed": #{fn.rem(2)},
+  "slider-thumb-size": #{fn.rem(44)},
+  "slider-gap": #{fn.rem(6)},
+  "slider-gap-color": var(--#{c.$sys-prefix}-sys-color-surface),
+  "slider-stop-size": #{fn.rem(4)},
+  "slider-stop-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "slider-ticks": 10,
+);
+
+// Defaults that build on another token in this map: resolved through
+// token() so the sibling's own default travels with them.
+$tokens: map.set($tokens, "slider-thumb-height", #{m.token($tokens, "slider-thumb-size")});
+
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // --- private drawing helpers -----------------------------------------------
 
@@ -111,7 +125,7 @@
 // tile's start). Half a hairline of falloff keeps the edge anti-aliased.
 @function -dot($at) {
   @return radial-gradient(
-    circle calc(var(--#{c.$prefix}-slider-stop-size) / 2) at #{$at},
+    circle calc(#{v("slider-stop-size")} / 2) at #{$at},
     var(--_stop) calc(100% - var(--#{c.$prefix}-sys-stroke-hairline) / 2),
     transparent
   );
@@ -134,18 +148,18 @@
 // end. Both center on the handle centers, which sit --_inset from each
 // track edge; the including rule sets --_inset for its engine.
 @mixin -track-marks {
-  --_mark-x: calc(var(--_inset) - var(--#{c.$prefix}-slider-stop-size) / 2);
-  --_tick-size: calc((100% - 2 * var(--_inset)) / var(--#{c.$prefix}-slider-ticks));
+  --_mark-x: calc(var(--_inset) - #{v("slider-stop-size")} / 2);
+  --_tick-size: calc((100% - 2 * var(--_inset)) / #{v("slider-ticks")});
 }
 
 @mixin -track-webkit {
   @include -track-marks;
-  --_inset: calc(var(--#{c.$prefix}-slider-gap) + var(--#{c.$prefix}-slider-thumb-width) / 2);
+  --_inset: calc(#{v("slider-gap")} + #{v("slider-thumb-width")} / 2);
 
   display: block;
   box-sizing: border-box;
-  block-size: var(--#{c.$prefix}-slider-thumb-height);
-  padding-inline: var(--#{c.$prefix}-slider-gap);
+  block-size: #{v("slider-thumb-height")};
+  padding-inline: #{v("slider-gap")};
   border: none;
   background-color: transparent;
   background-image:
@@ -154,8 +168,8 @@
     linear-gradient(var(--_track), var(--_track));
   background-size:
     var(--_tick-size) 100%,
-    var(--#{c.$prefix}-slider-stop-size) var(--#{c.$prefix}-slider-stop-size),
-    100% var(--#{c.$prefix}-slider-track-height);
+    #{v("slider-stop-size")} #{v("slider-stop-size")},
+    100% #{v("slider-track-height")};
   background-position:
     var(--_mark-x) 50%,
     var(--_end) var(--_mark-x) center,
@@ -163,9 +177,9 @@
   background-repeat: repeat-x, no-repeat, no-repeat;
   mask-image: linear-gradient(currentColor, currentColor), #{-cap()}, #{-cap()};
   mask-size:
-    calc(100% - 2 * var(--#{c.$prefix}-slider-gap)) 100%,
-    var(--#{c.$prefix}-slider-track-height) var(--#{c.$prefix}-slider-track-height),
-    var(--#{c.$prefix}-slider-track-height) var(--#{c.$prefix}-slider-track-height);
+    calc(100% - 2 * #{v("slider-gap")}) 100%,
+    #{v("slider-track-height")} #{v("slider-track-height")},
+    #{v("slider-track-height")} #{v("slider-track-height")};
   mask-position: center, left center, right center;
   mask-repeat: no-repeat;
   @include m.forced-colors-border;
@@ -173,7 +187,7 @@
   // Forced colors drop background images, shadows and the like: hand back
   // a plain 16px outlined track the handle overhangs.
   @media (forced-colors: active) {
-    block-size: var(--#{c.$prefix}-slider-track-height);
+    block-size: #{v("slider-track-height")};
     border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
     mask: none;
   }
@@ -181,18 +195,18 @@
 
 @mixin -track-moz {
   @include -track-marks;
-  --_inset: calc(var(--#{c.$prefix}-slider-thumb-width) / 2);
+  --_inset: calc(#{v("slider-thumb-width")} / 2);
 
   display: block;
   box-sizing: border-box;
-  block-size: var(--#{c.$prefix}-slider-track-height);
+  block-size: #{v("slider-track-height")};
   border: none;
   border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   background-color: var(--_track);
   background-image: var(--_ticks), #{-dot(center)};
   background-size:
     var(--_tick-size) 100%,
-    var(--#{c.$prefix}-slider-stop-size) var(--#{c.$prefix}-slider-stop-size);
+    #{v("slider-stop-size")} #{v("slider-stop-size")};
   background-position:
     var(--_mark-x) 50%,
     var(--_end) var(--_mark-x) center;
@@ -209,7 +223,7 @@
   display: block;
   box-sizing: border-box;
   inline-size: var(--_thumb-width);
-  block-size: var(--#{c.$prefix}-slider-thumb-height);
+  block-size: #{v("slider-thumb-height")};
   margin: var(--#{c.$prefix}-sys-space-none);
   border: none;
   border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
@@ -239,32 +253,32 @@
 // density; the input itself is at least the 48px touch target tall.
 @mixin control {
   @include m.own-box;
-  --_thumb-width: var(--#{c.$prefix}-slider-thumb-width);
-  --_track: var(--#{c.$prefix}-slider-track-color);
-  --_active: var(--#{c.$prefix}-slider-active-color);
-  --_stop: var(--#{c.$prefix}-slider-stop-color);
+  --_thumb-width: #{v("slider-thumb-width")};
+  --_track: #{v("slider-track-color")};
+  --_active: #{v("slider-active-color")};
+  --_stop: #{v("slider-stop-color")};
   --_ticks: none;
   // Band edges inside the handle box (the clip-path) and how far the fill
   // and the clip reach along the track.
-  --_band-start: calc(50% - var(--#{c.$prefix}-slider-track-height) / 2);
-  --_band-end: calc(50% + var(--#{c.$prefix}-slider-track-height) / 2);
+  --_band-start: calc(50% - #{v("slider-track-height")} / 2);
+  --_band-end: calc(50% + #{v("slider-track-height")} / 2);
   --_reach: 100vw;
   // Fill direction and the stop indicator's end, flipped for RTL below.
-  --_fill-x: calc(var(--#{c.$prefix}-slider-gap) - var(--_reach));
+  --_fill-x: calc(#{v("slider-gap")} - var(--_reach));
   --_end: right;
 
   display: inline-block;
   -webkit-appearance: none;
   appearance: none;
   inline-size: 100%;
-  block-size: max(var(--#{c.$prefix}-sys-target-size), var(--#{c.$prefix}-slider-thumb-height));
+  block-size: max(var(--#{c.$prefix}-sys-target-size), #{v("slider-thumb-height")});
   background-color: transparent;
   cursor: pointer;
   margin: var(--#{c.$prefix}-sys-space-none);
   @include m.focus-ring;
 
   &:dir(rtl) {
-    --_fill-x: calc(var(--_reach) - var(--#{c.$prefix}-slider-gap));
+    --_fill-x: calc(var(--_reach) - #{v("slider-gap")});
     --_end: left;
   }
 
@@ -282,14 +296,14 @@
   &::-webkit-slider-thumb {
     @include -thumb;
     box-shadow:
-      0 0 0 var(--#{c.$prefix}-slider-gap) var(--#{c.$prefix}-slider-gap-color),
+      0 0 0 #{v("slider-gap")} #{v("slider-gap-color")},
       var(--_fill-x) 0 0 var(--_reach) var(--_active);
 
     @media (forced-colors: active) {
       margin-block-start: calc(
         (
-            var(--#{c.$prefix}-slider-track-height) -
-              var(--#{c.$prefix}-slider-thumb-height)
+            #{v("slider-track-height")} -
+              #{v("slider-thumb-height")}
           ) / 2
       );
       clip-path: none;
@@ -298,14 +312,14 @@
 
   &::-moz-range-thumb {
     @include -thumb;
-    box-shadow: 0 0 0 var(--#{c.$prefix}-slider-gap)
-      var(--#{c.$prefix}-slider-gap-color);
+    box-shadow: 0 0 0 #{v("slider-gap")}
+      #{v("slider-gap-color")};
   }
 
   // Firefox-only active (traveled) track fill.
   &::-moz-range-progress {
     display: block;
-    block-size: var(--#{c.$prefix}-slider-track-height);
+    block-size: #{v("slider-track-height")};
     border: none;
     border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
     background-color: var(--_active);
@@ -313,7 +327,7 @@
 
   // Pressed: the handle narrows (the vendor thumb rules read the private).
   &:active:not(:disabled) {
-    --_thumb-width: var(--#{c.$prefix}-slider-thumb-width-pressed);
+    --_thumb-width: #{v("slider-thumb-width-pressed")};
   }
 
   // Disabled: inactive track at 12% on-surface; handle, fill and marks at
@@ -330,7 +344,7 @@
       in srgb,
       var(--#{c.$sys-prefix}-sys-color-on-surface)
         var(--#{c.$sys-prefix}-sys-state-disabled-content-opacity),
-      var(--#{c.$prefix}-slider-gap-color)
+      #{v("slider-gap-color")}
     );
     --_stop: color-mix(
       in srgb,
@@ -345,7 +359,7 @@
 // Tick marks: one dot per interval on the inactive track (visual only; keep
 // --m3-slider-ticks equal to (max - min) / step).
 @mixin ticks {
-  --_ticks: #{-dot("calc(var(--#{c.$prefix}-slider-stop-size) / 2) 50%")};
+  --_ticks: #{-dot("calc(#{v("slider-stop-size")} / 2) 50%")};
 }
 
 // --- class emission ---------------------------------------------------------

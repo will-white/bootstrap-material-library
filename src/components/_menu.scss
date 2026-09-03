@@ -30,26 +30,35 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-menu-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container);
-  --#{c.$prefix}-menu-content-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-menu-shape: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
-  --#{c.$prefix}-menu-item-height: #{fn.rem(48)};
-  --#{c.$prefix}-menu-min-width: #{fn.rem(112)};
-  --#{c.$prefix}-menu-max-width: #{fn.rem(280)};
-  --#{c.$prefix}-menu-header-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "menu-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container),
+  "menu-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "menu-shape": var(--#{c.$sys-prefix}-sys-shape-corner-extra-small),
+  "menu-item-height": #{fn.rem(48)},
+  "menu-min-width": #{fn.rem(112)},
+  "menu-max-width": #{fn.rem(280)},
+  "menu-header-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // The menu surface (also Bootstrap's .dropdown-menu).
 @mixin surface {
   @include m.own-box;
-  background-color: var(--#{c.$prefix}-menu-container-color);
-  color: var(--#{c.$prefix}-menu-content-color);
+  background-color: #{v("menu-container-color")};
+  color: #{v("menu-content-color")};
   border: none;
-  border-radius: var(--#{c.$prefix}-menu-shape);
+  border-radius: #{v("menu-shape")};
   padding-block: var(--#{c.$prefix}-sys-space-2);
-  min-inline-size: var(--#{c.$prefix}-menu-min-width);
-  max-inline-size: var(--#{c.$prefix}-menu-max-width);
+  min-inline-size: #{v("menu-min-width")};
+  max-inline-size: #{v("menu-max-width")};
   @include m.elevation(2);
 
   // Dividers between items: spacing only; the divider component owns the
@@ -70,13 +79,13 @@
 @mixin item {
   @include m.own-box;
   --_container: transparent;
-  --_content: var(--#{c.$prefix}-menu-content-color);
+  --_content: #{v("menu-content-color")};
 
   display: flex;
   align-items: center;
   gap: var(--#{c.$prefix}-sys-space-3);
   inline-size: 100%;
-  @include m.control-min-height(--#{c.$prefix}-menu-item-height);
+  @include m.control-min-height(v("menu-item-height"));
   padding-inline: var(--#{c.$prefix}-sys-space-3);
   border: none;
   text-align: start;
@@ -125,7 +134,7 @@
   display: block;
   padding-inline: var(--#{c.$prefix}-sys-space-3);
   padding-block: var(--#{c.$prefix}-sys-space-2) var(--#{c.$prefix}-sys-space-1);
-  color: var(--#{c.$prefix}-menu-header-color);
+  color: #{v("menu-header-color")};
   @include m.typescale("label-small");
 }
 

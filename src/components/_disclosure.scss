@@ -25,27 +25,36 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-disclosure-summary-height: #{fn.rem(48)};
-  --#{c.$prefix}-disclosure-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-disclosure-shape: var(--#{c.$sys-prefix}-sys-shape-corner-small);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "disclosure-summary-height": #{fn.rem(48)},
+  "disclosure-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "disclosure-shape": var(--#{c.$sys-prefix}-sys-shape-corner-small),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 @mixin base {
   @include m.own-box;
   display: block;
-  color: var(--#{c.$prefix}-disclosure-color);
+  color: #{v("disclosure-color")};
 
   > summary {
     @include m.own-region;
     --_container: transparent;
-    --_content: var(--#{c.$prefix}-disclosure-color);
+    --_content: #{v("disclosure-color")};
     display: flex;
     align-items: center;
     gap: var(--#{c.$prefix}-sys-space-3);
-    @include m.control-min-height(--#{c.$prefix}-disclosure-summary-height);
+    @include m.control-min-height(v("disclosure-summary-height"));
     padding-inline: var(--#{c.$prefix}-sys-space-3);
-    border-radius: var(--#{c.$prefix}-disclosure-shape);
+    border-radius: #{v("disclosure-shape")};
     cursor: pointer;
     user-select: none;
     list-style: none;

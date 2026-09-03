@@ -21,11 +21,20 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-bottom-app-bar-height: #{fn.rem(80)};
-  --#{c.$prefix}-bottom-app-bar-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container);
-  --#{c.$prefix}-bottom-app-bar-content-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "bottom-app-bar-height": #{fn.rem(80)},
+  "bottom-app-bar-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container),
+  "bottom-app-bar-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // Structural bar container.
 @mixin bar {
@@ -34,9 +43,9 @@
   align-items: center;
   gap: var(--#{c.$prefix}-sys-space-2);
   padding-inline: var(--#{c.$prefix}-sys-space-4);
-  @include m.control-height(--#{c.$prefix}-bottom-app-bar-height);
-  background-color: var(--#{c.$prefix}-bottom-app-bar-container-color);
-  color: var(--#{c.$prefix}-bottom-app-bar-content-color);
+  @include m.control-height(v("bottom-app-bar-height"));
+  background-color: #{v("bottom-app-bar-container-color")};
+  color: #{v("bottom-app-bar-content-color")};
 }
 
 // Trailing slot, pushed to the far inline end (typically holds a .m3-fab).

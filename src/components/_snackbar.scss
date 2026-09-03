@@ -31,16 +31,25 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-snackbar-container-color: var(--#{c.$sys-prefix}-sys-color-inverse-surface);
-  --#{c.$prefix}-snackbar-content-color: var(--#{c.$sys-prefix}-sys-color-inverse-on-surface);
-  --#{c.$prefix}-snackbar-action-color: var(--#{c.$sys-prefix}-sys-color-inverse-primary);
-  --#{c.$prefix}-snackbar-shape: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
-  --#{c.$prefix}-snackbar-min-height: #{fn.rem(48)};
-  --#{c.$prefix}-snackbar-max-width: #{fn.rem(560)};
-  --#{c.$prefix}-snackbar-action-height: #{fn.rem(36)};
-  --#{c.$prefix}-snackbar-close-size: #{fn.rem(32)};
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "snackbar-container-color": var(--#{c.$sys-prefix}-sys-color-inverse-surface),
+  "snackbar-content-color": var(--#{c.$sys-prefix}-sys-color-inverse-on-surface),
+  "snackbar-action-color": var(--#{c.$sys-prefix}-sys-color-inverse-primary),
+  "snackbar-shape": var(--#{c.$sys-prefix}-sys-shape-corner-extra-small),
+  "snackbar-min-height": #{fn.rem(48)},
+  "snackbar-max-width": #{fn.rem(560)},
+  "snackbar-action-height": #{fn.rem(36)},
+  "snackbar-close-size": #{fn.rem(32)},
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // Inverse-surface container. Reused by the Bootstrap .toast re-skin.
 @mixin container {
@@ -48,12 +57,12 @@
   display: flex;
   align-items: center;
   gap: var(--#{c.$prefix}-sys-space-2);
-  @include m.control-min-height(--#{c.$prefix}-snackbar-min-height);
-  max-inline-size: var(--#{c.$prefix}-snackbar-max-width);
+  @include m.control-min-height(v("snackbar-min-height"));
+  max-inline-size: #{v("snackbar-max-width")};
   padding-inline: var(--#{c.$prefix}-sys-space-4);
-  background-color: var(--#{c.$prefix}-snackbar-container-color);
-  color: var(--#{c.$prefix}-snackbar-content-color);
-  border-radius: var(--#{c.$prefix}-snackbar-shape);
+  background-color: #{v("snackbar-container-color")};
+  color: #{v("snackbar-content-color")};
+  border-radius: #{v("snackbar-shape")};
   @include m.elevation(3);
   @include m.typescale("body-medium");
 }
@@ -63,7 +72,7 @@
   @include m.own-box;
   display: block;
   @include m.typescale("body-medium");
-  color: var(--#{c.$prefix}-snackbar-content-color);
+  color: #{v("snackbar-content-color")};
   flex: 1;
   padding-block: var(--#{c.$prefix}-sys-space-3);
 }
@@ -76,11 +85,11 @@
   justify-content: center;
   text-align: center;
   --_container: transparent;
-  --_content: var(--#{c.$prefix}-snackbar-action-color);
+  --_content: #{v("snackbar-action-color")};
 
   flex-shrink: 0;
   border: none;
-  @include m.control-height(--#{c.$prefix}-snackbar-action-height);
+  @include m.control-height(v("snackbar-action-height"));
   padding-inline: var(--#{c.$prefix}-sys-space-2);
   border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   cursor: pointer;
@@ -105,11 +114,11 @@
   text-align: center;
   @include m.typescale("label-large");
   --_container: transparent;
-  --_content: var(--#{c.$prefix}-snackbar-content-color);
+  --_content: #{v("snackbar-content-color")};
 
   flex-shrink: 0;
   border: none;
-  @include m.control-height(--#{c.$prefix}-snackbar-close-size);
+  @include m.control-height(v("snackbar-close-size"));
   aspect-ratio: 1;
   padding: var(--#{c.$prefix}-sys-space-none);
   border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
@@ -134,7 +143,7 @@
   z-index: var(--#{c.$prefix}-sys-z-snackbar);
   inline-size: max-content;
   max-inline-size: min(
-    var(--#{c.$prefix}-snackbar-max-width),
+    #{v("snackbar-max-width")},
     calc(100% - var(--#{c.$prefix}-sys-space-6))
   );
 }
@@ -148,7 +157,7 @@
 ) {
   @scope (#{$root}) to (#{$slot}) {
     a {
-      color: var(--#{c.$prefix}-snackbar-action-color);
+      color: #{v("snackbar-action-color")};
     }
   }
 }

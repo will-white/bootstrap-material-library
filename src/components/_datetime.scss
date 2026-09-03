@@ -24,9 +24,18 @@
 @use "../mixins" as m;
 @use "text-field" as field;
 
-@mixin tokens {
-  --#{c.$prefix}-datetime-min-width: #{fn.rem(160)};
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "datetime-min-width": #{fn.rem(160)},
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // The whole control: shared field structure + outlined look by default.
 // Native popup chrome (calendar grid, clock) is themed by accent-color and
@@ -35,7 +44,7 @@
   @include m.own-box;
   @include field.input-base;
   @include field.input-outlined;
-  min-inline-size: var(--#{c.$prefix}-datetime-min-width);
+  min-inline-size: #{v("datetime-min-width")};
   cursor: default;
 
   // Separate rule: WebKit-only pseudo-element (the whole rule is simply

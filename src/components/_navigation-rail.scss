@@ -32,16 +32,25 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-rail-width: #{fn.rem(96)};
-  --#{c.$prefix}-rail-pill-width: #{fn.rem(56)};
-  --#{c.$prefix}-rail-pill-height: #{fn.rem(32)};
-  --#{c.$prefix}-rail-container-color: var(--#{c.$sys-prefix}-sys-color-surface);
-  --#{c.$prefix}-rail-label-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-rail-active-label-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-rail-active-icon-container-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
-  --#{c.$prefix}-rail-active-icon-color: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "rail-width": #{fn.rem(96)},
+  "rail-pill-width": #{fn.rem(56)},
+  "rail-pill-height": #{fn.rem(32)},
+  "rail-container-color": var(--#{c.$sys-prefix}-sys-color-surface),
+  "rail-label-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "rail-active-label-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "rail-active-icon-container-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
+  "rail-active-icon-color": var(--#{c.$sys-prefix}-sys-color-on-secondary-container),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // The rail container (an <aside>): a full-height column of destinations.
 @mixin rail {
@@ -50,10 +59,10 @@
   flex-direction: column;
   align-items: center;
   gap: var(--#{c.$prefix}-sys-space-3);
-  inline-size: var(--#{c.$prefix}-rail-width);
+  inline-size: #{v("rail-width")};
   block-size: 100%;
   padding-block: var(--#{c.$prefix}-sys-space-4);
-  background-color: var(--#{c.$prefix}-rail-container-color);
+  background-color: #{v("rail-container-color")};
 }
 
 // Pinned to the inline-start edge of the viewport.
@@ -74,7 +83,7 @@
   align-items: center;
   gap: var(--#{c.$prefix}-sys-space-1);
   inline-size: 100%;
-  color: var(--#{c.$prefix}-rail-label-color);
+  color: #{v("rail-label-color")};
   text-decoration: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -95,12 +104,12 @@
   // Active destination: aria-current="page" (preferred) or .active interop.
   &.active,
   &[aria-current="page"] {
-    color: var(--#{c.$prefix}-rail-active-label-color);
+    color: #{v("rail-active-label-color")};
 
     #{$icon} {
       --#{c.$prefix}-icon-fill: 1;
-      --_container: var(--#{c.$prefix}-rail-active-icon-container-color);
-      color: var(--#{c.$prefix}-rail-active-icon-color);
+      --_container: #{v("rail-active-icon-container-color")};
+      color: #{v("rail-active-icon-color")};
     }
   }
 }
@@ -111,15 +120,15 @@
 @mixin icon {
   @include m.own-box;
   --_container: transparent;
-  --_content: var(--#{c.$prefix}-rail-label-color);
+  --_content: #{v("rail-label-color")};
   --_state-color: var(--_content);
   --_state-opacity: var(--#{c.$sys-prefix}-sys-state-none);
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: var(--#{c.$prefix}-rail-pill-width);
-  block-size: var(--#{c.$prefix}-rail-pill-height);
+  inline-size: #{v("rail-pill-width")};
+  block-size: #{v("rail-pill-height")};
   border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   color: var(--_content);
   background-color: color-mix(

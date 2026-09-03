@@ -34,17 +34,26 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-loading-indicator-size: #{fn.rem(48)};
-  --#{c.$prefix}-loading-indicator-size-small: #{fn.rem(32)};
-  --#{c.$prefix}-loading-indicator-size-large: #{fn.rem(64)};
-  --#{c.$prefix}-loading-indicator-color: var(--#{c.$sys-prefix}-sys-color-primary);
-  --#{c.$prefix}-loading-indicator-container-color: var(--#{c.$sys-prefix}-sys-color-primary-container);
-  --#{c.$prefix}-loading-indicator-contained-color: var(--#{c.$sys-prefix}-sys-color-on-primary-container);
-  --#{c.$prefix}-loading-indicator-container-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
-  --#{c.$prefix}-loading-indicator-container-padding: #{fn.rem(5)};
-  --#{c.$prefix}-loading-indicator-cycle: calc(var(--#{c.$sys-prefix}-sys-motion-duration-extra-long4) * 4);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "loading-indicator-size": #{fn.rem(48)},
+  "loading-indicator-size-small": #{fn.rem(32)},
+  "loading-indicator-size-large": #{fn.rem(64)},
+  "loading-indicator-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "loading-indicator-container-color": var(--#{c.$sys-prefix}-sys-color-primary-container),
+  "loading-indicator-contained-color": var(--#{c.$sys-prefix}-sys-color-on-primary-container),
+  "loading-indicator-container-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
+  "loading-indicator-container-padding": #{fn.rem(5)},
+  "loading-indicator-cycle": calc(var(--#{c.$sys-prefix}-sys-motion-duration-extra-long4) * 4),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // --- shape geometry (build time) ---------------------------------------------
 // Each shape is a polygon of $-vertices points sampled at fixed angles; only
@@ -93,14 +102,14 @@ $-vertices: 24;
   @include m.own-box;
   @include m.typescale("body-medium"); // text-less, but its ::before inherits the font
   --_container: transparent;
-  --_content: var(--#{c.$prefix}-loading-indicator-color);
+  --_content: #{v("loading-indicator-color")};
   --_padding: var(--#{c.$prefix}-sys-space-none);
 
   display: inline-block;
-  inline-size: var(--#{c.$prefix}-loading-indicator-size);
-  block-size: var(--#{c.$prefix}-loading-indicator-size);
+  inline-size: #{v("loading-indicator-size")};
+  block-size: #{v("loading-indicator-size")};
   padding: var(--_padding);
-  border-radius: var(--#{c.$prefix}-loading-indicator-container-shape);
+  border-radius: #{v("loading-indicator-container-shape")};
   background-color: var(--_container);
   color: var(--_content);
   vertical-align: middle;
@@ -141,10 +150,10 @@ $-vertices: 24;
 
       animation:
         #{c.$prefix}-loading-indicator-morph
-          var(--#{c.$prefix}-loading-indicator-cycle)
+          #{v("loading-indicator-cycle")}
           var(--#{c.$sys-prefix}-sys-motion-easing-emphasized) infinite,
         #{c.$prefix}-loading-indicator-turn
-          var(--#{c.$prefix}-loading-indicator-cycle)
+          #{v("loading-indicator-cycle")}
           var(--#{c.$sys-prefix}-sys-motion-easing-linear) infinite;
     }
   }
@@ -152,17 +161,17 @@ $-vertices: 24;
 
 // Contained: a tonal circle behind the shape, shape in the on-container role.
 @mixin contained {
-  --_container: var(--#{c.$prefix}-loading-indicator-container-color);
-  --_content: var(--#{c.$prefix}-loading-indicator-contained-color);
-  --_padding: var(--#{c.$prefix}-loading-indicator-container-padding);
+  --_container: #{v("loading-indicator-container-color")};
+  --_content: #{v("loading-indicator-contained-color")};
+  --_padding: #{v("loading-indicator-container-padding")};
 }
 
 @mixin small {
-  --#{c.$prefix}-loading-indicator-size: var(--#{c.$prefix}-loading-indicator-size-small);
+  --#{c.$prefix}-loading-indicator-size: #{v("loading-indicator-size-small")};
 }
 
 @mixin large {
-  --#{c.$prefix}-loading-indicator-size: var(--#{c.$prefix}-loading-indicator-size-large);
+  --#{c.$prefix}-loading-indicator-size: #{v("loading-indicator-size-large")};
 }
 
 @mixin classes {

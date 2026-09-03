@@ -317,12 +317,44 @@ readable from the name alone:
    `--m3-sys-selection-layer-size`, `--m3-sys-chevron-size` and
    `--m3-sys-elevation-level`.
 3. **Component tokens** -- `--m3-btn-*`, `--m3-card-*`, `--m3-field-*`, ...:
-   the public API of each component, defined in the `tokens` layer, each
-   defaulting to a system token. **The Bootstrap re-skin consumes these same
-   tier-3 tokens**, so retheming a component rethemes both vocabularies.
+   the public API of each component, each defaulting to a system token.
+   **The Bootstrap re-skin consumes these same tier-3 tokens**, so retheming
+   a component rethemes both vocabularies.
 4. **Private per-instance variables** -- `--_container`, `--_content`,
    `--_state-opacity`: set inside component rules. Variants and states
    re-point these and nothing else. Underscore prefix = not API.
+
+### Where a default lives, and why it matters
+
+A component token's default is emitted **as the fallback of the `var()` that
+reads it**, never as a `:root` declaration:
+
+```css
+.m3-btn { background-color: var(--m3-btn-container-color, var(--md-sys-color-primary)); }
+```
+
+CSS substitutes a `var()` where the declaration it sits in applies. A `:root`
+declaration would therefore freeze the whole chain at the root: re-pointing
+`--md-sys-color-primary` on a subtree would move the role, but not the button
+token that reads it, and the button would keep the page-level colour. With the
+default at the point of use the substitution happens on the component itself,
+so **every tier above cascades into it** -- and an override of the token on
+any ancestor still wins, because a fallback only applies when the token is
+unset. Precedence, nearest first:
+
+```css
+.card    { --m3-btn-container-color: teal; }  /* 1. the component token wins */
+.section { --md-sys-color-primary: teal; }    /* 2. then the system role     */
+:root    { --md-seed: teal; }                 /* 3. then the seed            */
+```
+
+This is what makes `.m3-island--*`, a `[data-contrast]` subtree and a plain
+`--md-sys-color-*` re-point on any wrapper reach the components inside them
+rather than only the inherited text. `test/cascade.js` holds it.
+
+Each partial keeps its defaults in one `$tokens` map and reads them through a
+`v()` function, so a default has a single source however many places read it,
+and `dist/m3x.tokens.json` collects them back out of the compiled fallbacks.
 
 ### Reading a token name
 
@@ -761,9 +793,15 @@ time fields, dividers, token islands.
 
 1. **Retheme globally**: set `--md-seed` (relative-color browsers) or any
    system token: `:root { --md-sys-color-primary: oklch(0.5 0.1 150); }`.
+1b. **Retheme a region**: the same system tokens on any ancestor. Component
+   defaults resolve on the component, so a role, a surface, a shape or a
+   library global re-pointed on a wrapper reaches everything inside it --
+   `.hero { --md-sys-color-primary: oklch(0.5 0.1 150); }` retints the buttons,
+   chips and cards in that region, and nests.
 2. **Component tokens** per type, per region, or per instance:
    `.sidebar { --m3-card-shape: var(--md-sys-shape-corner-none); }` or
-   `<button style="--m3-btn-height: 3rem">`.
+   `<button style="--m3-btn-height: 3rem">`. These beat any system token
+   re-pointed above them, at any depth.
 3. **`@layer overrides { ... }`** -- the disciplined path for layered setups.
 4. **Unlayered CSS always wins** -- your plain stylesheet already outranks
    every m3x layer; no config needed.
@@ -975,7 +1013,7 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
 
 ### Tests
 
-`npm test` runs seven suites against the built CSS:
+`npm test` runs eight suites against the built CSS:
 
 - **contrast** (`test/contrast.js`, no browser): reads the static sRGB tier
   and asserts M3's minimum ratios for every accent / on-accent, container /
@@ -1005,6 +1043,11 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
   every frame: the pill is half the height, the radius moves through visible
   intermediate values, never clamps toward square, and settles on the target
   shape.
+- **cascade** (`test/cascade.js`): re-pointing a system role, a surface role,
+  a shape token or a library global on a plain ancestor reaches the components
+  below it; a component token set on an ancestor still beats all of them; and
+  the island utilities and a forced `[data-contrast]` subtree re-tint real
+  components, not just inherited text.
 - **spec** (`test/spec.js`): M3's published numbers asserted against what the
   stylesheet computes in a browser, not against what the Sass declares --
   typescale, state-layer opacities, the focus indicator, the shape scale, the

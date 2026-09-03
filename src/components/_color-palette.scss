@@ -67,34 +67,39 @@
 @use "../mixins" as m;
 @use "menu";
 
-@mixin tokens {
-  --#{c.$prefix}-color-palette-container-color: var(--#{c.$prefix}-menu-container-color);
-  --#{c.$prefix}-color-palette-content-color: var(--#{c.$prefix}-menu-content-color);
-  --#{c.$prefix}-color-palette-label-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-color-palette-shape: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
-  --#{c.$prefix}-color-palette-padding: var(--#{c.$prefix}-sys-space-3);
-  --#{c.$prefix}-color-palette-gap: var(--#{c.$prefix}-sys-space-1);
-  --#{c.$prefix}-color-palette-columns: 10;
-  --#{c.$prefix}-color-palette-swatch-size: #{fn.rem(20)};
-  --#{c.$prefix}-color-palette-swatch-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
-  --#{c.$prefix}-color-palette-edge-color: color-mix(
-    in srgb,
-    var(--#{c.$sys-prefix}-sys-color-on-surface) var(--#{c.$sys-prefix}-sys-state-disabled-container-opacity),
-    transparent
-  );
-  --#{c.$prefix}-color-palette-selected-ring-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "color-palette-container-color": #{menu.v("menu-container-color")},
+  "color-palette-content-color": #{menu.v("menu-content-color")},
+  "color-palette-label-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "color-palette-shape": var(--#{c.$sys-prefix}-sys-shape-corner-extra-small),
+  "color-palette-padding": var(--#{c.$prefix}-sys-space-3),
+  "color-palette-gap": var(--#{c.$prefix}-sys-space-1),
+  "color-palette-columns": 10,
+  "color-palette-swatch-size": #{fn.rem(20)},
+  "color-palette-swatch-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
+  "color-palette-edge-color": color-mix( in srgb, var(--#{c.$sys-prefix}-sys-color-on-surface) var(--#{c.$sys-prefix}-sys-state-disabled-container-opacity), transparent ),
+  "color-palette-selected-ring-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // The surface: a menu-colored card that is also a popover.
 @mixin surface {
   @include m.own-box;
   display: block;
   inline-size: fit-content;
-  padding: var(--#{c.$prefix}-color-palette-padding);
-  background-color: var(--#{c.$prefix}-color-palette-container-color);
-  color: var(--#{c.$prefix}-color-palette-content-color);
+  padding: #{v("color-palette-padding")};
+  background-color: #{v("color-palette-container-color")};
+  color: #{v("color-palette-content-color")};
   border: none;
-  border-radius: var(--#{c.$prefix}-color-palette-shape);
+  border-radius: #{v("color-palette-shape")};
   @include m.elevation(2);
   @include m.typescale("label-medium");
 
@@ -120,7 +125,7 @@
   @include m.own-box;
   display: block;
   padding-block: var(--#{c.$prefix}-sys-space-2) var(--#{c.$prefix}-sys-space-1);
-  color: var(--#{c.$prefix}-color-palette-label-color);
+  color: #{v("color-palette-label-color")};
   @include m.typescale("label-medium");
 
   &:first-child {
@@ -133,10 +138,10 @@
   @include m.own-box;
   display: grid;
   grid-template-columns: repeat(
-    var(--#{c.$prefix}-color-palette-columns),
-    var(--#{c.$prefix}-color-palette-swatch-size)
+    #{v("color-palette-columns")},
+    #{v("color-palette-swatch-size")}
   );
-  gap: var(--#{c.$prefix}-color-palette-gap);
+  gap: #{v("color-palette-gap")};
 }
 
 // One swatch: a label around a hidden radio. Painted from --m3-swatch (set
@@ -145,9 +150,9 @@
   @include m.own-box;
   position: relative;
   display: block;
-  inline-size: var(--#{c.$prefix}-color-palette-swatch-size);
-  block-size: var(--#{c.$prefix}-color-palette-swatch-size);
-  border-radius: var(--#{c.$prefix}-color-palette-swatch-shape);
+  inline-size: #{v("color-palette-swatch-size")};
+  block-size: #{v("color-palette-swatch-size")};
+  border-radius: #{v("color-palette-swatch-shape")};
   // The swatch's own colour. --m3-swatch is the pre-1.0 short name and still
   // works; --m3-color-palette-swatch-color is the namespaced one, consistent
   // with its -size and -shape siblings.
@@ -156,7 +161,7 @@
     var(--#{c.$prefix}-swatch, var(--_swatch, currentColor))
   );
   box-shadow: inset 0 0 0 var(--#{c.$prefix}-sys-stroke-hairline)
-    var(--#{c.$prefix}-color-palette-edge-color);
+    #{v("color-palette-edge-color")};
   cursor: pointer;
   @include m.transition((outline-color, box-shadow));
 
@@ -178,7 +183,7 @@
     inset: var(--#{c.$prefix}-sys-space-none);
     margin: auto;
     @include m.check-glyph(
-      calc(var(--#{c.$prefix}-color-palette-swatch-size) * 0.6),
+      calc(#{v("color-palette-swatch-size")} * 0.6),
       var(--#{c.$prefix}-sys-stroke-thick)
     );
     color: var(--#{c.$sys-prefix}-ref-palette-neutral100);
@@ -192,7 +197,7 @@
 
   &:has(> input:checked) {
     outline: var(--#{c.$prefix}-sys-stroke-thick) solid
-      var(--#{c.$prefix}-color-palette-selected-ring-color);
+      #{v("color-palette-selected-ring-color")};
     outline-offset: var(--#{c.$prefix}-sys-stroke-thick);
   }
 
@@ -231,9 +236,9 @@
   @include m.own-box;
   position: relative;
   display: block;
-  inline-size: var(--#{c.$prefix}-color-palette-swatch-size);
-  block-size: var(--#{c.$prefix}-color-palette-swatch-size);
-  border-radius: var(--#{c.$prefix}-color-palette-swatch-shape);
+  inline-size: #{v("color-palette-swatch-size")};
+  block-size: #{v("color-palette-swatch-size")};
+  border-radius: #{v("color-palette-swatch-shape")};
   cursor: pointer;
 
   > input {
@@ -277,8 +282,8 @@
     position: absolute;
     inset: var(--#{c.$prefix}-sys-space-none);
     margin: auto;
-    inline-size: calc(var(--#{c.$prefix}-color-palette-swatch-size) / 2);
-    block-size: calc(var(--#{c.$prefix}-color-palette-swatch-size) / 2);
+    inline-size: calc(#{v("color-palette-swatch-size")} / 2);
+    block-size: calc(#{v("color-palette-swatch-size")} / 2);
     pointer-events: none;
     color: var(--#{c.$sys-prefix}-ref-palette-neutral100);
     mix-blend-mode: difference;

@@ -33,18 +33,27 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-tabs-height: #{fn.rem(48)};
-  --#{c.$prefix}-tabs-height-icon-label: #{fn.rem(64)};
-  --#{c.$prefix}-tabs-label-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-tabs-active-label-color: var(--#{c.$sys-prefix}-sys-color-primary);
-  --#{c.$prefix}-tabs-indicator-color: var(--#{c.$sys-prefix}-sys-color-primary);
-  --#{c.$prefix}-tabs-indicator-thickness: var(--#{c.$prefix}-sys-stroke-heavy);
-  --#{c.$prefix}-tabs-divider-color: var(--#{c.$sys-prefix}-sys-color-outline-variant);
-  --#{c.$prefix}-tabs-pill-height: #{fn.rem(40)};
-  --#{c.$prefix}-tabs-pill-container-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
-  --#{c.$prefix}-tabs-pill-label-color: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "tabs-height": #{fn.rem(48)},
+  "tabs-height-icon-label": #{fn.rem(64)},
+  "tabs-label-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "tabs-active-label-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "tabs-indicator-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "tabs-indicator-thickness": var(--#{c.$prefix}-sys-stroke-heavy),
+  "tabs-divider-color": var(--#{c.$sys-prefix}-sys-color-outline-variant),
+  "tabs-pill-height": #{fn.rem(40)},
+  "tabs-pill-container-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
+  "tabs-pill-label-color": var(--#{c.$sys-prefix}-sys-color-on-secondary-container),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // The scrollable tab bar with its bottom divider.
 @mixin bar {
@@ -52,7 +61,7 @@
   display: flex;
   overflow-x: auto;
   border-block-end: var(--#{c.$prefix}-sys-stroke-hairline) solid
-    var(--#{c.$prefix}-tabs-divider-color);
+    #{v("tabs-divider-color")};
   scrollbar-width: none;
 
   &::-webkit-scrollbar {
@@ -75,7 +84,7 @@
 // Secondary tabs keep the 48dp single line. Without :has() every bar keeps
 // the 48dp default, which is the spec value for the label-only bar.
 @mixin tab-icon-label {
-  @include m.control-height(--#{c.$prefix}-tabs-height-icon-label);
+  @include m.control-height(v("tabs-height-icon-label"));
   flex-direction: column;
   justify-content: center;
   gap: var(--#{c.$prefix}-sys-space-1);
@@ -86,10 +95,10 @@
   @include m.own-box;
   text-align: center;
   --_container: transparent;
-  --_content: var(--#{c.$prefix}-tabs-label-color);
+  --_content: #{v("tabs-label-color")};
 
   position: relative;
-  @include m.control-height(--#{c.$prefix}-tabs-height);
+  @include m.control-height(v("tabs-height"));
   padding-inline: var(--#{c.$prefix}-sys-space-4);
   display: inline-flex;
   align-items: center;
@@ -111,7 +120,7 @@
 // Active treatment: label re-color + underline indicator drawn with ::after.
 @mixin tab-active {
   --#{c.$prefix}-icon-fill: 1;
-  --_content: var(--#{c.$prefix}-tabs-active-label-color);
+  --_content: #{v("tabs-active-label-color")};
 
   &::after {
     @include m.own-pseudo;
@@ -119,8 +128,8 @@
     position: absolute;
     inset-block-end: var(--#{c.$prefix}-sys-space-none);
     inset-inline: var(--#{c.$prefix}-sys-space-4);
-    block-size: var(--#{c.$prefix}-tabs-indicator-thickness);
-    background-color: var(--#{c.$prefix}-tabs-indicator-color);
+    block-size: #{v("tabs-indicator-thickness")};
+    background-color: #{v("tabs-indicator-color")};
     border-start-start-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
     border-start-end-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   }
@@ -153,18 +162,18 @@
   @include m.own-box;
   text-align: center;
   --_container: transparent;
-  --_content: var(--#{c.$prefix}-tabs-label-color);
+  --_content: #{v("tabs-label-color")};
 
   border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
-  @include m.control-height(--#{c.$prefix}-tabs-pill-height);
+  @include m.control-height(v("tabs-pill-height"));
   padding-inline: var(--#{c.$prefix}-sys-space-4);
   @include m.typescale("label-large");
   @include m.state-layer;
 }
 
 @mixin pill-active {
-  --_container: var(--#{c.$prefix}-tabs-pill-container-color);
-  --_content: var(--#{c.$prefix}-tabs-pill-label-color);
+  --_container: #{v("tabs-pill-container-color")};
+  --_content: #{v("tabs-pill-label-color")};
 }
 
 @mixin classes {

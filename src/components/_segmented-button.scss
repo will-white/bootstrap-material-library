@@ -33,16 +33,25 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-segmented-height: #{fn.rem(40)};
-  --#{c.$prefix}-segmented-padding-inline: var(--#{c.$prefix}-sys-space-4);
-  --#{c.$prefix}-segmented-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
-  --#{c.$prefix}-segmented-outline-color: var(--#{c.$sys-prefix}-sys-color-outline);
-  --#{c.$prefix}-segmented-outline-width: var(--#{c.$prefix}-sys-stroke-hairline);
-  --#{c.$prefix}-segmented-label-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-segmented-selected-container-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
-  --#{c.$prefix}-segmented-selected-label-color: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "segmented-height": #{fn.rem(40)},
+  "segmented-padding-inline": var(--#{c.$prefix}-sys-space-4),
+  "segmented-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
+  "segmented-outline-color": var(--#{c.$sys-prefix}-sys-color-outline),
+  "segmented-outline-width": var(--#{c.$prefix}-sys-stroke-hairline),
+  "segmented-label-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "segmented-selected-container-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
+  "segmented-selected-label-color": var(--#{c.$sys-prefix}-sys-color-on-secondary-container),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // The fieldset: reset its native chrome, draw the group outline. Overflow
 // stays visible (never clip) so the focus ring can render outside the box.
@@ -52,9 +61,9 @@
   vertical-align: middle;
   margin: var(--#{c.$prefix}-sys-space-none);
   padding: var(--#{c.$prefix}-sys-space-none);
-  border: var(--#{c.$prefix}-segmented-outline-width) solid
-    var(--#{c.$prefix}-segmented-outline-color);
-  border-radius: var(--#{c.$prefix}-segmented-shape);
+  border: #{v("segmented-outline-width")} solid
+    #{v("segmented-outline-color")};
+  border-radius: #{v("segmented-shape")};
 }
 
 // One segment: a <label> wrapping a real (visually hidden) input plus the
@@ -67,13 +76,13 @@
 ) {
   @include m.own-box;
   --_container: transparent;
-  --_content: var(--#{c.$prefix}-segmented-label-color);
+  --_content: #{v("segmented-label-color")};
 
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  @include m.control-height(--#{c.$prefix}-segmented-height);
+  @include m.control-height(v("segmented-height"));
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
@@ -83,29 +92,29 @@
 
   // Hairline divider between adjacent segments.
   & + & {
-    border-inline-start: var(--#{c.$prefix}-segmented-outline-width) solid
-      var(--#{c.$prefix}-segmented-outline-color);
+    border-inline-start: #{v("segmented-outline-width")} solid
+      #{v("segmented-outline-color")};
   }
 
   // Outer corners follow the group shape on both the segment and its span
   // (the container does not clip, so the ends must round themselves).
   &:first-of-type {
-    border-start-start-radius: var(--#{c.$prefix}-segmented-shape);
-    border-end-start-radius: var(--#{c.$prefix}-segmented-shape);
+    border-start-start-radius: #{v("segmented-shape")};
+    border-end-start-radius: #{v("segmented-shape")};
 
     #{$label} {
-      border-start-start-radius: var(--#{c.$prefix}-segmented-shape);
-      border-end-start-radius: var(--#{c.$prefix}-segmented-shape);
+      border-start-start-radius: #{v("segmented-shape")};
+      border-end-start-radius: #{v("segmented-shape")};
     }
   }
 
   &:last-of-type {
-    border-start-end-radius: var(--#{c.$prefix}-segmented-shape);
-    border-end-end-radius: var(--#{c.$prefix}-segmented-shape);
+    border-start-end-radius: #{v("segmented-shape")};
+    border-end-end-radius: #{v("segmented-shape")};
 
     #{$label} {
-      border-start-end-radius: var(--#{c.$prefix}-segmented-shape);
-      border-end-end-radius: var(--#{c.$prefix}-segmented-shape);
+      border-start-end-radius: #{v("segmented-shape")};
+      border-end-end-radius: #{v("segmented-shape")};
     }
   }
 
@@ -131,7 +140,7 @@
     gap: var(--#{c.$prefix}-sys-space-2);
     flex: 1 1 auto;
     align-self: stretch;
-    padding-inline: var(--#{c.$prefix}-segmented-padding-inline);
+    padding-inline: #{v("segmented-padding-inline")};
     pointer-events: none;
     color: var(--_content);
     background-color: color-mix(
@@ -172,8 +181,8 @@
   }
 
   #{$input}:checked + #{$label} {
-    --_container: var(--#{c.$prefix}-segmented-selected-container-color);
-    --_content: var(--#{c.$prefix}-segmented-selected-label-color);
+    --_container: #{v("segmented-selected-container-color")};
+    --_content: #{v("segmented-selected-label-color")};
   }
 
   // Last so it wins over hover/checked at equal specificity.

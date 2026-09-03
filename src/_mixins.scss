@@ -15,6 +15,34 @@
 // Hover styles only where a hovering pointer exists: touch screens otherwise
 // keep the hover state stuck on after a tap. `&:hover` inside a media query,
 // so the guard costs nothing in the selector.
+// --- component token defaults ----------------------------------------------
+//
+// A component token's default is emitted WHERE THE TOKEN IS READ, as the
+// fallback of its var(), and never as a :root declaration:
+//
+//   background-color: var(--m3-btn-container-color, var(--md-sys-color-primary));
+//
+// CSS substitutes a var() where the declaration it sits in applies. A :root
+// declaration therefore freezes the substitution at :root: re-pointing
+// --md-sys-color-primary on a subtree would move the role but not the button
+// token that reads it, so a token island tinted text and nothing else. With
+// the default at the point of use the substitution happens on the component
+// itself, so every upstream tier -- system roles, library globals -- cascades
+// into it, while an override of the token on any ancestor still wins by
+// inheritance (the fallback only applies when the token is unset).
+//
+// Each component partial owns its defaults in a $tokens map and exposes them
+// through a v() function, so the default has one source however many places
+// read it.
+@function token($map, $name) {
+  @if not map.has-key($map, $name) {
+    @error "Unknown component token #{$name}";
+  }
+  @return string.unquote(
+    "var(--#{config.$prefix}-#{$name}, #{map.get($map, $name)})"
+  );
+}
+
 // --- library globals -------------------------------------------------------
 //
 // The library's own system tier: values M3 does not define a token set for
@@ -208,12 +236,12 @@
 
 // Interactive control heights participate in density (-3..0):
 // height = token + density * 4px.
-@mixin control-height($height-token) {
-  height: calc(var(#{$height-token}) + var(--#{config.$prefix}-sys-density) * var(--#{config.$prefix}-sys-density-step));
+@mixin control-height($height) {
+  height: calc(#{$height} + var(--#{config.$prefix}-sys-density) * var(--#{config.$prefix}-sys-density-step));
 }
 
-@mixin control-min-height($height-token) {
-  min-height: calc(var(#{$height-token}) + var(--#{config.$prefix}-sys-density) * var(--#{config.$prefix}-sys-density-step));
+@mixin control-min-height($height) {
+  min-height: calc(#{$height} + var(--#{config.$prefix}-sys-density) * var(--#{config.$prefix}-sys-density-step));
 }
 
 // --- shape morphs -----------------------------------------------------------
@@ -230,9 +258,9 @@
   @return string.unquote("min(#{$shape}, var(--_pill-radius))");
 }
 
-@mixin pill-radius($height-token) {
+@mixin pill-radius($height) {
   --_pill-radius: calc(
-    (var(#{$height-token}) + var(--#{config.$prefix}-sys-density) * var(--#{config.$prefix}-sys-density-step)) / 2
+    (#{$height} + var(--#{config.$prefix}-sys-density) * var(--#{config.$prefix}-sys-density-step)) / 2
   );
 }
 

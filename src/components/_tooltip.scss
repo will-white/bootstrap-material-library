@@ -43,40 +43,49 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-tooltip-container-color: var(--#{c.$sys-prefix}-sys-color-inverse-surface);
-  --#{c.$prefix}-tooltip-content-color: var(--#{c.$sys-prefix}-sys-color-inverse-on-surface);
-  --#{c.$prefix}-tooltip-rich-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container);
-  --#{c.$prefix}-tooltip-rich-content-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-tooltip-rich-title-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-tooltip-shape: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
-  --#{c.$prefix}-tooltip-rich-shape: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
-  --#{c.$prefix}-tooltip-max-width: #{fn.rem(200)};
-  --#{c.$prefix}-tooltip-rich-max-width: #{fn.rem(320)};
-  --#{c.$prefix}-tooltip-rich-padding: var(--#{c.$prefix}-sys-space-4);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "tooltip-container-color": var(--#{c.$sys-prefix}-sys-color-inverse-surface),
+  "tooltip-content-color": var(--#{c.$sys-prefix}-sys-color-inverse-on-surface),
+  "tooltip-rich-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container),
+  "tooltip-rich-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "tooltip-rich-title-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "tooltip-shape": var(--#{c.$sys-prefix}-sys-shape-corner-extra-small),
+  "tooltip-rich-shape": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "tooltip-max-width": #{fn.rem(200)},
+  "tooltip-rich-max-width": #{fn.rem(320)},
+  "tooltip-rich-padding": var(--#{c.$prefix}-sys-space-4),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // Plain tooltip surface (reused by Bootstrap compat for .tooltip-inner).
 @mixin plain {
   @include m.own-box;
   display: inline-block;
   width: max-content;
-  max-inline-size: var(--#{c.$prefix}-tooltip-max-width);
+  max-inline-size: #{v("tooltip-max-width")};
   padding-block: var(--#{c.$prefix}-sys-space-1);
   padding-inline: var(--#{c.$prefix}-sys-space-2);
-  background-color: var(--#{c.$prefix}-tooltip-container-color);
-  color: var(--#{c.$prefix}-tooltip-content-color);
-  border-radius: var(--#{c.$prefix}-tooltip-shape);
+  background-color: #{v("tooltip-container-color")};
+  color: #{v("tooltip-content-color")};
+  border-radius: #{v("tooltip-shape")};
   @include m.typescale("body-small");
 }
 
 // Rich tooltip surface (reused by Bootstrap compat for .popover).
 @mixin rich {
-  max-inline-size: var(--#{c.$prefix}-tooltip-rich-max-width);
-  padding: var(--#{c.$prefix}-tooltip-rich-padding);
-  background-color: var(--#{c.$prefix}-tooltip-rich-container-color);
-  color: var(--#{c.$prefix}-tooltip-rich-content-color);
-  border-radius: var(--#{c.$prefix}-tooltip-rich-shape);
+  max-inline-size: #{v("tooltip-rich-max-width")};
+  padding: #{v("tooltip-rich-padding")};
+  background-color: #{v("tooltip-rich-container-color")};
+  color: #{v("tooltip-rich-content-color")};
+  border-radius: #{v("tooltip-rich-shape")};
   @include m.elevation(2);
   @include m.typescale("body-medium");
 }
@@ -86,7 +95,7 @@
   @include m.own-box;
   display: block;
   @include m.typescale("title-small");
-  color: var(--#{c.$prefix}-tooltip-rich-title-color);
+  color: #{v("tooltip-rich-title-color")};
   margin-block-end: var(--#{c.$prefix}-sys-space-1);
 }
 

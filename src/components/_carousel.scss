@@ -26,22 +26,31 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-carousel-item-width: 75%;
-  --#{c.$prefix}-carousel-gap: var(--#{c.$prefix}-sys-space-2);
-  --#{c.$prefix}-carousel-shape: var(--#{c.$sys-prefix}-sys-shape-corner-extra-large);
-  --#{c.$prefix}-carousel-indicator-size: #{fn.rem(8)};
-  --#{c.$prefix}-carousel-indicator-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-carousel-indicator-active-color: var(--#{c.$sys-prefix}-sys-color-primary);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "carousel-item-width": 75%,
+  "carousel-gap": var(--#{c.$prefix}-sys-space-2),
+  "carousel-shape": var(--#{c.$sys-prefix}-sys-shape-corner-extra-large),
+  "carousel-indicator-size": #{fn.rem(8)},
+  "carousel-indicator-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "carousel-indicator-active-color": var(--#{c.$sys-prefix}-sys-color-primary),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // The scroll-snap track: a one-row column grid that scrolls inline.
 @mixin track {
   @include m.own-box;
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: var(--#{c.$prefix}-carousel-item-width);
-  gap: var(--#{c.$prefix}-carousel-gap);
+  grid-auto-columns: #{v("carousel-item-width")};
+  gap: #{v("carousel-gap")};
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-padding-inline: var(--#{c.$prefix}-sys-space-4);
@@ -62,7 +71,7 @@
   @include m.own-box;
   display: block;
   scroll-snap-align: center;
-  border-radius: var(--#{c.$prefix}-carousel-shape);
+  border-radius: #{v("carousel-shape")};
   overflow: clip;
 
   > img {
@@ -88,15 +97,15 @@
   display: inline-block;
   text-align: center;
   @include m.typescale("label-large");
-  color: var(--#{c.$prefix}-carousel-indicator-color);
-  inline-size: var(--#{c.$prefix}-carousel-indicator-size);
-  block-size: var(--#{c.$prefix}-carousel-indicator-size);
+  color: #{v("carousel-indicator-color")};
+  inline-size: #{v("carousel-indicator-size")};
+  block-size: #{v("carousel-indicator-size")};
   border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   border: none;
   padding: var(--#{c.$prefix}-sys-space-none);
   background-color: color-mix(
     in srgb,
-    var(--#{c.$prefix}-carousel-indicator-color)
+    #{v("carousel-indicator-color")}
       var(--#{c.$sys-prefix}-sys-state-disabled-content-opacity),
     transparent
   );
@@ -107,7 +116,7 @@
 
   &.active,
   &[aria-current="true"] {
-    background-color: var(--#{c.$prefix}-carousel-indicator-active-color);
+    background-color: #{v("carousel-indicator-active-color")};
   }
 }
 

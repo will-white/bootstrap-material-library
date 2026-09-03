@@ -30,27 +30,36 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-drawer-width: #{fn.rem(360)};
-  --#{c.$prefix}-drawer-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container-low);
-  --#{c.$prefix}-drawer-content-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-drawer-item-height: #{fn.rem(56)};
-  --#{c.$prefix}-drawer-item-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-drawer-active-container-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
-  --#{c.$prefix}-drawer-active-color: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
-  --#{c.$prefix}-drawer-shape: var(--#{c.$sys-prefix}-sys-shape-corner-large);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "drawer-width": #{fn.rem(360)},
+  "drawer-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-low),
+  "drawer-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "drawer-item-height": #{fn.rem(56)},
+  "drawer-item-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "drawer-active-container-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
+  "drawer-active-color": var(--#{c.$sys-prefix}-sys-color-on-secondary-container),
+  "drawer-shape": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // The drawer surface, shared by standard and modal.
 @mixin container {
   @include m.own-box;
   display: block;
-  inline-size: var(--#{c.$prefix}-drawer-width);
+  inline-size: #{v("drawer-width")};
   max-inline-size: 80%;
   block-size: 100%;
   padding: var(--#{c.$prefix}-sys-space-3);
-  background-color: var(--#{c.$prefix}-drawer-container-color);
-  color: var(--#{c.$prefix}-drawer-content-color);
+  background-color: #{v("drawer-container-color")};
+  color: #{v("drawer-content-color")};
   overflow-y: auto;
 }
 
@@ -76,8 +85,8 @@
   block-size: 100%;
   max-block-size: 100%;
   border: none;
-  border-start-end-radius: var(--#{c.$prefix}-drawer-shape);
-  border-end-end-radius: var(--#{c.$prefix}-drawer-shape);
+  border-start-end-radius: #{v("drawer-shape")};
+  border-end-end-radius: #{v("drawer-shape")};
   @include m.elevation(1);
 
   &::backdrop {
@@ -108,12 +117,12 @@
 @mixin item {
   @include m.own-box;
   --_container: transparent;
-  --_content: var(--#{c.$prefix}-drawer-item-color);
+  --_content: #{v("drawer-item-color")};
 
   display: flex;
   align-items: center;
   gap: var(--#{c.$prefix}-sys-space-3);
-  @include m.control-height(--#{c.$prefix}-drawer-item-height);
+  @include m.control-height(v("drawer-item-height"));
   padding-inline: var(--#{c.$prefix}-sys-space-4);
   border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   text-decoration: none;
@@ -126,8 +135,8 @@
   &.active,
   &[aria-current="page"] {
     --#{c.$prefix}-icon-fill: 1;
-    --_container: var(--#{c.$prefix}-drawer-active-container-color);
-    --_content: var(--#{c.$prefix}-drawer-active-color);
+    --_container: #{v("drawer-active-container-color")};
+    --_content: #{v("drawer-active-color")};
   }
 }
 
@@ -136,7 +145,7 @@
   @include m.own-box;
   display: block;
   @include m.typescale("title-small");
-  color: var(--#{c.$prefix}-drawer-item-color);
+  color: #{v("drawer-item-color")};
   padding-inline: var(--#{c.$prefix}-sys-space-4);
   padding-block: var(--#{c.$prefix}-sys-space-3) var(--#{c.$prefix}-sys-space-2);
 }
@@ -147,7 +156,7 @@
   display: inline-block;
   margin-inline-start: auto;
   @include m.typescale("label-large");
-  color: var(--#{c.$prefix}-drawer-item-color);
+  color: #{v("drawer-item-color")};
 }
 
 @mixin classes {

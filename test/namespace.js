@@ -25,10 +25,10 @@ function stems() {
   const dir = path.join(ROOT, 'src/components');
   const out = new Map();
   for (const file of fs.readdirSync(dir).filter((f) => f.endsWith('.scss'))) {
-    const block = /@mixin tokens\s*\{([\s\S]*?)\n\}/.exec(fs.readFileSync(path.join(dir, file), 'utf8'));
+    const block = /\$tokens:\s*\(([\s\S]*?)\n\);/.exec(fs.readFileSync(path.join(dir, file), 'utf8'));
     if (!block) continue;
     const groups = new Map();
-    for (const m of block[1].matchAll(/--#\{c\.\$prefix\}-([a-z0-9-]+):/g)) {
+    for (const m of block[1].matchAll(/"([a-z0-9-]+)":/g)) {
       const segs = m[1].split('-');
       if (!groups.has(segs[0])) groups.set(segs[0], []);
       groups.get(segs[0]).push(segs);

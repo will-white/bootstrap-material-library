@@ -55,24 +55,38 @@
 
 @use "sass:list";
 @use "sass:math";
+@use "sass:map";
 @use "../config" as c;
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-progress-track-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
-  --#{c.$prefix}-progress-color: var(--#{c.$sys-prefix}-sys-color-primary);
-  --#{c.$prefix}-progress-thickness: #{fn.rem(4)};
-  --#{c.$prefix}-progress-value: 0;
-  --#{c.$prefix}-progress-circle-size: #{fn.rem(48)};
-  --#{c.$prefix}-progress-circle-thickness: #{fn.rem(4)};
-  --#{c.$prefix}-progress-wave-amplitude: #{fn.rem(3)};
-  --#{c.$prefix}-progress-wave-wavelength: #{fn.rem(24)};
-  --#{c.$prefix}-progress-stop-size: #{fn.rem(4)};
-  --#{c.$prefix}-progress-stop-color: var(--#{c.$prefix}-progress-color);
-  --#{c.$prefix}-progress-gap: #{fn.rem(4)};
-  --#{c.$prefix}-progress-circle-gap: 6deg;
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "progress-track-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
+  "progress-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "progress-thickness": #{fn.rem(4)},
+  "progress-value": 0,
+  "progress-circle-size": #{fn.rem(48)},
+  "progress-circle-thickness": #{fn.rem(4)},
+  "progress-wave-amplitude": #{fn.rem(3)},
+  "progress-wave-wavelength": #{fn.rem(24)},
+  "progress-stop-size": #{fn.rem(4)},
+  "progress-gap": #{fn.rem(4)},
+  "progress-circle-gap": 6deg,
+);
+
+// Defaults that build on another token in this map: resolved through
+// token() so the sibling's own default travels with them.
+$tokens: map.set($tokens, "progress-stop-color", #{m.token($tokens, "progress-color")});
+
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // Linear track: thin rounded rail that clips the bar, with M3's stop
 // indicator -- a dot of the active-indicator colour parked at the trailing
@@ -82,7 +96,7 @@
   @include m.own-box;
   position: relative;
   display: block;
-  block-size: var(--#{c.$prefix}-progress-thickness);
+  block-size: #{v("progress-thickness")};
   border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   background: transparent;
   overflow: clip;
@@ -101,14 +115,14 @@
     inset-block: 0;
     inset-inline-end: 0;
     inset-inline-start: calc(
-      var(--#{c.$prefix}-progress-value) * 1% +
-        var(--#{c.$prefix}-progress-gap) *
-        clamp(0, var(--#{c.$prefix}-progress-value), 1)
+      #{v("progress-value")} * 1% +
+        #{v("progress-gap")} *
+        clamp(0, #{v("progress-value")}, 1)
     );
     border-radius: inherit;
     // Painted from currentColor, like the stop indicator: the box is owned,
     // so its colour is pinned rather than inherited from the page.
-    color: var(--#{c.$prefix}-progress-track-color);
+    color: #{v("progress-track-color")};
     background: currentColor;
     @include m.typescale("label-small");
   }
@@ -119,11 +133,11 @@
     position: absolute;
     inset-block-start: 50%;
     inset-inline-end: 0;
-    inline-size: var(--#{c.$prefix}-progress-stop-size);
-    block-size: var(--#{c.$prefix}-progress-stop-size);
+    inline-size: #{v("progress-stop-size")};
+    block-size: #{v("progress-stop-size")};
     translate: 0 -50%;
     border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
-    color: var(--#{c.$prefix}-progress-stop-color);
+    color: #{v("progress-stop-color")};
     background: currentColor;
     // The dot never renders text, but the box is owned: pinning a typescale
     // stops a hostile host reaching it through inheritance (own-pseudo
@@ -147,14 +161,14 @@
 // width, which wins the cascade -- see header).
 @mixin linear-bar {
   @include m.own-box;
-  color: var(--#{c.$prefix}-progress-color); // the wavy mask stops resolve from currentColor
+  color: #{v("progress-color")}; // the wavy mask stops resolve from currentColor
   position: relative;
   z-index: 1; // above the track's stop indicator
   display: block;
   block-size: 100%;
   border-radius: inherit;
-  background: var(--#{c.$prefix}-progress-color);
-  inline-size: calc(var(--#{c.$prefix}-progress-value) * 1%);
+  background: #{v("progress-color")};
+  inline-size: calc(#{v("progress-value")} * 1%);
 }
 
 // Indeterminate bar: full-width bar swept across the track by a
@@ -187,21 +201,21 @@
 // opaque mask stop (alpha matters, not hue) -- never a color literal.
 @mixin circular {
   @include m.own-box;
-  --_active: var(--#{c.$prefix}-progress-color);
-  --_track: var(--#{c.$prefix}-progress-track-color);
+  --_active: #{v("progress-color")};
+  --_track: #{v("progress-track-color")};
   // Value and gap as angles, so no stop position mixes % with deg. The gap
   // is the circular form of the linear one and closes the same way at value
   // 0, leaving an unbroken ring.
-  --_sweep: calc(var(--#{c.$prefix}-progress-value) * 3.6deg);
+  --_sweep: calc(#{v("progress-value")} * 3.6deg);
   --_gap: calc(
-    var(--#{c.$prefix}-progress-circle-gap) *
-      clamp(0, var(--#{c.$prefix}-progress-value), 1)
+    #{v("progress-circle-gap")} *
+      clamp(0, #{v("progress-value")}, 1)
   );
   color: var(--_active);
 
   display: inline-block;
-  inline-size: var(--#{c.$prefix}-progress-circle-size);
-  block-size: var(--#{c.$prefix}-progress-circle-size);
+  inline-size: #{v("progress-circle-size")};
+  block-size: #{v("progress-circle-size")};
   border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   background: conic-gradient(
     var(--_active) 0deg var(--_sweep),
@@ -212,13 +226,13 @@
   );
   -webkit-mask: radial-gradient(
     farthest-side,
-    transparent calc(100% - var(--#{c.$prefix}-progress-circle-thickness)),
-    currentColor calc(100% - var(--#{c.$prefix}-progress-circle-thickness))
+    transparent calc(100% - #{v("progress-circle-thickness")}),
+    currentColor calc(100% - #{v("progress-circle-thickness")})
   );
   mask: radial-gradient(
     farthest-side,
-    transparent calc(100% - var(--#{c.$prefix}-progress-circle-thickness)),
-    currentColor calc(100% - var(--#{c.$prefix}-progress-circle-thickness))
+    transparent calc(100% - #{v("progress-circle-thickness")}),
+    currentColor calc(100% - #{v("progress-circle-thickness")})
   );
 }
 
@@ -227,11 +241,11 @@
 @mixin spinner {
   @include m.own-box;
   display: inline-block;
-  inline-size: var(--#{c.$prefix}-progress-circle-size);
-  block-size: var(--#{c.$prefix}-progress-circle-size);
-  border: var(--#{c.$prefix}-progress-circle-thickness) solid
-    var(--#{c.$prefix}-progress-track-color);
-  border-block-start-color: var(--#{c.$prefix}-progress-color);
+  inline-size: #{v("progress-circle-size")};
+  block-size: #{v("progress-circle-size")};
+  border: #{v("progress-circle-thickness")} solid
+    #{v("progress-track-color")};
+  border-block-start-color: #{v("progress-color")};
   border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
 
   @keyframes #{c.$prefix}-progress-rotate {
@@ -252,10 +266,10 @@
 @mixin pulse {
   @include m.own-box;
   display: inline-block;
-  inline-size: var(--#{c.$prefix}-progress-circle-size);
-  block-size: var(--#{c.$prefix}-progress-circle-size);
+  inline-size: #{v("progress-circle-size")};
+  block-size: #{v("progress-circle-size")};
   border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
-  color: var(--#{c.$prefix}-progress-color);
+  color: #{v("progress-color")};
   background: currentColor;
 
   @keyframes #{c.$prefix}-progress-pulse {
@@ -283,17 +297,17 @@
 // The band rides the same ::before as the flat track, so it keeps the gap.
 @mixin linear-wavy-track {
   block-size: calc(
-    var(--#{c.$prefix}-progress-thickness) +
-      2 * var(--#{c.$prefix}-progress-wave-amplitude)
+    #{v("progress-thickness")} +
+      2 * #{v("progress-wave-amplitude")}
   );
 
   &::before {
     background-color: transparent;
     background-image: linear-gradient(
-      var(--#{c.$prefix}-progress-track-color),
-      var(--#{c.$prefix}-progress-track-color)
+      #{v("progress-track-color")},
+      #{v("progress-track-color")}
     );
-    background-size: 100% var(--#{c.$prefix}-progress-thickness);
+    background-size: 100% #{v("progress-thickness")};
     background-position: center;
     background-repeat: no-repeat;
     border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
@@ -309,8 +323,8 @@
 // the mask scrolls one wavelength per cycle; the static wave is the
 // reduced-motion rendering. currentColor is only the opaque mask stop.
 @mixin linear-wavy-bar {
-  $amp: var(--#{c.$prefix}-progress-wave-amplitude);
-  $wl: var(--#{c.$prefix}-progress-wave-wavelength);
+  $amp: #{v("progress-wave-amplitude")};
+  $wl: #{v("progress-wave-wavelength")};
   $ring: (
     transparent calc(var(--_wave-inner) - var(--#{c.$prefix}-sys-stroke-hairline)),
     currentColor var(--_wave-inner),
@@ -328,12 +342,12 @@
 
   --_wave-radius: calc(#{$wl} / 4 / sin(2 * atan2(#{$amp}, #{$wl} / 4)));
   --_wave-center: calc(var(--_wave-radius) - #{$amp});
-  --_wave-half: calc(#{$amp} + var(--#{c.$prefix}-progress-thickness) / 2);
+  --_wave-half: calc(#{$amp} + #{v("progress-thickness")} / 2);
   --_wave-inner: calc(
-    var(--_wave-radius) - var(--#{c.$prefix}-progress-thickness) / 2
+    var(--_wave-radius) - #{v("progress-thickness")} / 2
   );
   --_wave-outer: calc(
-    var(--_wave-radius) + var(--#{c.$prefix}-progress-thickness) / 2
+    var(--_wave-radius) + #{v("progress-thickness")} / 2
   );
   border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
   -webkit-mask-image: $crest, $trough;
@@ -384,8 +398,8 @@ $-scallops: 12;
 }
 
 @mixin circular-wavy {
-  $amp: var(--#{c.$prefix}-progress-wave-amplitude);
-  $thick: var(--#{c.$prefix}-progress-circle-thickness);
+  $amp: #{v("progress-wave-amplitude")};
+  $thick: #{v("progress-circle-thickness")};
   $layers: (
     radial-gradient(
       farthest-side,

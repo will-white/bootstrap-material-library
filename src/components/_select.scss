@@ -34,13 +34,23 @@
 
 @use "../config" as c;
 @use "../mixins" as m;
+@use "menu";
 @use "../functions" as fn;
 @use "text-field" as field;
 
-@mixin tokens {
-  --#{c.$prefix}-select-chevron-size: #{fn.rem(6)};
-  --#{c.$prefix}-select-padding-end: var(--#{c.$prefix}-sys-space-7);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "select-chevron-size": #{fn.rem(6)},
+  "select-padding-end": var(--#{c.$prefix}-sys-space-7),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // Single-line select: outlined field look plus a CSS-drawn chevron made of
 // two right-triangle gradients in currentColor (no images, no fonts).
@@ -52,16 +62,16 @@
   @include field.input-outlined;
   appearance: none;
   cursor: pointer;
-  padding-inline-end: var(--#{c.$prefix}-select-padding-end);
+  padding-inline-end: #{v("select-padding-end")};
   background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
     linear-gradient(135deg, currentColor 50%, transparent 50%);
   background-position: calc(100% - var(--#{c.$prefix}-sys-space-5)) 50%,
     calc(
-        100% - var(--#{c.$prefix}-sys-space-5) + var(--#{c.$prefix}-select-chevron-size)
+        100% - var(--#{c.$prefix}-sys-space-5) + #{v("select-chevron-size")}
       )
       50%;
-  background-size: var(--#{c.$prefix}-select-chevron-size)
-    var(--#{c.$prefix}-select-chevron-size);
+  background-size: #{v("select-chevron-size")}
+    #{v("select-chevron-size")};
   background-repeat: no-repeat;
 
   // While the native picker is showing, the chevron points up (browsers
@@ -105,10 +115,10 @@
       margin-block-start: var(--#{c.$prefix}-sys-space-1);
       padding: var(--#{c.$prefix}-sys-space-2) var(--#{c.$prefix}-sys-space-none);
       border: none;
-      border-radius: var(--#{c.$prefix}-menu-shape);
-      background-color: var(--#{c.$prefix}-menu-container-color);
-      color: var(--#{c.$prefix}-menu-content-color);
-      max-inline-size: var(--#{c.$prefix}-menu-max-width);
+      border-radius: #{menu.v("menu-shape")};
+      background-color: #{menu.v("menu-container-color")};
+      color: #{menu.v("menu-content-color")};
+      max-inline-size: #{menu.v("menu-max-width")};
       @include m.elevation(2);
 
       @media (prefers-reduced-motion: no-preference) {
@@ -141,10 +151,10 @@
       display: flex;
       align-items: center;
       gap: var(--#{c.$prefix}-sys-space-3);
-      @include m.control-min-height(--#{c.$prefix}-menu-item-height);
+      @include m.control-min-height(menu.v("menu-item-height"));
       padding-inline: var(--#{c.$prefix}-sys-space-3);
       background-color: transparent;
-      color: var(--#{c.$prefix}-menu-content-color);
+      color: #{menu.v("menu-content-color")};
       cursor: pointer;
       @include m.typescale("label-large");
       @include m.transition((background-color, color));
@@ -152,7 +162,7 @@
       @include m.hover {
         background-color: color-mix(
           in srgb,
-          var(--#{c.$prefix}-menu-content-color)
+          #{menu.v("menu-content-color")}
             var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity),
           transparent
         );

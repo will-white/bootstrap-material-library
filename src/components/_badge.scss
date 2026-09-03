@@ -23,13 +23,22 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-badge-container-color: var(--#{c.$sys-prefix}-sys-color-error);
-  --#{c.$prefix}-badge-label-color: var(--#{c.$sys-prefix}-sys-color-on-error);
-  --#{c.$prefix}-badge-size: #{fn.rem(16)};
-  --#{c.$prefix}-badge-dot-size: #{fn.rem(6)};
-  --#{c.$prefix}-badge-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "badge-container-color": var(--#{c.$sys-prefix}-sys-color-error),
+  "badge-label-color": var(--#{c.$sys-prefix}-sys-color-on-error),
+  "badge-size": #{fn.rem(16)},
+  "badge-dot-size": #{fn.rem(6)},
+  "badge-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // Full numbered-badge structure. Non-interactive: no state layer, no density.
 @mixin base {
@@ -37,12 +46,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-inline-size: var(--#{c.$prefix}-badge-size);
-  block-size: var(--#{c.$prefix}-badge-size);
+  min-inline-size: #{v("badge-size")};
+  block-size: #{v("badge-size")};
   padding-inline: var(--#{c.$prefix}-sys-space-1);
-  border-radius: var(--#{c.$prefix}-badge-shape);
-  background-color: var(--#{c.$prefix}-badge-container-color);
-  color: var(--#{c.$prefix}-badge-label-color);
+  border-radius: #{v("badge-shape")};
+  background-color: #{v("badge-container-color")};
+  color: #{v("badge-label-color")};
   @include m.typescale("label-small");
   line-height: 1;
   white-space: nowrap;
@@ -57,9 +66,9 @@
 
 // Small status dot: no label, fixed square footprint.
 @mixin dot {
-  min-inline-size: var(--#{c.$prefix}-badge-dot-size);
-  inline-size: var(--#{c.$prefix}-badge-dot-size);
-  block-size: var(--#{c.$prefix}-badge-dot-size);
+  min-inline-size: #{v("badge-dot-size")};
+  inline-size: #{v("badge-dot-size")};
+  block-size: #{v("badge-dot-size")};
   padding-inline: var(--#{c.$prefix}-sys-space-none);
 }
 

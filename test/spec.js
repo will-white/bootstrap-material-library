@@ -7,6 +7,7 @@ const path = require('path');
 const { launch, serve } = require('./lib/browser');
 
 const ROOT = path.resolve(__dirname, '..');
+const CSS_TEXT = fs.readFileSync(path.join(ROOT, 'dist/m3x.css'), 'utf8');
 const ICON = '<span class="m3-icon">home</span>';
 
 // M3 Expressive size ramp shared by .m3-btn, .m3-icon-btn and .m3-split-button:
@@ -167,9 +168,10 @@ async function run() {
         out.misc.checkbox = num(box('cb').width);
         out.misc.radio = num(box('rd').width);
         out.misc.switchBox = [num(box('sw').width), num(box('sw').height)];
-        const remPx = (id, name) => num(toPx(cs(id).getPropertyValue(name).trim()));
-        out.misc.sliderTrack = remPx('sl', '--m3-slider-track-height');
-        out.misc.sliderThumb = [remPx('sl', '--m3-slider-thumb-width'), remPx('sl', '--m3-slider-thumb-size')];
+        // The slider's handle is drawn on a UA pseudo whose box getComputedStyle
+        // does not report, so its geometry is asserted from the stylesheet
+        // below; what the browser can answer for is the 48dp hit area.
+        out.misc.sliderHitArea = num(box('sl').height);
 
         // Linear progress stop indicator: a dot at the trailing end, absent
         // while indeterminate.
@@ -238,8 +240,18 @@ async function run() {
   expect(r.misc.checkbox === 18, `checkbox ${r.misc.checkbox}px, expected 18`);
   expect(r.misc.radio === 20, `radio ${r.misc.radio}px, expected 20`);
   expect(eq(r.misc.switchBox, [52, 32]), `switch ${JSON.stringify(r.misc.switchBox)}, expected [52,32]`);
-  expect(r.misc.sliderTrack === 16, `slider track ${r.misc.sliderTrack}, expected 16`);
-  expect(eq(r.misc.sliderThumb, [4, 44]), `slider handle ${JSON.stringify(r.misc.sliderThumb)}, expected [4,44]`);
+  expect(r.misc.sliderHitArea === 48, `slider hit area ${r.misc.sliderHitArea}, expected the 48dp target`);
+
+  // Component tokens carry their default as the fallback of the var() that
+  // reads them, so the shipped default is read out of the stylesheet.
+  const shipped = (token) => {
+    const m = new RegExp(`var\\(\\s*--${token}\\s*,\\s*([^)]*)\\)`).exec(CSS_TEXT);
+    return m ? m[1].trim() : null;
+  };
+  const remToPx = (v) => (/rem$/.test(v || '') ? parseFloat(v) * 16 : parseFloat(v));
+  expect(remToPx(shipped('m3-slider-track-height')) === 16, `slider track default ${shipped('m3-slider-track-height')}, expected 1rem`);
+  expect(remToPx(shipped('m3-slider-thumb-width')) === 4, `slider handle width default ${shipped('m3-slider-thumb-width')}, expected 0.25rem`);
+  expect(remToPx(shipped('m3-slider-thumb-size')) === 44, `slider handle height default ${shipped('m3-slider-thumb-size')}, expected 2.75rem`);
 
   // M3 linear progress carries a 4dp stop indicator; indeterminate has none.
   expect(eq(r.misc.progStop, [true, 4, 4]), `progress stop indicator ${JSON.stringify(r.misc.progStop)}, expected [true,4,4]`);

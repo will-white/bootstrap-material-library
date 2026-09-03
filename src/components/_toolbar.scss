@@ -192,45 +192,54 @@
 @use "menu";
 @use "button";
 
-@mixin tokens {
-  --#{c.$prefix}-toolbar-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container);
-  --#{c.$prefix}-toolbar-content-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-toolbar-vibrant-container-color: var(--#{c.$sys-prefix}-sys-color-primary-container);
-  --#{c.$prefix}-toolbar-vibrant-content-color: var(--#{c.$sys-prefix}-sys-color-on-primary-container);
-  --#{c.$prefix}-toolbar-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
-  --#{c.$prefix}-toolbar-docked-shape: var(--#{c.$sys-prefix}-sys-shape-corner-large);
-  --#{c.$prefix}-toolbar-height: #{fn.rem(64)};
-  --#{c.$prefix}-toolbar-gap: var(--#{c.$prefix}-sys-space-1);
-  --#{c.$prefix}-toolbar-padding: var(--#{c.$prefix}-sys-space-2);
-  --#{c.$prefix}-toolbar-docked-padding-inline: var(--#{c.$prefix}-sys-space-4);
-  --#{c.$prefix}-toolbar-fixed-offset: var(--#{c.$prefix}-sys-space-4);
-  --#{c.$prefix}-toolbar-dense-height: #{fn.rem(40)};
-  --#{c.$prefix}-toolbar-dense-control-size: #{fn.rem(28)};
-  --#{c.$prefix}-toolbar-dense-icon-size: #{fn.rem(20)};
-  --#{c.$prefix}-toolbar-dense-gap: #{fn.rem(2)};
-  --#{c.$prefix}-toolbar-dense-padding-inline: var(--#{c.$prefix}-sys-space-2);
-  --#{c.$prefix}-toolbar-dense-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
-  --#{c.$prefix}-toolbar-dense-control-shape: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
-  --#{c.$prefix}-toolbar-dense-selected-container-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
-  --#{c.$prefix}-toolbar-dense-selected-color: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
-  --#{c.$prefix}-toolbar-dense-separator-color: var(--#{c.$sys-prefix}-sys-color-outline-variant);
-  --#{c.$prefix}-toolbar-dense-separator-height: #{fn.rem(20)};
-  --#{c.$prefix}-toolbar-dense-chevron-size: #{fn.rem(5)};
-  --#{c.$prefix}-toolbar-dense-field-width: #{fn.rem(40)};
-  --#{c.$prefix}-toolbar-dense-field-outline-color: var(--#{c.$sys-prefix}-sys-color-outline);
-  --#{c.$prefix}-toolbar-dense-swatch-height: #{fn.rem(3)};
-  --#{c.$prefix}-toolbar-dense-menu-offset: var(--#{c.$prefix}-sys-space-1);
-  --#{c.$prefix}-toolbar-dense-split-toggle-width: #{fn.rem(14)};
-  --#{c.$prefix}-toolbar-dense-split-chevron-size: #{fn.rem(5)};
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "toolbar-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container),
+  "toolbar-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "toolbar-vibrant-container-color": var(--#{c.$sys-prefix}-sys-color-primary-container),
+  "toolbar-vibrant-content-color": var(--#{c.$sys-prefix}-sys-color-on-primary-container),
+  "toolbar-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
+  "toolbar-docked-shape": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+  "toolbar-height": #{fn.rem(64)},
+  "toolbar-gap": var(--#{c.$prefix}-sys-space-1),
+  "toolbar-padding": var(--#{c.$prefix}-sys-space-2),
+  "toolbar-docked-padding-inline": var(--#{c.$prefix}-sys-space-4),
+  "toolbar-fixed-offset": var(--#{c.$prefix}-sys-space-4),
+  "toolbar-dense-height": #{fn.rem(40)},
+  "toolbar-dense-control-size": #{fn.rem(28)},
+  "toolbar-dense-icon-size": #{fn.rem(20)},
+  "toolbar-dense-gap": #{fn.rem(2)},
+  "toolbar-dense-padding-inline": var(--#{c.$prefix}-sys-space-2),
+  "toolbar-dense-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
+  "toolbar-dense-control-shape": var(--#{c.$sys-prefix}-sys-shape-corner-extra-small),
+  "toolbar-dense-selected-container-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
+  "toolbar-dense-selected-color": var(--#{c.$sys-prefix}-sys-color-on-secondary-container),
+  "toolbar-dense-separator-color": var(--#{c.$sys-prefix}-sys-color-outline-variant),
+  "toolbar-dense-separator-height": #{fn.rem(20)},
+  "toolbar-dense-chevron-size": #{fn.rem(5)},
+  "toolbar-dense-field-width": #{fn.rem(40)},
+  "toolbar-dense-field-outline-color": var(--#{c.$sys-prefix}-sys-color-outline),
+  "toolbar-dense-swatch-height": #{fn.rem(3)},
+  "toolbar-dense-menu-offset": var(--#{c.$prefix}-sys-space-1),
+  "toolbar-dense-split-toggle-width": #{fn.rem(14)},
+  "toolbar-dense-split-chevron-size": #{fn.rem(5)},
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // Structure + color machinery. The look with no modifier is the floating
 // pill in standard colors; modifiers re-point the privates and the layout.
 @mixin base {
   @include m.own-box;
-  --_container: var(--#{c.$prefix}-toolbar-container-color);
-  --_content: var(--#{c.$prefix}-toolbar-content-color);
-  --_offset: var(--#{c.$prefix}-toolbar-fixed-offset);
+  --_container: #{v("toolbar-container-color")};
+  --_content: #{v("toolbar-content-color")};
+  --_offset: #{v("toolbar-fixed-offset")};
   // Uncontained controls inside follow the toolbar: their color tokens
   // resolve to currentColor here, i.e. this element's var(--_content).
   --#{c.$prefix}-icon-btn-color: currentColor;
@@ -240,10 +249,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--#{c.$prefix}-toolbar-gap);
-  @include m.control-height(--#{c.$prefix}-toolbar-height);
-  padding-inline: var(--#{c.$prefix}-toolbar-padding);
-  border-radius: var(--#{c.$prefix}-toolbar-shape);
+  gap: #{v("toolbar-gap")};
+  @include m.control-height(v("toolbar-height"));
+  padding-inline: #{v("toolbar-padding")};
+  border-radius: #{v("toolbar-shape")};
   color: var(--_content);
   background-color: var(--_container);
   vertical-align: middle;
@@ -253,7 +262,7 @@
 
 // Floating: the default look, re-asserted (pill + elevation 3).
 @mixin floating {
-  border-radius: var(--#{c.$prefix}-toolbar-shape);
+  border-radius: #{v("toolbar-shape")};
   @include m.elevation(3);
 }
 
@@ -264,24 +273,24 @@
   display: flex;
   inline-size: 100%;
   height: auto;
-  @include m.control-min-height(--#{c.$prefix}-toolbar-height);
-  padding-inline: var(--#{c.$prefix}-toolbar-docked-padding-inline);
-  padding-block: var(--#{c.$prefix}-toolbar-padding);
-  border-start-start-radius: var(--#{c.$prefix}-toolbar-docked-shape);
-  border-start-end-radius: var(--#{c.$prefix}-toolbar-docked-shape);
+  @include m.control-min-height(v("toolbar-height"));
+  padding-inline: #{v("toolbar-docked-padding-inline")};
+  padding-block: #{v("toolbar-padding")};
+  border-start-start-radius: #{v("toolbar-docked-shape")};
+  border-start-end-radius: #{v("toolbar-docked-shape")};
   border-end-start-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
   border-end-end-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
   @include m.elevation(0);
 }
 
 @mixin standard {
-  --_container: var(--#{c.$prefix}-toolbar-container-color);
-  --_content: var(--#{c.$prefix}-toolbar-content-color);
+  --_container: #{v("toolbar-container-color")};
+  --_content: #{v("toolbar-content-color")};
 }
 
 @mixin vibrant {
-  --_container: var(--#{c.$prefix}-toolbar-vibrant-container-color);
-  --_content: var(--#{c.$prefix}-toolbar-vibrant-content-color);
+  --_container: #{v("toolbar-vibrant-container-color")};
+  --_content: #{v("toolbar-vibrant-content-color")};
 }
 
 // Vertical pill: the height token becomes the width, padding moves to the
@@ -290,10 +299,10 @@
   flex-direction: column;
   height: auto;
   width: calc(
-    var(--#{c.$prefix}-toolbar-height) + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
+    #{v("toolbar-height")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
   );
   padding-inline: var(--#{c.$prefix}-sys-space-none);
-  padding-block: var(--#{c.$prefix}-toolbar-padding);
+  padding-block: #{v("toolbar-padding")};
 }
 
 // Viewport-anchored placement: bottom center. A floating pill keeps
@@ -319,38 +328,34 @@
   --#{c.$prefix}-sys-density: 0;
   --#{c.$prefix}-sys-target-size: 100%;
   // Every button vocabulary compacts through the tokens it reads.
-  --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-toolbar-dense-control-size);
-  --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-toolbar-dense-icon-size);
+  --#{c.$prefix}-icon-btn-size: #{v("toolbar-dense-control-size")};
+  --#{c.$prefix}-icon-btn-icon-size: #{v("toolbar-dense-icon-size")};
   --#{c.$prefix}-icon-btn-icon-optical-size: 20;
-  --#{c.$prefix}-icon-btn-shape: var(--#{c.$prefix}-toolbar-dense-control-shape);
-  --#{c.$prefix}-icon-btn-shape-pressed: var(--#{c.$prefix}-toolbar-dense-control-shape);
-  --#{c.$prefix}-icon-btn-shape-selected: var(--#{c.$prefix}-toolbar-dense-control-shape);
-  --#{c.$prefix}-icon-btn-selected-container-color: var(
-    --#{c.$prefix}-toolbar-dense-selected-container-color
-  );
-  --#{c.$prefix}-icon-btn-selected-color: var(--#{c.$prefix}-toolbar-dense-selected-color);
-  --#{c.$prefix}-btn-height: var(--#{c.$prefix}-toolbar-dense-control-size);
+  --#{c.$prefix}-icon-btn-shape: #{v("toolbar-dense-control-shape")};
+  --#{c.$prefix}-icon-btn-shape-pressed: #{v("toolbar-dense-control-shape")};
+  --#{c.$prefix}-icon-btn-shape-selected: #{v("toolbar-dense-control-shape")};
+  --#{c.$prefix}-icon-btn-selected-container-color: #{v("toolbar-dense-selected-container-color")};
+  --#{c.$prefix}-icon-btn-selected-color: #{v("toolbar-dense-selected-color")};
+  --#{c.$prefix}-btn-height: #{v("toolbar-dense-control-size")};
   --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-sys-space-2);
   --#{c.$prefix}-btn-icon-gap: var(--#{c.$prefix}-sys-space-1);
-  --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-toolbar-dense-icon-size);
+  --#{c.$prefix}-btn-icon-size: #{v("toolbar-dense-icon-size")};
   --#{c.$prefix}-btn-icon-optical-size: 20;
-  --#{c.$prefix}-btn-shape: var(--#{c.$prefix}-toolbar-dense-control-shape);
-  --#{c.$prefix}-btn-shape-pressed: var(--#{c.$prefix}-toolbar-dense-control-shape);
-  --#{c.$prefix}-btn-shape-selected: var(--#{c.$prefix}-toolbar-dense-control-shape);
+  --#{c.$prefix}-btn-shape: #{v("toolbar-dense-control-shape")};
+  --#{c.$prefix}-btn-shape-pressed: #{v("toolbar-dense-control-shape")};
+  --#{c.$prefix}-btn-shape-selected: #{v("toolbar-dense-control-shape")};
   // Split controls: the halves take the control size, the seam corners the
   // control shape (no hover morph at this size), and the trailing sliver
   // narrows to a small chevron.
-  --#{c.$prefix}-split-button-height: var(--#{c.$prefix}-toolbar-dense-control-size);
+  --#{c.$prefix}-split-button-height: #{v("toolbar-dense-control-size")};
   --#{c.$prefix}-split-button-min-width: var(--#{c.$prefix}-sys-space-none);
-  --#{c.$prefix}-split-button-inner-shape: var(--#{c.$prefix}-toolbar-dense-control-shape);
-  --#{c.$prefix}-split-button-inner-shape-active: var(
-    --#{c.$prefix}-toolbar-dense-control-shape
-  );
+  --#{c.$prefix}-split-button-inner-shape: #{v("toolbar-dense-control-shape")};
+  --#{c.$prefix}-split-button-inner-shape-active: #{v("toolbar-dense-control-shape")};
   --#{c.$prefix}-split-button-action-padding-start: var(--#{c.$prefix}-sys-space-2);
   --#{c.$prefix}-split-button-action-padding-end: var(--#{c.$prefix}-sys-space-2);
-  --#{c.$prefix}-split-button-toggle-width: var(--#{c.$prefix}-toolbar-dense-split-toggle-width);
+  --#{c.$prefix}-split-button-toggle-width: #{v("toolbar-dense-split-toggle-width")};
   --#{c.$prefix}-split-button-toggle-padding-inline: var(--#{c.$prefix}-sys-space-none);
-  --#{c.$prefix}-split-button-chevron-size: var(--#{c.$prefix}-toolbar-dense-split-chevron-size);
+  --#{c.$prefix}-split-button-chevron-size: #{v("toolbar-dense-split-chevron-size")};
 
   container-type: inline-size;
   container-name: #{c.$prefix}-toolbar;
@@ -361,10 +366,10 @@
   flex-wrap: nowrap;
   justify-content: flex-start;
   inline-size: 100%;
-  height: var(--#{c.$prefix}-toolbar-dense-height);
-  gap: var(--#{c.$prefix}-toolbar-dense-gap);
-  padding-inline: var(--#{c.$prefix}-toolbar-dense-padding-inline);
-  border-radius: var(--#{c.$prefix}-toolbar-dense-shape);
+  height: #{v("toolbar-dense-height")};
+  gap: #{v("toolbar-dense-gap")};
+  padding-inline: #{v("toolbar-dense-padding-inline")};
+  border-radius: #{v("toolbar-dense-shape")};
   // Clip along the row (an unmarked overflow never spills past the pill's
   // ends); stay open across it so tooltips and focus rings can rise above.
   overflow: clip visible;
@@ -389,8 +394,8 @@
 
   // A checked hidden input toggles its label like aria-pressed="true" does.
   .#{c.$prefix}-btn-check:checked + .#{c.$prefix}-icon-btn {
-    --_container: var(--#{c.$prefix}-toolbar-dense-selected-container-color);
-    --_content: var(--#{c.$prefix}-toolbar-dense-selected-color);
+    --_container: #{v("toolbar-dense-selected-container-color")};
+    --_content: #{v("toolbar-dense-selected-color")};
   }
 
   // Popover menus invoked from inside the bar hang below their invoker (the
@@ -403,7 +408,7 @@
     @supports (position-area: block-end) {
       inset: auto;
       margin: var(--#{c.$prefix}-sys-space-none);
-      margin-block-start: var(--#{c.$prefix}-toolbar-dense-menu-offset);
+      margin-block-start: #{v("toolbar-dense-menu-offset")};
       position-area: block-end span-inline-end;
       position-try-fallbacks: flip-block, flip-inline;
     }
@@ -441,7 +446,7 @@
   display: inline-flex;
   align-items: center;
   flex: none;
-  gap: var(--#{c.$prefix}-toolbar-dense-gap);
+  gap: #{v("toolbar-dense-gap")};
 
   & + &::before {
     @include m.own-pseudo;
@@ -449,9 +454,9 @@
     display: block;
     flex: none;
     inline-size: var(--#{c.$prefix}-sys-stroke-hairline);
-    block-size: var(--#{c.$prefix}-toolbar-dense-separator-height);
+    block-size: #{v("toolbar-dense-separator-height")};
     margin-inline: var(--#{c.$prefix}-sys-space-1);
-    background-color: var(--#{c.$prefix}-toolbar-dense-separator-color);
+    background-color: #{v("toolbar-dense-separator-color")};
   }
 }
 
@@ -501,16 +506,16 @@
   display: inline-block;
   inline-size: auto;
   max-inline-size: 100%;
-  block-size: var(--#{c.$prefix}-toolbar-dense-control-size);
+  block-size: #{v("toolbar-dense-control-size")};
   min-block-size: var(--#{c.$prefix}-sys-space-none);
   padding-block: var(--#{c.$prefix}-sys-space-none);
   padding-inline: var(--#{c.$prefix}-sys-space-2)
     calc(
-      var(--#{c.$prefix}-sys-space-2) + 2 * var(--#{c.$prefix}-toolbar-dense-chevron-size) +
+      var(--#{c.$prefix}-sys-space-2) + 2 * #{v("toolbar-dense-chevron-size")} +
         var(--#{c.$prefix}-sys-space-1)
     );
   border: none;
-  border-radius: var(--#{c.$prefix}-toolbar-dense-control-shape);
+  border-radius: #{v("toolbar-dense-control-shape")};
   appearance: none;
   cursor: pointer;
   white-space: pre;
@@ -521,11 +526,11 @@
   background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
     linear-gradient(135deg, currentColor 50%, transparent 50%);
   background-position:
-    calc(100% - var(--#{c.$prefix}-sys-space-2) - var(--#{c.$prefix}-toolbar-dense-chevron-size))
+    calc(100% - var(--#{c.$prefix}-sys-space-2) - #{v("toolbar-dense-chevron-size")})
       50%,
     calc(100% - var(--#{c.$prefix}-sys-space-2)) 50%;
-  background-size: var(--#{c.$prefix}-toolbar-dense-chevron-size)
-    var(--#{c.$prefix}-toolbar-dense-chevron-size);
+  background-size: #{v("toolbar-dense-chevron-size")}
+    #{v("toolbar-dense-chevron-size")};
   background-repeat: no-repeat;
 
   // While the native picker is showing, the chevron points up (browsers
@@ -553,19 +558,19 @@
   display: inline-flex;
   align-items: center;
   flex: none;
-  gap: var(--#{c.$prefix}-toolbar-dense-gap);
+  gap: #{v("toolbar-dense-gap")};
 }
 
 @mixin dense-stepper-input {
   @include m.own-box;
   @include m.typescale("label-large");
   display: inline-block;
-  inline-size: var(--#{c.$prefix}-toolbar-dense-field-width);
-  block-size: var(--#{c.$prefix}-toolbar-dense-control-size);
+  inline-size: #{v("toolbar-dense-field-width")};
+  block-size: #{v("toolbar-dense-control-size")};
   padding-inline: var(--#{c.$prefix}-sys-space-1);
   border: var(--#{c.$prefix}-sys-stroke-hairline) solid
-    var(--#{c.$prefix}-toolbar-dense-field-outline-color);
-  border-radius: var(--#{c.$prefix}-toolbar-dense-control-shape);
+    #{v("toolbar-dense-field-outline-color")};
+  border-radius: #{v("toolbar-dense-control-shape")};
   background-color: transparent;
   color: inherit;
   caret-color: var(--#{c.$sys-prefix}-sys-color-primary);
@@ -616,14 +621,14 @@
     position: absolute;
     inset-block-end: calc(
       (
-          var(--#{c.$prefix}-toolbar-dense-control-size) -
-            var(--#{c.$prefix}-toolbar-dense-icon-size)
+          #{v("toolbar-dense-control-size")} -
+            #{v("toolbar-dense-icon-size")}
         ) / 2
     );
     inset-inline-start: 50%;
     translate: -50% 0;
-    inline-size: calc(var(--#{c.$prefix}-toolbar-dense-icon-size) - var(--#{c.$prefix}-sys-space-1));
-    block-size: var(--#{c.$prefix}-toolbar-dense-swatch-height);
+    inline-size: calc(#{v("toolbar-dense-icon-size")} - var(--#{c.$prefix}-sys-space-1));
+    block-size: #{v("toolbar-dense-swatch-height")};
     border-radius: var(--#{c.$prefix}-sys-stroke-hairline);
     background-color: var(--#{c.$prefix}-toolbar-swatch-color, currentColor);
   }
@@ -662,7 +667,7 @@
   > .#{c.$prefix}-menu:not([popover]) {
     display: block;
     position: absolute;
-    inset-block-start: calc(100% + var(--#{c.$prefix}-toolbar-dense-menu-offset));
+    inset-block-start: calc(100% + #{v("toolbar-dense-menu-offset")});
     inset-inline-start: var(--#{c.$prefix}-sys-space-none);
     z-index: var(--#{c.$prefix}-sys-z-overlay);
   }

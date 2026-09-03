@@ -83,29 +83,38 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-time-picker-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container-high);
-  --#{c.$prefix}-time-picker-content-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-time-picker-shape: var(--#{c.$sys-prefix}-sys-shape-corner-extra-large);
-  --#{c.$prefix}-time-picker-padding: var(--#{c.$prefix}-sys-space-6);
-  --#{c.$prefix}-time-picker-label-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-time-picker-field-width: #{fn.rem(96)};
-  --#{c.$prefix}-time-picker-field-height: #{fn.rem(72)};
-  --#{c.$prefix}-time-picker-field-shape: var(--#{c.$sys-prefix}-sys-shape-corner-small);
-  --#{c.$prefix}-time-picker-field-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container-highest);
-  --#{c.$prefix}-time-picker-field-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-time-picker-field-selected-container-color: var(--#{c.$sys-prefix}-sys-color-primary-container);
-  --#{c.$prefix}-time-picker-field-selected-color: var(--#{c.$sys-prefix}-sys-color-on-primary-container);
-  --#{c.$prefix}-time-picker-hint-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-time-picker-separator-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-time-picker-period-width: #{fn.rem(52)};
-  --#{c.$prefix}-time-picker-period-shape: var(--#{c.$sys-prefix}-sys-shape-corner-small);
-  --#{c.$prefix}-time-picker-period-outline-color: var(--#{c.$sys-prefix}-sys-color-outline);
-  --#{c.$prefix}-time-picker-period-outline-width: var(--#{c.$prefix}-sys-stroke-hairline);
-  --#{c.$prefix}-time-picker-period-label-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-time-picker-period-selected-container-color: var(--#{c.$sys-prefix}-sys-color-tertiary-container);
-  --#{c.$prefix}-time-picker-period-selected-label-color: var(--#{c.$sys-prefix}-sys-color-on-tertiary-container);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "time-picker-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-high),
+  "time-picker-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "time-picker-shape": var(--#{c.$sys-prefix}-sys-shape-corner-extra-large),
+  "time-picker-padding": var(--#{c.$prefix}-sys-space-6),
+  "time-picker-label-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "time-picker-field-width": #{fn.rem(96)},
+  "time-picker-field-height": #{fn.rem(72)},
+  "time-picker-field-shape": var(--#{c.$sys-prefix}-sys-shape-corner-small),
+  "time-picker-field-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-highest),
+  "time-picker-field-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "time-picker-field-selected-container-color": var(--#{c.$sys-prefix}-sys-color-primary-container),
+  "time-picker-field-selected-color": var(--#{c.$sys-prefix}-sys-color-on-primary-container),
+  "time-picker-hint-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "time-picker-separator-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "time-picker-period-width": #{fn.rem(52)},
+  "time-picker-period-shape": var(--#{c.$sys-prefix}-sys-shape-corner-small),
+  "time-picker-period-outline-color": var(--#{c.$sys-prefix}-sys-color-outline),
+  "time-picker-period-outline-width": var(--#{c.$prefix}-sys-stroke-hairline),
+  "time-picker-period-label-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "time-picker-period-selected-container-color": var(--#{c.$sys-prefix}-sys-color-tertiary-container),
+  "time-picker-period-selected-label-color": var(--#{c.$sys-prefix}-sys-color-on-tertiary-container),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // --- surface ----------------------------------------------------------------
 
@@ -115,10 +124,10 @@
   flex-direction: column;
   align-items: stretch;
   max-inline-size: 100%;
-  padding: var(--#{c.$prefix}-time-picker-padding);
-  background-color: var(--#{c.$prefix}-time-picker-container-color);
-  color: var(--#{c.$prefix}-time-picker-content-color);
-  border-radius: var(--#{c.$prefix}-time-picker-shape);
+  padding: #{v("time-picker-padding")};
+  background-color: #{v("time-picker-container-color")};
+  color: #{v("time-picker-content-color")};
+  border-radius: #{v("time-picker-shape")};
   @include m.elevation(3);
 }
 
@@ -134,7 +143,7 @@
   @include m.own-box;
   display: block;
   margin-block-end: var(--#{c.$prefix}-sys-space-5);
-  color: var(--#{c.$prefix}-time-picker-label-color);
+  color: #{v("time-picker-label-color")};
   @include m.typescale("label-medium");
 }
 
@@ -155,34 +164,30 @@
   flex-direction: column;
   flex: none;
   gap: var(--#{c.$prefix}-sys-space-2);
-  inline-size: var(--#{c.$prefix}-time-picker-field-width);
+  inline-size: #{v("time-picker-field-width")};
   cursor: text;
 }
 
 // Held selection without focus: re-points the field tokens the input reads.
 @mixin field-selected {
-  --#{c.$prefix}-time-picker-field-container-color: var(
-    --#{c.$prefix}-time-picker-field-selected-container-color
-  );
-  --#{c.$prefix}-time-picker-field-color: var(
-    --#{c.$prefix}-time-picker-field-selected-color
-  );
+  --#{c.$prefix}-time-picker-field-container-color: #{v("time-picker-field-selected-container-color")};
+  --#{c.$prefix}-time-picker-field-color: #{v("time-picker-field-selected-color")};
 }
 
 // The digits box: a real text input, display-large, centered.
 @mixin input {
   @include m.own-box;
-  --_container: var(--#{c.$prefix}-time-picker-field-container-color);
-  --_content: var(--#{c.$prefix}-time-picker-field-color);
+  --_container: #{v("time-picker-field-container-color")};
+  --_content: #{v("time-picker-field-color")};
 
   display: block;
   inline-size: 100%;
-  block-size: var(--#{c.$prefix}-time-picker-field-height);
+  block-size: #{v("time-picker-field-height")};
   padding: var(--#{c.$prefix}-sys-space-none);
   border: none;
-  border-radius: var(--#{c.$prefix}-time-picker-field-shape);
+  border-radius: #{v("time-picker-field-shape")};
   text-align: center;
-  caret-color: var(--#{c.$prefix}-time-picker-field-selected-color);
+  caret-color: #{v("time-picker-field-selected-color")};
   cursor: text;
   appearance: none;
   @include m.typescale("display-large");
@@ -196,7 +201,7 @@
   }
 
   &::placeholder {
-    color: var(--#{c.$prefix}-time-picker-hint-color);
+    color: #{v("time-picker-hint-color")};
     opacity: var(--#{c.$prefix}-sys-opacity-full);
   }
 
@@ -218,8 +223,8 @@
 
   // Selected = focused by any means (typing, tab, tap).
   &:focus {
-    --_container: var(--#{c.$prefix}-time-picker-field-selected-container-color);
-    --_content: var(--#{c.$prefix}-time-picker-field-selected-color);
+    --_container: #{v("time-picker-field-selected-container-color")};
+    --_content: #{v("time-picker-field-selected-color")};
   }
 
   &:user-invalid {
@@ -236,7 +241,7 @@
 @mixin hint {
   @include m.own-box;
   display: block;
-  color: var(--#{c.$prefix}-time-picker-hint-color);
+  color: #{v("time-picker-hint-color")};
   @include m.typescale("body-small");
 }
 
@@ -253,8 +258,8 @@
   justify-content: center;
   flex: none;
   inline-size: var(--#{c.$prefix}-sys-space-5);
-  block-size: var(--#{c.$prefix}-time-picker-field-height);
-  color: var(--#{c.$prefix}-time-picker-separator-color);
+  block-size: #{v("time-picker-field-height")};
+  color: #{v("time-picker-separator-color")};
   user-select: none;
   @include m.typescale("display-large");
 }
@@ -269,12 +274,12 @@
   display: flex;
   flex-direction: column;
   flex: none;
-  inline-size: var(--#{c.$prefix}-time-picker-period-width);
-  block-size: var(--#{c.$prefix}-time-picker-field-height);
+  inline-size: #{v("time-picker-period-width")};
+  block-size: #{v("time-picker-field-height")};
   margin-inline-start: var(--#{c.$prefix}-sys-space-3);
-  border: var(--#{c.$prefix}-time-picker-period-outline-width) solid
-    var(--#{c.$prefix}-time-picker-period-outline-color);
-  border-radius: var(--#{c.$prefix}-time-picker-period-shape);
+  border: #{v("time-picker-period-outline-width")} solid
+    #{v("time-picker-period-outline-color")};
+  border-radius: #{v("time-picker-period-shape")};
 }
 
 // One option: a <label> wrapping a hidden radio and the visible label span.
@@ -286,7 +291,7 @@
 ) {
   @include m.own-box;
   --_container: transparent;
-  --_content: var(--#{c.$prefix}-time-picker-period-label-color);
+  --_content: #{v("time-picker-period-label-color")};
 
   position: relative;
   display: flex;
@@ -302,20 +307,20 @@
 
   // Hairline divider between the two options.
   & + & {
-    border-block-start: var(--#{c.$prefix}-time-picker-period-outline-width)
-      solid var(--#{c.$prefix}-time-picker-period-outline-color);
+    border-block-start: #{v("time-picker-period-outline-width")}
+      solid #{v("time-picker-period-outline-color")};
   }
 
   // Outer corners follow the group shape (the fieldset does not clip); the
   // span inherits them.
   &:first-of-type {
-    border-start-start-radius: var(--#{c.$prefix}-time-picker-period-shape);
-    border-start-end-radius: var(--#{c.$prefix}-time-picker-period-shape);
+    border-start-start-radius: #{v("time-picker-period-shape")};
+    border-start-end-radius: #{v("time-picker-period-shape")};
   }
 
   &:last-of-type {
-    border-end-start-radius: var(--#{c.$prefix}-time-picker-period-shape);
-    border-end-end-radius: var(--#{c.$prefix}-time-picker-period-shape);
+    border-end-start-radius: #{v("time-picker-period-shape")};
+    border-end-end-radius: #{v("time-picker-period-shape")};
   }
 
   // The real radio: invisible but full-size, so pointer and keyboard state
@@ -345,8 +350,8 @@
   @include m.state-layer-for($label);
 
   #{$input}:checked + #{$label} {
-    --_container: var(--#{c.$prefix}-time-picker-period-selected-container-color);
-    --_content: var(--#{c.$prefix}-time-picker-period-selected-label-color);
+    --_container: #{v("time-picker-period-selected-container-color")};
+    --_content: #{v("time-picker-period-selected-label-color")};
   }
 
   // Last so it wins over hover/checked at equal specificity.

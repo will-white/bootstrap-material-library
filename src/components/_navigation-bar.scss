@@ -34,17 +34,26 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-nav-bar-height: #{fn.rem(80)};
-  --#{c.$prefix}-nav-bar-item-max-width: #{fn.rem(104)};
-  --#{c.$prefix}-nav-bar-pill-width: #{fn.rem(64)};
-  --#{c.$prefix}-nav-bar-pill-height: #{fn.rem(32)};
-  --#{c.$prefix}-nav-bar-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container);
-  --#{c.$prefix}-nav-bar-label-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-nav-bar-active-label-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-nav-bar-active-icon-container-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
-  --#{c.$prefix}-nav-bar-active-icon-color: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "nav-bar-height": #{fn.rem(80)},
+  "nav-bar-item-max-width": #{fn.rem(104)},
+  "nav-bar-pill-width": #{fn.rem(64)},
+  "nav-bar-pill-height": #{fn.rem(32)},
+  "nav-bar-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container),
+  "nav-bar-label-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "nav-bar-active-label-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "nav-bar-active-icon-container-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
+  "nav-bar-active-icon-color": var(--#{c.$sys-prefix}-sys-color-on-secondary-container),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // The bar container.
 @mixin bar {
@@ -52,9 +61,9 @@
   display: flex;
   align-items: stretch;
   justify-content: space-around;
-  @include m.control-height(--#{c.$prefix}-nav-bar-height);
+  @include m.control-height(v("nav-bar-height"));
   padding-inline: var(--#{c.$prefix}-sys-space-2);
-  background-color: var(--#{c.$prefix}-nav-bar-container-color);
+  background-color: #{v("nav-bar-container-color")};
 }
 
 // Pinned to the bottom of the viewport.
@@ -76,8 +85,8 @@
   align-items: center;
   justify-content: center;
   gap: var(--#{c.$prefix}-sys-space-1);
-  max-inline-size: var(--#{c.$prefix}-nav-bar-item-max-width);
-  color: var(--#{c.$prefix}-nav-bar-label-color);
+  max-inline-size: #{v("nav-bar-item-max-width")};
+  color: #{v("nav-bar-label-color")};
   text-decoration: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -98,12 +107,12 @@
   // Active destination: aria-current="page" (preferred) or .active interop.
   &.active,
   &[aria-current="page"] {
-    color: var(--#{c.$prefix}-nav-bar-active-label-color);
+    color: #{v("nav-bar-active-label-color")};
 
     #{$icon} {
       --#{c.$prefix}-icon-fill: 1;
-      --_container: var(--#{c.$prefix}-nav-bar-active-icon-container-color);
-      color: var(--#{c.$prefix}-nav-bar-active-icon-color);
+      --_container: #{v("nav-bar-active-icon-container-color")};
+      color: #{v("nav-bar-active-icon-color")};
     }
   }
 }
@@ -114,15 +123,15 @@
 @mixin icon {
   @include m.own-box;
   --_container: transparent;
-  --_content: var(--#{c.$prefix}-nav-bar-label-color);
+  --_content: #{v("nav-bar-label-color")};
   --_state-color: var(--_content);
   --_state-opacity: var(--#{c.$sys-prefix}-sys-state-none);
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: var(--#{c.$prefix}-nav-bar-pill-width);
-  block-size: var(--#{c.$prefix}-nav-bar-pill-height);
+  inline-size: #{v("nav-bar-pill-width")};
+  block-size: #{v("nav-bar-pill-height")};
   border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   color: var(--_content);
   background-color: color-mix(

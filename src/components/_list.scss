@@ -46,34 +46,45 @@
 // Arbitrary consumer content goes in .m3-list-item__slot (donut boundary).
 // ============================================================================
 
+@use "sass:map";
 @use "../config" as c;
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-list-container-color: var(--#{c.$sys-prefix}-sys-color-surface);
-  --#{c.$prefix}-list-subheader-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-list-subheader-height: #{fn.rem(48)};
-  --#{c.$prefix}-list-divider-color: var(--#{c.$sys-prefix}-sys-color-outline-variant);
-  --#{c.$prefix}-list-divider-inset: calc(
-    var(--#{c.$prefix}-list-item-padding-inline) + var(--#{c.$prefix}-sys-icon-size) +
-      var(--#{c.$prefix}-list-item-gap)
-  );
-  --#{c.$prefix}-list-item-height: #{fn.rem(56)};
-  --#{c.$prefix}-list-item-height-two-line: #{fn.rem(72)};
-  --#{c.$prefix}-list-item-height-three-line: #{fn.rem(88)};
-  --#{c.$prefix}-list-item-padding-inline: var(--#{c.$prefix}-sys-space-4);
-  --#{c.$prefix}-list-item-gap: var(--#{c.$prefix}-sys-space-4);
-  --#{c.$prefix}-list-item-headline-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-list-item-supporting-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-list-item-overline-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-list-item-avatar-size: #{fn.rem(40)};
-  --#{c.$prefix}-list-item-avatar-container-color: var(--#{c.$sys-prefix}-sys-color-primary-container);
-  --#{c.$prefix}-list-item-avatar-label-color: var(--#{c.$sys-prefix}-sys-color-on-primary-container);
-  --#{c.$prefix}-list-item-image-size: #{fn.rem(56)};
-  --#{c.$prefix}-list-item-video-width: #{fn.rem(114)};
-  --#{c.$prefix}-list-item-video-height: #{fn.rem(64)};
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "list-container-color": var(--#{c.$sys-prefix}-sys-color-surface),
+  "list-subheader-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "list-subheader-height": #{fn.rem(48)},
+  "list-divider-color": var(--#{c.$sys-prefix}-sys-color-outline-variant),
+  "list-item-height": #{fn.rem(56)},
+  "list-item-height-two-line": #{fn.rem(72)},
+  "list-item-height-three-line": #{fn.rem(88)},
+  "list-item-padding-inline": var(--#{c.$prefix}-sys-space-4),
+  "list-item-gap": var(--#{c.$prefix}-sys-space-4),
+  "list-item-headline-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "list-item-supporting-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "list-item-overline-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "list-item-avatar-size": #{fn.rem(40)},
+  "list-item-avatar-container-color": var(--#{c.$sys-prefix}-sys-color-primary-container),
+  "list-item-avatar-label-color": var(--#{c.$sys-prefix}-sys-color-on-primary-container),
+  "list-item-image-size": #{fn.rem(56)},
+  "list-item-video-width": #{fn.rem(114)},
+  "list-item-video-height": #{fn.rem(64)},
+);
+
+// Defaults that build on another token in this map: resolved through
+// token() so the sibling's own default travels with them.
+$tokens: map.set($tokens, "list-divider-inset", calc( #{m.token($tokens, "list-item-padding-inline")} + var(--#{c.$prefix}-sys-icon-size) + #{m.token($tokens, "list-item-gap")} ));
+
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 @mixin list {
   @include m.own-box;
@@ -84,12 +95,12 @@
   list-style: none;
   padding-inline: var(--#{c.$prefix}-sys-space-none);
   padding-block: var(--#{c.$prefix}-sys-space-2);
-  background-color: var(--#{c.$prefix}-list-container-color);
+  background-color: #{v("list-container-color")};
 }
 
 // Dividers start at the headline text instead of the list edge.
 @mixin list-inset {
-  --_divider-inset: var(--#{c.$prefix}-list-divider-inset);
+  --_divider-inset: #{v("list-divider-inset")};
 }
 
 // Hairline between items: drawn by each item's ::after (a border cannot be
@@ -107,7 +118,7 @@
       inset-inline-start: var(--_divider-inset);
       inset-inline-end: var(--#{c.$prefix}-sys-space-none);
       block-size: var(--#{c.$prefix}-sys-stroke-hairline);
-      background-color: var(--#{c.$prefix}-list-divider-color);
+      background-color: #{v("list-divider-color")};
     }
   }
 }
@@ -117,11 +128,11 @@
   @include m.own-box;
   display: flex;
   align-items: center;
-  @include m.control-min-height(--#{c.$prefix}-list-subheader-height);
-  padding-inline: var(--#{c.$prefix}-list-item-padding-inline);
+  @include m.control-min-height(v("list-subheader-height"));
+  padding-inline: #{v("list-item-padding-inline")};
   padding-block: var(--#{c.$prefix}-sys-space-2);
   @include m.typescale("title-small");
-  color: var(--#{c.$prefix}-list-subheader-color);
+  color: #{v("list-subheader-color")};
 }
 
 @mixin item {
@@ -130,27 +141,27 @@
   // font: own it (parts set their own typescales).
   @include m.typescale("body-large");
   --_container: transparent;
-  --_content: var(--#{c.$prefix}-list-item-headline-color);
+  --_content: #{v("list-item-headline-color")};
   // Cross-axis alignment of the row; three-line items top-align.
   --_align: center;
 
   display: flex;
   align-items: var(--_align);
-  gap: var(--#{c.$prefix}-list-item-gap);
-  @include m.control-min-height(--#{c.$prefix}-list-item-height);
-  padding-inline: var(--#{c.$prefix}-list-item-padding-inline);
+  gap: #{v("list-item-gap")};
+  @include m.control-min-height(v("list-item-height"));
+  padding-inline: #{v("list-item-padding-inline")};
   padding-block: var(--#{c.$prefix}-sys-space-2);
   color: var(--_content);
   background-color: var(--_container);
 }
 
 @mixin item-two-line {
-  @include m.control-min-height(--#{c.$prefix}-list-item-height-two-line);
+  @include m.control-min-height(v("list-item-height-two-line"));
 }
 
 @mixin item-three-line {
   --_align: flex-start;
-  @include m.control-min-height(--#{c.$prefix}-list-item-height-three-line);
+  @include m.control-min-height(v("list-item-height-three-line"));
   padding-block: var(--#{c.$prefix}-sys-space-3);
 }
 
@@ -204,21 +215,21 @@
   @include m.own-box;
   display: block;
   @include m.typescale("label-small");
-  color: var(--#{c.$prefix}-list-item-overline-color);
+  color: #{v("list-item-overline-color")};
 }
 
 @mixin headline {
   @include m.own-box;
   display: block;
   @include m.typescale("body-large");
-  color: var(--#{c.$prefix}-list-item-headline-color);
+  color: #{v("list-item-headline-color")};
 }
 
 @mixin supporting {
   @include m.own-box;
   display: block;
   @include m.typescale("body-medium");
-  color: var(--#{c.$prefix}-list-item-supporting-color);
+  color: #{v("list-item-supporting-color")};
 }
 
 @mixin leading {
@@ -226,7 +237,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--#{c.$prefix}-list-item-supporting-color);
+  color: #{v("list-item-supporting-color")};
   flex: none;
 }
 
@@ -247,19 +258,19 @@
 
 // 40px circle: initials in title-medium on primary-container, or an <img>.
 @mixin leading-avatar {
-  inline-size: var(--#{c.$prefix}-list-item-avatar-size);
-  block-size: var(--#{c.$prefix}-list-item-avatar-size);
+  inline-size: #{v("list-item-avatar-size")};
+  block-size: #{v("list-item-avatar-size")};
   border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
-  background-color: var(--#{c.$prefix}-list-item-avatar-container-color);
+  background-color: #{v("list-item-avatar-container-color")};
   @include m.typescale("title-medium");
-  color: var(--#{c.$prefix}-list-item-avatar-label-color);
+  color: #{v("list-item-avatar-label-color")};
   @include -leading-media;
 }
 
 // 56px square thumbnail, small corners.
 @mixin leading-image {
-  inline-size: var(--#{c.$prefix}-list-item-image-size);
-  block-size: var(--#{c.$prefix}-list-item-image-size);
+  inline-size: #{v("list-item-image-size")};
+  block-size: #{v("list-item-image-size")};
   border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-small);
   @include -leading-media;
 }
@@ -269,8 +280,8 @@
 // exactly the 88px row; in a shorter row the item grows to fit rather than
 // cropping the frame.
 @mixin leading-video {
-  inline-size: var(--#{c.$prefix}-list-item-video-width);
-  block-size: var(--#{c.$prefix}-list-item-video-height);
+  inline-size: #{v("list-item-video-width")};
+  block-size: #{v("list-item-video-height")};
   border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
   @include -leading-media;
 }
@@ -280,7 +291,7 @@
   display: inline-flex;
   align-items: center;
   margin-inline-start: auto;
-  color: var(--#{c.$prefix}-list-item-supporting-color);
+  color: #{v("list-item-supporting-color")};
   flex: none;
   @include m.typescale("label-small");
 
@@ -297,7 +308,7 @@
 @mixin trailing-meta {
   align-self: baseline;
   @include m.typescale("label-small");
-  color: var(--#{c.$prefix}-list-item-supporting-color);
+  color: #{v("list-item-supporting-color")};
 }
 
 // Chrome donut: bare-element defaults for item furniture stop at the slot.
@@ -315,7 +326,7 @@
 
     small {
       @include m.typescale("label-small");
-      color: var(--#{c.$prefix}-list-item-supporting-color);
+      color: #{v("list-item-supporting-color")};
     }
   }
 }

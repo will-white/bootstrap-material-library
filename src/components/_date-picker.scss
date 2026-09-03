@@ -116,30 +116,39 @@
 @use "../mixins" as m;
 @use "button" as btn;
 
-@mixin tokens {
-  --#{c.$prefix}-date-picker-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container-high);
-  --#{c.$prefix}-date-picker-content-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-date-picker-shape: var(--#{c.$sys-prefix}-sys-shape-corner-large);
-  --#{c.$prefix}-date-picker-width: #{fn.rem(360)};
-  --#{c.$prefix}-date-picker-modal-width: #{fn.rem(328)};
-  --#{c.$prefix}-date-picker-padding: var(--#{c.$prefix}-sys-space-3);
-  --#{c.$prefix}-date-picker-header-height: #{fn.rem(120)};
-  --#{c.$prefix}-date-picker-cell-size: #{fn.rem(48)};
-  --#{c.$prefix}-date-picker-day-size: #{fn.rem(40)};
-  --#{c.$prefix}-date-picker-day-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
-  --#{c.$prefix}-date-picker-day-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-date-picker-weekday-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-date-picker-outside-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-date-picker-today-color: var(--#{c.$sys-prefix}-sys-color-primary);
-  --#{c.$prefix}-date-picker-selected-container-color: var(--#{c.$sys-prefix}-sys-color-primary);
-  --#{c.$prefix}-date-picker-selected-color: var(--#{c.$sys-prefix}-sys-color-on-primary);
-  --#{c.$prefix}-date-picker-range-container-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
-  --#{c.$prefix}-date-picker-range-color: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
-  --#{c.$prefix}-date-picker-menu-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-date-picker-supporting-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-date-picker-headline-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-date-picker-divider-color: var(--#{c.$sys-prefix}-sys-color-outline-variant);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "date-picker-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-high),
+  "date-picker-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "date-picker-shape": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+  "date-picker-width": #{fn.rem(360)},
+  "date-picker-modal-width": #{fn.rem(328)},
+  "date-picker-padding": var(--#{c.$prefix}-sys-space-3),
+  "date-picker-header-height": #{fn.rem(120)},
+  "date-picker-cell-size": #{fn.rem(48)},
+  "date-picker-day-size": #{fn.rem(40)},
+  "date-picker-day-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
+  "date-picker-day-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "date-picker-weekday-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "date-picker-outside-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "date-picker-today-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "date-picker-selected-container-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "date-picker-selected-color": var(--#{c.$sys-prefix}-sys-color-on-primary),
+  "date-picker-range-container-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
+  "date-picker-range-color": var(--#{c.$sys-prefix}-sys-color-on-secondary-container),
+  "date-picker-menu-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "date-picker-supporting-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "date-picker-headline-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "date-picker-divider-color": var(--#{c.$sys-prefix}-sys-color-outline-variant),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // --- surface ----------------------------------------------------------------
 
@@ -150,11 +159,11 @@
   @include m.own-box;
   display: flex;
   flex-direction: column;
-  inline-size: var(--#{c.$prefix}-date-picker-width);
+  inline-size: #{v("date-picker-width")};
   max-inline-size: 100%;
-  background-color: var(--#{c.$prefix}-date-picker-container-color);
-  color: var(--#{c.$prefix}-date-picker-content-color);
-  border-radius: var(--#{c.$prefix}-date-picker-shape);
+  background-color: #{v("date-picker-container-color")};
+  color: #{v("date-picker-content-color")};
+  border-radius: #{v("date-picker-shape")};
   @include m.elevation(3);
 }
 
@@ -164,8 +173,8 @@
   --#{c.$prefix}-date-picker-width: #{fn.rem(360)};
   --#{c.$prefix}-date-picker-padding: var(--#{c.$prefix}-sys-space-3);
   --#{c.$prefix}-date-picker-cell-size: #{fn.rem(48)};
-  background-color: var(--#{c.$prefix}-date-picker-container-color);
-  border-radius: var(--#{c.$prefix}-date-picker-shape);
+  background-color: #{v("date-picker-container-color")};
+  border-radius: #{v("date-picker-shape")};
   @include m.elevation(3);
 }
 
@@ -173,9 +182,9 @@
 // the picker keeps only layout. Modal metrics: 328 wide, 24px inline
 // padding, 40px cells (the day circle fills its cell).
 @mixin modal {
-  --#{c.$prefix}-date-picker-width: var(--#{c.$prefix}-date-picker-modal-width);
+  --#{c.$prefix}-date-picker-width: #{v("date-picker-modal-width")};
   --#{c.$prefix}-date-picker-padding: var(--#{c.$prefix}-sys-space-5);
-  --#{c.$prefix}-date-picker-cell-size: var(--#{c.$prefix}-date-picker-day-size);
+  --#{c.$prefix}-date-picker-cell-size: #{v("date-picker-day-size")};
   background-color: transparent;
   border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
   box-shadow: none;
@@ -189,17 +198,17 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-block-size: var(--#{c.$prefix}-date-picker-header-height);
+  min-block-size: #{v("date-picker-header-height")};
   padding-block: var(--#{c.$prefix}-sys-space-4) var(--#{c.$prefix}-sys-space-3);
   padding-inline: var(--#{c.$prefix}-sys-space-5);
   border-block-end: var(--#{c.$prefix}-sys-stroke-hairline) solid
-    var(--#{c.$prefix}-date-picker-divider-color);
+    #{v("date-picker-divider-color")};
 }
 
 @mixin supporting {
   @include m.own-box;
   display: block;
-  color: var(--#{c.$prefix}-date-picker-supporting-color);
+  color: #{v("date-picker-supporting-color")};
   @include m.typescale("label-medium");
 }
 
@@ -211,7 +220,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--#{c.$prefix}-sys-space-2);
-  color: var(--#{c.$prefix}-date-picker-headline-color);
+  color: #{v("date-picker-headline-color")};
   @include m.typescale("headline-large");
 }
 
@@ -224,7 +233,7 @@
   justify-content: space-between;
   gap: var(--#{c.$prefix}-sys-space-2);
   padding-block: var(--#{c.$prefix}-sys-space-2) var(--#{c.$prefix}-sys-space-1);
-  padding-inline: var(--#{c.$prefix}-date-picker-padding);
+  padding-inline: #{v("date-picker-padding")};
 }
 
 // Month/year menu trigger: the text-button look (button mixins) in the
@@ -234,7 +243,7 @@
   @include m.own-box;
   @include btn.base;
   @include btn.text-variant;
-  --_content: var(--#{c.$prefix}-date-picker-menu-color);
+  --_content: #{v("date-picker-menu-color")};
   gap: var(--#{c.$prefix}-sys-space-2);
 
   &::after {
@@ -271,12 +280,12 @@
   display: grid;
   grid-template-columns: repeat(
     7,
-    minmax(var(--#{c.$prefix}-date-picker-day-size), 1fr)
+    minmax(#{v("date-picker-day-size")}, 1fr)
   );
-  grid-auto-rows: var(--#{c.$prefix}-date-picker-cell-size);
+  grid-auto-rows: #{v("date-picker-cell-size")};
   justify-items: center;
   align-items: center;
-  padding-inline: var(--#{c.$prefix}-date-picker-padding);
+  padding-inline: #{v("date-picker-padding")};
 }
 
 @mixin weekday {
@@ -286,7 +295,7 @@
   justify-content: center;
   inline-size: 100%;
   block-size: 100%;
-  color: var(--#{c.$prefix}-date-picker-weekday-color);
+  color: #{v("date-picker-weekday-color")};
   user-select: none;
   @include m.typescale("body-large");
 }
@@ -299,16 +308,16 @@
 @mixin day {
   @include m.own-box;
   --_container: transparent;
-  --_content: var(--#{c.$prefix}-date-picker-day-color);
+  --_content: #{v("date-picker-day-color")};
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: var(--#{c.$prefix}-date-picker-day-size);
-  block-size: var(--#{c.$prefix}-date-picker-day-size);
+  inline-size: #{v("date-picker-day-size")};
+  block-size: #{v("date-picker-day-size")};
   padding: var(--#{c.$prefix}-sys-space-none);
   border: none;
-  border-radius: var(--#{c.$prefix}-date-picker-day-shape);
+  border-radius: #{v("date-picker-day-shape")};
   isolation: isolate;
   cursor: pointer;
   user-select: none;
@@ -330,37 +339,37 @@
     inset-block: var(--#{c.$prefix}-sys-space-none);
     inset-inline: calc(
       (
-          var(--#{c.$prefix}-date-picker-day-size) -
-            var(--#{c.$prefix}-date-picker-cell-size)
+          #{v("date-picker-day-size")} -
+            #{v("date-picker-cell-size")}
         ) / 2
     );
-    background-color: var(--#{c.$prefix}-date-picker-range-container-color);
+    background-color: #{v("date-picker-range-container-color")};
   }
 }
 
 // Today: primary ring (inset shadow: no layout shift, and it vanishes under
 // a filled selection) and primary label.
 @mixin day-today {
-  --_content: var(--#{c.$prefix}-date-picker-today-color);
+  --_content: #{v("date-picker-today-color")};
   box-shadow: inset 0 0 0 var(--#{c.$prefix}-sys-stroke-hairline)
-    var(--#{c.$prefix}-date-picker-today-color);
+    #{v("date-picker-today-color")};
 }
 
 // Adjacent-month day.
 @mixin day-outside {
-  --_content: var(--#{c.$prefix}-date-picker-outside-color);
+  --_content: #{v("date-picker-outside-color")};
 }
 
 // The selected day: filled circle.
 @mixin day-selected {
-  --_container: var(--#{c.$prefix}-date-picker-selected-container-color);
-  --_content: var(--#{c.$prefix}-date-picker-selected-color);
+  --_container: #{v("date-picker-selected-container-color")};
+  --_content: #{v("date-picker-selected-color")};
 }
 
 // Inside a range: transparent circle over the band.
 @mixin day-range {
   --_container: transparent;
-  --_content: var(--#{c.$prefix}-date-picker-range-color);
+  --_content: #{v("date-picker-range-color")};
 
   &::before {
     display: block;
@@ -369,8 +378,8 @@
 
 // Range ends: filled circle, band from the circle's center outward only.
 @mixin day-range-start {
-  --_container: var(--#{c.$prefix}-date-picker-selected-container-color);
-  --_content: var(--#{c.$prefix}-date-picker-selected-color);
+  --_container: #{v("date-picker-selected-container-color")};
+  --_content: #{v("date-picker-selected-color")};
 
   &::before {
     display: block;
@@ -379,8 +388,8 @@
 }
 
 @mixin day-range-end {
-  --_container: var(--#{c.$prefix}-date-picker-selected-container-color);
-  --_content: var(--#{c.$prefix}-date-picker-selected-color);
+  --_container: #{v("date-picker-selected-container-color")};
+  --_content: #{v("date-picker-selected-color")};
 
   &::before {
     display: block;
@@ -400,7 +409,7 @@
 @mixin input-row {
   @include m.own-region;
   display: block;
-  padding-inline: var(--#{c.$prefix}-date-picker-padding);
+  padding-inline: #{v("date-picker-padding")};
   padding-block: var(--#{c.$prefix}-sys-space-2);
 }
 
@@ -409,8 +418,8 @@
   display: flex;
   justify-content: flex-end;
   gap: var(--#{c.$prefix}-sys-space-2);
-  padding-inline: var(--#{c.$prefix}-date-picker-padding);
-  padding-block: var(--#{c.$prefix}-sys-space-2) var(--#{c.$prefix}-date-picker-padding);
+  padding-inline: #{v("date-picker-padding")};
+  padding-block: var(--#{c.$prefix}-sys-space-2) #{v("date-picker-padding")};
 }
 
 // --- class emission ---------------------------------------------------------

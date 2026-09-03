@@ -36,18 +36,27 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-chip-height: #{fn.rem(32)};
-  --#{c.$prefix}-chip-shape: var(--#{c.$sys-prefix}-sys-shape-corner-small);
-  --#{c.$prefix}-chip-outline-color: var(--#{c.$sys-prefix}-sys-color-outline);
-  --#{c.$prefix}-chip-label-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-chip-selected-container-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
-  --#{c.$prefix}-chip-selected-label-color: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
-  --#{c.$prefix}-chip-elevated-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container-low);
-  --#{c.$prefix}-chip-icon-size: var(--#{c.$prefix}-sys-icon-size-small);
-  --#{c.$prefix}-chip-padding-inline: var(--#{c.$prefix}-sys-space-4);
-  --#{c.$prefix}-chip-padding-inline-icon: var(--#{c.$prefix}-sys-space-2);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "chip-height": #{fn.rem(32)},
+  "chip-shape": var(--#{c.$sys-prefix}-sys-shape-corner-small),
+  "chip-outline-color": var(--#{c.$sys-prefix}-sys-color-outline),
+  "chip-label-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "chip-selected-container-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
+  "chip-selected-label-color": var(--#{c.$sys-prefix}-sys-color-on-secondary-container),
+  "chip-elevated-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-low),
+  "chip-icon-size": var(--#{c.$prefix}-sys-icon-size-small),
+  "chip-padding-inline": var(--#{c.$prefix}-sys-space-4),
+  "chip-padding-inline-icon": var(--#{c.$prefix}-sys-space-2),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // Shared shell: outline, shape, height, typography. Variants add the state
 // machinery (on the root for button chips, on the label for checkbox chips).
@@ -58,10 +67,10 @@
   display: inline-flex;
   align-items: center;
   gap: var(--#{c.$prefix}-sys-space-2);
-  @include m.control-height(--#{c.$prefix}-chip-height);
-  border-radius: var(--#{c.$prefix}-chip-shape);
-  border: var(--#{c.$prefix}-sys-stroke-hairline) solid var(--#{c.$prefix}-chip-outline-color);
-  padding-inline: var(--#{c.$prefix}-chip-padding-inline);
+  @include m.control-height(v("chip-height"));
+  border-radius: #{v("chip-shape")};
+  border: var(--#{c.$prefix}-sys-stroke-hairline) solid #{v("chip-outline-color")};
+  padding-inline: #{v("chip-padding-inline")};
   background-color: transparent;
   cursor: pointer;
   @include m.typescale("label-large");
@@ -70,14 +79,14 @@
   // a leading icon. Without :has() every chip keeps the 16dp default, which
   // is the spec value for the icon-less chip.
   &:has(> :is(svg, img, .#{c.$prefix}-icon):first-child) {
-    padding-inline-start: var(--#{c.$prefix}-chip-padding-inline-icon);
+    padding-inline-start: #{v("chip-padding-inline-icon")};
   }
 }
 
 // Assist chip: a plain <button>; the root carries the state layer.
 @mixin assist {
   --_container: transparent;
-  --_content: var(--#{c.$prefix}-chip-label-color);
+  --_content: #{v("chip-label-color")};
   @include m.state-layer;
   @include m.focus-ring;
   @include m.transition((background-color, color));
@@ -114,7 +123,7 @@
     @include m.own-box;
     @include m.typescale("label-large");
     --_container: transparent;
-    --_content: var(--#{c.$prefix}-chip-label-color);
+    --_content: #{v("chip-label-color")};
     --_state-color: var(--_content);
     --_state-opacity: var(--#{c.$sys-prefix}-sys-state-none);
 
@@ -123,7 +132,7 @@
     align-items: center;
     justify-content: center;
     gap: var(--#{c.$prefix}-sys-space-2);
-    padding-inline: var(--#{c.$prefix}-chip-padding-inline);
+    padding-inline: #{v("chip-padding-inline")};
     border-radius: inherit;
     block-size: 100%;
     color: var(--_content);
@@ -139,7 +148,7 @@
       @include m.own-pseudo;
       content: "";
       display: none;
-      @include m.check-glyph(var(--#{c.$prefix}-chip-icon-size), var(--#{c.$prefix}-sys-stroke-thick));
+      @include m.check-glyph(#{v("chip-icon-size")}, var(--#{c.$prefix}-sys-stroke-thick));
     }
   }
 
@@ -158,9 +167,9 @@
   .#{c.$prefix}-chip__input:checked + .#{c.$prefix}-chip__label {
     --#{c.$prefix}-icon-fill: 1;
     // The checkmark is a leading icon, so the leading space narrows with it.
-    padding-inline-start: var(--#{c.$prefix}-chip-padding-inline-icon);
-    --_container: var(--#{c.$prefix}-chip-selected-container-color);
-    --_content: var(--#{c.$prefix}-chip-selected-label-color);
+    padding-inline-start: #{v("chip-padding-inline-icon")};
+    --_container: #{v("chip-selected-container-color")};
+    --_content: #{v("chip-selected-label-color")};
 
     &::before {
       display: inline-block;
@@ -187,7 +196,7 @@
 // (which inherits the chip's label color from the root).
 @mixin input-chip {
   @include filter;
-  color: var(--#{c.$prefix}-chip-label-color);
+  color: #{v("chip-label-color")};
   padding-inline-end: var(--#{c.$prefix}-sys-space-2);
 
   .#{c.$prefix}-chip__label {
@@ -196,7 +205,7 @@
 
   // Enhancement only: tint the remove icon with the selected label color.
   &:has(.#{c.$prefix}-chip__input:checked) {
-    color: var(--#{c.$prefix}-chip-selected-label-color);
+    color: #{v("chip-selected-label-color")};
   }
 }
 
@@ -208,8 +217,8 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  inline-size: var(--#{c.$prefix}-chip-icon-size);
-  block-size: var(--#{c.$prefix}-chip-icon-size);
+  inline-size: #{v("chip-icon-size")};
+  block-size: #{v("chip-icon-size")};
   border: none;
   border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   padding: var(--#{c.$prefix}-sys-space-none);
@@ -217,7 +226,7 @@
   color: inherit;
   cursor: pointer;
   @include m.cross-icon(
-    calc(var(--#{c.$prefix}-chip-icon-size) - var(--#{c.$prefix}-sys-space-1)),
+    calc(#{v("chip-icon-size")} - var(--#{c.$prefix}-sys-space-1)),
     var(--#{c.$prefix}-sys-stroke-thick)
   );
   @include m.focus-ring;
@@ -235,12 +244,12 @@
 // re-points --_container so every variant's state compositing keeps working;
 // emitted after the variants so it wins the custom-property cascade.
 @mixin elevated {
-  --_container: var(--#{c.$prefix}-chip-elevated-container-color);
+  --_container: #{v("chip-elevated-container-color")};
   border: none;
   @include m.elevation(1);
 
   .#{c.$prefix}-chip__label {
-    --_container: var(--#{c.$prefix}-chip-elevated-container-color);
+    --_container: #{v("chip-elevated-container-color")};
   }
 }
 

@@ -46,19 +46,28 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-fab-menu-item-height: #{fn.rem(56)};
-  --#{c.$prefix}-fab-menu-item-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
-  --#{c.$prefix}-fab-menu-item-container-color: var(--#{c.$sys-prefix}-sys-color-primary-container);
-  --#{c.$prefix}-fab-menu-item-content-color: var(--#{c.$sys-prefix}-sys-color-on-primary-container);
-  --#{c.$prefix}-fab-menu-item-padding-inline: var(--#{c.$prefix}-sys-space-4);
-  --#{c.$prefix}-fab-menu-item-icon-gap: var(--#{c.$prefix}-sys-space-2);
-  --#{c.$prefix}-fab-menu-item-icon-size: var(--#{c.$prefix}-sys-icon-size);
-  --#{c.$prefix}-fab-menu-gap: var(--#{c.$prefix}-sys-space-1);
-  --#{c.$prefix}-fab-menu-offset: var(--#{c.$prefix}-sys-space-2);
-  --#{c.$prefix}-fab-menu-open-container-color: var(--#{c.$sys-prefix}-sys-color-primary);
-  --#{c.$prefix}-fab-menu-open-content-color: var(--#{c.$sys-prefix}-sys-color-on-primary);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "fab-menu-item-height": #{fn.rem(56)},
+  "fab-menu-item-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
+  "fab-menu-item-container-color": var(--#{c.$sys-prefix}-sys-color-primary-container),
+  "fab-menu-item-content-color": var(--#{c.$sys-prefix}-sys-color-on-primary-container),
+  "fab-menu-item-padding-inline": var(--#{c.$prefix}-sys-space-4),
+  "fab-menu-item-icon-gap": var(--#{c.$prefix}-sys-space-2),
+  "fab-menu-item-icon-size": var(--#{c.$prefix}-sys-icon-size),
+  "fab-menu-gap": var(--#{c.$prefix}-sys-space-1),
+  "fab-menu-offset": var(--#{c.$prefix}-sys-space-2),
+  "fab-menu-open-container-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "fab-menu-open-content-color": var(--#{c.$sys-prefix}-sys-color-on-primary),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // Root: the anchor context. Its box is the fab's box (the popover leaves
 // flow when open), so the item stack anchors to it.
@@ -84,8 +93,8 @@
 // Open state of the fab: primary surface, icon rotated a quarter-turn less
 // half (plus -> cross). :popover-open stands alone in its selector.
 @mixin fab-open {
-  --_container: var(--#{c.$prefix}-fab-menu-open-container-color);
-  --_content: var(--#{c.$prefix}-fab-menu-open-content-color);
+  --_container: #{v("fab-menu-open-container-color")};
+  --_content: #{v("fab-menu-open-content-color")};
 
   > svg,
   > img {
@@ -100,8 +109,8 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: var(--#{c.$prefix}-fab-menu-gap);
-  color: var(--#{c.$prefix}-fab-menu-item-content-color);
+  gap: #{v("fab-menu-gap")};
+  color: #{v("fab-menu-item-content-color")};
 }
 
 // The UA [popover] layout, restated because the box is owned. margin: auto
@@ -130,7 +139,7 @@
     position-try-fallbacks: flip-block;
     inset: auto;
     margin: var(--#{c.$prefix}-sys-space-none);
-    margin-block: var(--#{c.$prefix}-fab-menu-offset);
+    margin-block: #{v("fab-menu-offset")};
   }
 }
 
@@ -155,18 +164,18 @@
 // One item: an extended-fab-like pill (<button> or <a>), state-layered.
 @mixin item {
   @include m.own-box;
-  --_container: var(--#{c.$prefix}-fab-menu-item-container-color);
-  --_content: var(--#{c.$prefix}-fab-menu-item-content-color);
+  --_container: #{v("fab-menu-item-container-color")};
+  --_content: #{v("fab-menu-item-content-color")};
 
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--#{c.$prefix}-fab-menu-item-icon-gap);
-  @include m.control-height(--#{c.$prefix}-fab-menu-item-height);
-  padding-inline: var(--#{c.$prefix}-fab-menu-item-padding-inline);
+  gap: #{v("fab-menu-item-icon-gap")};
+  @include m.control-height(v("fab-menu-item-height"));
+  padding-inline: #{v("fab-menu-item-padding-inline")};
   border: none;
-  border-radius: var(--#{c.$prefix}-fab-menu-item-shape);
+  border-radius: #{v("fab-menu-item-shape")};
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
@@ -187,9 +196,9 @@
   > svg,
   > img,
   > .#{c.$prefix}-icon {
-    inline-size: var(--#{c.$prefix}-fab-menu-item-icon-size);
-    font-size: var(--#{c.$prefix}-fab-menu-item-icon-size);
-    block-size: var(--#{c.$prefix}-fab-menu-item-icon-size);
+    inline-size: #{v("fab-menu-item-icon-size")};
+    font-size: #{v("fab-menu-item-icon-size")};
+    block-size: #{v("fab-menu-item-icon-size")};
   }
 
   &:disabled,

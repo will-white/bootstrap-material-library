@@ -17,18 +17,27 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-divider-color: var(--#{c.$sys-prefix}-sys-color-outline-variant);
-  --#{c.$prefix}-divider-thickness: var(--#{c.$prefix}-sys-stroke-hairline);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "divider-color": var(--#{c.$sys-prefix}-sys-color-outline-variant),
+  "divider-thickness": var(--#{c.$prefix}-sys-stroke-hairline),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // Horizontal rule (the default on <hr>).
 @mixin rule {
   @include m.own-box;
   display: block;
   border: none;
-  border-block-start: var(--#{c.$prefix}-divider-thickness) solid
-    var(--#{c.$prefix}-divider-color);
+  border-block-start: #{v("divider-thickness")} solid
+    #{v("divider-color")};
   margin-block: var(--#{c.$prefix}-sys-space-2);
 }
 
@@ -46,8 +55,8 @@
 @mixin vertical {
   display: inline-block;
   border-block-start: none;
-  border-inline-start: var(--#{c.$prefix}-divider-thickness) solid
-    var(--#{c.$prefix}-divider-color);
+  border-inline-start: #{v("divider-thickness")} solid
+    #{v("divider-color")};
   block-size: auto;
   align-self: stretch;
   margin-inline: var(--#{c.$prefix}-sys-space-2);

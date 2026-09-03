@@ -37,25 +37,34 @@
 @use "../functions" as fn;
 @use "../mixins" as m;
 
-@mixin tokens {
-  --#{c.$prefix}-field-height: #{fn.rem(56)};
-  --#{c.$prefix}-field-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container-highest);
-  --#{c.$prefix}-field-shape: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
-  --#{c.$prefix}-field-content-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-  --#{c.$prefix}-field-label-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-field-focus-color: var(--#{c.$sys-prefix}-sys-color-primary);
-  --#{c.$prefix}-field-error-color: var(--#{c.$sys-prefix}-sys-color-error);
-  --#{c.$prefix}-field-valid-color: var(--#{c.$sys-prefix}-extended-color-success);
-  --#{c.$prefix}-field-supporting-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-field-indicator-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-  --#{c.$prefix}-field-indicator-width: var(--#{c.$prefix}-sys-stroke-hairline);
-  --#{c.$prefix}-field-indicator-width-focus: var(--#{c.$prefix}-sys-stroke-heavy);
-  --#{c.$prefix}-field-outline-color: var(--#{c.$sys-prefix}-sys-color-outline);
-  --#{c.$prefix}-field-outline-width: var(--#{c.$prefix}-sys-stroke-hairline);
-  --#{c.$prefix}-field-outline-width-focus: var(--#{c.$prefix}-sys-stroke-heavy);
-  --#{c.$prefix}-field-label-bg: var(--#{c.$sys-prefix}-sys-color-surface);
-  --#{c.$prefix}-field-padding-inline: var(--#{c.$prefix}-sys-space-4);
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "field-height": #{fn.rem(56)},
+  "field-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-highest),
+  "field-shape": var(--#{c.$sys-prefix}-sys-shape-corner-extra-small),
+  "field-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "field-label-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "field-focus-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "field-error-color": var(--#{c.$sys-prefix}-sys-color-error),
+  "field-valid-color": var(--#{c.$sys-prefix}-extended-color-success),
+  "field-supporting-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "field-indicator-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "field-indicator-width": var(--#{c.$prefix}-sys-stroke-hairline),
+  "field-indicator-width-focus": var(--#{c.$prefix}-sys-stroke-heavy),
+  "field-outline-color": var(--#{c.$sys-prefix}-sys-color-outline),
+  "field-outline-width": var(--#{c.$prefix}-sys-stroke-hairline),
+  "field-outline-width-focus": var(--#{c.$prefix}-sys-stroke-heavy),
+  "field-label-bg": var(--#{c.$sys-prefix}-sys-color-surface),
+  "field-padding-inline": var(--#{c.$prefix}-sys-space-4),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
 }
+
 
 // Positioning context for the floated label.
 @mixin wrapper {
@@ -69,14 +78,14 @@
 // Shared input rules for both variants.
 @mixin input-base {
   @include m.own-box;
-  --_content: var(--#{c.$prefix}-field-content-color);
+  --_content: #{v("field-content-color")};
 
   display: block;
   inline-size: 100%;
-  @include m.control-min-height(--#{c.$prefix}-field-height);
-  padding-inline: var(--#{c.$prefix}-field-padding-inline);
+  @include m.control-min-height(v("field-height"));
+  padding-inline: #{v("field-padding-inline")};
   color: var(--_content);
-  caret-color: var(--#{c.$prefix}-field-focus-color);
+  caret-color: #{v("field-focus-color")};
   cursor: text;
   appearance: none;
 
@@ -97,7 +106,7 @@
   @include m.transition((background-color, border-color, box-shadow));
 
   &::placeholder {
-    color: var(--#{c.$prefix}-field-label-color);
+    color: #{v("field-label-color")};
     opacity: var(--#{c.$prefix}-sys-opacity-full);
   }
 
@@ -126,21 +135,21 @@
 // reads error at the resting 1px -- both as M3 specifies, with no
 // combinatorial focus x validity rules.
 @mixin filled-invalid-state {
-  --_indicator: var(--#{c.$prefix}-field-error-color);
-  caret-color: var(--#{c.$prefix}-field-error-color);
+  --_indicator: #{v("field-error-color")};
+  caret-color: #{v("field-error-color")};
 }
 
 @mixin filled-valid-state {
-  --_indicator: var(--#{c.$prefix}-field-valid-color);
+  --_indicator: #{v("field-valid-color")};
 }
 
 @mixin outlined-invalid-state {
-  --_indicator: var(--#{c.$prefix}-field-error-color);
-  caret-color: var(--#{c.$prefix}-field-error-color);
+  --_indicator: #{v("field-error-color")};
+  caret-color: #{v("field-error-color")};
 }
 
 @mixin outlined-valid-state {
-  --_indicator: var(--#{c.$prefix}-field-valid-color);
+  --_indicator: #{v("field-valid-color")};
 }
 
 // Filled variant: container + active indicator drawn on the input itself so
@@ -149,16 +158,16 @@
   // Resting indicator on the border, the focused growth on an inset shadow
   // drawn inside it: 1px border + (3px - 1px) shadow = the 3px M3 asks for
   // when focused, with the border box -- and so the text -- never moving.
-  --_indicator: var(--#{c.$prefix}-field-indicator-color);
+  --_indicator: #{v("field-indicator-color")};
   --_indicator-grow: 0px;
 
-  background-color: var(--#{c.$prefix}-field-container-color);
+  background-color: #{v("field-container-color")};
   border: none;
-  border-block-end: var(--#{c.$prefix}-field-indicator-width) solid
+  border-block-end: #{v("field-indicator-width")} solid
     var(--_indicator);
   box-shadow: inset 0 calc(-1 * var(--_indicator-grow)) 0 0 var(--_indicator);
-  border-start-start-radius: var(--#{c.$prefix}-field-shape);
-  border-start-end-radius: var(--#{c.$prefix}-field-shape);
+  border-start-start-radius: #{v("field-shape")};
+  border-start-end-radius: #{v("field-shape")};
   border-end-start-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
   border-end-end-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
   padding-block-start: var(--#{c.$prefix}-sys-space-4);
@@ -169,17 +178,17 @@
       in srgb,
       var(--#{c.$sys-prefix}-sys-color-on-surface)
         var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity),
-      var(--#{c.$prefix}-field-container-color)
+      #{v("field-container-color")}
     );
   }
 
   &:focus,
   &:focus-visible {
     outline: none;
-    --_indicator: var(--#{c.$prefix}-field-focus-color);
+    --_indicator: #{v("field-focus-color")};
     --_indicator-grow: calc(
-      var(--#{c.$prefix}-field-indicator-width-focus) -
-        var(--#{c.$prefix}-field-indicator-width)
+      #{v("field-indicator-width-focus")} -
+        #{v("field-indicator-width")}
     );
   }
 
@@ -208,12 +217,12 @@
   // Same trick as the filled variant: the outline grows inward on an inset
   // shadow so a focused outline measures the 3px M3 asks for without the
   // border box (and the text inside it) moving.
-  --_indicator: var(--#{c.$prefix}-field-outline-color);
+  --_indicator: #{v("field-outline-color")};
   --_indicator-grow: 0px;
 
   background-color: transparent;
-  border: var(--#{c.$prefix}-field-outline-width) solid var(--_indicator);
-  border-radius: var(--#{c.$prefix}-field-shape);
+  border: #{v("field-outline-width")} solid var(--_indicator);
+  border-radius: #{v("field-shape")};
   padding-block: var(--#{c.$prefix}-sys-space-3);
   box-shadow: inset 0 0 0 var(--_indicator-grow) var(--_indicator);
 
@@ -224,10 +233,10 @@
   &:focus,
   &:focus-visible {
     outline: none;
-    --_indicator: var(--#{c.$prefix}-field-focus-color);
+    --_indicator: #{v("field-focus-color")};
     --_indicator-grow: calc(
-      var(--#{c.$prefix}-field-outline-width-focus) -
-        var(--#{c.$prefix}-field-outline-width)
+      #{v("field-outline-width-focus")} -
+        #{v("field-outline-width")}
     );
   }
 
@@ -254,12 +263,12 @@
   @include m.own-box;
   display: block;
   position: absolute;
-  inset-inline-start: var(--#{c.$prefix}-field-padding-inline);
+  inset-inline-start: #{v("field-padding-inline")};
   inset-block-start: calc(
-    (var(--#{c.$prefix}-field-height) + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)) / 2
+    (#{v("field-height")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)) / 2
   );
   translate: 0 -50%;
-  color: var(--#{c.$prefix}-field-label-color);
+  color: #{v("field-label-color")};
   pointer-events: none;
   transform-origin: left top;
   @include m.typescale("body-large");
@@ -278,16 +287,16 @@
   inset-block-start: var(--#{c.$prefix}-sys-space-none);
   translate: 0 -50%;
   padding-inline: var(--#{c.$prefix}-sys-space-1);
-  background-color: var(--#{c.$prefix}-field-label-bg);
+  background-color: #{v("field-label-bg")};
   @include m.typescale("body-small");
 }
 
 @mixin label-focused {
-  color: var(--#{c.$prefix}-field-focus-color);
+  color: #{v("field-focus-color")};
 }
 
 @mixin label-invalid {
-  color: var(--#{c.$prefix}-field-error-color);
+  color: #{v("field-error-color")};
 }
 
 // --- supporting text --------------------------------------------------------
@@ -295,18 +304,18 @@
 @mixin supporting {
   @include m.own-box;
   display: block;
-  padding-inline: var(--#{c.$prefix}-field-padding-inline);
+  padding-inline: #{v("field-padding-inline")};
   padding-block-start: var(--#{c.$prefix}-sys-space-1);
-  color: var(--#{c.$prefix}-field-supporting-color);
+  color: #{v("field-supporting-color")};
   @include m.typescale("body-small");
 }
 
 @mixin supporting-invalid {
-  color: var(--#{c.$prefix}-field-error-color);
+  color: #{v("field-error-color")};
 }
 
 @mixin supporting-valid {
-  color: var(--#{c.$prefix}-field-valid-color);
+  color: #{v("field-valid-color")};
 }
 
 // --- class emission ---------------------------------------------------------
@@ -333,7 +342,7 @@
   textarea.#{$p}-field__input {
     block-size: auto;
     min-block-size: calc(
-      var(--#{$p}-field-height) + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
+      #{v("field-height")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
     );
     resize: vertical;
 
