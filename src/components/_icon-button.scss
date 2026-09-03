@@ -120,7 +120,8 @@
   );
   padding: var(--m3-space-none);
   border: none;
-  border-radius: var(--#{c.$prefix}-icon-btn-shape);
+  @include m.pill-radius(--#{c.$prefix}-icon-btn-size);
+  border-radius: m.pill(var(--#{c.$prefix}-icon-btn-shape));
   cursor: pointer;
   user-select: none;
   text-decoration: none;
@@ -145,14 +146,15 @@
     --#{c.$prefix}-icon-optical-size: var(--#{c.$prefix}-icon-btn-icon-optical-size);
   }
 
-  // M3 Expressive shape morphs (see button.scss).
+  // M3 Expressive shape morphs (see button.scss); m.pill() keeps "full"
+  // finite so the spring interpolates.
   &:active {
-    border-radius: var(--#{c.$prefix}-icon-btn-shape-pressed);
+    border-radius: m.pill(var(--#{c.$prefix}-icon-btn-shape-pressed));
   }
   &[aria-pressed="true"],
   #{$check}:checked + & {
     --m3-icon-fill: 1;
-    border-radius: var(--#{c.$prefix}-icon-btn-shape-selected);
+    border-radius: m.pill(var(--#{c.$prefix}-icon-btn-shape-selected));
   }
 
   &[aria-pressed="true"] {
@@ -244,6 +246,7 @@
   --#{c.$prefix}-icon-btn-icon-size: var(--m3-icon-size-small);
   --#{c.$prefix}-icon-btn-icon-optical-size: var(--#{c.$prefix}-icon-btn-icon-optical-size-xs);
   @include m.control-height(--#{c.$prefix}-icon-btn-size-small);
+  @include m.pill-radius(--#{c.$prefix}-icon-btn-size-small);
   inline-size: calc(
     var(--#{c.$prefix}-icon-btn-size-small) + var(--m3-density) * var(--m3-density-step)
   );
@@ -287,12 +290,12 @@
 // Square shape: the radius follows the size via the --m3-icon-btn-shape-square
 // token the size modifiers re-point.
 @mixin square($check: ".#{c.$prefix}-btn-check") {
-  border-radius: var(--#{c.$prefix}-icon-btn-shape-square);
+  border-radius: m.pill(var(--#{c.$prefix}-icon-btn-shape-square));
 
   // Square toggles morph the other way: round when selected.
   &[aria-pressed="true"],
   #{$check}:checked + & {
-    border-radius: var(--md-sys-shape-corner-full);
+    border-radius: m.pill(var(--md-sys-shape-corner-full));
   }
 }
 

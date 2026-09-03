@@ -5,6 +5,7 @@
 // live; components re-point custom properties and include these.
 // ============================================================================
 
+@use "sass:string";
 @use "sass:list";
 @use "sass:map";
 @use "config";
@@ -192,6 +193,26 @@
 
 @mixin control-min-height($height-token) {
   min-height: calc(var(#{$height-token}) + var(--m3-density) * var(--m3-density-step));
+}
+
+// --- shape morphs -----------------------------------------------------------
+//
+// --md-sys-shape-corner-full is 9999px: it renders as a pill but cannot
+// animate. A spring from 9999px to 8px shows nothing until its last frames,
+// and its overshoot below zero clamps to square corners, so a pressed pill
+// would flash square and snap. Components that morph their shape declare
+// --_pill-radius (half their rendered block size, density included) and wrap
+// every shape token they animate in pill(), so "full" resolves to the real
+// half-height and the spring runs between visible radii (20px to 8px on a
+// 40px button). Any smaller token passes through min() unchanged.
+@function pill($shape) {
+  @return string.unquote("min(#{$shape}, var(--_pill-radius))");
+}
+
+@mixin pill-radius($height-token) {
+  --_pill-radius: calc(
+    (var(#{$height-token}) + var(--m3-density) * var(--m3-density-step)) / 2
+  );
 }
 
 // --- box ownership ----------------------------------------------------------

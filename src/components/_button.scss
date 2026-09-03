@@ -116,9 +116,10 @@
   justify-content: center;
   gap: var(--#{c.$prefix}-btn-icon-gap);
   @include m.control-height(--#{c.$prefix}-btn-height);
+  @include m.pill-radius(--#{c.$prefix}-btn-height);
   padding-inline: var(--#{c.$prefix}-btn-padding-inline);
   border: none;
-  border-radius: var(--#{c.$prefix}-btn-shape);
+  border-radius: m.pill(var(--#{c.$prefix}-btn-shape));
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
@@ -147,13 +148,15 @@
 
   // M3 Expressive shape morphs: squarer while pressed, squarer still while
   // selected (toggle buttons). Connected groups override both at (0,3,0).
+  // Every animated radius goes through m.pill() so "full" is a finite,
+  // interpolable half-height (see the mixins).
   &:active {
-    border-radius: var(--#{c.$prefix}-btn-shape-pressed);
+    border-radius: m.pill(var(--#{c.$prefix}-btn-shape-pressed));
   }
   &[aria-pressed="true"],
   #{$check}:checked + & {
     --m3-icon-fill: 1;
-    border-radius: var(--#{c.$prefix}-btn-shape-selected);
+    border-radius: m.pill(var(--#{c.$prefix}-btn-shape-selected));
   }
 
   &:disabled,
@@ -281,12 +284,12 @@
 // Square shape (M3 Expressive "square" buttons): the radius follows the
 // size via the --m3-btn-shape-square token the size modifiers re-point.
 @mixin square($check: ".#{c.$prefix}-btn-check") {
-  border-radius: var(--#{c.$prefix}-btn-shape-square);
+  border-radius: m.pill(var(--#{c.$prefix}-btn-shape-square));
 
   // Square toggles morph the other way: round when selected.
   &[aria-pressed="true"],
   #{$check}:checked + & {
-    border-radius: var(--md-sys-shape-corner-full);
+    border-radius: m.pill(var(--md-sys-shape-corner-full));
   }
 }
 

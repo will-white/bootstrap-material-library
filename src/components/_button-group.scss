@@ -89,8 +89,10 @@ $members: ".#{c.$prefix}-btn, .#{c.$prefix}-icon-btn";
 @mixin connected($members: $members, $check: ".#{c.$prefix}-btn-check") {
   gap: var(--#{c.$prefix}-button-group-connected-gap);
 
+  // Members are buttons, so --_pill-radius (half their height) is theirs;
+  // m.pill() keeps the "full" outer and selected shapes animatable.
   > :is(#{$members}) {
-    border-radius: var(--#{c.$prefix}-button-group-shape);
+    border-radius: m.pill(var(--#{c.$prefix}-button-group-shape));
   }
 
   > :is(#{$members}) ~ :is(#{$members}) {
@@ -105,7 +107,7 @@ $members: ".#{c.$prefix}-btn, .#{c.$prefix}-icon-btn";
 
   > :is(#{$members}):is([aria-pressed="true"], .active),
   > #{$check}:checked + :is(#{$members}) {
-    border-radius: var(--#{c.$prefix}-button-group-selected-shape);
+    border-radius: m.pill(var(--#{c.$prefix}-button-group-selected-shape));
   }
 
   // Hit areas keep their 48dp block-axis overhang but never cross the seam:

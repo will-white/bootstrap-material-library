@@ -230,7 +230,7 @@
 
 @mixin -toggle-open {
   --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
-  border-radius: var(--md-sys-shape-corner-full);
+  border-radius: m.pill(var(--md-sys-shape-corner-full));
 
   &::after {
     rotate: 225deg;

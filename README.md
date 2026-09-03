@@ -353,7 +353,7 @@ components.
 | `--m3-btn-padding-inline-large` | `--m3-space-6` | |
 | `--m3-btn-icon-gap` | `--m3-space-2` | |
 | `--m3-btn-icon-size` | 18px | leading icon slot |
-| `--m3-btn-shape` | `corner-full` | |
+| `--m3-btn-shape` | `corner-full` | resolved to half the height for the morph |
 | `--m3-btn-outline-width` | `--m3-stroke-hairline` | outlined variant |
 | `--m3-btn-container-color` | `primary` | filled container |
 | `--m3-btn-label-color` | `on-primary` | filled label |
@@ -383,7 +383,13 @@ handles, menu entry and the shape morphs ride them; build your own with
 (`--m3-btn-shape-pressed`, per size) and when selected (`aria-pressed="true"`
 or a checked `.m3-btn-check`: `--m3-btn-shape-selected`); square toggles go
 round instead. Connected button groups and the dense toolbar keep their own
-geometry. Icon-button tokens mirror these (`--m3-icon-btn-shape-*`).
+geometry. Icon-button tokens mirror these (`--m3-icon-btn-shape-*`). The pill
+itself is animatable: `corner-full` is 9999px, which renders as a pill but
+cannot interpolate (a spring from 9999px to 8px shows nothing until its last
+frames, and its overshoot clamps to square corners), so every morphing control
+resolves its shape tokens against half its own height (`min()` with a private
+`--_pill-radius`) and the spring runs between real radii, 20px to 8px on a
+40px button. A smaller shape token passes through unchanged.
 
 **Pointer gating.** Every hover state in the library sits behind
 `@media (hover: hover)`, so a tap on a touch screen never leaves a control
@@ -859,7 +865,7 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
 
 ### Tests
 
-`npm test` runs four suites against the built CSS:
+`npm test` runs five suites against the built CSS:
 
 - **contrast** (`test/contrast.js`, no browser): reads the static sRGB tier
   and asserts M3's minimum ratios for every accent / on-accent, container /
@@ -878,6 +884,11 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
 - **icon** (`test/icon.js`): without an icon font a `.m3-icon` paints no text
   and keeps its box (the blank fallback face), containers set `opsz` to the
   icon size, and a selected control sets `FILL 1`.
+- **morph** (`test/morph.js`): a real press and release on a button and an
+  icon button, and a selection change on a connected-group member, sampled
+  every frame: the pill is half the height, the radius moves through visible
+  intermediate values, never clamps toward square, and settles on the target
+  shape.
 
 Chromium comes from `CHROME_PATH`, `npx playwright-core install chromium`, or
 a `PLAYWRIGHT_BROWSERS_PATH` directory, in that order. Stock `bootstrap.css`

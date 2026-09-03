@@ -2785,9 +2785,12 @@
       justify-content: center;
       gap: var(--m3-btn-icon-gap);
       height: calc(var(--m3-btn-height) + var(--m3-density) * var(--m3-density-step));
+      --_pill-radius: calc(
+        (var(--m3-btn-height) + var(--m3-density) * var(--m3-density-step)) / 2
+      );
       padding-inline: var(--m3-btn-padding-inline);
       border: none;
-      border-radius: var(--m3-btn-shape);
+      border-radius: min(var(--m3-btn-shape), var(--_pill-radius));
       cursor: pointer;
       user-select: none;
       white-space: nowrap;
@@ -2841,11 +2844,11 @@
       --m3-icon-optical-size: var(--m3-btn-icon-optical-size);
     }
     .btn:active {
-      border-radius: var(--m3-btn-shape-pressed);
+      border-radius: min(var(--m3-btn-shape-pressed), var(--_pill-radius));
     }
     .btn[aria-pressed=true], .btn-check:checked + .btn {
       --m3-icon-fill: 1;
-      border-radius: var(--m3-btn-shape-selected);
+      border-radius: min(var(--m3-btn-shape-selected), var(--_pill-radius));
     }
     .btn:disabled, .btn.disabled {
       --_container: color-mix(
@@ -3213,7 +3216,7 @@
       gap: var(--m3-button-group-connected-gap);
     }
     .btn-group > :is(.btn) {
-      border-radius: var(--m3-button-group-shape);
+      border-radius: min(var(--m3-button-group-shape), var(--_pill-radius));
     }
     .btn-group > :is(.btn) ~ :is(.btn) {
       border-start-start-radius: var(--m3-button-group-inner-shape);
@@ -3225,7 +3228,7 @@
     }
     .btn-group > :is(.btn):is([aria-pressed=true], .active),
     .btn-group > .btn-check:checked + :is(.btn) {
-      border-radius: var(--m3-button-group-selected-shape);
+      border-radius: min(var(--m3-button-group-selected-shape), var(--_pill-radius));
     }
     .btn-group > .m3-icon-btn::after {
       width: 100%;
@@ -3351,7 +3354,7 @@
     }
     .btn-group > .btn.dropdown-toggle-split[aria-expanded=true] {
       --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: min(var(--md-sys-shape-corner-full), var(--_pill-radius));
     }
     .btn-group > .btn.dropdown-toggle-split[aria-expanded=true]::after {
       rotate: 225deg;
@@ -3359,7 +3362,7 @@
     }
     .btn-group > .btn.dropdown-toggle-split:has(+ .m3-menu:popover-open) {
       --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: min(var(--md-sys-shape-corner-full), var(--_pill-radius));
     }
     .btn-group > .btn.dropdown-toggle-split:has(+ .m3-menu:popover-open)::after {
       rotate: 225deg;
@@ -3589,7 +3592,10 @@
       inline-size: calc(var(--m3-icon-btn-size) + var(--m3-density) * var(--m3-density-step));
       padding: var(--m3-space-none);
       border: none;
-      border-radius: var(--m3-icon-btn-shape);
+      --_pill-radius: calc(
+        (var(--m3-icon-btn-size) + var(--m3-density) * var(--m3-density-step)) / 2
+      );
+      border-radius: min(var(--m3-icon-btn-shape), var(--_pill-radius));
       cursor: pointer;
       user-select: none;
       text-decoration: none;
@@ -3648,11 +3654,11 @@
       --m3-icon-optical-size: var(--m3-icon-btn-icon-optical-size);
     }
     .btn-close:active {
-      border-radius: var(--m3-icon-btn-shape-pressed);
+      border-radius: min(var(--m3-icon-btn-shape-pressed), var(--_pill-radius));
     }
     .btn-close[aria-pressed=true], .m3-btn-check:checked + .btn-close {
       --m3-icon-fill: 1;
-      border-radius: var(--m3-icon-btn-shape-selected);
+      border-radius: min(var(--m3-icon-btn-shape-selected), var(--_pill-radius));
     }
     .btn-close[aria-pressed=true] {
       --m3-icon-fill: 1;
@@ -4713,7 +4719,10 @@
       inline-size: calc(var(--m3-icon-btn-size) + var(--m3-density) * var(--m3-density-step));
       padding: var(--m3-space-none);
       border: none;
-      border-radius: var(--m3-icon-btn-shape);
+      --_pill-radius: calc(
+        (var(--m3-icon-btn-size) + var(--m3-density) * var(--m3-density-step)) / 2
+      );
+      border-radius: min(var(--m3-icon-btn-shape), var(--_pill-radius));
       cursor: pointer;
       user-select: none;
       text-decoration: none;
@@ -4772,11 +4781,11 @@
       --m3-icon-optical-size: var(--m3-icon-btn-icon-optical-size);
     }
     .navbar-toggler:active {
-      border-radius: var(--m3-icon-btn-shape-pressed);
+      border-radius: min(var(--m3-icon-btn-shape-pressed), var(--_pill-radius));
     }
     .navbar-toggler[aria-pressed=true], .m3-btn-check:checked + .navbar-toggler {
       --m3-icon-fill: 1;
-      border-radius: var(--m3-icon-btn-shape-selected);
+      border-radius: min(var(--m3-icon-btn-shape-selected), var(--_pill-radius));
     }
     .navbar-toggler[aria-pressed=true] {
       --m3-icon-fill: 1;
@@ -9043,9 +9052,12 @@
       justify-content: center;
       gap: var(--m3-btn-icon-gap);
       height: calc(var(--m3-btn-height) + var(--m3-density) * var(--m3-density-step));
+      --_pill-radius: calc(
+        (var(--m3-btn-height) + var(--m3-density) * var(--m3-density-step)) / 2
+      );
       padding-inline: var(--m3-btn-padding-inline);
       border: none;
-      border-radius: var(--m3-btn-shape);
+      border-radius: min(var(--m3-btn-shape), var(--_pill-radius));
       cursor: pointer;
       user-select: none;
       white-space: nowrap;
@@ -9099,11 +9111,11 @@
       --m3-icon-optical-size: var(--m3-btn-icon-optical-size);
     }
     .m3-btn:active {
-      border-radius: var(--m3-btn-shape-pressed);
+      border-radius: min(var(--m3-btn-shape-pressed), var(--_pill-radius));
     }
     .m3-btn[aria-pressed=true], .m3-btn-check:checked + .m3-btn {
       --m3-icon-fill: 1;
-      border-radius: var(--m3-btn-shape-selected);
+      border-radius: min(var(--m3-btn-shape-selected), var(--_pill-radius));
     }
     .m3-btn:disabled, .m3-btn.disabled {
       --_container: color-mix(
@@ -9259,10 +9271,10 @@
       letter-spacing: var(--md-sys-typescale-headline-small-tracking);
     }
     .m3-btn--square {
-      border-radius: var(--m3-btn-shape-square);
+      border-radius: min(var(--m3-btn-shape-square), var(--_pill-radius));
     }
     .m3-btn--square[aria-pressed=true], .m3-btn-check:checked + .m3-btn--square {
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: min(var(--md-sys-shape-corner-full), var(--_pill-radius));
     }
     .m3-btn-group {
       display: inline-flex;
@@ -9298,7 +9310,10 @@
       inline-size: calc(var(--m3-icon-btn-size) + var(--m3-density) * var(--m3-density-step));
       padding: var(--m3-space-none);
       border: none;
-      border-radius: var(--m3-icon-btn-shape);
+      --_pill-radius: calc(
+        (var(--m3-icon-btn-size) + var(--m3-density) * var(--m3-density-step)) / 2
+      );
+      border-radius: min(var(--m3-icon-btn-shape), var(--_pill-radius));
       cursor: pointer;
       user-select: none;
       text-decoration: none;
@@ -9357,11 +9372,11 @@
       --m3-icon-optical-size: var(--m3-icon-btn-icon-optical-size);
     }
     .m3-icon-btn:active {
-      border-radius: var(--m3-icon-btn-shape-pressed);
+      border-radius: min(var(--m3-icon-btn-shape-pressed), var(--_pill-radius));
     }
     .m3-icon-btn[aria-pressed=true], .m3-btn-check:checked + .m3-icon-btn {
       --m3-icon-fill: 1;
-      border-radius: var(--m3-icon-btn-shape-selected);
+      border-radius: min(var(--m3-icon-btn-shape-selected), var(--_pill-radius));
     }
     .m3-icon-btn[aria-pressed=true] {
       --m3-icon-fill: 1;
@@ -9455,6 +9470,9 @@
       --m3-icon-btn-icon-size: var(--m3-icon-size-small);
       --m3-icon-btn-icon-optical-size: var(--m3-icon-btn-icon-optical-size-xs);
       height: calc(var(--m3-icon-btn-size-small) + var(--m3-density) * var(--m3-density-step));
+      --_pill-radius: calc(
+        (var(--m3-icon-btn-size-small) + var(--m3-density) * var(--m3-density-step)) / 2
+      );
       inline-size: calc(var(--m3-icon-btn-size-small) + var(--m3-density) * var(--m3-density-step));
     }
     .m3-icon-btn--xs {
@@ -9485,10 +9503,10 @@
       --m3-icon-btn-shape-selected: var(--m3-icon-btn-shape-selected-large);
     }
     .m3-icon-btn--square {
-      border-radius: var(--m3-icon-btn-shape-square);
+      border-radius: min(var(--m3-icon-btn-shape-square), var(--_pill-radius));
     }
     .m3-icon-btn--square[aria-pressed=true], .m3-btn-check:checked + .m3-icon-btn--square {
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: min(var(--md-sys-shape-corner-full), var(--_pill-radius));
     }
     .m3-fab {
       text-align: center;
@@ -13462,9 +13480,12 @@
       justify-content: center;
       gap: var(--m3-btn-icon-gap);
       height: calc(var(--m3-btn-height) + var(--m3-density) * var(--m3-density-step));
+      --_pill-radius: calc(
+        (var(--m3-btn-height) + var(--m3-density) * var(--m3-density-step)) / 2
+      );
       padding-inline: var(--m3-btn-padding-inline);
       border: none;
-      border-radius: var(--m3-btn-shape);
+      border-radius: min(var(--m3-btn-shape), var(--_pill-radius));
       cursor: pointer;
       user-select: none;
       white-space: nowrap;
@@ -13518,11 +13539,11 @@
       --m3-icon-optical-size: var(--m3-btn-icon-optical-size);
     }
     .m3-toolbar__dropdown:active {
-      border-radius: var(--m3-btn-shape-pressed);
+      border-radius: min(var(--m3-btn-shape-pressed), var(--_pill-radius));
     }
     .m3-toolbar__dropdown[aria-pressed=true], .m3-btn-check:checked + .m3-toolbar__dropdown {
       --m3-icon-fill: 1;
-      border-radius: var(--m3-btn-shape-selected);
+      border-radius: min(var(--m3-btn-shape-selected), var(--_pill-radius));
     }
     .m3-toolbar__dropdown:disabled, .m3-toolbar__dropdown.disabled {
       --_container: color-mix(
@@ -14211,7 +14232,7 @@
       gap: var(--m3-button-group-connected-gap);
     }
     .m3-button-group--connected > :is(.m3-btn, .m3-icon-btn) {
-      border-radius: var(--m3-button-group-shape);
+      border-radius: min(var(--m3-button-group-shape), var(--_pill-radius));
     }
     .m3-button-group--connected > :is(.m3-btn, .m3-icon-btn) ~ :is(.m3-btn, .m3-icon-btn) {
       border-start-start-radius: var(--m3-button-group-inner-shape);
@@ -14223,7 +14244,7 @@
     }
     .m3-button-group--connected > :is(.m3-btn, .m3-icon-btn):is([aria-pressed=true], .active),
     .m3-button-group--connected > .m3-btn-check:checked + :is(.m3-btn, .m3-icon-btn) {
-      border-radius: var(--m3-button-group-selected-shape);
+      border-radius: min(var(--m3-button-group-selected-shape), var(--_pill-radius));
     }
     .m3-button-group--connected > .m3-icon-btn::after {
       width: 100%;
@@ -14382,7 +14403,7 @@
     }
     .m3-split-button__toggle[aria-expanded=true] {
       --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: min(var(--md-sys-shape-corner-full), var(--_pill-radius));
     }
     .m3-split-button__toggle[aria-expanded=true]::after {
       rotate: 225deg;
@@ -14390,7 +14411,7 @@
     }
     .m3-split-button__toggle:has(+ .m3-menu:popover-open) {
       --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: min(var(--md-sys-shape-corner-full), var(--_pill-radius));
     }
     .m3-split-button__toggle:has(+ .m3-menu:popover-open)::after {
       rotate: 225deg;
@@ -14926,9 +14947,12 @@
       justify-content: center;
       gap: var(--m3-btn-icon-gap);
       height: calc(var(--m3-btn-height) + var(--m3-density) * var(--m3-density-step));
+      --_pill-radius: calc(
+        (var(--m3-btn-height) + var(--m3-density) * var(--m3-density-step)) / 2
+      );
       padding-inline: var(--m3-btn-padding-inline);
       border: none;
-      border-radius: var(--m3-btn-shape);
+      border-radius: min(var(--m3-btn-shape), var(--_pill-radius));
       cursor: pointer;
       user-select: none;
       white-space: nowrap;
@@ -14982,11 +15006,11 @@
       --m3-icon-optical-size: var(--m3-btn-icon-optical-size);
     }
     .m3-date-picker__menu:active {
-      border-radius: var(--m3-btn-shape-pressed);
+      border-radius: min(var(--m3-btn-shape-pressed), var(--_pill-radius));
     }
     .m3-date-picker__menu[aria-pressed=true], .m3-btn-check:checked + .m3-date-picker__menu {
       --m3-icon-fill: 1;
-      border-radius: var(--m3-btn-shape-selected);
+      border-radius: min(var(--m3-btn-shape-selected), var(--_pill-radius));
     }
     .m3-date-picker__menu:disabled, .m3-date-picker__menu.disabled {
       --_container: color-mix(
