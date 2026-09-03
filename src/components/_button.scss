@@ -183,6 +183,10 @@ $tokens: (
   #{$check}:checked + & {
     --#{c.$prefix}-icon-fill: 1;
     border-radius: m.pill(#{v("btn-shape-selected")});
+    // The morph above is M3's selection signal. Under a shape family with
+    // nothing left to morph it says nothing, so the emphasis layer carries
+    // it instead -- unset, and a no-op, under M3's own family.
+    @include m.selected-emphasis;
   }
 
   &:disabled,
@@ -333,6 +337,7 @@ $tokens: (
   &[aria-pressed="true"],
   #{$check}:checked + & {
     border-radius: m.pill(var(--#{c.$sys-prefix}-sys-shape-corner-full));
+    @include m.selected-emphasis;
   }
 }
 

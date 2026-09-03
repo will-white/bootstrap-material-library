@@ -99,7 +99,7 @@ $tokens: (
   }
 
   &:active #{$icon} {
-    --_state-opacity: var(--#{c.$sys-prefix}-sys-state-pressed-state-layer-opacity);
+    @include m.pressed-opacity;
   }
 
   // Active destination: aria-current="page" (preferred) or .active interop.

@@ -49,7 +49,90 @@ $contrast: "standard" !default;
 // on-<name>-container, plus .m3-bg-<name> / .m3-text-<name> utilities.
 //   @use "m3x/src" with ($custom-colors: ("brand": #ff6f00));
 $custom-colors: () !default;
-$motion-scheme: "expressive" !default; // expressive | standard: the spring physics set behind --md-sys-motion-spring-*
+// expressive | standard: the spring physics set behind --md-sys-motion-spring-*
+$motion-scheme: "expressive" !default;
+
+// Shape family: the corner GEOMETRY the whole shape scale draws, and how a
+// component signals press and selection when that geometry leaves it no
+// shape to morph. M3's shape scale says how big a corner is; a family says
+// what a corner IS -- rounded (M3's own), cut, squircle -- and may re-point
+// the scale itself. $shape-family names the build default; every family in
+// the map is also emitted as [data-shape="<name>"] and .m3-shape--<name>, so
+// a family can be switched at runtime or applied to one subtree.
+//
+// A family entry may carry:
+//   "corners"      map of rung name -> px, merged over the shape scale
+//   "scale"        multiplier applied to every rung it did not override
+//   "corner-shape" a CSS `corner-shape` keyword (bevel, notch, scoop,
+//                  squircle, round); rounded corners are the fallback where
+//                  the property is unsupported
+//   "emphasis"     "shape" (the default: press and selection morph the
+//                  corner) or "color" (they tint the container instead --
+//                  see the emphasis tokens below)
+//
+// A family whose corners are flat has no shape left to morph: a pressed
+// square button cannot get squarer, so "emphasis": "color" moves that signal
+// onto the state layer.
+$shape-family: "rounded" !default;
+
+$shape-families: (
+  // M3 as specified: the published scale, corners rounded, press and
+  // selection morph the shape. The identity family -- it emits nothing.
+  "rounded": (),
+  // Every rung collapses to 0. Nothing can morph, so press and selection
+  // speak in color.
+  "sharp": (
+    "scale": 0,
+    "emphasis": "color",
+  ),
+  // M2's cut corners: the same radii, mitred instead of rounded. A bevel
+  // still shrinks under a press, so the shape channel stays.
+  //
+// `full` is capped rather than left at the pill: a bevel taken at half the
+  // box height is a hexagon, not a cut corner, so a pill button would come
+  // out as a six-sided badge. The cap has to clear the morph targets as well
+  // as the hexagon: at 12 it would have landed exactly on `corner-medium`,
+  // the selected rung, and a selected button would have stopped moving --
+  // the same way a flat family stops a pressed one. 16 leaves 16 -> 8
+  // pressed and 16 -> 12 selected. (Controls that are round by identity --
+  // radio, switch handle, spinner -- keep their circle either way.)
+  "cut": (
+    "corner-shape": bevel,
+    "corners": ("full": 16),
+  ),
+  // Superellipse corners (Apple's "squircle"): rounder than round, and it
+  // interpolates, so the shape channel stays.
+  "squircle": (
+    "corner-shape": squircle,
+  ),
+  // Softer than M3 across the board: every rung 1.5x, pills unchanged.
+  "soft": (
+    "scale": 1.5,
+  ),
+) !default;
+
+// Emphasis channel: the color half of press and selection feedback. All
+// three tokens are UNSET by default, so every read site falls back to the M3
+// value and the default build is byte-identical; a shape family with
+// "emphasis": "color" opens them, and a project can set them directly to get
+// color-forward feedback under any family (or none under a cut one).
+//   --m3-sys-emphasis-pressed-state-layer-opacity   press: the state-layer
+//                                                   opacity (M3's is 10%)
+//   --m3-sys-emphasis-selected-state-layer-opacity  selection: a persistent
+//                                                   tint composited UNDER the
+//                                                   interaction layer, so
+//                                                   hover and press still
+//                                                   read while selected
+//   --m3-sys-emphasis-selected-container-color      the color that tint moves
+//                                                   toward; defaults to the
+//                                                   control's own content
+//                                                   color, so it works in
+//                                                   every variant and both
+//                                                   schemes without knowing
+//                                                   which container it is on
+// These two supply the values a "color" family uses.
+$emphasis-pressed-state-layer-opacity: 16% !default;
+$emphasis-selected-state-layer-opacity: 12% !default;
 
 // M3 window size classes (min widths): the adaptive layout media queries.
 $window-size-classes: (

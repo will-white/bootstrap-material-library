@@ -192,6 +192,11 @@ function inferType(prop, value) {
   if (/shadow|elevation-\d/.test(prop)) return 'shadow';
   if (/opacity|density|-l$|weight|grade|optical|columns|level|z-/.test(prop)) return 'number';
   if (/font$/.test(prop) || /-family$/.test(prop)) return 'fontFamily';
+  // Keyword-valued tokens: the shape family's corner geometry is `round` /
+  // `bevel` / `squircle`, not a length. DTCG has no keyword type, and typing
+  // it `dimension` would have a consumer try to parse `round` as a length,
+  // so it goes out as a string -- outside the registry, but honest.
+  if (/corner-shape$/.test(prop)) return 'string';
   return 'dimension';
 }
 

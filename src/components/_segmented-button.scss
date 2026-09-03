@@ -177,7 +177,7 @@ $tokens: (
   }
 
   #{$input}:active + #{$label} {
-    --_state-opacity: var(--#{c.$sys-prefix}-sys-state-pressed-state-layer-opacity);
+    @include m.pressed-opacity;
   }
 
   #{$input}:checked + #{$label} {

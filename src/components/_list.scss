@@ -259,9 +259,10 @@ $tokens: map.set($tokens, "list-divider-inset", calc( #{m.token($tokens, "list-i
 
 // 40px circle: initials in title-medium on primary-container, or an <img>.
 @mixin leading-avatar {
+  @include m.always-round;
   inline-size: #{v("list-item-avatar-size")};
   block-size: #{v("list-item-avatar-size")};
-  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  border-radius: var(--#{c.$prefix}-sys-shape-pill);
   background-color: #{v("list-item-avatar-container-color")};
   @include m.typescale("title-medium");
   color: #{v("list-item-avatar-label-color")};

@@ -100,6 +100,7 @@ $-vertices: 24;
 // contained inset and is none by default.
 @mixin root {
   @include m.own-box;
+  @include m.always-round;
   @include m.typescale("body-medium"); // text-less, but its ::before inherits the font
   --_container: transparent;
   --_content: #{v("loading-indicator-color")};

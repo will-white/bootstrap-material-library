@@ -2264,6 +2264,19 @@
   },
   "m3": {
     "sys": {
+      "corner-shape": {
+        "$type": "string",
+        "$value": "round",
+        "$extensions": {
+          "m3x": {
+            "css": "round"
+          }
+        }
+      },
+      "shape-pill": {
+        "$type": "dimension",
+        "$value": "9999px"
+      },
       "stroke-hairline": {
         "$type": "dimension",
         "$value": "1px"
@@ -2375,6 +2388,24 @@
       "z-tooltip": {
         "$type": "number",
         "$value": 70
+      },
+      "emphasis-pressed-state-layer-opacity": {
+        "$value": "{md.sys.state.pressed-state-layer-opacity}",
+        "$type": "number",
+        "$extensions": {
+          "m3x": {
+            "css": "var(--md-sys-state-pressed-state-layer-opacity)"
+          }
+        }
+      },
+      "emphasis-selected-state-layer-opacity": {
+        "$value": "{md.sys.state.none}",
+        "$type": "dimension",
+        "$extensions": {
+          "m3x": {
+            "css": "var(--md-sys-state-none)"
+          }
+        }
       },
       "container-color": {
         "$value": "{md.sys.color.surface}",

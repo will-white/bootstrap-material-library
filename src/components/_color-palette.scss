@@ -149,6 +149,7 @@ $tokens: (
 // inline) or --_swatch (set per index from $color-palette).
 @mixin swatch {
   @include m.own-box;
+  @include m.always-round;
   position: relative;
   display: block;
   inline-size: #{v("color-palette-swatch-size")};
@@ -235,6 +236,7 @@ $tokens: (
 // value), with a plus sign over it.
 @mixin custom {
   @include m.own-box;
+  @include m.always-round;
   position: relative;
   display: block;
   inline-size: #{v("color-palette-swatch-size")};

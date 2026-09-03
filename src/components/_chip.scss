@@ -161,7 +161,7 @@ $tokens: (
   }
 
   .#{c.$prefix}-chip__input:active + .#{c.$prefix}-chip__label {
-    --_state-opacity: var(--#{c.$sys-prefix}-sys-state-pressed-state-layer-opacity);
+    @include m.pressed-opacity;
   }
 
   .#{c.$prefix}-chip__input:checked + .#{c.$prefix}-chip__label {

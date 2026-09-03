@@ -45,6 +45,7 @@ $tokens: (
 // hit area constant regardless.
 @mixin control {
   @include m.own-box;
+  @include m.always-round;
   // 40dp state layer: on-surface unselected, primary selected; pressed swaps.
   --_layer-color: #{v("radio-state-layer-color")};
 
@@ -52,7 +53,7 @@ $tokens: (
   inline-size: #{v("radio-size")};
   block-size: #{v("radio-size")};
   border: var(--#{c.$prefix}-sys-stroke-thick) solid #{v("radio-outline-color")};
-  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  border-radius: var(--#{c.$prefix}-sys-shape-pill);
   @include m.typescale("body-medium");
   color: #{v("radio-outline-color")};
   display: inline-grid;
@@ -74,7 +75,7 @@ $tokens: (
     grid-area: 1 / 1;
     inline-size: #{v("radio-dot-size")};
     block-size: #{v("radio-dot-size")};
-    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+    border-radius: var(--#{c.$prefix}-sys-shape-pill);
     background-color: #{v("radio-selected-color")};
     scale: 0;
     @include m.transition(

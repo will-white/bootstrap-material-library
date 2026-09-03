@@ -259,6 +259,7 @@ $tokens: map.set($tokens, "slider-thumb-height", #{m.token($tokens, "slider-thum
 // density; the input itself is at least the 48px touch target tall.
 @mixin control {
   @include m.own-box;
+  @include m.always-round;
   --_thumb-width: #{v("slider-thumb-width")};
   --_track: #{v("slider-track-color")};
   --_active: #{v("slider-active-color")};
@@ -327,7 +328,7 @@ $tokens: map.set($tokens, "slider-thumb-height", #{m.token($tokens, "slider-thum
     display: block;
     block-size: #{v("slider-track-height")};
     border: none;
-    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+    border-radius: var(--#{c.$prefix}-sys-shape-pill);
     background-color: var(--_active);
   }
 

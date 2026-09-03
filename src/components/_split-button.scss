@@ -234,7 +234,7 @@ $tokens: (
 }
 
 @mixin -toggle-open {
-  --_state-opacity: var(--#{c.$sys-prefix}-sys-state-pressed-state-layer-opacity);
+  @include m.pressed-opacity;
   border-radius: m.pill(var(--#{c.$sys-prefix}-sys-shape-corner-full));
 
   &::after {

@@ -103,10 +103,11 @@ $tokens: map.set($tokens, "progress-stop-color", #{m.token($tokens, "progress-co
 // a full-value bar occludes the dot, exactly as the spec shows it.
 @mixin linear-track {
   @include m.own-box;
+  @include m.always-round;
   position: relative;
   display: block;
   block-size: #{v("progress-thickness")};
-  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  border-radius: var(--#{c.$prefix}-sys-shape-pill);
   background: transparent;
   overflow: clip;
 
@@ -145,7 +146,7 @@ $tokens: map.set($tokens, "progress-stop-color", #{m.token($tokens, "progress-co
     inline-size: #{v("progress-stop-size")};
     block-size: #{v("progress-stop-size")};
     translate: 0 -50%;
-    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+    border-radius: var(--#{c.$prefix}-sys-shape-pill);
     color: #{v("progress-stop-color")};
     background: currentColor;
     // The dot never renders text, but the box is owned: pinning a typescale
@@ -170,6 +171,7 @@ $tokens: map.set($tokens, "progress-stop-color", #{m.token($tokens, "progress-co
 // width, which wins the cascade -- see header).
 @mixin linear-bar {
   @include m.own-box;
+  @include m.always-round;
   color: #{v("progress-color")}; // the wavy mask stops resolve from currentColor
   position: relative;
   z-index: 1; // above the track's stop indicator
@@ -210,6 +212,7 @@ $tokens: map.set($tokens, "progress-stop-color", #{m.token($tokens, "progress-co
 // opaque mask stop (alpha matters, not hue) -- never a color literal.
 @mixin circular {
   @include m.own-box;
+  @include m.always-round;
   --_active: #{v("progress-color")};
   --_track: #{v("progress-track-color")};
   // Value and gap as angles, so no stop position mixes % with deg. The gap
@@ -225,7 +228,7 @@ $tokens: map.set($tokens, "progress-stop-color", #{m.token($tokens, "progress-co
   display: inline-block;
   inline-size: #{v("progress-circle-size")};
   block-size: #{v("progress-circle-size")};
-  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  border-radius: var(--#{c.$prefix}-sys-shape-pill);
   background: conic-gradient(
     var(--_active) 0deg var(--_sweep),
     transparent var(--_sweep) calc(var(--_sweep) + var(--_gap)),
@@ -249,13 +252,14 @@ $tokens: map.set($tokens, "progress-stop-color", #{m.token($tokens, "progress-co
 // rotated forever. The static arc is the reduced-motion rendering.
 @mixin spinner {
   @include m.own-box;
+  @include m.always-round;
   display: inline-block;
   inline-size: #{v("progress-circle-size")};
   block-size: #{v("progress-circle-size")};
   border: #{v("progress-circle-thickness")} solid
     #{v("progress-track-color")};
   border-block-start-color: #{v("progress-color")};
-  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  border-radius: var(--#{c.$prefix}-sys-shape-pill);
 
   @keyframes #{c.$prefix}-progress-rotate {
     to {
@@ -274,10 +278,11 @@ $tokens: map.set($tokens, "progress-stop-color", #{m.token($tokens, "progress-co
 // disc is the reduced-motion rendering.
 @mixin pulse {
   @include m.own-box;
+  @include m.always-round;
   display: inline-block;
   inline-size: #{v("progress-circle-size")};
   block-size: #{v("progress-circle-size")};
-  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  border-radius: var(--#{c.$prefix}-sys-shape-pill);
   color: #{v("progress-color")};
   background: currentColor;
 

@@ -102,11 +102,16 @@
 @mixin state-layer {
   --_state-color: var(--_content);
   --_state-opacity: var(--#{config.$sys-prefix}-sys-state-none);
+  @include emphasis-layer;
   color: var(--_content);
   background-color: color-mix(
     in srgb,
     var(--_state-color) var(--_state-opacity),
-    var(--_container)
+    color-mix(
+      in srgb,
+      var(--_emphasis-color) var(--_emphasis-opacity),
+      var(--_container)
+    )
   );
 
   @include hover {
@@ -116,8 +121,49 @@
     --_state-opacity: var(--#{config.$sys-prefix}-sys-state-focus-state-layer-opacity);
   }
   &:active {
-    --_state-opacity: var(--#{config.$sys-prefix}-sys-state-pressed-state-layer-opacity);
+    @include pressed-opacity;
   }
+}
+
+// The emphasis layer: a PERSISTENT tint on the container, composited UNDER
+// the interaction state layer so hover, focus and press still read on a
+// control that is already carrying it.
+//
+// It is the color half of the expression channel. M3 Expressive signals a
+// selection by morphing the corner, which a shape family with flat corners
+// leaves nothing to say -- so the signal moves here instead. At rest the
+// opacity is 0% and the layer is a no-op: 0% of anything over the container
+// IS the container, in every variant and both schemes, which is why this is
+// a tint of the content color rather than a swap of the container role.
+// A swap would have to know which variant it was in (filled sits on primary,
+// outlined on transparent) and would fight the variant's own specificity; a
+// tint of the color already known to contrast with the container cannot.
+//
+// --_emphasis-color defaults to the content color and can be re-pointed at
+// any color to tint toward instead -- at 100% that is a full container swap,
+// at 12% a nudge.
+@mixin emphasis-layer {
+  --_emphasis-color: var(--#{config.$prefix}-sys-emphasis-selected-container-color, var(--_state-color));
+  --_emphasis-opacity: var(--#{config.$sys-prefix}-sys-state-none);
+}
+
+// M3's pressed state-layer opacity, or the emphasis channel's where a shape
+// family has opened it (a square button cannot press squarer).
+@mixin pressed-opacity($var: "--_state-opacity") {
+  #{$var}: var(
+    --#{config.$prefix}-sys-emphasis-pressed-state-layer-opacity,
+    var(--#{config.$sys-prefix}-sys-state-pressed-state-layer-opacity)
+  );
+}
+
+// Turns the emphasis layer on for a selected control. Unset by default, so
+// under M3's own family the shape morph remains the whole signal and this
+// resolves to 0%.
+@mixin selected-emphasis {
+  --_emphasis-opacity: var(
+    --#{config.$prefix}-sys-emphasis-selected-state-layer-opacity,
+    var(--#{config.$sys-prefix}-sys-state-none)
+  );
 }
 
 // Same states, but driven from a parent (for hidden-input controls:
@@ -126,11 +172,16 @@
   #{$child} {
     --_state-color: var(--_content);
     --_state-opacity: var(--#{config.$sys-prefix}-sys-state-none);
+    @include emphasis-layer;
     color: var(--_content);
     background-color: color-mix(
       in srgb,
       var(--_state-color) var(--_state-opacity),
-      var(--_container)
+      color-mix(
+        in srgb,
+        var(--_emphasis-color) var(--_emphasis-opacity),
+        var(--_container)
+      )
     );
   }
   @media (hover: hover) {
@@ -142,7 +193,7 @@
     --_state-opacity: var(--#{config.$sys-prefix}-sys-state-focus-state-layer-opacity);
   }
   &:active #{$child} {
-    --_state-opacity: var(--#{config.$sys-prefix}-sys-state-pressed-state-layer-opacity);
+    @include pressed-opacity;
   }
 }
 
@@ -258,6 +309,21 @@
   @return string.unquote("min(#{$shape}, var(--_pill-radius))");
 }
 
+// Components whose shape is a load-bearing CIRCLE -- a radio, a switch
+// handle, a spinner, an avatar, a swatch, an indicator dot -- opt out of the
+// shape family's corner GEOMETRY: a `bevel` on a radius that is half the box
+// turns a circle into a diamond, which reads as a bug rather than a style.
+// They also take their radius from --<prefix>-sys-shape-pill rather than the
+// family-owned `corner-full` rung, so a flat family cannot square them
+// either (see tokens/_shape.scss for why that distinction exists).
+// Emitted in the layer's `rules` sub-layer, so it beats the shared ownership
+// rule that carries the family keyword.
+@mixin always-round {
+  @supports (corner-shape: bevel) {
+    corner-shape: round;
+  }
+}
+
 @mixin pill-radius($height) {
   --_pill-radius: calc(
     (#{$height} + var(--#{config.$prefix}-sys-density) * var(--#{config.$prefix}-sys-density-step)) / 2
@@ -369,6 +435,24 @@ $-own-pseudo-selectors: ();
       @include own-pseudo-declarations;
     }
   }
+
+  // Corner geometry is part of the box a component owns -- a host rule that
+  // set `corner-shape` would re-cut every corner in the library -- but the
+  // property is new, so it cannot go in the contract above: an unsupported
+  // declaration would be dropped and the whole ownership rule stays valid
+  // only because every other declaration in it is old. It gets its own
+  // @supports rule over the same selectors, reading the shape family's
+  // keyword. Where the property is unsupported nothing lands and the radii
+  // draw M3's rounded corners.
+  $chrome: list.join($boxes, $regions, comma);
+  @if list.length($chrome) > 0 {
+    @supports (corner-shape: bevel) {
+      #{$chrome} {
+        corner-shape: var(--#{config.$prefix}-sys-corner-shape, round);
+      }
+    }
+  }
+
   $-own-box-selectors: () !global;
   $-own-region-selectors: () !global;
   $-own-pseudo-selectors: () !global;

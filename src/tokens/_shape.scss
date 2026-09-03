@@ -47,6 +47,25 @@ $corners: (
   }
   --#{config.$sys-prefix}-sys-shape-corner-full: 9999px;
 
+  // Corner GEOMETRY, as opposed to corner size: the CSS `corner-shape`
+  // keyword every piece of chrome draws its radii with. `round` is M3 as
+  // specified; a shape family (tokens/_shape-family.scss) re-points it to
+  // bevel / notch / scoop / squircle on the root or on any subtree. The read
+  // site sits behind @supports, so where the property is unsupported the same
+  // radii simply draw rounded corners.
+  @include m.global-token("corner-shape", round);
+
+  // The identity pill. --md-sys-shape-corner-full is the shape SCALE's
+  // roundest rung, and a shape family owns it: a family with flat corners
+  // flattens it along with the rest, which is what makes the shape morph a
+  // clean no-op. But some controls are not round as a corner TREATMENT, they
+  // are round by identity -- a radio, a switch handle, a spinner, an avatar,
+  // a swatch, an indicator dot. Squaring those does not restyle them, it
+  // breaks them: a square radio is indistinguishable from a checkbox, so
+  // single choice stops reading as single choice. They take their radius
+  // from here, which no family re-points.
+  @include m.global-token("shape-pill", 9999px);
+
   // Library extensions (documented as such in the README): stroke widths so
   // components never hardcode a border, even hairlines. They sit in the
   // library's own system tier, --<prefix>-sys-*.

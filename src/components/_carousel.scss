@@ -94,13 +94,14 @@ $tokens: (
 // 38% mix, the active dot is solid.
 @mixin indicator {
   @include m.own-box;
+  @include m.always-round;
   display: inline-block;
   text-align: center;
   @include m.typescale("label-large");
   color: #{v("carousel-indicator-color")};
   inline-size: #{v("carousel-indicator-size")};
   block-size: #{v("carousel-indicator-size")};
-  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  border-radius: var(--#{c.$prefix}-sys-shape-pill);
   border: none;
   padding: var(--#{c.$prefix}-sys-space-none);
   background-color: color-mix(

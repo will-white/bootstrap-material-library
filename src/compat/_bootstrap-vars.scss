@@ -10,6 +10,7 @@
 @use "../config" as c;
 @use "../functions" as fn;
 @use "../tokens/color-scheme";
+@use "../tokens/shape-family";
 
 // Bootstrap theme-color name -> m3x color role custom property.
 $-theme-map: (
@@ -206,14 +207,6 @@ $-extra-triplets: (
   --bs-body-font-weight: var(--#{c.$sys-prefix}-sys-typescale-body-medium-weight);
   --bs-body-line-height: 1.5;
 
-  // Radius scale -> M3 shape scale.
-  --bs-border-radius-sm: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
-  --bs-border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-small);
-  --bs-border-radius-lg: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
-  --bs-border-radius-xl: var(--#{c.$sys-prefix}-sys-shape-corner-large);
-  --bs-border-radius-xxl: var(--#{c.$sys-prefix}-sys-shape-corner-extra-large);
-  --bs-border-radius-pill: var(--#{c.$sys-prefix}-sys-shape-corner-full);
-
   // Shadows -> elevation tokens.
   --bs-box-shadow-sm: var(--#{c.$sys-prefix}-sys-elevation-1);
   --bs-box-shadow: var(--#{c.$sys-prefix}-sys-elevation-2);
@@ -221,9 +214,26 @@ $-extra-triplets: (
   --bs-box-shadow-inset: var(--#{c.$sys-prefix}-sys-elevation-0);
 }
 
+// The radius scale, split out of the static aliases for the same reason the
+// color aliases are split out: a var() is substituted where its DECLARATION
+// applies, so an alias declared only at :root freezes there. A shape family
+// on a subtree re-points --#{c.$sys-prefix}-sys-shape-corner-*, and Bootstrap's radius
+// scale has to be re-resolved where that family applies or the M3 components
+// inside would take the family's corners while .card and .btn kept the
+// root's.
+@mixin shape-aliases {
+  --bs-border-radius-sm: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
+  --bs-border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-small);
+  --bs-border-radius-lg: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
+  --bs-border-radius-xl: var(--#{c.$sys-prefix}-sys-shape-corner-large);
+  --bs-border-radius-xxl: var(--#{c.$sys-prefix}-sys-shape-corner-extra-large);
+  --bs-border-radius-pill: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+}
+
 @mixin remap {
   :root {
     @include color-aliases;
+    @include shape-aliases;
     @include -static-aliases;
     @include tokens;
   }
@@ -252,6 +262,13 @@ $-extra-triplets: (
   .#{c.$prefix}-island--primary,
   .#{c.$prefix}-island--tertiary {
     @include color-aliases;
+  }
+
+  // Contexts that re-point the shape scale on a subtree: the shape families.
+  @if list.length(shape-family.selectors()) > 0 {
+    #{shape-family.selectors()} {
+      @include shape-aliases;
+    }
   }
 
   // Bootstrap 5.3's own theme switch keeps working: it simply drives

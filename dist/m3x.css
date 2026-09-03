@@ -756,6 +756,10 @@
     --md-sys-shape-corner-extra-large-increased: 2rem;
     --md-sys-shape-corner-extra-extra-large: 3rem;
     --md-sys-shape-corner-full: 9999px;
+    --m3-corner-shape: round;
+    --m3-sys-corner-shape: var(--m3-corner-shape);
+    --m3-shape-pill: 9999px;
+    --m3-sys-shape-pill: var(--m3-shape-pill);
     --m3-stroke-hairline: 1px;
     --m3-sys-stroke-hairline: var(--m3-stroke-hairline);
     --m3-stroke-thick: 2px;
@@ -1708,6 +1712,40 @@
       --md-extended-color-on-info-container: light-dark(var(--md-ref-palette-info100), var(--md-ref-palette-info0));
     }
   }
+  [data-shape=sharp],
+  .m3-shape--sharp {
+    --md-sys-shape-corner-extra-small: 0px;
+    --md-sys-shape-corner-small: 0px;
+    --md-sys-shape-corner-medium: 0px;
+    --md-sys-shape-corner-large: 0px;
+    --md-sys-shape-corner-large-increased: 0px;
+    --md-sys-shape-corner-extra-large: 0px;
+    --md-sys-shape-corner-extra-large-increased: 0px;
+    --md-sys-shape-corner-extra-extra-large: 0px;
+    --md-sys-shape-corner-full: 0px;
+    --m3-sys-emphasis-pressed-state-layer-opacity: 16%;
+    --m3-sys-emphasis-selected-state-layer-opacity: 12%;
+  }
+  [data-shape=cut],
+  .m3-shape--cut {
+    --md-sys-shape-corner-full: 1rem;
+    --m3-sys-corner-shape: bevel;
+  }
+  [data-shape=squircle],
+  .m3-shape--squircle {
+    --m3-sys-corner-shape: squircle;
+  }
+  [data-shape=soft],
+  .m3-shape--soft {
+    --md-sys-shape-corner-extra-small: 0.375rem;
+    --md-sys-shape-corner-small: 0.75rem;
+    --md-sys-shape-corner-medium: 1.125rem;
+    --md-sys-shape-corner-large: 1.5rem;
+    --md-sys-shape-corner-large-increased: 1.875rem;
+    --md-sys-shape-corner-extra-large: 2.625rem;
+    --md-sys-shape-corner-extra-large-increased: 3rem;
+    --md-sys-shape-corner-extra-extra-large: 4.5rem;
+  }
   @supports (transition-timing-function: linear(0, 1)) {
     :root {
       --md-sys-motion-spring-fast-spatial: linear(0, 0.0292, 0.1046, 0.2099, 0.3314, 0.458, 0.5814, 0.6955, 0.7966, 0.8823, 0.952, 1.006, 1.0455, 1.072, 1.0876, 1.0942, 1.0938, 1.0883, 1.0794, 1.0684, 1.0565, 1.0446, 1.0333, 1.0232, 1.0144, 1.0072, 1.0014, 0.9971, 0.9941, 0.9922, 0.9912, 0.991, 0.9914, 0.9921, 0.9931, 0.9942, 0.9953, 0.9964, 0.9974, 0.9983, 1);
@@ -2108,6 +2146,12 @@
       --bs-progress-bg: var(--md-sys-color-secondary-container);
       --bs-progress-bar-color: var(--md-sys-color-on-primary);
       --bs-progress-bar-bg: var(--md-sys-color-primary);
+      --bs-border-radius-sm: var(--md-sys-shape-corner-extra-small);
+      --bs-border-radius: var(--md-sys-shape-corner-small);
+      --bs-border-radius-lg: var(--md-sys-shape-corner-medium);
+      --bs-border-radius-xl: var(--md-sys-shape-corner-large);
+      --bs-border-radius-xxl: var(--md-sys-shape-corner-extra-large);
+      --bs-border-radius-pill: var(--md-sys-shape-corner-full);
       --bs-border-width: var(--m3-sys-stroke-hairline);
       --bs-border-style: solid;
       --bs-focus-ring-width: var(--md-sys-state-focus-indicator-thickness);
@@ -2118,12 +2162,6 @@
       --bs-body-font-size: var(--md-sys-typescale-body-medium-size);
       --bs-body-font-weight: var(--md-sys-typescale-body-medium-weight);
       --bs-body-line-height: 1.5;
-      --bs-border-radius-sm: var(--md-sys-shape-corner-extra-small);
-      --bs-border-radius: var(--md-sys-shape-corner-small);
-      --bs-border-radius-lg: var(--md-sys-shape-corner-medium);
-      --bs-border-radius-xl: var(--md-sys-shape-corner-large);
-      --bs-border-radius-xxl: var(--md-sys-shape-corner-extra-large);
-      --bs-border-radius-pill: var(--md-sys-shape-corner-full);
       --bs-box-shadow-sm: var(--md-sys-elevation-1);
       --bs-box-shadow: var(--md-sys-elevation-2);
       --bs-box-shadow-lg: var(--md-sys-elevation-4);
@@ -2307,6 +2345,14 @@
       --bs-progress-bar-color: var(--md-sys-color-on-primary);
       --bs-progress-bar-bg: var(--md-sys-color-primary);
     }
+    [data-shape=sharp], .m3-shape--sharp, [data-shape=cut], .m3-shape--cut, [data-shape=squircle], .m3-shape--squircle, [data-shape=soft], .m3-shape--soft {
+      --bs-border-radius-sm: var(--md-sys-shape-corner-extra-small);
+      --bs-border-radius: var(--md-sys-shape-corner-small);
+      --bs-border-radius-lg: var(--md-sys-shape-corner-medium);
+      --bs-border-radius-xl: var(--md-sys-shape-corner-large);
+      --bs-border-radius-xxl: var(--md-sys-shape-corner-extra-large);
+      --bs-border-radius-pill: var(--md-sys-shape-corner-full);
+    }
     [data-bs-theme=light] {
       color-scheme: light;
     }
@@ -2457,8 +2503,10 @@
       letter-spacing: var(--md-sys-typescale-label-large-tracking);
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .btn:hover {
@@ -2469,7 +2517,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .btn:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .btn:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -2501,6 +2549,10 @@
     .btn[aria-pressed=true], .btn-check:checked + .btn {
       --m3-icon-fill: 1;
       border-radius: min(var(--m3-btn-shape-selected, var(--md-sys-shape-corner-medium)), var(--_pill-radius));
+      --_emphasis-opacity: var(
+        --m3-sys-emphasis-selected-state-layer-opacity,
+        var(--md-sys-state-none)
+      );
     }
     .btn:disabled, .btn.disabled {
       --_container: color-mix(
@@ -3007,7 +3059,7 @@
       }
     }
     .btn-group > .btn.dropdown-toggle-split[aria-expanded=true] {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
       border-radius: min(var(--md-sys-shape-corner-full), var(--_pill-radius));
     }
     .btn-group > .btn.dropdown-toggle-split[aria-expanded=true]::after {
@@ -3015,7 +3067,7 @@
       translate: 0 25%;
     }
     .btn-group > .btn.dropdown-toggle-split:has(+ .m3-menu:popover-open) {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
       border-radius: min(var(--md-sys-shape-corner-full), var(--_pill-radius));
     }
     .btn-group > .btn.dropdown-toggle-split:has(+ .m3-menu:popover-open)::after {
@@ -3049,8 +3101,10 @@
       vertical-align: middle;
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .m3-toolbar--dense select.form-select:hover {
@@ -3061,7 +3115,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .m3-toolbar--dense select.form-select:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-toolbar--dense select.form-select:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -3257,8 +3311,10 @@
       -webkit-tap-highlight-color: transparent;
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .btn-close:hover {
@@ -3269,7 +3325,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .btn-close:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .btn-close:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -3313,6 +3369,10 @@
     .btn-close[aria-pressed=true], .m3-btn-check:checked + .btn-close {
       --m3-icon-fill: 1;
       border-radius: min(var(--m3-icon-btn-shape-selected, var(--md-sys-shape-corner-medium)), var(--_pill-radius));
+      --_emphasis-opacity: var(
+        --m3-sys-emphasis-selected-state-layer-opacity,
+        var(--md-sys-state-none)
+      );
     }
     .btn-close[aria-pressed=true] {
       --m3-icon-fill: 1;
@@ -3372,6 +3432,11 @@
     }
     .btn-close-white {
       --_content: var(--md-sys-color-inverse-on-surface);
+    }
+    @supports (corner-shape: bevel) {
+      .badge {
+        corner-shape: round;
+      }
     }
     .badge {
       display: inline-flex;
@@ -3703,8 +3768,10 @@
       letter-spacing: var(--md-sys-typescale-title-medium-tracking);
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .accordion-button:hover {
@@ -3715,7 +3782,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .accordion-button:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .accordion-button:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -3830,8 +3897,10 @@
       -webkit-tap-highlight-color: transparent;
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .list-group-item-action:hover {
@@ -3842,7 +3911,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .list-group-item-action:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .list-group-item-action:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -4021,8 +4090,10 @@
       letter-spacing: var(--md-sys-typescale-label-large-tracking);
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .dropdown-item:hover {
@@ -4033,7 +4104,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .dropdown-item:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .dropdown-item:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -4197,8 +4268,10 @@
       letter-spacing: var(--md-sys-typescale-label-large-tracking);
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .nav-tabs .nav-link:hover {
@@ -4209,7 +4282,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .nav-tabs .nav-link:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .nav-tabs .nav-link:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -4261,8 +4334,10 @@
       letter-spacing: var(--md-sys-typescale-label-large-tracking);
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .nav-pills .nav-link:hover {
@@ -4273,7 +4348,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .nav-pills .nav-link:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .nav-pills .nav-link.active,
     .nav-pills .show > .nav-link {
@@ -4387,8 +4462,10 @@
       -webkit-tap-highlight-color: transparent;
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .navbar-toggler:hover {
@@ -4399,7 +4476,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .navbar-toggler:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .navbar-toggler:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -4443,6 +4520,10 @@
     .navbar-toggler[aria-pressed=true], .m3-btn-check:checked + .navbar-toggler {
       --m3-icon-fill: 1;
       border-radius: min(var(--m3-icon-btn-shape-selected, var(--md-sys-shape-corner-medium)), var(--_pill-radius));
+      --_emphasis-opacity: var(
+        --m3-sys-emphasis-selected-state-layer-opacity,
+        var(--md-sys-state-none)
+      );
     }
     .navbar-toggler[aria-pressed=true] {
       --m3-icon-fill: 1;
@@ -4976,8 +5057,10 @@
       letter-spacing: var(--md-sys-typescale-label-large-tracking);
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .page-link:hover {
@@ -4988,7 +5071,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .page-link:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .page-link:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -5180,13 +5263,18 @@
         background-position-x: var(--m3-sys-space-4);
       }
     }
+    @supports (corner-shape: bevel) {
+      .spinner-border {
+        corner-shape: round;
+      }
+    }
     .spinner-border {
       display: inline-block;
       inline-size: var(--m3-progress-circle-size, 3rem);
       block-size: var(--m3-progress-circle-size, 3rem);
       border: var(--m3-progress-circle-thickness, 0.25rem) solid var(--m3-progress-track-color, var(--md-sys-color-secondary-container));
       border-block-start-color: var(--m3-progress-color, var(--md-sys-color-primary));
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: var(--m3-sys-shape-pill);
     }
     @keyframes m3-progress-rotate {
       to {
@@ -5205,11 +5293,16 @@
       --m3-progress-circle-size: var(--m3-sys-space-4);
       --m3-progress-circle-thickness: var(--m3-sys-stroke-thick);
     }
+    @supports (corner-shape: bevel) {
+      .spinner-grow {
+        corner-shape: round;
+      }
+    }
     .spinner-grow {
       display: inline-block;
       inline-size: var(--m3-progress-circle-size, 3rem);
       block-size: var(--m3-progress-circle-size, 3rem);
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: var(--m3-sys-shape-pill);
       color: var(--m3-progress-color, var(--md-sys-color-primary));
       background: currentColor;
     }
@@ -5966,13 +6059,18 @@
     .form-check-input[type=checkbox]:indeterminate:disabled {
       background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity), transparent);
     }
+    @supports (corner-shape: bevel) {
+      .form-check-input[type=radio] {
+        corner-shape: round;
+      }
+    }
     .form-check-input[type=radio] {
       --_layer-color: var(--m3-radio-state-layer-color, var(--md-sys-color-on-surface));
       appearance: none;
       inline-size: var(--m3-radio-size, 1.25rem);
       block-size: var(--m3-radio-size, 1.25rem);
       border: var(--m3-sys-stroke-thick) solid var(--m3-radio-outline-color, var(--md-sys-color-on-surface-variant));
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: var(--m3-sys-shape-pill);
       font-family: var(--md-sys-typescale-body-medium-font);
       font-size: var(--md-sys-typescale-body-medium-size);
       line-height: var(--md-sys-typescale-body-medium-line-height);
@@ -6039,7 +6137,7 @@
       grid-area: 1/1;
       inline-size: var(--m3-radio-dot-size, 0.625rem);
       block-size: var(--m3-radio-dot-size, 0.625rem);
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: var(--m3-sys-shape-pill);
       background-color: var(--m3-radio-selected-color, var(--md-sys-color-primary));
       scale: 0;
     }
@@ -6079,6 +6177,11 @@
       justify-content: flex-end;
       text-align: end;
     }
+    @supports (corner-shape: bevel) {
+      .form-switch .form-check-input {
+        corner-shape: round;
+      }
+    }
     .form-switch .form-check-input {
       display: inline-block;
       appearance: none;
@@ -6088,7 +6191,7 @@
       position: relative;
       margin: var(--m3-sys-space-none);
       border: var(--m3-sys-stroke-thick) solid var(--m3-switch-outline-color, var(--md-sys-color-outline));
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: var(--m3-sys-shape-pill);
       background-color: var(--m3-switch-track-color, var(--md-sys-color-surface-container-highest));
       font-family: var(--md-sys-typescale-body-medium-font);
       font-size: var(--md-sys-typescale-body-medium-size);
@@ -6133,7 +6236,7 @@
       position: absolute;
       inline-size: var(--_handle);
       block-size: var(--_handle);
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: var(--m3-sys-shape-pill);
       background-color: var(--m3-switch-handle-color, var(--md-sys-color-outline));
       inset-block-start: 50%;
       inset-inline-start: calc((var(--m3-switch-height, 2rem) - var(--_handle)) / 2 - var(--m3-sys-stroke-thick));
@@ -6168,7 +6271,7 @@
       --_layer-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .form-switch .form-check-input:active {
-      --_layer-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_layer-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
       --_handle: var(--m3-switch-pressed-handle-size, 1.75rem);
     }
     @media (hover: hover) {
@@ -6216,6 +6319,11 @@
       rotate: none;
       visibility: visible;
       background: radial-gradient(circle at var(--_handle-x) 50%, color-mix(in srgb, var(--_layer-color) var(--_layer-opacity), transparent) calc(var(--m3-sys-selection-layer-size) / 2), transparent calc(var(--m3-sys-selection-layer-size) / 2 + var(--m3-sys-stroke-hairline) / 2));
+    }
+    @supports (corner-shape: bevel) {
+      .form-range {
+        corner-shape: round;
+      }
     }
     .form-range {
       --_thumb-width: var(--m3-slider-thumb-width, 0.25rem);
@@ -6362,7 +6470,7 @@
       display: block;
       block-size: var(--m3-slider-track-height, 1rem);
       border: none;
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: var(--m3-sys-shape-pill);
       background-color: var(--_active);
     }
     .form-range:active:not(:disabled) {
@@ -6656,6 +6764,11 @@
       list-style: none;
       padding: var(--m3-sys-space-none);
     }
+    @supports (corner-shape: bevel) {
+      .carousel-indicators [data-bs-target] {
+        corner-shape: round;
+      }
+    }
     .carousel-indicators [data-bs-target] {
       display: inline-block;
       text-align: center;
@@ -6667,7 +6780,7 @@
       color: var(--m3-carousel-indicator-color, var(--md-sys-color-on-surface-variant));
       inline-size: var(--m3-carousel-indicator-size, 0.5rem);
       block-size: var(--m3-carousel-indicator-size, 0.5rem);
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: var(--m3-sys-shape-pill);
       border: none;
       padding: var(--m3-sys-space-none);
       background-color: color-mix(in srgb, var(--m3-carousel-indicator-color, var(--md-sys-color-on-surface-variant)) var(--md-sys-state-disabled-content-opacity), transparent);
@@ -8504,6 +8617,11 @@
       color-scheme: inherit;
       image-rendering: inherit;
     }
+    @supports (corner-shape: bevel) {
+      .fade, .accordion-collapse, .collapsing, .btn, .btn-group, .btn-group-vertical, .btn-toolbar, .btn-group > .btn:has(+ .dropdown-toggle-split), .btn-group > .btn.dropdown-toggle-split, .m3-toolbar--dense select.form-select, .btn-check, .btn-close, .badge, .alert, .alert-heading, .alert-link, .alert-dismissible, .breadcrumb, .breadcrumb-item, .card, .card-body, .card-title, .card-subtitle, .card-text, .card-header, .card-footer, .card-img-top, .card-img, .card-img-bottom, .accordion, .accordion-item, .accordion-header, .accordion-button, .accordion-body, .list-group, .list-group-item, .dropdown, .dropdown-center, .dropup, .dropup-center, .dropend, .dropstart, .dropdown-menu, .dropdown-item, .dropdown-header, .dropdown-item-text, .dropdown-divider, .nav, .nav-link, .nav-tabs, .nav-tabs .nav-link, .nav-item, .nav-pills .nav-link, .tab-content > .tab-pane, .navbar, .navbar > .container, .navbar > .container-fluid, .navbar > [class*=container-], .navbar-brand, .navbar-text, .navbar-toggler, .navbar-toggler-icon, .navbar-expand .navbar-nav, .navbar-expand .navbar-collapse, .navbar-expand-sm .navbar-nav, .navbar-expand-sm .navbar-collapse, .navbar-expand-md .navbar-nav, .navbar-expand-md .navbar-collapse, .navbar-expand-lg .navbar-nav, .navbar-expand-lg .navbar-collapse, .navbar-expand-xl .navbar-nav, .navbar-expand-xl .navbar-collapse, .navbar-expand-xxl .navbar-nav, .navbar-expand-xxl .navbar-collapse, .modal, .modal-dialog, .modal-content, .modal-header, .modal-title, .modal-body, .modal-footer, .modal-backdrop, .offcanvas, .offcanvas-header, .offcanvas-title, .offcanvas-body, .offcanvas-backdrop, .pagination, .page-link, .page-item, .placeholder, .placeholder-glow, .placeholder-wave, .tooltip, .tooltip .tooltip-arrow, .tooltip-inner, .popover, .popover .popover-arrow, .popover-header, .popover-body, .progress, .progress-stacked, .progress-bar, .spinner-border, .spinner-grow, .toast, .toast-container, .toast-header, .toast-body, .table, .table > :not(caption) > * > *, .table > thead th, .table-responsive, .form-label, .form-text, .form-control, .form-control-plaintext, .form-select, .form-check, .form-check-label, .form-check-input[type=checkbox], .form-check-input[type=radio], .form-switch .form-check-input, .form-range, .input-group, .input-group-text, .form-floating, .form-floating > label, .invalid-feedback, .valid-feedback, .carousel, .carousel-inner, .carousel-item, .carousel-control-prev, .carousel-control-next, .carousel-control-prev-icon, .carousel-control-next-icon, .carousel-indicators, .carousel-indicators [data-bs-target], .carousel-caption {
+        corner-shape: var(--m3-sys-corner-shape, round);
+      }
+    }
   }
 }
 @layer base {
@@ -8761,8 +8879,10 @@
       letter-spacing: var(--md-sys-typescale-label-large-tracking);
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .m3-btn:hover {
@@ -8773,7 +8893,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .m3-btn:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-btn:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -8805,6 +8925,10 @@
     .m3-btn[aria-pressed=true], .m3-btn-check:checked + .m3-btn {
       --m3-icon-fill: 1;
       border-radius: min(var(--m3-btn-shape-selected, var(--md-sys-shape-corner-medium)), var(--_pill-radius));
+      --_emphasis-opacity: var(
+        --m3-sys-emphasis-selected-state-layer-opacity,
+        var(--md-sys-state-none)
+      );
     }
     .m3-btn:disabled, .m3-btn.disabled {
       --_container: color-mix(
@@ -8972,6 +9096,10 @@
     }
     .m3-btn--square[aria-pressed=true], .m3-btn-check:checked + .m3-btn--square {
       border-radius: min(var(--md-sys-shape-corner-full), var(--_pill-radius));
+      --_emphasis-opacity: var(
+        --m3-sys-emphasis-selected-state-layer-opacity,
+        var(--md-sys-state-none)
+      );
     }
     .m3-btn-group {
       display: inline-flex;
@@ -9018,8 +9146,10 @@
       -webkit-tap-highlight-color: transparent;
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .m3-icon-btn:hover {
@@ -9030,7 +9160,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .m3-icon-btn:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-icon-btn:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -9074,6 +9204,10 @@
     .m3-icon-btn[aria-pressed=true], .m3-btn-check:checked + .m3-icon-btn {
       --m3-icon-fill: 1;
       border-radius: min(var(--m3-icon-btn-shape-selected, var(--md-sys-shape-corner-medium)), var(--_pill-radius));
+      --_emphasis-opacity: var(
+        --m3-sys-emphasis-selected-state-layer-opacity,
+        var(--md-sys-state-none)
+      );
     }
     .m3-icon-btn[aria-pressed=true] {
       --m3-icon-fill: 1;
@@ -9231,8 +9365,10 @@
       box-shadow: var(--md-sys-elevation-3);
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .m3-fab:hover {
@@ -9243,7 +9379,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .m3-fab:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-fab:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -9490,7 +9626,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .m3-segmented__segment .m3-segmented__input:active + .m3-segmented__label {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-segmented__segment .m3-segmented__input:checked + .m3-segmented__label {
       --_container: var(--m3-segmented-selected-container-color, var(--md-sys-color-secondary-container));
@@ -9507,6 +9643,11 @@
       box-shadow: none;
       cursor: not-allowed;
       pointer-events: none;
+    }
+    @supports (corner-shape: bevel) {
+      .m3-badge {
+        corner-shape: round;
+      }
     }
     .m3-badge {
       display: inline-flex;
@@ -9547,11 +9688,16 @@
       inset-inline-end: var(--m3-sys-space-none);
       translate: 50% -50%;
     }
+    @supports (corner-shape: bevel) {
+      .m3-progress {
+        corner-shape: round;
+      }
+    }
     .m3-progress {
       position: relative;
       display: block;
       block-size: var(--m3-progress-thickness, 0.25rem);
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: var(--m3-sys-shape-pill);
       background: transparent;
       overflow: clip;
     }
@@ -9578,7 +9724,7 @@
       inline-size: var(--m3-progress-stop-size, 0.25rem);
       block-size: var(--m3-progress-stop-size, 0.25rem);
       translate: 0 -50%;
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: var(--m3-sys-shape-pill);
       color: var(--m3-progress-stop-color, var(--m3-progress-color, var(--md-sys-color-primary)));
       background: currentColor;
       font-family: var(--md-sys-typescale-label-small-font);
@@ -9586,6 +9732,11 @@
       line-height: var(--md-sys-typescale-label-small-line-height);
       font-weight: var(--md-sys-typescale-label-small-weight);
       letter-spacing: var(--md-sys-typescale-label-small-tracking);
+    }
+    @supports (corner-shape: bevel) {
+      .m3-progress__bar {
+        corner-shape: round;
+      }
     }
     .m3-progress__bar {
       color: var(--m3-progress-color, var(--md-sys-color-primary));
@@ -9670,6 +9821,11 @@
         animation: m3-progress-slide var(--md-sys-motion-duration-extra-long2) var(--md-sys-motion-easing-standard) infinite, m3-progress-wave var(--md-sys-motion-duration-extra-long4) var(--md-sys-motion-easing-linear) infinite;
       }
     }
+    @supports (corner-shape: bevel) {
+      .m3-progress-circle {
+        corner-shape: round;
+      }
+    }
     .m3-progress-circle {
       --_active: var(--m3-progress-color, var(--md-sys-color-primary));
       --_track: var(--m3-progress-track-color, var(--md-sys-color-secondary-container));
@@ -9682,7 +9838,7 @@
       display: inline-block;
       inline-size: var(--m3-progress-circle-size, 3rem);
       block-size: var(--m3-progress-circle-size, 3rem);
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: var(--m3-sys-shape-pill);
       background: conic-gradient(var(--_active) 0deg var(--_sweep), transparent var(--_sweep) calc(var(--_sweep) + var(--_gap)), var(--_track) calc(var(--_sweep) + var(--_gap)) calc(360deg - var(--_gap)), transparent calc(360deg - var(--_gap)) 360deg);
       -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--m3-progress-circle-thickness, 0.25rem)), currentColor calc(100% - var(--m3-progress-circle-thickness, 0.25rem)));
       mask: radial-gradient(farthest-side, transparent calc(100% - var(--m3-progress-circle-thickness, 0.25rem)), currentColor calc(100% - var(--m3-progress-circle-thickness, 0.25rem)));
@@ -9693,13 +9849,18 @@
       -webkit-mask-repeat: no-repeat;
       mask-repeat: no-repeat;
     }
+    @supports (corner-shape: bevel) {
+      .m3-spinner {
+        corner-shape: round;
+      }
+    }
     .m3-spinner {
       display: inline-block;
       inline-size: var(--m3-progress-circle-size, 3rem);
       block-size: var(--m3-progress-circle-size, 3rem);
       border: var(--m3-progress-circle-thickness, 0.25rem) solid var(--m3-progress-track-color, var(--md-sys-color-secondary-container));
       border-block-start-color: var(--m3-progress-color, var(--md-sys-color-primary));
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: var(--m3-sys-shape-pill);
     }
     @keyframes m3-progress-rotate {
       to {
@@ -9761,8 +9922,10 @@
       letter-spacing: var(--md-sys-typescale-label-large-tracking);
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .m3-snackbar__action:hover {
@@ -9773,7 +9936,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .m3-snackbar__action:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-snackbar__action:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -9831,8 +9994,10 @@
       cursor: pointer;
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .m3-snackbar__close:hover {
@@ -9843,7 +10008,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .m3-snackbar__close:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-snackbar__close {
       background-image: linear-gradient(45deg, transparent calc(50% - var(--m3-sys-stroke-thick) / 2), currentColor calc(50% - var(--m3-sys-stroke-thick) / 2), currentColor calc(50% + var(--m3-sys-stroke-thick) / 2), transparent calc(50% + var(--m3-sys-stroke-thick) / 2)), linear-gradient(135deg, transparent calc(50% - var(--m3-sys-stroke-thick) / 2), currentColor calc(50% - var(--m3-sys-stroke-thick) / 2), currentColor calc(50% + var(--m3-sys-stroke-thick) / 2), transparent calc(50% + var(--m3-sys-stroke-thick) / 2));
@@ -10019,8 +10184,10 @@
       text-decoration: none;
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .m3-card--interactive:hover {
@@ -10031,7 +10198,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .m3-card--interactive:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-card--interactive:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -10129,6 +10296,11 @@
       gap: var(--m3-sys-space-2);
       padding-block: var(--m3-sys-space-3);
     }
+    @supports (corner-shape: bevel) {
+      .m3-carousel__indicator {
+        corner-shape: round;
+      }
+    }
     .m3-carousel__indicator {
       display: inline-block;
       text-align: center;
@@ -10140,7 +10312,7 @@
       color: var(--m3-carousel-indicator-color, var(--md-sys-color-on-surface-variant));
       inline-size: var(--m3-carousel-indicator-size, 0.5rem);
       block-size: var(--m3-carousel-indicator-size, 0.5rem);
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: var(--m3-sys-shape-pill);
       border: none;
       padding: var(--m3-sys-space-none);
       background-color: color-mix(in srgb, var(--m3-carousel-indicator-color, var(--md-sys-color-on-surface-variant)) var(--md-sys-state-disabled-content-opacity), transparent);
@@ -10378,8 +10550,10 @@
       -webkit-tap-highlight-color: transparent;
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       a.m3-list-item:hover,
@@ -10396,7 +10570,7 @@
     a.m3-list-item:active,
     button.m3-list-item:active,
     .m3-list-item--interactive:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     a.m3-list-item:focus-visible,
     button.m3-list-item:focus-visible,
@@ -10475,10 +10649,15 @@
       color: var(--m3-list-item-supporting-color, var(--md-sys-color-on-surface-variant));
       flex: none;
     }
+    @supports (corner-shape: bevel) {
+      .m3-list-item__leading--avatar {
+        corner-shape: round;
+      }
+    }
     .m3-list-item__leading--avatar {
       inline-size: var(--m3-list-item-avatar-size, 2.5rem);
       block-size: var(--m3-list-item-avatar-size, 2.5rem);
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: var(--m3-sys-shape-pill);
       background-color: var(--m3-list-item-avatar-container-color, var(--md-sys-color-primary-container));
       font-family: var(--md-sys-typescale-title-medium-font);
       font-size: var(--md-sys-typescale-title-medium-size);
@@ -10756,7 +10935,7 @@
       }
     }
     .m3-nav-bar__item:active .m3-nav-bar__icon {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-nav-bar__item.active, .m3-nav-bar__item[aria-current=page] {
       color: var(--m3-nav-bar-active-label-color, var(--md-sys-color-on-surface));
@@ -10871,8 +11050,10 @@
       letter-spacing: var(--md-sys-typescale-label-large-tracking);
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .m3-drawer__item:hover {
@@ -10883,7 +11064,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .m3-drawer__item:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-drawer__item:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -10973,7 +11154,7 @@
       }
     }
     .m3-rail__item:active .m3-rail__icon {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-rail__item.active, .m3-rail__item[aria-current=page] {
       color: var(--m3-rail-active-label-color, var(--md-sys-color-on-surface));
@@ -11044,8 +11225,10 @@
       letter-spacing: var(--md-sys-typescale-label-large-tracking);
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .m3-tabs__tab:hover {
@@ -11056,7 +11239,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .m3-tabs__tab:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-tabs__tab:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -11398,13 +11581,18 @@
     input[type=checkbox].m3-checkbox:indeterminate:disabled {
       background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity), transparent);
     }
+    @supports (corner-shape: bevel) {
+      input[type=radio].m3-radio {
+        corner-shape: round;
+      }
+    }
     input[type=radio].m3-radio {
       --_layer-color: var(--m3-radio-state-layer-color, var(--md-sys-color-on-surface));
       appearance: none;
       inline-size: var(--m3-radio-size, 1.25rem);
       block-size: var(--m3-radio-size, 1.25rem);
       border: var(--m3-sys-stroke-thick) solid var(--m3-radio-outline-color, var(--md-sys-color-on-surface-variant));
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: var(--m3-sys-shape-pill);
       font-family: var(--md-sys-typescale-body-medium-font);
       font-size: var(--md-sys-typescale-body-medium-size);
       line-height: var(--md-sys-typescale-body-medium-line-height);
@@ -11471,7 +11659,7 @@
       grid-area: 1/1;
       inline-size: var(--m3-radio-dot-size, 0.625rem);
       block-size: var(--m3-radio-dot-size, 0.625rem);
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: var(--m3-sys-shape-pill);
       background-color: var(--m3-radio-selected-color, var(--md-sys-color-primary));
       scale: 0;
     }
@@ -11502,6 +11690,11 @@
     input[type=radio].m3-radio:disabled::after {
       background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity), transparent);
     }
+    @supports (corner-shape: bevel) {
+      input[type=checkbox].m3-switch {
+        corner-shape: round;
+      }
+    }
     input[type=checkbox].m3-switch {
       display: inline-block;
       appearance: none;
@@ -11511,7 +11704,7 @@
       position: relative;
       margin: var(--m3-sys-space-none);
       border: var(--m3-sys-stroke-thick) solid var(--m3-switch-outline-color, var(--md-sys-color-outline));
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: var(--m3-sys-shape-pill);
       background-color: var(--m3-switch-track-color, var(--md-sys-color-surface-container-highest));
       font-family: var(--md-sys-typescale-body-medium-font);
       font-size: var(--md-sys-typescale-body-medium-size);
@@ -11556,7 +11749,7 @@
       position: absolute;
       inline-size: var(--_handle);
       block-size: var(--_handle);
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: var(--m3-sys-shape-pill);
       background-color: var(--m3-switch-handle-color, var(--md-sys-color-outline));
       inset-block-start: 50%;
       inset-inline-start: calc((var(--m3-switch-height, 2rem) - var(--_handle)) / 2 - var(--m3-sys-stroke-thick));
@@ -11591,7 +11784,7 @@
       --_layer-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     input[type=checkbox].m3-switch:active {
-      --_layer-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_layer-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
       --_handle: var(--m3-switch-pressed-handle-size, 1.75rem);
     }
     @media (hover: hover) {
@@ -11653,8 +11846,10 @@
       --_content: var(--m3-chip-label-color, var(--md-sys-color-on-surface));
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .m3-chip--assist:hover {
@@ -11665,7 +11860,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .m3-chip--assist:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-chip--assist:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -11696,8 +11891,10 @@
       --_content: var(--m3-chip-label-color, var(--md-sys-color-on-surface));
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .m3-chip--suggestion:hover {
@@ -11708,7 +11905,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .m3-chip--suggestion:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-chip--suggestion:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -11807,7 +12004,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .m3-chip--filter .m3-chip__input:active + .m3-chip__label {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-chip--filter .m3-chip__input:checked + .m3-chip__label {
       --m3-icon-fill: 1;
@@ -11903,7 +12100,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .m3-chip--input .m3-chip__input:active + .m3-chip__label {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-chip--input .m3-chip__input:checked + .m3-chip__label {
       --m3-icon-fill: 1;
@@ -12021,8 +12218,10 @@
       letter-spacing: var(--md-sys-typescale-label-large-tracking);
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .m3-menu__item:hover {
@@ -12033,7 +12232,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .m3-menu__item:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-menu__item:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -12103,6 +12302,11 @@
           opacity: var(--m3-sys-opacity-hidden);
           translate: 0 calc(-1 * var(--m3-sys-space-1));
         }
+      }
+    }
+    @supports (corner-shape: bevel) {
+      input[type=range].m3-slider {
+        corner-shape: round;
       }
     }
     input[type=range].m3-slider {
@@ -12250,7 +12454,7 @@
       display: block;
       block-size: var(--m3-slider-track-height, 1rem);
       border: none;
-      border-radius: var(--md-sys-shape-corner-full);
+      border-radius: var(--m3-sys-shape-pill);
       background-color: var(--_active);
     }
     input[type=range].m3-slider:active:not(:disabled) {
@@ -13285,8 +13489,10 @@
       letter-spacing: var(--md-sys-typescale-label-large-tracking);
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .m3-toolbar__dropdown:hover {
@@ -13297,7 +13503,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .m3-toolbar__dropdown:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-toolbar__dropdown:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -13329,6 +13535,10 @@
     .m3-toolbar__dropdown[aria-pressed=true], .m3-btn-check:checked + .m3-toolbar__dropdown {
       --m3-icon-fill: 1;
       border-radius: min(var(--m3-btn-shape-selected, var(--md-sys-shape-corner-medium)), var(--_pill-radius));
+      --_emphasis-opacity: var(
+        --m3-sys-emphasis-selected-state-layer-opacity,
+        var(--md-sys-state-none)
+      );
     }
     .m3-toolbar__dropdown:disabled, .m3-toolbar__dropdown.disabled {
       --_container: color-mix(
@@ -13417,8 +13627,10 @@
       vertical-align: middle;
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       select.m3-toolbar__select:hover {
@@ -13429,7 +13641,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     select.m3-toolbar__select:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     select.m3-toolbar__select:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -14187,7 +14399,7 @@
       }
     }
     .m3-split-button__toggle[aria-expanded=true] {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
       border-radius: min(var(--md-sys-shape-corner-full), var(--_pill-radius));
     }
     .m3-split-button__toggle[aria-expanded=true]::after {
@@ -14195,7 +14407,7 @@
       translate: 0 25%;
     }
     .m3-split-button__toggle:has(+ .m3-menu:popover-open) {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
       border-radius: min(var(--md-sys-shape-corner-full), var(--_pill-radius));
     }
     .m3-split-button__toggle:has(+ .m3-menu:popover-open)::after {
@@ -14471,8 +14683,10 @@
       box-shadow: var(--md-sys-elevation-1);
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .m3-fab-menu__item:hover {
@@ -14483,7 +14697,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .m3-fab-menu__item:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-fab-menu__item:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -14538,6 +14752,11 @@
       letter-spacing: var(--md-sys-typescale-label-large-tracking);
       color: inherit;
       white-space: nowrap;
+    }
+    @supports (corner-shape: bevel) {
+      .m3-loading-indicator {
+        corner-shape: round;
+      }
     }
     .m3-loading-indicator {
       font-family: var(--md-sys-typescale-body-medium-font);
@@ -14698,8 +14917,10 @@
       letter-spacing: var(--md-sys-typescale-label-large-tracking);
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .m3-date-picker__menu:hover {
@@ -14710,7 +14931,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .m3-date-picker__menu:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-date-picker__menu:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -14742,6 +14963,10 @@
     .m3-date-picker__menu[aria-pressed=true], .m3-btn-check:checked + .m3-date-picker__menu {
       --m3-icon-fill: 1;
       border-radius: min(var(--m3-btn-shape-selected, var(--md-sys-shape-corner-medium)), var(--_pill-radius));
+      --_emphasis-opacity: var(
+        --m3-sys-emphasis-selected-state-layer-opacity,
+        var(--md-sys-state-none)
+      );
     }
     .m3-date-picker__menu:disabled, .m3-date-picker__menu.disabled {
       --_container: color-mix(
@@ -14852,8 +15077,10 @@
       letter-spacing: var(--md-sys-typescale-body-large-tracking);
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .m3-date-picker__day:hover {
@@ -14864,7 +15091,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .m3-date-picker__day:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-date-picker__day:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -15036,8 +15263,10 @@
       letter-spacing: var(--md-sys-typescale-display-large-tracking);
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .m3-time-picker__input:hover {
@@ -15048,7 +15277,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .m3-time-picker__input:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-time-picker__input:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -15219,8 +15448,10 @@
     .m3-time-picker__period-option .m3-time-picker__period-label {
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       .m3-time-picker__period-option:hover .m3-time-picker__period-label {
@@ -15231,7 +15462,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     .m3-time-picker__period-option:active .m3-time-picker__period-label {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-time-picker__period-option .m3-time-picker__period-input:checked + .m3-time-picker__period-label {
       --_container: var(--m3-time-picker-period-selected-container-color, var(--md-sys-color-tertiary-container));
@@ -15322,6 +15553,11 @@
       grid-template-columns: repeat(var(--m3-color-palette-columns, 10), var(--m3-color-palette-swatch-size, 1.25rem));
       gap: var(--m3-color-palette-gap, var(--m3-sys-space-1));
     }
+    @supports (corner-shape: bevel) {
+      .m3-color-palette__swatch {
+        corner-shape: round;
+      }
+    }
     .m3-color-palette__swatch {
       position: relative;
       display: block;
@@ -15385,6 +15621,11 @@
       --_swatch: transparent;
       background-image: linear-gradient(135deg, transparent calc(50% - var(--m3-sys-stroke-hairline)), var(--md-sys-color-error) calc(50% - var(--m3-sys-stroke-hairline)), var(--md-sys-color-error) calc(50% + var(--m3-sys-stroke-hairline)), transparent calc(50% + var(--m3-sys-stroke-hairline)));
       box-shadow: inset 0 0 0 var(--m3-sys-stroke-hairline) var(--md-sys-color-outline);
+    }
+    @supports (corner-shape: bevel) {
+      .m3-color-palette__custom {
+        corner-shape: round;
+      }
     }
     .m3-color-palette__custom {
       position: relative;
@@ -15817,7 +16058,7 @@
       }
     }
     .m3-adaptive-nav .m3-adaptive-nav__item:active .m3-adaptive-nav__icon {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     .m3-adaptive-nav .m3-adaptive-nav__item.active, .m3-adaptive-nav .m3-adaptive-nav__item[aria-current=page] {
       color: var(--m3-nav-bar-active-label-color, var(--md-sys-color-on-surface));
@@ -15917,7 +16158,7 @@
     }
     @media (min-width: 600px) {
       .m3-adaptive-nav .m3-adaptive-nav__item:active .m3-adaptive-nav__icon {
-        --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+        --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
       }
       .m3-adaptive-nav .m3-adaptive-nav__item.active, .m3-adaptive-nav .m3-adaptive-nav__item[aria-current=page] {
         color: var(--m3-rail-active-label-color, var(--md-sys-color-on-surface));
@@ -15994,8 +16235,10 @@
         letter-spacing: var(--md-sys-typescale-label-large-tracking);
         --_state-color: var(--_content);
         --_state-opacity: var(--md-sys-state-none);
+        --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+        --_emphasis-opacity: var(--md-sys-state-none);
         color: var(--_content);
-        background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+        background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
         flex-direction: row;
         justify-content: flex-start;
         inline-size: auto;
@@ -16013,7 +16256,7 @@
         --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
       }
       .m3-adaptive-nav .m3-adaptive-nav__item:active {
-        --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+        --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
       }
       .m3-adaptive-nav .m3-adaptive-nav__item:focus-visible {
         outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -16172,8 +16415,10 @@
       letter-spacing: var(--md-sys-typescale-title-small-tracking);
       --_state-color: var(--_content);
       --_state-opacity: var(--md-sys-state-none);
+      --_emphasis-color: var(--m3-sys-emphasis-selected-container-color, var(--_state-color));
+      --_emphasis-opacity: var(--md-sys-state-none);
       color: var(--_content);
-      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), var(--_container));
+      background-color: color-mix(in srgb, var(--_state-color) var(--_state-opacity), color-mix(in srgb, var(--_emphasis-color) var(--_emphasis-opacity), var(--_container)));
     }
     @media (hover: hover) {
       details.m3-disclosure > summary:hover {
@@ -16184,7 +16429,7 @@
       --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
     }
     details.m3-disclosure > summary:active {
-      --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+      --_state-opacity: var(--m3-sys-emphasis-pressed-state-layer-opacity, var(--md-sys-state-pressed-state-layer-opacity));
     }
     details.m3-disclosure > summary:focus-visible {
       outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
@@ -16487,6 +16732,11 @@
       accent-color: inherit;
       color-scheme: inherit;
       image-rendering: inherit;
+    }
+    @supports (corner-shape: bevel) {
+      .m3-btn, .m3-btn-group, .m3-icon-btn, .m3-fab, .m3-fab--extended .m3-fab__label, .m3-segmented, .m3-segmented__segment, .m3-segmented__segment .m3-segmented__input, .m3-segmented__segment .m3-segmented__label, .m3-badge, .m3-progress, .m3-progress__bar, .m3-progress-circle, .m3-spinner, .m3-snackbar, .m3-snackbar__text, .m3-snackbar__action, .m3-snackbar__close, .m3-tooltip, .m3-tooltip__title, .m3-card, .m3-carousel, .m3-carousel__item, .m3-carousel__indicators, .m3-carousel__indicator, .m3-dialog, .m3-dialog__title, .m3-dialog__content, .m3-dialog__actions, .m3-divider, .m3-list, .m3-list__subheader, .m3-list-item, .m3-list-item__body, .m3-list-item__overline, .m3-list-item__headline, .m3-list-item__supporting, .m3-list-item__leading, .m3-list-item__trailing, .m3-sheet--bottom, .m3-sheet--side, .m3-sheet--side-standard, .m3-sheet__handle, .m3-nav-bar, .m3-nav-bar__item, .m3-nav-bar__icon, .m3-drawer, .m3-drawer--modal, .m3-drawer__item, .m3-drawer__headline, .m3-drawer__badge, .m3-rail, .m3-rail__item, .m3-rail__icon, .m3-tabs, .m3-tabs__tab, .m3-tabs__input, .m3-top-app-bar, .m3-top-app-bar__title, .m3-bottom-app-bar, .m3-bottom-app-bar__trailing, input[type=checkbox].m3-checkbox, input[type=radio].m3-radio, input[type=checkbox].m3-switch, .m3-chip, .m3-chip--filter .m3-chip__input, .m3-chip--filter .m3-chip__label, .m3-chip--input .m3-chip__input, .m3-chip--input .m3-chip__label, .m3-chip__remove, .m3-menu, .m3-menu__item, .m3-menu__header, input[type=range].m3-slider, input[type=date].m3-datetime, input[type=time].m3-datetime, input[type=datetime-local].m3-datetime, input[type=month].m3-datetime, input[type=week].m3-datetime, .m3-field, .m3-field__input, .m3-field__label, .m3-field__supporting, .m3-search, .m3-search__input, .m3-search__panel, select.m3-select, .m3-toolbar, .m3-toolbar__group, .m3-toolbar__dropdown, select.m3-toolbar__select, .m3-toolbar__stepper, .m3-toolbar__stepper-input, .m3-toolbar__spacer, .m3-toolbar__choice, .m3-toolbar__option, .m3-toolbar__color, .m3-button-group, .m3-btn-check, .m3-split-button, .m3-split-button__action, .m3-split-button__toggle, .m3-split-button__option, .m3-fab-menu, .m3-fab-menu__items, .m3-fab-menu__item, .m3-fab-menu__label, .m3-loading-indicator, .m3-date-picker, .m3-date-picker__header, .m3-date-picker__supporting, .m3-date-picker__headline, .m3-date-picker__nav, .m3-date-picker__menu, .m3-date-picker__arrows, .m3-date-picker__grid, .m3-date-picker__weekday, .m3-date-picker__day, .m3-date-picker__actions, .m3-time-picker, .m3-time-picker__label, .m3-time-picker__fields, .m3-time-picker__field, .m3-time-picker__input, .m3-time-picker__hint, .m3-time-picker__separator, .m3-time-picker__period, .m3-time-picker__period-option, .m3-time-picker__period-option .m3-time-picker__period-input, .m3-time-picker__period-option .m3-time-picker__period-label, .m3-time-picker__actions, .m3-color-palette, .m3-color-palette__label, .m3-color-palette__grid, .m3-color-palette__swatch, .m3-color-palette__swatch > input, .m3-color-palette__custom, .m3-color-palette__custom > input, .m3-color-palette__theme, .m3-color-palette__standard, .m3-pane-layout, .m3-pane, .m3-adaptive-layout, .m3-adaptive-nav, .m3-adaptive-nav .m3-adaptive-nav__item, .m3-adaptive-nav .m3-adaptive-nav__icon, .m3-icon, details.m3-disclosure, .m3-snackbar__slot, .m3-card__media, .m3-card__slot, .m3-card__actions, .m3-list-item__slot, .m3-sheet__slot, .m3-toolbar__label, .m3-split-button__label, .m3-date-picker__input, .m3-adaptive-nav .m3-adaptive-nav__label, details.m3-disclosure > summary {
+        corner-shape: var(--m3-sys-corner-shape, round);
+      }
     }
   }
 }

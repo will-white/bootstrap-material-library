@@ -67,6 +67,7 @@
 @use "tokens/color-scheme";
 @use "tokens/typography";
 @use "tokens/shape";
+@use "tokens/shape-family";
 @use "tokens/spacing";
 @use "tokens/elevation";
 @use "tokens/motion";
@@ -169,6 +170,7 @@
     @include palette.static-fallback;
     @include typography.tokens;
     @include shape.tokens;
+    @include shape-family.tokens;
     @include spacing.tokens;
     @include elevation.tokens;
     @include motion.tokens;
@@ -184,6 +186,10 @@
   @include color-scheme.tier1;
   @include color-scheme.tier2;
   @include color-scheme.contrast-levels;
+
+  // Shape families as runtime switches: [data-shape] / .m3-shape--*, on the
+  // root element or on any subtree.
+  @include shape-family.variants;
 
   // Spring easings upgraded to linear() curves where supported.
   @include motion.springs;

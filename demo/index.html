@@ -56,6 +56,16 @@
       <option value="high">High</option>
     </select>
   </label>
+  <label class="m3-body-medium demo-bar-label" for="shape">
+    Shape
+    <select id="shape" class="m3-select demo-bar-select">
+      <option value="" selected>Rounded</option>
+      <option value="sharp">Sharp</option>
+      <option value="cut">Cut</option>
+      <option value="squircle">Squircle</option>
+      <option value="soft">Soft</option>
+    </select>
+  </label>
 </header>
 
 <div class="demo-shell">
@@ -1065,6 +1075,13 @@
   document.getElementById("contrast").addEventListener("change", function (e) {
     if (e.target.value) root.setAttribute("data-contrast", e.target.value);
     else root.removeAttribute("data-contrast");
+  });
+  // Shape family: one attribute re-points the whole corner scale, and on the
+  // flat family the press and selected morphs go quiet while the emphasis
+  // channel carries them in color instead. Try the toggles below in each.
+  document.getElementById("shape").addEventListener("change", function (e) {
+    if (e.target.value) root.setAttribute("data-shape", e.target.value);
+    else root.removeAttribute("data-shape");
   });
   // aria-pressed toggles are state, not styling: three lines of demo script.
   document.querySelectorAll("[data-toggle]").forEach(function (b) {

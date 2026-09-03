@@ -1,0 +1,193 @@
+// ============================================================================
+// m3x shape families
+//
+// The shape SCALE (tokens/_shape.scss) says how big a corner is. A FAMILY
+// says what a corner is, and may re-point the scale itself:
+//
+//   corners        a partial override of the scale, rung by rung
+//   scale          a multiplier over every rung the family did not override
+//   corner-shape   the CSS `corner-shape` keyword the corner is drawn with
+//                  (bevel, notch, scoop, squircle, round)
+//   emphasis       "shape" (M3: press and selection morph the corner) or
+//                  "color" (they tint the container instead)
+//
+// Why `emphasis` exists. M3 Expressive signals a press and a selection by
+// morphing the corner: a 40px pill's 20px radius drops to 8px pressed and
+// settles at 12px selected. That signal is the DIFFERENCE between two radii,
+// so a family that flattens the scale silently deletes it -- a square button
+// cannot get squarer, and the control ends up with no press feedback at all.
+// A family that has no shape to spend therefore spends color: the pressed
+// state layer opens up, and a selected control keeps a persistent tint under
+// its interaction layer. Both are ordinary tokens, unset by default, so the
+// two channels are independent of the family for anyone who wants
+// color-forward feedback on rounded corners (or shape-only feedback on cut
+// ones).
+//
+// The corner-shape tier degrades to rounded corners on its own: where the
+// property is unsupported the declaration never lands and the radii, which
+// are the same radii, draw M3's rounded corners. Nothing else in a family
+// depends on it.
+// ============================================================================
+
+@use "sass:list";
+@use "sass:map";
+@use "sass:string";
+@use "../config";
+@use "../functions" as fn;
+@use "shape";
+
+@function -entry($name) {
+  $entry: map.get(config.$shape-families, $name);
+  @if $entry == null {
+    @error "m3x: unknown shape family #{$name}. Known: #{map.keys(config.$shape-families)}.";
+  }
+  @return $entry;
+}
+
+// A family is the identity family when it re-points nothing: no corner
+// override, no multiplier, no corner-shape, shape emphasis. "rounded" is the
+// canonical one, and the build default emits nothing at all for it.
+@function -identity($entry) {
+  @return map.get($entry, "corners") ==
+    null and
+    -multiplier($entry) ==
+    1 and
+    map.get($entry, "corner-shape") ==
+    null and
+    -emphasis($entry) ==
+    "shape";
+}
+
+@function -multiplier($entry) {
+  $scale: map.get($entry, "scale");
+  @if $scale == null {
+    @return 1;
+  }
+  @return $scale;
+}
+
+@function -emphasis($entry) {
+  $mode: map.get($entry, "emphasis");
+  @if $mode == null {
+    @return "shape";
+  }
+  @return $mode;
+}
+
+// The rung's radius under a family, in px: an explicit override wins, else
+// the scale value times the multiplier.
+//
+// `full` is the exception. It does not mean 9999px, it means "as round as
+// this box can be", so scaling UP leaves it alone -- there is nothing rounder
+// than a pill. A multiplier of 0 does flatten it, because a family with no
+// corners has no pills either, and that is what makes the shape morph a
+// clean no-op rather than a pill that presses into a square.
+@function -radius($entry, $name, $px) {
+  $override: map.get($entry, "corners", $name);
+  @if $override != null {
+    @return $override;
+  }
+  $multiplier: -multiplier($entry);
+  @if $name == "full" and $multiplier != 0 {
+    @return $px;
+  }
+  @return $px * $multiplier;
+}
+
+@function -or($value, $fallback) {
+  @if $value == null {
+    @return $fallback;
+  }
+  @return $value;
+}
+
+// The corner scale under a family, as declarations. Emits only the rungs
+// that actually move, so a family that touches two rungs costs two lines.
+@mixin -corners($entry) {
+  $all: map.merge(shape.$corners, ("full": 9999));
+  @each $name, $px in $all {
+    $radius: -radius($entry, $name, $px);
+    @if $radius != $px {
+      $value: fn.rem($radius);
+      @if $radius == 0 {
+        $value: 0px;
+      }
+      --#{config.$sys-prefix}-sys-shape-corner-#{$name}: #{$value};
+    }
+  }
+}
+
+// The emphasis channel. "shape" leaves every token unset, so each read site
+// falls back to the M3 value; "color" opens the two state-layer opacities.
+// A family may also name its own values with "emphasis-pressed" /
+// "emphasis-selected" / "emphasis-selected-container" / "-label".
+@mixin -emphasis($entry) {
+  $p: config.$prefix;
+  @if -emphasis($entry) == "color" {
+    $pressed: -or(map.get($entry, "emphasis-pressed"), config.$emphasis-pressed-state-layer-opacity);
+    $selected: -or(map.get($entry, "emphasis-selected"), config.$emphasis-selected-state-layer-opacity);
+    --#{$p}-sys-emphasis-pressed-state-layer-opacity: #{$pressed};
+    --#{$p}-sys-emphasis-selected-state-layer-opacity: #{$selected};
+  }
+  // Available to any family, and to a project setting them directly.
+  @each $slot in ("container", "label") {
+    $value: map.get($entry, "emphasis-selected-#{$slot}");
+    @if $value != null {
+      --#{$p}-sys-emphasis-selected-#{$slot}-color: #{$value};
+    }
+  }
+}
+
+@mixin -family($name) {
+  $entry: -entry($name);
+  @include -corners($entry);
+  @include -emphasis($entry);
+
+  $corner-shape: map.get($entry, "corner-shape");
+  @if $corner-shape != null {
+    --#{config.$prefix}-sys-corner-shape: #{$corner-shape};
+  }
+}
+
+// The build default. Nothing is emitted for an identity family, so the
+// default build carries no shape-family CSS at all.
+@mixin tokens {
+  $entry: -entry(config.$shape-family);
+  @if not -identity($entry) {
+    @include -family(config.$shape-family);
+  }
+}
+
+// Every family as a runtime switch. [data-shape] mirrors [data-contrast]:
+// it works on the root element or on any subtree. .m3-shape--<name> is the
+// utility form, for a subtree that is already carrying classes.
+//
+// Both re-point the corner scale, which every component token reads through
+// its own var() fallback, so components inside follow with no rule of their
+// own -- the token-cascade contract (see the README) is what makes a family
+// a subtree-scoped thing rather than a build-time one.
+@mixin variants {
+  @each $name in map.keys(config.$shape-families) {
+    $entry: -entry($name);
+    @if not -identity($entry) {
+      [data-shape="#{$name}"],
+      .#{config.$prefix}-shape--#{$name} {
+        @include -family($name);
+      }
+    }
+  }
+}
+
+// Selectors every family is emitted on, for the partials that have to
+// re-resolve their own aliases where a family applies (the Bootstrap radius
+// scale) or list them (the token export).
+@function selectors() {
+  $out: ();
+  @each $name in map.keys(config.$shape-families) {
+    @if not -identity(-entry($name)) {
+      $out: list.append($out, string.unquote('[data-shape="#{$name}"]'), comma);
+      $out: list.append($out, string.unquote(".#{config.$prefix}-shape--#{$name}"), comma);
+    }
+  }
+  @return $out;
+}

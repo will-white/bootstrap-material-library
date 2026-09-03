@@ -163,6 +163,10 @@ $tokens: (
   #{$check}:checked + & {
     --#{c.$prefix}-icon-fill: 1;
     border-radius: m.pill(#{v("icon-btn-shape-selected")});
+    // See the button: the shape morph is the signal until a family flattens
+    // it, and this is the only selected rule a checked .m3-btn-check gets
+    // (the per-variant container swaps below are [aria-pressed] only).
+    @include m.selected-emphasis;
   }
 
   &[aria-pressed="true"] {
