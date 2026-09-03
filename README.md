@@ -367,7 +367,9 @@ unset. Precedence, nearest first:
 
 This is what makes `.m3-island--*`, a `[data-contrast]` subtree and a plain
 `--md-sys-color-*` re-point on any wrapper reach the components inside them
-rather than only the inherited text. `test/cascade.js` holds it.
+rather than only the inherited text. `test/cascade.js` holds it. (Token
+islands are an **m3x extension**, not an M3 component: M3 describes theming a
+region, and the islands are a set of ready-made ones.)
 
 The same rule applies one tier out. The `--bs-*` colour aliases are re-emitted
 on every context that re-points a role -- the islands and `[data-contrast]` --
@@ -715,6 +717,11 @@ reading as single choice. A bevel on a radius that is half the box would turn
 a circle into a diamond for the same reason.
 
 ### The emphasis channel
+
+**An m3x extension, not an M3 token set.** M3 publishes no colour channel for
+this; the three tokens below are the library's own answer to a problem M3's
+shape system creates when a project flattens the scale, and they are unset by
+default so a stock build is exactly M3.
 
 Corner geometry and interaction feedback come out of the same budget. M3
 signals a press and a selection by *morphing* the corner — a 40px pill's 20px
@@ -1071,7 +1078,15 @@ have an M3 counterpart that needs no JS at all.
 **Additive M3 components with no Bootstrap ancestor:** icon buttons, FABs,
 segmented buttons, chips, navigation bar / rail / drawer, bottom app bar,
 search bar, sliders beyond `form-range` styling, snackbar (as a class), date/
-time fields, dividers, token islands.
+time fields, dividers.
+
+**m3x extensions, in neither Bootstrap nor M3:** token islands
+(`.m3-island--*`), the colour palette popover (`.m3-color-palette`), the
+disclosure (`details.m3-disclosure`), the dense editor toolbar
+(`.m3-toolbar--dense`), the emphasis channel (`--m3-sys-emphasis-*`), and the
+library globals M3 publishes no token set for -- spacing, density, stroke
+widths, z-index. All are built from M3's tokens and follow its state and
+shape system; none is an M3 component.
 
 ---
 
@@ -1104,6 +1119,12 @@ time fields, dividers, token islands.
 Where M3 specifies JS-driven behavior, m3x resolves it to a native-element or
 pure-CSS equivalent -- divergences are listed.
 
+A few entries are marked **m3x extension**. Those are *not* M3 components:
+they are pieces this library adds because a CSS-first Bootstrap-interop
+library needs them, and nothing in M3's catalog covers them. They are built
+from M3's tokens and follow its state and shape system, but do not go looking
+for them in the spec.
+
 | Component | Classes | Divergence from JS-driven M3 |
 |---|---|---|
 | Buttons | `.m3-btn` + `--filled/--tonal/--elevated/--outlined/--text`, sizes `--xs/--small/--medium/--large/--xl`, `--square` | pressed / selected shape morphs on springs |
@@ -1111,7 +1132,7 @@ pure-CSS equivalent -- divergences are listed.
 | Button groups | `.m3-button-group` + `--connected`, sizes `--xs..--xl`, `.m3-btn-check` hidden inputs | selected via `aria-pressed`, `.active`, or a checked `.m3-btn-check`; in a connected group an icon button's 48dp hit area keeps its block-axis overhang but stops at the seam |
 | Split button | `.m3-split-button` (`__action` + `__toggle` on `.m3-btn`) + `--tonal/--outlined/--elevated`, sizes `--xs/--medium/--large/--xl`; `__option` radios in `<label>` menu items + `__label` spans let the menu choose the leading action | two independently enabled buttons on one pill (spec paddings, seam corners, 48dp trailing half); the toggle is the `popovertarget` of a `.m3-menu[popover]`, and while it is open (or `aria-expanded="true"`) it morphs to a circle with a pressed state layer and its chevron flips |
 | Toolbar | `.m3-toolbar` + `--floating/--docked/--standard/--vibrant/--vertical/--fixed`; `--dense` editor bar with `__group` (+ `--priority-low/--priority-medium`), `__dropdown`, `__choice` (+ `__option`/`__label`), `__select`, `__stepper` + `__stepper-input`, `__color` + `__swatch`, `__spacer`, `__more` | dense groups collapse through container queries on the bar; what the overflow menu lists is yours |
-| Color palette | `.m3-color-palette` on `[popover]` with `__label`, `__theme`/`__standard`/`__grid` groups of `__swatch` labels (hidden radios), `__swatch--none`, `__custom` (native color input) | swatch colors come from `$color-palette` by position; a toolbar swatch button's bar follows the checked swatch; the custom input's value needs script to reach the bar |
+| Color palette | `.m3-color-palette` on `[popover]` with `__label`, `__theme`/`__standard`/`__grid` groups of `__swatch` labels (hidden radios), `__swatch--none`, `__custom` (native color input) | **m3x extension** -- the swatch picker the dense toolbar needs; M3 has no such component. Swatch colors come from `$color-palette` by position; a toolbar swatch button's bar follows the checked swatch; the custom input's value needs script to reach the bar |
 | FAB / extended FAB | `.m3-fab` + `--small/--medium/--large/--extended/--fixed`, colors `--primary/--secondary/--tertiary/--surface` | -- |
 | FAB menu | `.m3-fab-menu` (`__fab` + `__items[popover]` of `__item`s) | opens through `popovertarget`; the FAB flips to its open look through `:has()`; anchored above the FAB where anchor positioning exists |
 | Loading indicator | `.m3-loading-indicator` + `--contained/--small/--large` | shape-morphing loader (build-time polygons, `clip-path`); static under reduced motion |
@@ -1129,7 +1150,7 @@ pure-CSS equivalent -- divergences are listed.
 | Navigation bar/rail/drawer | `.m3-nav-bar`, `.m3-rail` (+ `__header`, `--expanded`, `--modal`, `--fixed`), `.m3-drawer` (+ `--modal`) | active via `aria-current`; active icons fill (`--m3-icon-fill: 1`); the modal rail and drawer open with `showModal()` |
 | Adaptive layout | `.m3-adaptive-layout` + `.m3-adaptive-nav` (`__item`, `__icon`, `__label`: navigation bar / rail / drawer by window size class), `.m3-pane-layout` + `--list-detail/--supporting-pane/--feed`, `.m3-pane`, `.m3-only-*` / `.m3-hide-*` | viewport media queries at M3's window size classes (`$window-size-classes`); which pane a compact window shows is yours |
 | Icon | `.m3-icon` (+ `--filled`) for Material Symbols variable fonts | you load the font (subset it with `icon_names`); `opsz` follows the icon size, selected controls set `--m3-icon-fill: 1` and the FILL axis animates; a missing font is an empty box, not a clipped word |
-| Disclosure | `details.m3-disclosure` (+ `name` for exclusive groups) | animated `::details-content` where supported |
+| Disclosure | `details.m3-disclosure` (+ `name` for exclusive groups) | **m3x extension** -- M3 has no disclosure component; this is a native `<details>` dressed in M3's tokens, with animated `::details-content` where supported |
 | Tabs | `.m3-tabs` (aria/`.active` or real radio inputs) | pane switching is yours |
 | Top/bottom app bars | `.m3-top-app-bar` + size variants + `--sticky` (+ `--scrolled` class), `.m3-bottom-app-bar` | a sticky bar tints on scroll and a sticky medium/large bar collapses to the small height through scroll-driven animations; elsewhere toggle `--scrolled` yourself |
 | Checkbox / radio / switch | `.m3-checkbox`, `.m3-radio`, `.m3-switch` | `:indeterminate` styled; set it from your code |

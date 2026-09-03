@@ -41,6 +41,9 @@
     .cat-api { display: flex; flex-wrap: wrap; gap: var(--m3-sys-space-2); align-items: baseline; color: var(--md-sys-color-on-surface-variant); }
     code { font-family: var(--bs-font-monospace); font-size: 0.8125rem; }
     .cat-api code, .cat-note code { padding: 0.125rem 0.375rem; border-radius: var(--md-sys-shape-corner-extra-small); background-color: var(--md-sys-color-surface-container-highest); }
+    .cat-ext { display: inline-block; padding: 0.125rem 0.5rem; border-radius: var(--md-sys-shape-corner-full);
+      background-color: var(--md-sys-color-tertiary-container); color: var(--md-sys-color-on-tertiary-container);
+      font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; vertical-align: middle; }
     .cat-note { color: var(--md-sys-color-on-surface-variant); max-inline-size: 66ch; }
 
     .cat-specimen { display: flex; flex-wrap: wrap; min-inline-size: 0; gap: var(--m3-sys-space-3); align-items: center; padding: var(--m3-sys-space-4); border-radius: var(--md-sys-shape-corner-medium); background-color: var(--md-sys-color-surface); --m3-sys-container-color: var(--md-sys-color-surface); }
@@ -875,13 +878,14 @@
   </div>
 
   <div class="cat-item">
-    <header><h3 class="m3-title-medium">Animating to <code>auto</code></h3>
+    <header><h3 class="m3-title-medium">Animating to <code>auto</code> <span class="cat-ext">m3x extension</span></h3>
       <span class="cat-support" data-feature="interpolate"></span>
       <span class="cat-support" data-feature="details"></span></header>
     <p class="cat-note m3-body-small"><code>interpolate-size: allow-keywords</code> is opted in on
       <code>:root</code>, so a height can transition to <code>auto</code>. A disclosure is a real
       <code>&lt;details&gt;</code> whose <code>::details-content</code> animates open; the
-      <code>name</code> attribute makes a group exclusive, with no accordion script.</p>
+      <code>name</code> attribute makes a group exclusive, with no accordion script. M3 has no disclosure
+      component, so <code>.m3-disclosure</code> is m3x&rsquo;s own.</p>
     <div class="cat-specimen cat-specimen--stack" style="justify-items: stretch;">
       <details class="m3-disclosure" name="cat-faq" open>
         <summary>Where is my data stored?</summary>
@@ -1110,8 +1114,9 @@
 </section>
 
 <section class="cat-section" id="islands">
-  <header><h2 class="m3-headline-small">Token islands</h2>
-    <p class="cat-lede m3-body-medium">A region that re-points the system roles on its own scope root. Everything
+  <header><h2 class="m3-headline-small">Token islands <span class="cat-ext">m3x extension</span></h2>
+    <p class="cat-lede m3-body-medium">Not an M3 component &mdash; M3 describes theming a region, and these are a
+      set of ready-made ones. A region that re-points the system roles on its own scope root. Everything
       inside adapts &mdash; not just inherited text, but the components, and the Bootstrap vocabulary alongside them.
       Islands nest: the nearest one wins.</p></header>
   <div class="cat-cards">
@@ -1976,9 +1981,10 @@
     </div>
 
     <div class="cat-item">
-      <header><h3 class="m3-title-medium">Colour palette</h3>
+      <header><h3 class="m3-title-medium">Colour palette <span class="cat-ext">m3x extension</span></h3>
         <span class="cat-api"><code>.m3-color-palette</code></span></header>
-      <p class="cat-note m3-body-small">A popover of swatches on hidden radios: theme roles, the standard editor
+      <p class="cat-note m3-body-small">M3 has no swatch picker; this is the one the dense toolbar needs, built
+        from M3&rsquo;s tokens. A popover of swatches on hidden radios: theme roles, the standard editor
         grid, a &ldquo;none&rdquo; swatch and a native colour input. Arrow keys select; the ring and the inverting
         check mark follow the choice. No colours in the markup and no script.</p>
       <div class="cat-specimen cat-specimen--tall">
