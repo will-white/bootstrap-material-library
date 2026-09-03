@@ -15,9 +15,11 @@ $opacities: (
   "disabled-container-opacity": 12%,
 );
 
+@use "../config";
+
 @mixin properties {
   @each $name, $value in $opacities {
-    @property --md-sys-state-#{$name} {
+    @property --#{config.$sys-prefix}-sys-state-#{$name} {
       syntax: "<percentage>";
       inherits: true;
       initial-value: #{$value};
@@ -27,9 +29,9 @@ $opacities: (
 
 @mixin tokens {
   @each $name, $value in $opacities {
-    --md-sys-state-#{$name}: #{$value};
+    --#{config.$sys-prefix}-sys-state-#{$name}: #{$value};
   }
 
-  --md-sys-state-focus-indicator-thickness: 3px;
-  --md-sys-state-focus-indicator-offset: 2px;
+  --#{config.$sys-prefix}-sys-state-focus-indicator-thickness: 3px;
+  --#{config.$sys-prefix}-sys-state-focus-indicator-offset: 2px;
 }

@@ -29,11 +29,11 @@
 
 @mixin tokens {
   --#{c.$prefix}-search-height: #{fn.rem(56)};
-  --#{c.$prefix}-search-container-color: var(--md-sys-color-surface-container-high);
-  --#{c.$prefix}-search-content-color: var(--md-sys-color-on-surface);
-  --#{c.$prefix}-search-placeholder-color: var(--md-sys-color-on-surface-variant);
-  --#{c.$prefix}-search-shape: var(--md-sys-shape-corner-full);
-  --#{c.$prefix}-search-panel-shape: var(--md-sys-shape-corner-medium);
+  --#{c.$prefix}-search-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container-high);
+  --#{c.$prefix}-search-content-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+  --#{c.$prefix}-search-placeholder-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+  --#{c.$prefix}-search-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  --#{c.$prefix}-search-panel-shape: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
 }
 
 // The bar itself: positioning context for the panel, flex row for the input
@@ -43,11 +43,11 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: var(--m3-space-2);
+  gap: var(--#{c.$prefix}-sys-space-2);
   @include m.control-height(--#{c.$prefix}-search-height);
   border-radius: var(--#{c.$prefix}-search-shape);
   background-color: var(--#{c.$prefix}-search-container-color);
-  padding-inline: var(--m3-space-4);
+  padding-inline: var(--#{c.$prefix}-sys-space-4);
   @include m.focus-ring-within;
   @include m.transition((background-color));
 
@@ -55,7 +55,7 @@
     background-color: color-mix(
       in srgb,
       var(--#{c.$prefix}-search-content-color)
-        var(--md-sys-state-hover-state-layer-opacity),
+        var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity),
       var(--#{c.$prefix}-search-container-color)
     );
   }
@@ -70,7 +70,7 @@
   border: none;
   color: var(--#{c.$prefix}-search-content-color);
   @include m.typescale("body-large");
-  min-inline-size: var(--m3-space-none);
+  min-inline-size: var(--#{c.$prefix}-sys-space-none);
   cursor: text;
 
   &:focus,
@@ -80,14 +80,14 @@
 
   &::placeholder {
     color: var(--#{c.$prefix}-search-placeholder-color);
-    opacity: var(--m3-opacity-full);
+    opacity: var(--#{c.$prefix}-sys-opacity-full);
   }
 
   &::-webkit-search-cancel-button {
     -webkit-appearance: none;
-    @include m.cross-icon(var(--m3-icon-size-small), var(--m3-stroke-thick));
-    inline-size: var(--m3-icon-size-small);
-    block-size: var(--m3-icon-size-small);
+    @include m.cross-icon(var(--#{c.$prefix}-sys-icon-size-small), var(--#{c.$prefix}-sys-stroke-thick));
+    inline-size: var(--#{c.$prefix}-sys-icon-size-small);
+    block-size: var(--#{c.$prefix}-sys-icon-size-small);
     cursor: pointer;
   }
 }
@@ -99,14 +99,14 @@
   color: var(--#{c.$prefix}-search-content-color);
   position: absolute;
   inset-block-start: 100%;
-  inset-inline: var(--m3-space-none);
-  margin-block-start: var(--m3-space-1);
+  inset-inline: var(--#{c.$prefix}-sys-space-none);
+  margin-block-start: var(--#{c.$prefix}-sys-space-1);
   background-color: var(--#{c.$prefix}-search-container-color);
   border-radius: var(--#{c.$prefix}-search-panel-shape);
   @include m.elevation(2);
-  padding-block: var(--m3-space-2);
+  padding-block: var(--#{c.$prefix}-sys-space-2);
   display: none;
-  z-index: var(--m3-z-overlay);
+  z-index: var(--#{c.$prefix}-sys-z-overlay);
 }
 
 @mixin classes {

@@ -91,16 +91,16 @@
 
 @mixin tokens {
   --#{c.$prefix}-slider-track-height: #{fn.rem(16)};
-  --#{c.$prefix}-slider-track-color: var(--md-sys-color-secondary-container);
-  --#{c.$prefix}-slider-active-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-slider-track-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
+  --#{c.$prefix}-slider-active-color: var(--#{c.$sys-prefix}-sys-color-primary);
   --#{c.$prefix}-slider-thumb-width: #{fn.rem(4)};
   --#{c.$prefix}-slider-thumb-width-pressed: #{fn.rem(2)};
   --#{c.$prefix}-slider-thumb-size: #{fn.rem(44)};
   --#{c.$prefix}-slider-thumb-height: var(--#{c.$prefix}-slider-thumb-size);
   --#{c.$prefix}-slider-gap: #{fn.rem(6)};
-  --#{c.$prefix}-slider-gap-color: var(--md-sys-color-surface);
+  --#{c.$prefix}-slider-gap-color: var(--#{c.$sys-prefix}-sys-color-surface);
   --#{c.$prefix}-slider-stop-size: #{fn.rem(4)};
-  --#{c.$prefix}-slider-stop-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-slider-stop-color: var(--#{c.$sys-prefix}-sys-color-primary);
   --#{c.$prefix}-slider-ticks: 10;
 }
 
@@ -112,7 +112,7 @@
 @function -dot($at) {
   @return radial-gradient(
     circle calc(var(--#{c.$prefix}-slider-stop-size) / 2) at #{$at},
-    var(--_stop) calc(100% - var(--m3-stroke-hairline) / 2),
+    var(--_stop) calc(100% - var(--#{c.$prefix}-sys-stroke-hairline) / 2),
     transparent
   );
 }
@@ -122,7 +122,7 @@
 @function -cap() {
   @return radial-gradient(
     circle closest-side,
-    currentColor calc(100% - var(--m3-stroke-hairline) / 2),
+    currentColor calc(100% - var(--#{c.$prefix}-sys-stroke-hairline) / 2),
     transparent
   );
 }
@@ -174,7 +174,7 @@
   // a plain 16px outlined track the handle overhangs.
   @media (forced-colors: active) {
     block-size: var(--#{c.$prefix}-slider-track-height);
-    border-radius: var(--md-sys-shape-corner-full);
+    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
     mask: none;
   }
 }
@@ -187,7 +187,7 @@
   box-sizing: border-box;
   block-size: var(--#{c.$prefix}-slider-track-height);
   border: none;
-  border-radius: var(--md-sys-shape-corner-full);
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   background-color: var(--_track);
   background-image: var(--_ticks), #{-dot(center)};
   background-size:
@@ -210,9 +210,9 @@
   box-sizing: border-box;
   inline-size: var(--_thumb-width);
   block-size: var(--#{c.$prefix}-slider-thumb-height);
-  margin: var(--m3-space-none);
+  margin: var(--#{c.$prefix}-sys-space-none);
   border: none;
-  border-radius: var(--md-sys-shape-corner-full);
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   background-color: var(--_active);
   clip-path: polygon(
     0 0,
@@ -257,10 +257,10 @@
   -webkit-appearance: none;
   appearance: none;
   inline-size: 100%;
-  block-size: max(var(--m3-target-size), var(--#{c.$prefix}-slider-thumb-height));
+  block-size: max(var(--#{c.$prefix}-sys-target-size), var(--#{c.$prefix}-slider-thumb-height));
   background-color: transparent;
   cursor: pointer;
-  margin: var(--m3-space-none);
+  margin: var(--#{c.$prefix}-sys-space-none);
   @include m.focus-ring;
 
   &:dir(rtl) {
@@ -307,7 +307,7 @@
     display: block;
     block-size: var(--#{c.$prefix}-slider-track-height);
     border: none;
-    border-radius: var(--md-sys-shape-corner-full);
+    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
     background-color: var(--_active);
   }
 
@@ -322,20 +322,20 @@
   &:disabled {
     --_track: color-mix(
       in srgb,
-      var(--md-sys-color-on-surface)
-        var(--md-sys-state-disabled-container-opacity),
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-disabled-container-opacity),
       transparent
     );
     --_active: color-mix(
       in srgb,
-      var(--md-sys-color-on-surface)
-        var(--md-sys-state-disabled-content-opacity),
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-disabled-content-opacity),
       var(--#{c.$prefix}-slider-gap-color)
     );
     --_stop: color-mix(
       in srgb,
-      var(--md-sys-color-on-surface)
-        var(--md-sys-state-disabled-content-opacity),
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-disabled-content-opacity),
       transparent
     );
     cursor: not-allowed;

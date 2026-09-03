@@ -44,16 +44,16 @@
 @use "../mixins" as m;
 
 @mixin tokens {
-  --#{c.$prefix}-tooltip-container-color: var(--md-sys-color-inverse-surface);
-  --#{c.$prefix}-tooltip-content-color: var(--md-sys-color-inverse-on-surface);
-  --#{c.$prefix}-tooltip-rich-container-color: var(--md-sys-color-surface-container);
-  --#{c.$prefix}-tooltip-rich-content-color: var(--md-sys-color-on-surface-variant);
-  --#{c.$prefix}-tooltip-rich-title-color: var(--md-sys-color-on-surface);
-  --#{c.$prefix}-tooltip-shape: var(--md-sys-shape-corner-extra-small);
-  --#{c.$prefix}-tooltip-rich-shape: var(--md-sys-shape-corner-medium);
+  --#{c.$prefix}-tooltip-container-color: var(--#{c.$sys-prefix}-sys-color-inverse-surface);
+  --#{c.$prefix}-tooltip-content-color: var(--#{c.$sys-prefix}-sys-color-inverse-on-surface);
+  --#{c.$prefix}-tooltip-rich-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container);
+  --#{c.$prefix}-tooltip-rich-content-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+  --#{c.$prefix}-tooltip-rich-title-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+  --#{c.$prefix}-tooltip-shape: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
+  --#{c.$prefix}-tooltip-rich-shape: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
   --#{c.$prefix}-tooltip-max-width: #{fn.rem(200)};
   --#{c.$prefix}-tooltip-rich-max-width: #{fn.rem(320)};
-  --#{c.$prefix}-tooltip-rich-padding: var(--m3-space-4);
+  --#{c.$prefix}-tooltip-rich-padding: var(--#{c.$prefix}-sys-space-4);
 }
 
 // Plain tooltip surface (reused by Bootstrap compat for .tooltip-inner).
@@ -62,8 +62,8 @@
   display: inline-block;
   width: max-content;
   max-inline-size: var(--#{c.$prefix}-tooltip-max-width);
-  padding-block: var(--m3-space-1);
-  padding-inline: var(--m3-space-2);
+  padding-block: var(--#{c.$prefix}-sys-space-1);
+  padding-inline: var(--#{c.$prefix}-sys-space-2);
   background-color: var(--#{c.$prefix}-tooltip-container-color);
   color: var(--#{c.$prefix}-tooltip-content-color);
   border-radius: var(--#{c.$prefix}-tooltip-shape);
@@ -87,7 +87,7 @@
   display: block;
   @include m.typescale("title-small");
   color: var(--#{c.$prefix}-tooltip-rich-title-color);
-  margin-block-end: var(--m3-space-1);
+  margin-block-end: var(--#{c.$prefix}-sys-space-1);
 }
 
 // Positioning context wrapping the trigger and its tooltip.
@@ -100,18 +100,18 @@
 // hidden and inert until the anchor is hovered or holds focus.
 @mixin anchored {
   position: absolute;
-  inset-block-end: calc(100% + var(--m3-space-1));
+  inset-block-end: calc(100% + var(--#{c.$prefix}-sys-space-1));
   inset-inline-start: 50%;
   translate: -50%;
-  z-index: var(--m3-z-tooltip);
-  opacity: var(--m3-opacity-hidden);
+  z-index: var(--#{c.$prefix}-sys-z-tooltip);
+  opacity: var(--#{c.$prefix}-sys-opacity-hidden);
   visibility: hidden;
   pointer-events: none;
   @include m.transition(opacity);
 }
 
 @mixin revealed {
-  opacity: var(--m3-opacity-full);
+  opacity: var(--#{c.$prefix}-sys-opacity-full);
   visibility: visible;
 }
 
@@ -124,7 +124,7 @@
     position: fixed;
     position-anchor: --#{c.$prefix}-tooltip-anchor;
     position-area: block-start;
-    margin-block-end: var(--m3-space-1);
+    margin-block-end: var(--#{c.$prefix}-sys-space-1);
   }
 }
 

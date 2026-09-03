@@ -272,26 +272,26 @@ $palettes: ();
 // Tone lightness scale for runtime use: --md-tone-0-l ... --md-tone-100-l.
 @mixin tones {
   @each $t in $runtime-tones {
-    --md-tone-#{$t}-l: #{fn.tone-l-str($t)};
+    --#{config.$sys-prefix}-tone-#{$t}-l: #{fn.tone-l-str($t)};
   }
 }
 
 // Tier 1: static sRGB hex for every palette step, plus the seed itself.
 @mixin static-fallback {
-  --md-seed: #{fn.hex(config.$seed)};
+  --#{config.$sys-prefix}-seed: #{fn.hex(config.$seed)};
   @each $name, $steps in $palettes {
     @each $t, $c in $steps {
-      --md-ref-palette-#{$name}#{$t}: #{fn.hex($c)};
+      --#{config.$sys-prefix}-ref-palette-#{$name}#{$t}: #{fn.hex($c)};
     }
   }
 }
 
 // Tier 3: same steps as OKLCH literals (behind oklch + light-dark support).
 @mixin tier3-oklch {
-  --md-seed: #{fn.oklch-str(config.$seed)};
+  --#{config.$sys-prefix}-seed: #{fn.oklch-str(config.$seed)};
   @each $name, $steps in $palettes {
     @each $t, $c in $steps {
-      --md-ref-palette-#{$name}#{$t}: #{fn.oklch-str($c)};
+      --#{config.$sys-prefix}-ref-palette-#{$name}#{$t}: #{fn.oklch-str($c)};
     }
   }
 }
@@ -307,8 +307,8 @@ $palettes: ();
     @if $chroma-expr != null {
       $tones: list.nth($def, 3);
       @each $t in $tones {
-        --md-ref-palette-#{$name}#{$t}: #{fn.raw(
-            "oklch(from var(--md-seed) var(--md-tone-#{$t}-l) #{$chroma-expr} #{$hue-expr})"
+        --#{config.$sys-prefix}-ref-palette-#{$name}#{$t}: #{fn.raw(
+            "oklch(from var(--#{config.$sys-prefix}-seed) var(--#{config.$sys-prefix}-tone-#{$t}-l) #{$chroma-expr} #{$hue-expr})"
           )};
       }
     }

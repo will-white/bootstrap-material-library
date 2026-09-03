@@ -19,12 +19,12 @@
 
 // bootstrap step -> spacing token (0/.25/.5/1/1.5/3rem)
 $-space: (
-  0: var(--m3-space-none),
-  1: var(--m3-space-1),
-  2: var(--m3-space-2),
-  3: var(--m3-space-4),
-  4: var(--m3-space-5),
-  5: var(--m3-space-7),
+  0: var(--#{c.$prefix}-sys-space-none),
+  1: var(--#{c.$prefix}-sys-space-1),
+  2: var(--#{c.$prefix}-sys-space-2),
+  3: var(--#{c.$prefix}-sys-space-4),
+  4: var(--#{c.$prefix}-sys-space-5),
+  5: var(--#{c.$prefix}-sys-space-7),
 );
 
 $-margin-dirs: (
@@ -69,7 +69,7 @@ $-color-opacities: (10: 0.1, 25: 0.25, 50: 0.5, 75: 0.75, 100: 1);
 $-sizes: (25: 25%, 50: 50%, 75: 75%, 100: 100%, auto: auto);
 $-positions: (0: 0%, 50: 50%, 100: 100%);
 $-radii: (
-  0: var(--md-sys-shape-corner-none),
+  0: var(--#{c.$sys-prefix}-sys-shape-corner-none),
   1: var(--bs-border-radius-sm),
   2: var(--bs-border-radius),
   3: var(--bs-border-radius-lg),
@@ -318,7 +318,7 @@ $-z-indices: (n1: -1, 0: 0, 1: 1, 2: 2, 3: 3);
   // focus ring
   .focus-ring:focus-visible {
     outline: var(--bs-focus-ring-width) solid var(--bs-focus-ring-color);
-    outline-offset: var(--md-sys-state-focus-indicator-offset);
+    outline-offset: var(--#{c.$sys-prefix}-sys-state-focus-indicator-offset);
   }
   @each $name in $-theme-colors {
     .focus-ring-#{$name} {
@@ -583,8 +583,8 @@ $-z-indices: (n1: -1, 0: 0, 1: 1, 2: 2, 3: 3);
       &:focus {
         color: color-mix(
           in srgb,
-          var(--md-sys-color-on-surface)
-            var(--md-sys-state-hover-state-layer-opacity),
+          var(--#{c.$sys-prefix}-sys-color-on-surface)
+            var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity),
           var(--bs-#{$name})
         );
       }
@@ -629,13 +629,13 @@ $-z-indices: (n1: -1, 0: 0, 1: 1, 2: 2, 3: 3);
     );
   }
   .link-offset-1 {
-    text-underline-offset: var(--m3-stroke-thick);
+    text-underline-offset: var(--#{c.$prefix}-sys-stroke-thick);
   }
   .link-offset-2 {
-    text-underline-offset: var(--m3-space-1);
+    text-underline-offset: var(--#{c.$prefix}-sys-space-1);
   }
   .link-offset-3 {
-    text-underline-offset: calc(var(--m3-space-1) + var(--m3-stroke-thick));
+    text-underline-offset: calc(var(--#{c.$prefix}-sys-space-1) + var(--#{c.$prefix}-sys-stroke-thick));
   }
 
   // backgrounds (opacity contract via color-mix)

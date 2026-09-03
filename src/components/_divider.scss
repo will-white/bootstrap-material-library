@@ -18,8 +18,8 @@
 @use "../mixins" as m;
 
 @mixin tokens {
-  --#{c.$prefix}-divider-color: var(--md-sys-color-outline-variant);
-  --#{c.$prefix}-divider-thickness: var(--m3-stroke-hairline);
+  --#{c.$prefix}-divider-color: var(--#{c.$sys-prefix}-sys-color-outline-variant);
+  --#{c.$prefix}-divider-thickness: var(--#{c.$prefix}-sys-stroke-hairline);
 }
 
 // Horizontal rule (the default on <hr>).
@@ -29,17 +29,17 @@
   border: none;
   border-block-start: var(--#{c.$prefix}-divider-thickness) solid
     var(--#{c.$prefix}-divider-color);
-  margin-block: var(--m3-space-2);
+  margin-block: var(--#{c.$prefix}-sys-space-2);
 }
 
 // Inset from the leading edge (list content alignment).
 @mixin inset {
-  margin-inline-start: var(--m3-space-4);
+  margin-inline-start: var(--#{c.$prefix}-sys-space-4);
 }
 
 // Inset from both inline edges.
 @mixin middle {
-  margin-inline: var(--m3-space-4);
+  margin-inline: var(--#{c.$prefix}-sys-space-4);
 }
 
 // Vertical separator: stretches to its flex row's height.
@@ -50,8 +50,8 @@
     var(--#{c.$prefix}-divider-color);
   block-size: auto;
   align-self: stretch;
-  margin-inline: var(--m3-space-2);
-  margin-block: var(--m3-space-none);
+  margin-inline: var(--#{c.$prefix}-sys-space-2);
+  margin-block: var(--#{c.$prefix}-sys-space-none);
 }
 
 @mixin classes {

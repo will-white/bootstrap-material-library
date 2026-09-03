@@ -5,13 +5,14 @@
 // pass-through.
 // ============================================================================
 
+@use "../config" as c;
 @use "../mixins" as m;
 
 @mixin styles {
   :root {
-    accent-color: var(--md-sys-color-primary);
-    scrollbar-color: var(--md-sys-color-outline)
-      var(--md-sys-color-surface-container);
+    accent-color: var(--#{c.$sys-prefix}-sys-color-primary);
+    scrollbar-color: var(--#{c.$sys-prefix}-sys-color-outline)
+      var(--#{c.$sys-prefix}-sys-color-surface-container);
 
     // Lets block-size / inline-size transition to and from auto (disclosure,
     // ::details-content); no-op where unsupported.
@@ -21,8 +22,8 @@
   }
 
   body {
-    background-color: var(--md-sys-color-surface);
-    color: var(--md-sys-color-on-surface);
+    background-color: var(--#{c.$sys-prefix}-sys-color-surface);
+    color: var(--#{c.$sys-prefix}-sys-color-on-surface);
     @include m.typescale("body-medium");
     -webkit-font-smoothing: antialiased;
   }
@@ -56,71 +57,71 @@
   h4:where(:not([class])),
   h5:where(:not([class])),
   h6:where(:not([class])) {
-    color: var(--md-sys-color-on-surface);
+    color: var(--#{c.$sys-prefix}-sys-color-on-surface);
     text-wrap: balance;
   }
 
   p:where(:not([class])) {
-    margin-block: var(--m3-space-2);
+    margin-block: var(--#{c.$prefix}-sys-space-2);
   }
 
   a:where(:not([class])) {
-    color: var(--md-sys-color-primary);
+    color: var(--#{c.$sys-prefix}-sys-color-primary);
     text-decoration: underline;
-    text-underline-offset: var(--m3-stroke-thick);
+    text-underline-offset: var(--#{c.$prefix}-sys-stroke-thick);
 
     @include m.hover {
       color: color-mix(
         in srgb,
-        var(--md-sys-color-on-surface)
-          var(--md-sys-state-hover-state-layer-opacity),
-        var(--md-sys-color-primary)
+        var(--#{c.$sys-prefix}-sys-color-on-surface)
+          var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity),
+        var(--#{c.$sys-prefix}-sys-color-primary)
       );
     }
 
     &:focus-visible {
-      outline: var(--md-sys-state-focus-indicator-thickness) solid
-        var(--md-sys-color-secondary);
-      outline-offset: var(--md-sys-state-focus-indicator-offset);
-      border-radius: var(--md-sys-shape-corner-extra-small);
+      outline: var(--#{c.$sys-prefix}-sys-state-focus-indicator-thickness) solid
+        var(--#{c.$sys-prefix}-sys-color-secondary);
+      outline-offset: var(--#{c.$sys-prefix}-sys-state-focus-indicator-offset);
+      border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
     }
   }
 
   ::selection {
-    background-color: var(--md-sys-color-primary);
-    color: var(--md-sys-color-on-primary);
+    background-color: var(--#{c.$sys-prefix}-sys-color-primary);
+    color: var(--#{c.$sys-prefix}-sys-color-on-primary);
   }
 
   // Reboot-level element defaults (Bootstrap parity), unclassed-scoped like
   // the rules above so component and utility classes always win.
   ul:where(:not([class])),
   ol:where(:not([class])) {
-    margin-block: var(--m3-space-none) var(--m3-space-4);
-    padding-inline-start: var(--m3-space-6);
+    margin-block: var(--#{c.$prefix}-sys-space-none) var(--#{c.$prefix}-sys-space-4);
+    padding-inline-start: var(--#{c.$prefix}-sys-space-6);
   }
 
   ul:where(:not([class])) ul,
   ul:where(:not([class])) ol,
   ol:where(:not([class])) ul,
   ol:where(:not([class])) ol {
-    margin-block-end: var(--m3-space-none);
+    margin-block-end: var(--#{c.$prefix}-sys-space-none);
   }
 
   dl:where(:not([class])) {
-    margin-block: var(--m3-space-none) var(--m3-space-4);
+    margin-block: var(--#{c.$prefix}-sys-space-none) var(--#{c.$prefix}-sys-space-4);
   }
 
   dt:where(:not([class])) {
-    font-weight: var(--md-sys-typescale-label-large-weight);
+    font-weight: var(--#{c.$sys-prefix}-sys-typescale-label-large-weight);
   }
 
   dd:where(:not([class])) {
-    margin-block-end: var(--m3-space-2);
-    margin-inline-start: var(--m3-space-none);
+    margin-block-end: var(--#{c.$prefix}-sys-space-2);
+    margin-inline-start: var(--#{c.$prefix}-sys-space-none);
   }
 
   blockquote:where(:not([class])) {
-    margin: var(--m3-space-none) var(--m3-space-none) var(--m3-space-4);
+    margin: var(--#{c.$prefix}-sys-space-none) var(--#{c.$prefix}-sys-space-none) var(--#{c.$prefix}-sys-space-4);
   }
 
   b,
@@ -129,29 +130,29 @@
   }
 
   small:where(:not([class])) {
-    font-size: var(--md-sys-typescale-body-small-size);
+    font-size: var(--#{c.$sys-prefix}-sys-typescale-body-small-size);
   }
 
   mark:where(:not([class])) {
-    padding-inline: var(--m3-space-1);
-    background-color: var(--md-extended-color-warning-container);
-    color: var(--md-extended-color-on-warning-container);
+    padding-inline: var(--#{c.$prefix}-sys-space-1);
+    background-color: var(--#{c.$sys-prefix}-extended-color-warning-container);
+    color: var(--#{c.$sys-prefix}-extended-color-on-warning-container);
   }
 
   sub,
   sup {
     position: relative;
-    font-size: var(--md-sys-typescale-label-small-size);
+    font-size: var(--#{c.$sys-prefix}-sys-typescale-label-small-size);
     line-height: 0;
     vertical-align: baseline;
   }
 
   sub {
-    inset-block-end: calc(-1 * var(--m3-space-1));
+    inset-block-end: calc(-1 * var(--#{c.$prefix}-sys-space-1));
   }
 
   sup {
-    inset-block-start: calc(-1 * var(--m3-space-2));
+    inset-block-start: calc(-1 * var(--#{c.$prefix}-sys-space-2));
   }
 
   abbr[title] {
@@ -161,41 +162,41 @@
   }
 
   address:where(:not([class])) {
-    margin-block-end: var(--m3-space-4);
+    margin-block-end: var(--#{c.$prefix}-sys-space-4);
     font-style: normal;
   }
 
   kbd:where(:not([class])) {
-    padding: var(--m3-space-none) var(--m3-space-1);
-    background-color: var(--md-sys-color-inverse-surface);
-    color: var(--md-sys-color-inverse-on-surface);
-    border-radius: var(--md-sys-shape-corner-extra-small);
+    padding: var(--#{c.$prefix}-sys-space-none) var(--#{c.$prefix}-sys-space-1);
+    background-color: var(--#{c.$sys-prefix}-sys-color-inverse-surface);
+    color: var(--#{c.$sys-prefix}-sys-color-inverse-on-surface);
+    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
     font-family: ui-monospace, monospace;
-    font-size: var(--md-sys-typescale-body-small-size);
+    font-size: var(--#{c.$sys-prefix}-sys-typescale-body-small-size);
   }
 
   pre:where(:not([class])) {
     display: block;
-    margin-block: var(--m3-space-none) var(--m3-space-4);
+    margin-block: var(--#{c.$prefix}-sys-space-none) var(--#{c.$prefix}-sys-space-4);
     overflow: auto;
-    font-size: var(--md-sys-typescale-body-small-size);
+    font-size: var(--#{c.$sys-prefix}-sys-typescale-body-small-size);
   }
 
   figure:where(:not([class])) {
-    margin-block: var(--m3-space-none) var(--m3-space-4);
+    margin-block: var(--#{c.$prefix}-sys-space-none) var(--#{c.$prefix}-sys-space-4);
   }
 
   fieldset:where(:not([class])) {
-    min-inline-size: var(--m3-space-none);
-    padding: var(--m3-space-none);
-    margin: var(--m3-space-none);
+    min-inline-size: var(--#{c.$prefix}-sys-space-none);
+    padding: var(--#{c.$prefix}-sys-space-none);
+    margin: var(--#{c.$prefix}-sys-space-none);
     border: none;
   }
 
   legend:where(:not([class])) {
     inline-size: 100%;
-    padding: var(--m3-space-none);
-    margin-block-end: var(--m3-space-2);
+    padding: var(--#{c.$prefix}-sys-space-none);
+    margin-block-end: var(--#{c.$prefix}-sys-space-2);
     @include m.typescale("title-medium");
   }
 
@@ -221,14 +222,14 @@
 
   hr:where(:not([class])) {
     border: none;
-    border-block-start: var(--m3-stroke-hairline) solid
-      var(--md-sys-color-outline-variant);
+    border-block-start: var(--#{c.$prefix}-sys-stroke-hairline) solid
+      var(--#{c.$sys-prefix}-sys-color-outline-variant);
   }
 
   code,
   pre {
     font-family: ui-monospace, monospace;
-    color: var(--md-sys-color-tertiary);
+    color: var(--#{c.$sys-prefix}-sys-color-tertiary);
   }
 
   // Forced colors (Windows High Contrast): let system colors through on
@@ -241,7 +242,7 @@
     textarea,
     [role="button"] {
       forced-color-adjust: auto;
-      border: var(--m3-stroke-hairline) solid ButtonBorder;
+      border: var(--#{c.$prefix}-sys-stroke-hairline) solid ButtonBorder;
     }
 
     // Forced-colors strips box-shadow, which is the field focus indicator;
@@ -249,8 +250,8 @@
     input:focus-visible,
     select:focus-visible,
     textarea:focus-visible {
-      outline: var(--md-sys-state-focus-indicator-thickness) solid Highlight;
-      outline-offset: var(--md-sys-state-focus-indicator-offset);
+      outline: var(--#{c.$sys-prefix}-sys-state-focus-indicator-thickness) solid Highlight;
+      outline-offset: var(--#{c.$sys-prefix}-sys-state-focus-indicator-offset);
     }
   }
 }

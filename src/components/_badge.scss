@@ -24,11 +24,11 @@
 @use "../mixins" as m;
 
 @mixin tokens {
-  --#{c.$prefix}-badge-container-color: var(--md-sys-color-error);
-  --#{c.$prefix}-badge-label-color: var(--md-sys-color-on-error);
+  --#{c.$prefix}-badge-container-color: var(--#{c.$sys-prefix}-sys-color-error);
+  --#{c.$prefix}-badge-label-color: var(--#{c.$sys-prefix}-sys-color-on-error);
   --#{c.$prefix}-badge-size: #{fn.rem(16)};
   --#{c.$prefix}-badge-dot-size: #{fn.rem(6)};
-  --#{c.$prefix}-badge-shape: var(--md-sys-shape-corner-full);
+  --#{c.$prefix}-badge-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
 }
 
 // Full numbered-badge structure. Non-interactive: no state layer, no density.
@@ -39,7 +39,7 @@
   justify-content: center;
   min-inline-size: var(--#{c.$prefix}-badge-size);
   block-size: var(--#{c.$prefix}-badge-size);
-  padding-inline: var(--m3-space-1);
+  padding-inline: var(--#{c.$prefix}-sys-space-1);
   border-radius: var(--#{c.$prefix}-badge-shape);
   background-color: var(--#{c.$prefix}-badge-container-color);
   color: var(--#{c.$prefix}-badge-label-color);
@@ -60,7 +60,7 @@
   min-inline-size: var(--#{c.$prefix}-badge-dot-size);
   inline-size: var(--#{c.$prefix}-badge-dot-size);
   block-size: var(--#{c.$prefix}-badge-dot-size);
-  padding-inline: var(--m3-space-none);
+  padding-inline: var(--#{c.$prefix}-sys-space-none);
 }
 
 // Wrapper that pins a direct-child badge to the top trailing corner of the
@@ -71,8 +71,8 @@
 
   > .#{c.$prefix}-badge {
     position: absolute;
-    inset-block-start: var(--m3-space-none);
-    inset-inline-end: var(--m3-space-none);
+    inset-block-start: var(--#{c.$prefix}-sys-space-none);
+    inset-inline-end: var(--#{c.$prefix}-sys-space-none);
     translate: 50% -50%;
   }
 }

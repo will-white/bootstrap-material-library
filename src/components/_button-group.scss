@@ -54,13 +54,13 @@
 $members: ".#{c.$prefix}-btn, .#{c.$prefix}-icon-btn";
 
 @mixin tokens {
-  --#{c.$prefix}-button-group-gap: var(--m3-space-2);
+  --#{c.$prefix}-button-group-gap: var(--#{c.$prefix}-sys-space-2);
   --#{c.$prefix}-button-group-connected-gap: #{fn.rem(2)};
-  --#{c.$prefix}-button-group-shape: var(--md-sys-shape-corner-full);
-  --#{c.$prefix}-button-group-inner-shape: var(--md-sys-shape-corner-small);
-  --#{c.$prefix}-button-group-selected-shape: var(--md-sys-shape-corner-full);
-  --#{c.$prefix}-button-group-selected-container-color: var(--md-sys-color-primary);
-  --#{c.$prefix}-button-group-selected-label-color: var(--md-sys-color-on-primary);
+  --#{c.$prefix}-button-group-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  --#{c.$prefix}-button-group-inner-shape: var(--#{c.$sys-prefix}-sys-shape-corner-small);
+  --#{c.$prefix}-button-group-selected-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  --#{c.$prefix}-button-group-selected-container-color: var(--#{c.$sys-prefix}-sys-color-primary);
+  --#{c.$prefix}-button-group-selected-label-color: var(--#{c.$sys-prefix}-sys-color-on-primary);
 }
 
 // Standard group: a row of members that keep their own shapes.
@@ -125,14 +125,14 @@ $members: ".#{c.$prefix}-btn, .#{c.$prefix}-icon-btn";
   @include m.own-box;
   display: block;
   position: absolute;
-  opacity: var(--m3-opacity-hidden);
+  opacity: var(--#{c.$prefix}-sys-opacity-hidden);
   pointer-events: none;
 
   // Same indicator as m.focus-ring, drawn on the sibling label.
   &:focus-visible + :is(#{$members}) {
-    outline: var(--md-sys-state-focus-indicator-thickness) solid
-      var(--md-sys-color-secondary);
-    outline-offset: var(--md-sys-state-focus-indicator-offset);
+    outline: var(--#{c.$sys-prefix}-sys-state-focus-indicator-thickness) solid
+      var(--#{c.$sys-prefix}-sys-color-secondary);
+    outline-offset: var(--#{c.$sys-prefix}-sys-state-focus-indicator-offset);
   }
 
   &:disabled + :is(#{$members}) {
@@ -154,7 +154,7 @@ $members: ".#{c.$prefix}-btn, .#{c.$prefix}-icon-btn";
   --#{c.$prefix}-btn-height: var(--#{c.$prefix}-btn-height-small);
   --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-btn-padding-inline-small);
   --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-btn-height-small);
-  --#{c.$prefix}-icon-btn-icon-size: var(--m3-icon-size-small);
+  --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-sys-icon-size-small);
 
   > .#{c.$prefix}-btn {
     @include m.typescale("label-medium");

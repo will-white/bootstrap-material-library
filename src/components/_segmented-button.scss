@@ -35,13 +35,13 @@
 
 @mixin tokens {
   --#{c.$prefix}-segmented-height: #{fn.rem(40)};
-  --#{c.$prefix}-segmented-padding-inline: var(--m3-space-4);
-  --#{c.$prefix}-segmented-shape: var(--md-sys-shape-corner-full);
-  --#{c.$prefix}-segmented-outline-color: var(--md-sys-color-outline);
-  --#{c.$prefix}-segmented-outline-width: var(--m3-stroke-hairline);
-  --#{c.$prefix}-segmented-label-color: var(--md-sys-color-on-surface);
-  --#{c.$prefix}-segmented-selected-container-color: var(--md-sys-color-secondary-container);
-  --#{c.$prefix}-segmented-selected-label-color: var(--md-sys-color-on-secondary-container);
+  --#{c.$prefix}-segmented-padding-inline: var(--#{c.$prefix}-sys-space-4);
+  --#{c.$prefix}-segmented-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  --#{c.$prefix}-segmented-outline-color: var(--#{c.$sys-prefix}-sys-color-outline);
+  --#{c.$prefix}-segmented-outline-width: var(--#{c.$prefix}-sys-stroke-hairline);
+  --#{c.$prefix}-segmented-label-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+  --#{c.$prefix}-segmented-selected-container-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
+  --#{c.$prefix}-segmented-selected-label-color: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
 }
 
 // The fieldset: reset its native chrome, draw the group outline. Overflow
@@ -50,8 +50,8 @@
   @include m.own-box;
   display: inline-flex;
   vertical-align: middle;
-  margin: var(--m3-space-none);
-  padding: var(--m3-space-none);
+  margin: var(--#{c.$prefix}-sys-space-none);
+  padding: var(--#{c.$prefix}-sys-space-none);
   border: var(--#{c.$prefix}-segmented-outline-width) solid
     var(--#{c.$prefix}-segmented-outline-color);
   border-radius: var(--#{c.$prefix}-segmented-shape);
@@ -123,12 +123,12 @@
     text-align: center;
     white-space: nowrap;
     --_state-color: var(--_content);
-    --_state-opacity: var(--md-sys-state-none);
+    --_state-opacity: var(--#{c.$sys-prefix}-sys-state-none);
 
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: var(--m3-space-2);
+    gap: var(--#{c.$prefix}-sys-space-2);
     flex: 1 1 auto;
     align-self: stretch;
     padding-inline: var(--#{c.$prefix}-segmented-padding-inline);
@@ -147,7 +147,7 @@
       content: "";
       display: none;
       flex: none;
-      @include m.check-glyph(var(--m3-icon-size-small), var(--m3-stroke-thick));
+      @include m.check-glyph(var(--#{c.$prefix}-sys-icon-size-small), var(--#{c.$prefix}-sys-stroke-thick));
     }
   }
 
@@ -156,19 +156,19 @@
   }
 
   #{$input}:checked + #{$label} {
-    --m3-icon-fill: 1;
+    --#{c.$prefix}-icon-fill: 1;
   }
 
   @include m.hover-selector("#{$input}:hover + #{$label}") {
-    --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
+    --_state-opacity: var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity);
   }
 
   #{$input}:focus-visible + #{$label} {
-    --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
+    --_state-opacity: var(--#{c.$sys-prefix}-sys-state-focus-state-layer-opacity);
   }
 
   #{$input}:active + #{$label} {
-    --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+    --_state-opacity: var(--#{c.$sys-prefix}-sys-state-pressed-state-layer-opacity);
   }
 
   #{$input}:checked + #{$label} {

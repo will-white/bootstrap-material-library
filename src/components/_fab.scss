@@ -20,7 +20,7 @@
 //   --m3-fab-tertiary-content-color     on-tertiary-container
 //   --m3-fab-surface-container-color    surface-container-high (.m3-fab--surface)
 //   --m3-fab-surface-content-color      primary
-//   --m3-fab-icon-size          24px (--m3-icon-size)
+//   --m3-fab-icon-size          24px (--m3-sys-icon-size)
 //   --m3-fab-icon-size-medium   28px (.m3-fab--medium)
 //   --m3-fab-icon-size-large    36px (.m3-fab--large)
 //   --m3-fab-padding-inline     space-4 (16px; .m3-fab--extended)
@@ -46,23 +46,23 @@
   --#{c.$prefix}-fab-size-small: #{fn.rem(40)};
   --#{c.$prefix}-fab-size-medium: #{fn.rem(80)};
   --#{c.$prefix}-fab-size-large: #{fn.rem(96)};
-  --#{c.$prefix}-fab-shape: var(--md-sys-shape-corner-large);
-  --#{c.$prefix}-fab-shape-small: var(--md-sys-shape-corner-medium);
-  --#{c.$prefix}-fab-shape-medium: var(--md-sys-shape-corner-large);
-  --#{c.$prefix}-fab-shape-large: var(--md-sys-shape-corner-extra-large);
-  --#{c.$prefix}-fab-container-color: var(--md-sys-color-primary-container);
-  --#{c.$prefix}-fab-content-color: var(--md-sys-color-on-primary-container);
-  --#{c.$prefix}-fab-secondary-container-color: var(--md-sys-color-secondary-container);
-  --#{c.$prefix}-fab-secondary-content-color: var(--md-sys-color-on-secondary-container);
-  --#{c.$prefix}-fab-tertiary-container-color: var(--md-sys-color-tertiary-container);
-  --#{c.$prefix}-fab-tertiary-content-color: var(--md-sys-color-on-tertiary-container);
-  --#{c.$prefix}-fab-surface-container-color: var(--md-sys-color-surface-container-high);
-  --#{c.$prefix}-fab-surface-content-color: var(--md-sys-color-primary);
-  --#{c.$prefix}-fab-icon-size: var(--m3-icon-size);
+  --#{c.$prefix}-fab-shape: var(--#{c.$sys-prefix}-sys-shape-corner-large);
+  --#{c.$prefix}-fab-shape-small: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
+  --#{c.$prefix}-fab-shape-medium: var(--#{c.$sys-prefix}-sys-shape-corner-large);
+  --#{c.$prefix}-fab-shape-large: var(--#{c.$sys-prefix}-sys-shape-corner-extra-large);
+  --#{c.$prefix}-fab-container-color: var(--#{c.$sys-prefix}-sys-color-primary-container);
+  --#{c.$prefix}-fab-content-color: var(--#{c.$sys-prefix}-sys-color-on-primary-container);
+  --#{c.$prefix}-fab-secondary-container-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
+  --#{c.$prefix}-fab-secondary-content-color: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
+  --#{c.$prefix}-fab-tertiary-container-color: var(--#{c.$sys-prefix}-sys-color-tertiary-container);
+  --#{c.$prefix}-fab-tertiary-content-color: var(--#{c.$sys-prefix}-sys-color-on-tertiary-container);
+  --#{c.$prefix}-fab-surface-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container-high);
+  --#{c.$prefix}-fab-surface-content-color: var(--#{c.$sys-prefix}-sys-color-primary);
+  --#{c.$prefix}-fab-icon-size: var(--#{c.$prefix}-sys-icon-size);
   --#{c.$prefix}-fab-icon-size-medium: #{fn.rem(28)};
   --#{c.$prefix}-fab-icon-size-large: #{fn.rem(36)};
-  --#{c.$prefix}-fab-padding-inline: var(--m3-space-4);
-  --#{c.$prefix}-fab-icon-gap: var(--m3-space-2);
+  --#{c.$prefix}-fab-padding-inline: var(--#{c.$prefix}-sys-space-4);
+  --#{c.$prefix}-fab-icon-gap: var(--#{c.$prefix}-sys-space-2);
 }
 
 // Structure + state machinery. Size modifiers re-include control-height with
@@ -80,7 +80,7 @@
   justify-content: center;
   @include m.control-height(--#{c.$prefix}-fab-size);
   width: calc(
-    var(--#{c.$prefix}-fab-size) + var(--m3-density) * var(--m3-density-step)
+    var(--#{c.$prefix}-fab-size) + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
   );
   border: none;
   border-radius: var(--#{c.$prefix}-fab-shape);
@@ -118,7 +118,7 @@
 @mixin small {
   @include m.control-height(--#{c.$prefix}-fab-size-small);
   width: calc(
-    var(--#{c.$prefix}-fab-size-small) + var(--m3-density) * var(--m3-density-step)
+    var(--#{c.$prefix}-fab-size-small) + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
   );
   border-radius: var(--#{c.$prefix}-fab-shape-small);
   // 40px container: expand the hit area to the accessibility floor.
@@ -128,7 +128,7 @@
 @mixin medium {
   @include m.control-height(--#{c.$prefix}-fab-size-medium);
   width: calc(
-    var(--#{c.$prefix}-fab-size-medium) + var(--m3-density) * var(--m3-density-step)
+    var(--#{c.$prefix}-fab-size-medium) + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
   );
   border-radius: var(--#{c.$prefix}-fab-shape-medium);
 
@@ -145,7 +145,7 @@
 @mixin large {
   @include m.control-height(--#{c.$prefix}-fab-size-large);
   width: calc(
-    var(--#{c.$prefix}-fab-size-large) + var(--m3-density) * var(--m3-density-step)
+    var(--#{c.$prefix}-fab-size-large) + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
   );
   border-radius: var(--#{c.$prefix}-fab-shape-large);
 
@@ -197,9 +197,9 @@
 // Viewport-anchored placement (the classic bottom-end corner FAB).
 @mixin fixed {
   position: fixed;
-  inset-block-end: var(--m3-space-4);
-  inset-inline-end: var(--m3-space-4);
-  z-index: var(--m3-z-raised);
+  inset-block-end: var(--#{c.$prefix}-sys-space-4);
+  inset-inline-end: var(--#{c.$prefix}-sys-space-4);
+  z-index: var(--#{c.$prefix}-sys-z-raised);
 }
 
 @mixin classes {

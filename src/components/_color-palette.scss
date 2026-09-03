@@ -70,19 +70,19 @@
 @mixin tokens {
   --#{c.$prefix}-color-palette-container-color: var(--#{c.$prefix}-menu-container-color);
   --#{c.$prefix}-color-palette-content-color: var(--#{c.$prefix}-menu-content-color);
-  --#{c.$prefix}-color-palette-label-color: var(--md-sys-color-on-surface-variant);
-  --#{c.$prefix}-color-palette-shape: var(--md-sys-shape-corner-extra-small);
-  --#{c.$prefix}-color-palette-padding: var(--m3-space-3);
-  --#{c.$prefix}-color-palette-gap: var(--m3-space-1);
+  --#{c.$prefix}-color-palette-label-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+  --#{c.$prefix}-color-palette-shape: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
+  --#{c.$prefix}-color-palette-padding: var(--#{c.$prefix}-sys-space-3);
+  --#{c.$prefix}-color-palette-gap: var(--#{c.$prefix}-sys-space-1);
   --#{c.$prefix}-color-palette-columns: 10;
   --#{c.$prefix}-color-palette-swatch-size: #{fn.rem(20)};
-  --#{c.$prefix}-color-palette-swatch-shape: var(--md-sys-shape-corner-full);
+  --#{c.$prefix}-color-palette-swatch-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   --#{c.$prefix}-color-palette-edge-color: color-mix(
     in srgb,
-    var(--md-sys-color-on-surface) var(--md-sys-state-disabled-container-opacity),
+    var(--#{c.$sys-prefix}-sys-color-on-surface) var(--#{c.$sys-prefix}-sys-state-disabled-container-opacity),
     transparent
   );
-  --#{c.$prefix}-color-palette-selected-ring-color: var(--md-sys-color-on-surface);
+  --#{c.$prefix}-color-palette-selected-ring-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
 }
 
 // The surface: a menu-colored card that is also a popover.
@@ -104,7 +104,7 @@
   &[popover] {
     display: none;
     position: fixed;
-    inset: var(--m3-space-none);
+    inset: var(--#{c.$prefix}-sys-space-none);
     inline-size: fit-content;
     block-size: fit-content;
     overflow: auto;
@@ -119,12 +119,12 @@
 @mixin label {
   @include m.own-box;
   display: block;
-  padding-block: var(--m3-space-2) var(--m3-space-1);
+  padding-block: var(--#{c.$prefix}-sys-space-2) var(--#{c.$prefix}-sys-space-1);
   color: var(--#{c.$prefix}-color-palette-label-color);
   @include m.typescale("label-medium");
 
   &:first-child {
-    padding-block-start: var(--m3-space-none);
+    padding-block-start: var(--#{c.$prefix}-sys-space-none);
   }
 }
 
@@ -148,8 +148,14 @@
   inline-size: var(--#{c.$prefix}-color-palette-swatch-size);
   block-size: var(--#{c.$prefix}-color-palette-swatch-size);
   border-radius: var(--#{c.$prefix}-color-palette-swatch-shape);
-  background-color: var(--#{c.$prefix}-swatch, var(--_swatch, currentColor));
-  box-shadow: inset 0 0 0 var(--m3-stroke-hairline)
+  // The swatch's own colour. --m3-swatch is the pre-1.0 short name and still
+  // works; --m3-color-palette-swatch-color is the namespaced one, consistent
+  // with its -size and -shape siblings.
+  background-color: var(
+    --#{c.$prefix}-color-palette-swatch-color,
+    var(--#{c.$prefix}-swatch, var(--_swatch, currentColor))
+  );
+  box-shadow: inset 0 0 0 var(--#{c.$prefix}-sys-stroke-hairline)
     var(--#{c.$prefix}-color-palette-edge-color);
   cursor: pointer;
   @include m.transition((outline-color, box-shadow));
@@ -158,7 +164,7 @@
     @include m.own-box;
     display: block;
     position: absolute;
-    opacity: var(--m3-opacity-hidden);
+    opacity: var(--#{c.$prefix}-sys-opacity-hidden);
     pointer-events: none;
   }
 
@@ -169,25 +175,25 @@
     content: "";
     display: none;
     position: absolute;
-    inset: var(--m3-space-none);
+    inset: var(--#{c.$prefix}-sys-space-none);
     margin: auto;
     @include m.check-glyph(
       calc(var(--#{c.$prefix}-color-palette-swatch-size) * 0.6),
-      var(--m3-stroke-thick)
+      var(--#{c.$prefix}-sys-stroke-thick)
     );
-    color: var(--md-ref-palette-neutral100);
+    color: var(--#{c.$sys-prefix}-ref-palette-neutral100);
     mix-blend-mode: difference;
   }
 
   @include m.hover {
-    outline: var(--m3-stroke-hairline) solid var(--md-sys-color-outline);
-    outline-offset: var(--m3-stroke-thick);
+    outline: var(--#{c.$prefix}-sys-stroke-hairline) solid var(--#{c.$sys-prefix}-sys-color-outline);
+    outline-offset: var(--#{c.$prefix}-sys-stroke-thick);
   }
 
   &:has(> input:checked) {
-    outline: var(--m3-stroke-thick) solid
+    outline: var(--#{c.$prefix}-sys-stroke-thick) solid
       var(--#{c.$prefix}-color-palette-selected-ring-color);
-    outline-offset: var(--m3-stroke-thick);
+    outline-offset: var(--#{c.$prefix}-sys-stroke-thick);
   }
 
   &:has(> input:checked)::after {
@@ -195,13 +201,13 @@
   }
 
   &:has(> input:focus-visible) {
-    outline: var(--md-sys-state-focus-indicator-thickness) solid
-      var(--md-sys-color-secondary);
-    outline-offset: var(--md-sys-state-focus-indicator-offset);
+    outline: var(--#{c.$sys-prefix}-sys-state-focus-indicator-thickness) solid
+      var(--#{c.$sys-prefix}-sys-color-secondary);
+    outline-offset: var(--#{c.$sys-prefix}-sys-state-focus-indicator-offset);
   }
 
   &:has(> input:disabled) {
-    opacity: var(--md-sys-state-disabled-content-opacity);
+    opacity: var(--#{c.$sys-prefix}-sys-state-disabled-content-opacity);
     cursor: not-allowed;
   }
 }
@@ -211,12 +217,12 @@
   --_swatch: transparent;
   background-image: linear-gradient(
     135deg,
-    transparent calc(50% - var(--m3-stroke-hairline)),
-    var(--md-sys-color-error) calc(50% - var(--m3-stroke-hairline)),
-    var(--md-sys-color-error) calc(50% + var(--m3-stroke-hairline)),
-    transparent calc(50% + var(--m3-stroke-hairline))
+    transparent calc(50% - var(--#{c.$prefix}-sys-stroke-hairline)),
+    var(--#{c.$sys-prefix}-sys-color-error) calc(50% - var(--#{c.$prefix}-sys-stroke-hairline)),
+    var(--#{c.$sys-prefix}-sys-color-error) calc(50% + var(--#{c.$prefix}-sys-stroke-hairline)),
+    transparent calc(50% + var(--#{c.$prefix}-sys-stroke-hairline))
   );
-  box-shadow: inset 0 0 0 var(--m3-stroke-hairline) var(--md-sys-color-outline);
+  box-shadow: inset 0 0 0 var(--#{c.$prefix}-sys-stroke-hairline) var(--#{c.$sys-prefix}-sys-color-outline);
 }
 
 // Custom: a native color input as the visible circle (it shows its own
@@ -235,7 +241,7 @@
     display: block;
     inline-size: 100%;
     block-size: 100%;
-    padding: var(--m3-space-none);
+    padding: var(--#{c.$prefix}-sys-space-none);
     border: none;
     border-radius: inherit;
     background-color: transparent;
@@ -248,19 +254,19 @@
     }
 
     &::-webkit-color-swatch {
-      border: var(--m3-stroke-hairline) solid var(--md-sys-color-outline);
+      border: var(--#{c.$prefix}-sys-stroke-hairline) solid var(--#{c.$sys-prefix}-sys-color-outline);
       border-radius: inherit;
     }
 
     &::-moz-color-swatch {
-      border: var(--m3-stroke-hairline) solid var(--md-sys-color-outline);
+      border: var(--#{c.$prefix}-sys-stroke-hairline) solid var(--#{c.$sys-prefix}-sys-color-outline);
       border-radius: inherit;
     }
 
     &:focus-visible {
-      outline: var(--md-sys-state-focus-indicator-thickness) solid
-        var(--md-sys-color-secondary);
-      outline-offset: var(--md-sys-state-focus-indicator-offset);
+      outline: var(--#{c.$sys-prefix}-sys-state-focus-indicator-thickness) solid
+        var(--#{c.$sys-prefix}-sys-color-secondary);
+      outline-offset: var(--#{c.$sys-prefix}-sys-state-focus-indicator-offset);
     }
   }
 
@@ -269,19 +275,19 @@
     content: "";
     display: block;
     position: absolute;
-    inset: var(--m3-space-none);
+    inset: var(--#{c.$prefix}-sys-space-none);
     margin: auto;
     inline-size: calc(var(--#{c.$prefix}-color-palette-swatch-size) / 2);
     block-size: calc(var(--#{c.$prefix}-color-palette-swatch-size) / 2);
     pointer-events: none;
-    color: var(--md-ref-palette-neutral100);
+    color: var(--#{c.$sys-prefix}-ref-palette-neutral100);
     mix-blend-mode: difference;
     background-image:
       linear-gradient(currentColor, currentColor),
       linear-gradient(currentColor, currentColor);
     background-size:
-      100% var(--m3-stroke-thick),
-      var(--m3-stroke-thick) 100%;
+      100% var(--#{c.$prefix}-sys-stroke-thick),
+      var(--#{c.$prefix}-sys-stroke-thick) 100%;
     background-position: center;
     background-repeat: no-repeat;
   }

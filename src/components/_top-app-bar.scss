@@ -40,9 +40,9 @@
   --#{c.$prefix}-top-app-bar-height: #{fn.rem(64)};
   --#{c.$prefix}-top-app-bar-height-medium: #{fn.rem(112)};
   --#{c.$prefix}-top-app-bar-height-large: #{fn.rem(152)};
-  --#{c.$prefix}-top-app-bar-container-color: var(--md-sys-color-surface);
-  --#{c.$prefix}-top-app-bar-content-color: var(--md-sys-color-on-surface);
-  --#{c.$prefix}-top-app-bar-scrolled-container-color: var(--md-sys-color-surface-container);
+  --#{c.$prefix}-top-app-bar-container-color: var(--#{c.$sys-prefix}-sys-color-surface);
+  --#{c.$prefix}-top-app-bar-content-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+  --#{c.$prefix}-top-app-bar-scrolled-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container);
   --#{c.$prefix}-top-app-bar-scroll-range: #{fn.rem(64)};
 }
 
@@ -51,8 +51,8 @@
   @include m.own-box;
   display: flex;
   align-items: center;
-  gap: var(--m3-space-2);
-  padding-inline: var(--m3-space-2);
+  gap: var(--#{c.$prefix}-sys-space-2);
+  padding-inline: var(--#{c.$prefix}-sys-space-2);
   background-color: var(--#{c.$prefix}-top-app-bar-container-color);
   color: var(--#{c.$prefix}-top-app-bar-content-color);
   @include m.control-height(--#{c.$prefix}-top-app-bar-height);
@@ -68,7 +68,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding-inline: var(--m3-space-2);
+  padding-inline: var(--#{c.$prefix}-sys-space-2);
 }
 
 // Small is the default bar: nothing extra.
@@ -87,7 +87,7 @@
   @include m.control-height(--#{c.$prefix}-top-app-bar-height-medium);
   flex-wrap: wrap;
   align-content: space-between;
-  padding-block-end: var(--m3-space-4);
+  padding-block-end: var(--#{c.$prefix}-sys-space-4);
 
   #{$title} {
     @include m.typescale("headline-small");
@@ -102,7 +102,7 @@
   @include m.control-height(--#{c.$prefix}-top-app-bar-height-large);
   flex-wrap: wrap;
   align-content: space-between;
-  padding-block-end: var(--m3-space-4);
+  padding-block-end: var(--#{c.$prefix}-sys-space-4);
 
   #{$title} {
     @include m.typescale("headline-medium");
@@ -115,8 +115,8 @@
 // Pin the bar to the top of its scroll container.
 @mixin sticky {
   position: sticky;
-  inset-block-start: var(--m3-space-none);
-  z-index: var(--m3-z-nav);
+  inset-block-start: var(--#{c.$prefix}-sys-space-none);
+  z-index: var(--#{c.$prefix}-sys-z-nav);
 }
 
 // On-scroll container color, as a class (fallback / script-driven).
@@ -168,15 +168,15 @@
   @keyframes #{c.$prefix}-top-app-bar-collapse {
     to {
       block-size: calc(
-        var(--#{c.$prefix}-top-app-bar-height) + var(--m3-density) * var(--m3-density-step)
+        var(--#{c.$prefix}-top-app-bar-height) + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
       );
-      padding-block-end: var(--m3-space-none);
+      padding-block-end: var(--#{c.$prefix}-sys-space-none);
     }
   }
 
   @keyframes #{c.$prefix}-top-app-bar-title-fade {
     to {
-      opacity: var(--m3-opacity-hidden);
+      opacity: var(--#{c.$prefix}-sys-opacity-hidden);
     }
   }
 }

@@ -36,14 +36,14 @@
 @mixin tokens {
   --#{c.$prefix}-tabs-height: #{fn.rem(48)};
   --#{c.$prefix}-tabs-height-icon-label: #{fn.rem(64)};
-  --#{c.$prefix}-tabs-label-color: var(--md-sys-color-on-surface-variant);
-  --#{c.$prefix}-tabs-active-label-color: var(--md-sys-color-primary);
-  --#{c.$prefix}-tabs-indicator-color: var(--md-sys-color-primary);
-  --#{c.$prefix}-tabs-indicator-thickness: var(--m3-stroke-heavy);
-  --#{c.$prefix}-tabs-divider-color: var(--md-sys-color-outline-variant);
+  --#{c.$prefix}-tabs-label-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+  --#{c.$prefix}-tabs-active-label-color: var(--#{c.$sys-prefix}-sys-color-primary);
+  --#{c.$prefix}-tabs-indicator-color: var(--#{c.$sys-prefix}-sys-color-primary);
+  --#{c.$prefix}-tabs-indicator-thickness: var(--#{c.$prefix}-sys-stroke-heavy);
+  --#{c.$prefix}-tabs-divider-color: var(--#{c.$sys-prefix}-sys-color-outline-variant);
   --#{c.$prefix}-tabs-pill-height: #{fn.rem(40)};
-  --#{c.$prefix}-tabs-pill-container-color: var(--md-sys-color-secondary-container);
-  --#{c.$prefix}-tabs-pill-label-color: var(--md-sys-color-on-secondary-container);
+  --#{c.$prefix}-tabs-pill-container-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
+  --#{c.$prefix}-tabs-pill-label-color: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
 }
 
 // The scrollable tab bar with its bottom divider.
@@ -51,7 +51,7 @@
   @include m.own-box;
   display: flex;
   overflow-x: auto;
-  border-block-end: var(--m3-stroke-hairline) solid
+  border-block-end: var(--#{c.$prefix}-sys-stroke-hairline) solid
     var(--#{c.$prefix}-tabs-divider-color);
   scrollbar-width: none;
 
@@ -63,9 +63,9 @@
 // Inset focus ring: same state tokens as m.focus-ring, offset pulled inside
 // so the ring is not clipped by the bar's scroll container.
 @mixin focus-ring-inset {
-  outline: var(--md-sys-state-focus-indicator-thickness) solid
-    var(--md-sys-color-secondary);
-  outline-offset: calc(-1 * var(--md-sys-state-focus-indicator-offset));
+  outline: var(--#{c.$sys-prefix}-sys-state-focus-indicator-thickness) solid
+    var(--#{c.$sys-prefix}-sys-color-secondary);
+  outline-offset: calc(-1 * var(--#{c.$sys-prefix}-sys-state-focus-indicator-offset));
 }
 
 // A primary tab bar carrying icons alongside labels is 64dp tall with the
@@ -78,7 +78,7 @@
   @include m.control-height(--#{c.$prefix}-tabs-height-icon-label);
   flex-direction: column;
   justify-content: center;
-  gap: var(--m3-space-1);
+  gap: var(--#{c.$prefix}-sys-space-1);
 }
 
 // One tab (button, a, or label for the real-input variant).
@@ -90,11 +90,11 @@
 
   position: relative;
   @include m.control-height(--#{c.$prefix}-tabs-height);
-  padding-inline: var(--m3-space-4);
+  padding-inline: var(--#{c.$prefix}-sys-space-4);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--m3-space-2);
+  gap: var(--#{c.$prefix}-sys-space-2);
   border: none;
   text-decoration: none;
   cursor: pointer;
@@ -104,38 +104,38 @@
   @include m.transition((color, background-color));
 
   &:focus-visible {
-    outline-offset: calc(-1 * var(--md-sys-state-focus-indicator-offset));
+    outline-offset: calc(-1 * var(--#{c.$sys-prefix}-sys-state-focus-indicator-offset));
   }
 }
 
 // Active treatment: label re-color + underline indicator drawn with ::after.
 @mixin tab-active {
-  --m3-icon-fill: 1;
+  --#{c.$prefix}-icon-fill: 1;
   --_content: var(--#{c.$prefix}-tabs-active-label-color);
 
   &::after {
     @include m.own-pseudo;
     content: "";
     position: absolute;
-    inset-block-end: var(--m3-space-none);
-    inset-inline: var(--m3-space-4);
+    inset-block-end: var(--#{c.$prefix}-sys-space-none);
+    inset-inline: var(--#{c.$prefix}-sys-space-4);
     block-size: var(--#{c.$prefix}-tabs-indicator-thickness);
     background-color: var(--#{c.$prefix}-tabs-indicator-color);
-    border-start-start-radius: var(--md-sys-shape-corner-full);
-    border-start-end-radius: var(--md-sys-shape-corner-full);
+    border-start-start-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+    border-start-end-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   }
 }
 
 // Secondary bar root: variants re-point tier-3 tokens (sanctioned pattern).
 @mixin secondary {
-  --#{c.$prefix}-tabs-active-label-color: var(--md-sys-color-on-surface);
+  --#{c.$prefix}-tabs-active-label-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
 }
 
 // Secondary active indicator: full-width, thinner.
 @mixin tab-active-secondary {
   &::after {
-    inset-inline: var(--m3-space-none);
-    block-size: var(--m3-stroke-thick);
+    inset-inline: var(--#{c.$prefix}-sys-space-none);
+    block-size: var(--#{c.$prefix}-sys-stroke-thick);
   }
 }
 
@@ -144,7 +144,7 @@
   @include m.own-box;
   display: block;
   position: absolute;
-  opacity: var(--m3-opacity-hidden);
+  opacity: var(--#{c.$prefix}-sys-opacity-hidden);
   pointer-events: none;
 }
 
@@ -155,9 +155,9 @@
   --_container: transparent;
   --_content: var(--#{c.$prefix}-tabs-label-color);
 
-  border-radius: var(--md-sys-shape-corner-full);
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   @include m.control-height(--#{c.$prefix}-tabs-pill-height);
-  padding-inline: var(--m3-space-4);
+  padding-inline: var(--#{c.$prefix}-sys-space-4);
   @include m.typescale("label-large");
   @include m.state-layer;
 }

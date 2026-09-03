@@ -4,6 +4,8 @@
 // inheritance, :focus-visible groundwork. Nothing opinionated.
 // ============================================================================
 
+@use "../config" as c;
+
 @mixin styles {
   *,
   *::before,
@@ -12,7 +14,7 @@
   }
 
   * {
-    margin: var(--m3-space-none);
+    margin: var(--#{c.$prefix}-sys-space-none);
   }
 
   img,

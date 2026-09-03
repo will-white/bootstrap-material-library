@@ -64,17 +64,17 @@
   --#{c.$prefix}-icon-btn-size-medium: #{fn.rem(56)};
   --#{c.$prefix}-icon-btn-size-large: #{fn.rem(96)};
   --#{c.$prefix}-icon-btn-size-xl: #{fn.rem(136)};
-  --#{c.$prefix}-icon-btn-shape: var(--md-sys-shape-corner-full);
-  --#{c.$prefix}-icon-btn-shape-square: var(--md-sys-shape-corner-medium);
-  --#{c.$prefix}-icon-btn-shape-square-medium: var(--md-sys-shape-corner-large);
-  --#{c.$prefix}-icon-btn-shape-square-large: var(--md-sys-shape-corner-extra-large);
-  --#{c.$prefix}-icon-btn-shape-pressed: var(--md-sys-shape-corner-small);
-  --#{c.$prefix}-icon-btn-shape-pressed-medium: var(--md-sys-shape-corner-medium);
-  --#{c.$prefix}-icon-btn-shape-pressed-large: var(--md-sys-shape-corner-large);
-  --#{c.$prefix}-icon-btn-shape-selected: var(--md-sys-shape-corner-medium);
-  --#{c.$prefix}-icon-btn-shape-selected-medium: var(--md-sys-shape-corner-large);
-  --#{c.$prefix}-icon-btn-shape-selected-large: var(--md-sys-shape-corner-extra-large);
-  --#{c.$prefix}-icon-btn-icon-size: var(--m3-icon-size);
+  --#{c.$prefix}-icon-btn-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  --#{c.$prefix}-icon-btn-shape-square: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
+  --#{c.$prefix}-icon-btn-shape-square-medium: var(--#{c.$sys-prefix}-sys-shape-corner-large);
+  --#{c.$prefix}-icon-btn-shape-square-large: var(--#{c.$sys-prefix}-sys-shape-corner-extra-large);
+  --#{c.$prefix}-icon-btn-shape-pressed: var(--#{c.$sys-prefix}-sys-shape-corner-small);
+  --#{c.$prefix}-icon-btn-shape-pressed-medium: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
+  --#{c.$prefix}-icon-btn-shape-pressed-large: var(--#{c.$sys-prefix}-sys-shape-corner-large);
+  --#{c.$prefix}-icon-btn-shape-selected: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
+  --#{c.$prefix}-icon-btn-shape-selected-medium: var(--#{c.$sys-prefix}-sys-shape-corner-large);
+  --#{c.$prefix}-icon-btn-shape-selected-large: var(--#{c.$sys-prefix}-sys-shape-corner-extra-large);
+  --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-sys-icon-size);
   --#{c.$prefix}-icon-btn-icon-size-xs: #{fn.rem(20)};
   --#{c.$prefix}-icon-btn-icon-size-large: #{fn.rem(32)};
   --#{c.$prefix}-icon-btn-icon-size-xl: #{fn.rem(40)};
@@ -83,18 +83,18 @@
   --#{c.$prefix}-icon-btn-icon-optical-size-xs: 20;
   --#{c.$prefix}-icon-btn-icon-optical-size-large: 32;
   --#{c.$prefix}-icon-btn-icon-optical-size-xl: 40;
-  --#{c.$prefix}-icon-btn-color: var(--md-sys-color-on-surface-variant);
-  --#{c.$prefix}-icon-btn-selected-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-icon-btn-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+  --#{c.$prefix}-icon-btn-selected-color: var(--#{c.$sys-prefix}-sys-color-primary);
   --#{c.$prefix}-icon-btn-selected-container-color: transparent;
-  --#{c.$prefix}-icon-btn-filled-container-color: var(--md-sys-color-primary);
-  --#{c.$prefix}-icon-btn-filled-color: var(--md-sys-color-on-primary);
-  --#{c.$prefix}-icon-btn-tonal-container-color: var(--md-sys-color-secondary-container);
-  --#{c.$prefix}-icon-btn-tonal-color: var(--md-sys-color-on-secondary-container);
-  --#{c.$prefix}-icon-btn-outlined-color: var(--md-sys-color-on-surface-variant);
-  --#{c.$prefix}-icon-btn-outline-width: var(--m3-stroke-hairline);
-  --#{c.$prefix}-icon-btn-outline-color: var(--md-sys-color-outline);
-  --#{c.$prefix}-icon-btn-outlined-selected-container-color: var(--md-sys-color-inverse-surface);
-  --#{c.$prefix}-icon-btn-outlined-selected-color: var(--md-sys-color-inverse-on-surface);
+  --#{c.$prefix}-icon-btn-filled-container-color: var(--#{c.$sys-prefix}-sys-color-primary);
+  --#{c.$prefix}-icon-btn-filled-color: var(--#{c.$sys-prefix}-sys-color-on-primary);
+  --#{c.$prefix}-icon-btn-tonal-container-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
+  --#{c.$prefix}-icon-btn-tonal-color: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
+  --#{c.$prefix}-icon-btn-outlined-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+  --#{c.$prefix}-icon-btn-outline-width: var(--#{c.$prefix}-sys-stroke-hairline);
+  --#{c.$prefix}-icon-btn-outline-color: var(--#{c.$sys-prefix}-sys-color-outline);
+  --#{c.$prefix}-icon-btn-outlined-selected-container-color: var(--#{c.$sys-prefix}-sys-color-inverse-surface);
+  --#{c.$prefix}-icon-btn-outlined-selected-color: var(--#{c.$sys-prefix}-sys-color-inverse-on-surface);
 }
 
 // Square structure + state machinery shared by every variant (and by the
@@ -116,9 +116,9 @@
   @include m.control-height(--#{c.$prefix}-icon-btn-size);
   // Width mirrors the density-adjusted height so the control stays square.
   inline-size: calc(
-    var(--#{c.$prefix}-icon-btn-size) + var(--m3-density) * var(--m3-density-step)
+    var(--#{c.$prefix}-icon-btn-size) + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
   );
-  padding: var(--m3-space-none);
+  padding: var(--#{c.$prefix}-sys-space-none);
   border: none;
   @include m.pill-radius(--#{c.$prefix}-icon-btn-size);
   border-radius: m.pill(var(--#{c.$prefix}-icon-btn-shape));
@@ -153,12 +153,12 @@
   }
   &[aria-pressed="true"],
   #{$check}:checked + & {
-    --m3-icon-fill: 1;
+    --#{c.$prefix}-icon-fill: 1;
     border-radius: m.pill(var(--#{c.$prefix}-icon-btn-shape-selected));
   }
 
   &[aria-pressed="true"] {
-    --m3-icon-fill: 1;
+    --#{c.$prefix}-icon-fill: 1;
     --_container: var(--#{c.$prefix}-icon-btn-selected-container-color);
     --_content: var(--#{c.$prefix}-icon-btn-selected-color);
   }
@@ -175,7 +175,7 @@
   --_content: var(--#{c.$prefix}-icon-btn-color);
 
   &[aria-pressed="true"] {
-    --m3-icon-fill: 1;
+    --#{c.$prefix}-icon-fill: 1;
     --_container: var(--#{c.$prefix}-icon-btn-selected-container-color);
     --_content: var(--#{c.$prefix}-icon-btn-selected-color);
   }
@@ -235,20 +235,20 @@
     @include m.disabled-bare;
     border-color: color-mix(
       in srgb,
-      var(--md-sys-color-on-surface)
-        var(--md-sys-state-disabled-container-opacity),
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-disabled-container-opacity),
       transparent
     );
   }
 }
 
 @mixin small {
-  --#{c.$prefix}-icon-btn-icon-size: var(--m3-icon-size-small);
+  --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-sys-icon-size-small);
   --#{c.$prefix}-icon-btn-icon-optical-size: var(--#{c.$prefix}-icon-btn-icon-optical-size-xs);
   @include m.control-height(--#{c.$prefix}-icon-btn-size-small);
   @include m.pill-radius(--#{c.$prefix}-icon-btn-size-small);
   inline-size: calc(
-    var(--#{c.$prefix}-icon-btn-size-small) + var(--m3-density) * var(--m3-density-step)
+    var(--#{c.$prefix}-icon-btn-size-small) + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
   );
 }
 
@@ -295,7 +295,7 @@
   // Square toggles morph the other way: round when selected.
   &[aria-pressed="true"],
   #{$check}:checked + & {
-    border-radius: m.pill(var(--md-sys-shape-corner-full));
+    border-radius: m.pill(var(--#{c.$sys-prefix}-sys-shape-corner-full));
   }
 }
 

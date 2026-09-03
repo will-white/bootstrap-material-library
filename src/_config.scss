@@ -4,9 +4,28 @@
 //   @use "m3x/src" with ($seed: #00695c, $prefix: "md");
 // ============================================================================
 
-// Class + custom-property prefix for tier-3 tokens and component classes.
-// ".m3-btn" and "--m3-btn-height" become ".md-btn" / "--md-btn-height" etc.
+// Class + custom-property prefix for the library's own tokens and component
+// classes. ".m3-btn" and "--m3-btn-height" become ".md-btn" / "--md-btn-height"
+// etc. It covers both library tiers:
+//   --<prefix>-sys-*           library-wide globals (space, density, stroke,
+//                              z, opacity, icon and target sizes)
+//   --<prefix>-<component>-*   per-component tokens
 $prefix: "m3" !default;
+
+// Emit the pre-1.0 names of the library globals (--m3-space-4 rather than
+// --m3-sys-space-4) alongside the current ones. The sys token READS the old
+// name, so a subtree that sets the old one still moves the new one and
+// nothing that overrode a global breaks. Turn off to drop them.
+$legacy-global-aliases: true !default;
+
+// Prefix of the M3 system tier: --md-ref-palette-*, --md-sys-*,
+// --md-extended-color-* and --md-seed. It defaults to "md", which is M3's own
+// namespace -- keep it and Material Theme Builder output, a Figma token
+// export and Material Web components all theme m3x with no adapter. Change it
+// only to sidestep a host application that already defines --md-sys-* with
+// different values:
+//   @use "m3x/src" with ($sys-prefix: "acme");  // --acme-sys-color-primary
+$sys-prefix: "md" !default;
 
 // Source color for the whole scheme. Any CSS color Sass can parse.
 $seed: #6750a4 !default;
@@ -93,12 +112,16 @@ $toolbar-dense-collapse: (
 // Color palette swatches, in order. The n-th swatch of
 // .m3-color-palette__<group> is painted from the list, and a dense toolbar's
 // swatch indicator follows the checked one, so the markup carries no colors
-// (a swatch can still override its own with --m3-swatch). "theme" holds M3
+// (a swatch overrides its own with --m3-color-palette-swatch-color). "theme" holds M3
 // roles; "standard" is the familiar editor grid, ten columns by eight rows:
 // grays, pure hues, three lighter and three darker rows.
 $color-palette: (
   "theme": (
-    var(--md-sys-color-on-surface), var(--md-sys-color-on-surface-variant), var(--md-sys-color-primary), var(--md-sys-color-secondary), var(--md-sys-color-tertiary), var(--md-sys-color-error), var(--md-sys-color-primary-container), var(--md-sys-color-secondary-container), var(--md-sys-color-tertiary-container), var(--md-sys-color-surface)
+    var(--#{$sys-prefix}-sys-color-on-surface), var(--#{$sys-prefix}-sys-color-on-surface-variant),
+    var(--#{$sys-prefix}-sys-color-primary), var(--#{$sys-prefix}-sys-color-secondary),
+    var(--#{$sys-prefix}-sys-color-tertiary), var(--#{$sys-prefix}-sys-color-error),
+    var(--#{$sys-prefix}-sys-color-primary-container), var(--#{$sys-prefix}-sys-color-secondary-container),
+    var(--#{$sys-prefix}-sys-color-tertiary-container), var(--#{$sys-prefix}-sys-color-surface)
   ),
   "standard": (
     #000000, #434343, #666666, #999999, #b7b7b7, #cccccc, #d9d9d9, #efefef, #f3f3f3, #ffffff,

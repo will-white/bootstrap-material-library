@@ -60,8 +60,8 @@ $blank-face: "m3x-icon-blank";
   @include m.own-box;
   display: inline-block;
   flex: none;
-  inline-size: var(--m3-icon-size);
-  block-size: var(--m3-icon-size);
+  inline-size: var(--#{c.$prefix}-sys-icon-size);
+  block-size: var(--#{c.$prefix}-sys-icon-size);
   overflow: hidden;
   vertical-align: middle;
   text-align: center;
@@ -70,7 +70,7 @@ $blank-face: "m3x-icon-blank";
   } @else {
     font-family: var(--#{c.$prefix}-icon-font);
   }
-  font-size: var(--m3-icon-size);
+  font-size: var(--#{c.$prefix}-sys-icon-size);
   font-weight: normal;
   font-style: normal;
   line-height: 1;

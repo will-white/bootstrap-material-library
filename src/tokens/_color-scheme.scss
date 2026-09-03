@@ -48,14 +48,14 @@ $extended-roles: contrast.$extended-roles;
 
 @function -prop($role) {
   @if map.has-key($sys-roles, $role) {
-    @return "--md-sys-color-#{$role}";
+    @return "--#{config.$sys-prefix}-sys-color-#{$role}";
   }
-  @return "--md-extended-color-#{$role}";
+  @return "--#{config.$sys-prefix}-extended-color-#{$role}";
 }
 
 @function -ref($role, $scheme, $level) {
   @return fn.raw(
-    "var(--md-ref-palette-#{contrast.palette-of($role)}#{role-tone($role, $scheme, $level)})"
+    "var(--#{config.$sys-prefix}-ref-palette-#{contrast.palette-of($role)}#{role-tone($role, $scheme, $level)})"
   );
 }
 
@@ -63,14 +63,14 @@ $extended-roles: contrast.$extended-roles;
 
 @mixin properties {
   @each $role, $def in $sys-roles {
-    @property --md-sys-color-#{$role} {
+    @property --#{config.$sys-prefix}-sys-color-#{$role} {
       syntax: "<color>";
       inherits: true;
       initial-value: #{fn.hex(role-color($role, light))};
     }
   }
   @each $role, $def in $extended-roles {
-    @property --md-extended-color-#{$role} {
+    @property --#{config.$sys-prefix}-extended-color-#{$role} {
       syntax: "<color>";
       inherits: true;
       initial-value: #{fn.hex(role-color($role, light))};

@@ -5,7 +5,9 @@
 
 @use "sass:list";
 @use "sass:map";
+@use "../config";
 @use "../functions" as fn;
+@use "../mixins" as m;
 
 // name -> px radius
 $corners: (
@@ -22,13 +24,13 @@ $corners: (
 
 @mixin properties {
   @each $name, $px in $corners {
-    @property --md-sys-shape-corner-#{$name} {
+    @property --#{config.$sys-prefix}-sys-shape-corner-#{$name} {
       syntax: "<length>";
       inherits: true;
       initial-value: #{$px * 1px};
     }
   }
-  @property --md-sys-shape-corner-full {
+  @property --#{config.$sys-prefix}-sys-shape-corner-full {
     syntax: "<length>";
     inherits: true;
     initial-value: 9999px;
@@ -41,13 +43,14 @@ $corners: (
     @if $px == 0 {
       $value: 0px;
     }
-    --md-sys-shape-corner-#{$name}: #{$value};
+    --#{config.$sys-prefix}-sys-shape-corner-#{$name}: #{$value};
   }
-  --md-sys-shape-corner-full: 9999px;
+  --#{config.$sys-prefix}-sys-shape-corner-full: 9999px;
 
   // Library extensions (documented as such in the README): stroke widths so
-  // components never hardcode a border, even hairlines.
-  --m3-stroke-hairline: 1px;
-  --m3-stroke-thick: 2px;
-  --m3-stroke-heavy: 3px;
+  // components never hardcode a border, even hairlines. They sit in the
+  // library's own system tier, --<prefix>-sys-*.
+  @include m.global-token("stroke-hairline", 1px);
+  @include m.global-token("stroke-thick", 2px);
+  @include m.global-token("stroke-heavy", 3px);
 }

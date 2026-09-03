@@ -36,11 +36,11 @@
   --#{c.$prefix}-rail-width: #{fn.rem(96)};
   --#{c.$prefix}-rail-pill-width: #{fn.rem(56)};
   --#{c.$prefix}-rail-pill-height: #{fn.rem(32)};
-  --#{c.$prefix}-rail-container-color: var(--md-sys-color-surface);
-  --#{c.$prefix}-rail-label-color: var(--md-sys-color-on-surface-variant);
-  --#{c.$prefix}-rail-active-label-color: var(--md-sys-color-on-surface);
-  --#{c.$prefix}-rail-active-icon-container-color: var(--md-sys-color-secondary-container);
-  --#{c.$prefix}-rail-active-icon-color: var(--md-sys-color-on-secondary-container);
+  --#{c.$prefix}-rail-container-color: var(--#{c.$sys-prefix}-sys-color-surface);
+  --#{c.$prefix}-rail-label-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+  --#{c.$prefix}-rail-active-label-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+  --#{c.$prefix}-rail-active-icon-container-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
+  --#{c.$prefix}-rail-active-icon-color: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
 }
 
 // The rail container (an <aside>): a full-height column of destinations.
@@ -49,19 +49,19 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--m3-space-3);
+  gap: var(--#{c.$prefix}-sys-space-3);
   inline-size: var(--#{c.$prefix}-rail-width);
   block-size: 100%;
-  padding-block: var(--m3-space-4);
+  padding-block: var(--#{c.$prefix}-sys-space-4);
   background-color: var(--#{c.$prefix}-rail-container-color);
 }
 
 // Pinned to the inline-start edge of the viewport.
 @mixin fixed {
   position: fixed;
-  inset-block: var(--m3-space-none);
-  inset-inline-start: var(--m3-space-none);
-  z-index: var(--m3-z-nav);
+  inset-block: var(--#{c.$prefix}-sys-space-none);
+  inset-inline-start: var(--#{c.$prefix}-sys-space-none);
+  z-index: var(--#{c.$prefix}-sys-z-nav);
 }
 
 // One destination (an <a>). The state layer lives on the child pill and is
@@ -72,7 +72,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--m3-space-1);
+  gap: var(--#{c.$prefix}-sys-space-1);
   inline-size: 100%;
   color: var(--#{c.$prefix}-rail-label-color);
   text-decoration: none;
@@ -84,12 +84,12 @@
 
   @media (hover: hover) {
     &:hover #{$icon} {
-      --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
+      --_state-opacity: var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity);
     }
   }
 
   &:active #{$icon} {
-    --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+    --_state-opacity: var(--#{c.$sys-prefix}-sys-state-pressed-state-layer-opacity);
   }
 
   // Active destination: aria-current="page" (preferred) or .active interop.
@@ -98,7 +98,7 @@
     color: var(--#{c.$prefix}-rail-active-label-color);
 
     #{$icon} {
-      --m3-icon-fill: 1;
+      --#{c.$prefix}-icon-fill: 1;
       --_container: var(--#{c.$prefix}-rail-active-icon-container-color);
       color: var(--#{c.$prefix}-rail-active-icon-color);
     }
@@ -113,14 +113,14 @@
   --_container: transparent;
   --_content: var(--#{c.$prefix}-rail-label-color);
   --_state-color: var(--_content);
-  --_state-opacity: var(--md-sys-state-none);
+  --_state-opacity: var(--#{c.$sys-prefix}-sys-state-none);
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
   inline-size: var(--#{c.$prefix}-rail-pill-width);
   block-size: var(--#{c.$prefix}-rail-pill-height);
-  border-radius: var(--md-sys-shape-corner-full);
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   color: var(--_content);
   background-color: color-mix(
     in srgb,
@@ -132,9 +132,9 @@
   > svg,
   > img,
   > .#{c.$prefix}-icon {
-    inline-size: var(--m3-icon-size);
-    font-size: var(--m3-icon-size);
-    block-size: var(--m3-icon-size);
+    inline-size: var(--#{c.$prefix}-sys-icon-size);
+    font-size: var(--#{c.$prefix}-sys-icon-size);
+    block-size: var(--#{c.$prefix}-sys-icon-size);
   }
 }
 

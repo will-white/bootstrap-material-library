@@ -153,7 +153,7 @@ the reserved layer). The contract splits by inheritance:
 Two consequences worth knowing:
 
 - **Density is the only vertical authority.** Controls set `padding-block: 0`
-  and take their height from `calc(token + var(--m3-density) * 4px)`. A host
+  and take their height from `calc(token + var(--m3-sys-density) * 4px)`. A host
   rule such as `.btn { padding: 6px 12px }` in the `bootstrap` layer changes
   nothing; padding is horizontal only.
 - **Content regions inherit on purpose.** Slots and bodies (`.m3-card__slot`,
@@ -300,15 +300,22 @@ Opt in globally (respects `prefers-reduced-motion`):
 
 ## The four-tier variable architecture
 
-Every value in the library flows through this chain:
+Every value in the library flows through this chain, and each tier is
+readable from the name alone:
 
 1. **Reference tokens** -- `--md-ref-palette-*`: raw palette steps.
-2. **System tokens** -- `--md-sys-*`: semantic roles (color, typescale, shape,
-   elevation, motion, state opacities). Library extensions are clearly
-   namespaced: `--md-extended-color-*`, the spacing scale `--m3-space-1..8`
-   (4/8/12/16/24/32/48/64px -- **an m3x extension; M3 defines no official
-   spacing token set**), stroke widths `--m3-stroke-*`, z-indices `--m3-z-*`,
-   and density `--m3-density` (0 to -3).
+2. **System tokens** -- `--md-sys-*`: M3's semantic roles (color, typescale,
+   shape, elevation, motion, state opacities), plus `--md-extended-color-*`
+   for the library's added palettes. These carry **M3's own token names**, so
+   Material Theme Builder output, a Figma token export and Material Web
+   components all theme m3x with no adapter.
+2b. **Library globals** -- `--m3-sys-*`: values M3 publishes no token set for,
+   so they are m3x's own system tier: the spacing scale `--m3-sys-space-1..8`
+   (4/8/12/16/24/32/48/64px), `--m3-sys-density` (0 to -3) and
+   `--m3-sys-density-step`, `--m3-sys-stroke-*`, `--m3-sys-z-*`,
+   `--m3-sys-opacity-*`, `--m3-sys-icon-size`, `--m3-sys-target-size`,
+   `--m3-sys-selection-layer-size`, `--m3-sys-chevron-size` and
+   `--m3-sys-elevation-level`.
 3. **Component tokens** -- `--m3-btn-*`, `--m3-card-*`, `--m3-field-*`, ...:
    the public API of each component, defined in the `tokens` layer, each
    defaulting to a system token. **The Bootstrap re-skin consumes these same
@@ -316,6 +323,41 @@ Every value in the library flows through this chain:
 4. **Private per-instance variables** -- `--_container`, `--_content`,
    `--_state-opacity`: set inside component rules. Variants and states
    re-point these and nothing else. Underscore prefix = not API.
+
+### Reading a token name
+
+The prefix and the segment after it say which tier a token belongs to, so a
+name is enough to know whether you are touching M3's vocabulary, the library's
+globals, or one component:
+
+| Name | Tier | Owner |
+|---|---|---|
+| `--md-ref-palette-primary40` | reference | M3 |
+| `--md-sys-color-primary` | system role | M3 |
+| `--m3-sys-space-4` | library global | m3x |
+| `--m3-icon-weight` | component | the icon |
+| `--m3-icon-btn-size` | component | the icon button |
+
+Before the split the last three shared one namespace: `--m3-icon-size` (a
+global) sat beside `--m3-icon-weight` (the icon component) and
+`--m3-icon-btn-size` (a different component) with nothing in the name to tell
+them apart, and the token export could not group them either. The pre-1.0
+global names are still emitted while `$legacy-global-aliases` is on, and the
+current token reads the old one, so a project that set `--m3-space-4` keeps
+working; set `--m3-sys-space-4` in new code.
+
+Both prefixes are build-time settings. `$prefix` renames the library's own
+tiers and its classes; `$sys-prefix` renames the M3 tier, which you only need
+if a host application already defines `--md-sys-*` with different values:
+
+```scss
+@use "m3x/src" with ($sys-prefix: "acme", $prefix: "ax");
+// --acme-sys-color-primary, --ax-sys-space-4, --ax-btn-height, .ax-btn
+```
+
+Keep `$sys-prefix` at its default unless you have that collision -- `md` is
+M3's own namespace, and it is what Material Theme Builder, a Figma token
+export and Material Web components all speak.
 
 Components consume only tiers 3-4 (plus the shared state/focus/motion machinery
 in the library's mixins); tier-3 defaults reference tier 2; tier 2 references
@@ -333,7 +375,7 @@ recolors every button inside `.brand-cta` -- **including `.btn` Bootstrap
 buttons** -- with no selector wars. Works per instance via `style=""`, per
 region via any ancestor, or globally via `:root`. Every height-based
 interactive control participates in density:
-`height: calc(var(--m3-btn-height) + var(--m3-density) * 4px)`.
+`height: calc(var(--m3-btn-height) + var(--m3-sys-density) * 4px)`.
 (Selection-control glyphs -- checkbox, radio, switch, slider thumb -- are
 fixed-size per the M3 spec; their >=48px touch targets stay constant.)
 
@@ -352,15 +394,15 @@ components.
 | `--m3-btn-height-xl` | 136px | `.m3-btn--xl` |
 | `--m3-btn-height-small` | 32px | `.m3-btn--small` / `.btn-sm` (Bootstrap's ramp) |
 | `--m3-btn-height-bootstrap-large` | 48px | `.btn-lg` (Bootstrap's ramp) |
-| `--m3-btn-padding-inline` | `--m3-space-4` (16px) | |
-| `--m3-btn-padding-inline-xs` | `--m3-space-3` (12px) | |
-| `--m3-btn-padding-inline-medium` | `--m3-space-5` (24px) | |
-| `--m3-btn-padding-inline-large` | `--m3-space-7` (48px) | |
+| `--m3-btn-padding-inline` | `--m3-sys-space-4` (16px) | |
+| `--m3-btn-padding-inline-xs` | `--m3-sys-space-3` (12px) | |
+| `--m3-btn-padding-inline-medium` | `--m3-sys-space-5` (24px) | |
+| `--m3-btn-padding-inline-large` | `--m3-sys-space-7` (48px) | |
 | `--m3-btn-padding-inline-xl` | 64px | |
-| `--m3-btn-icon-gap` | `--m3-space-2` | |
+| `--m3-btn-icon-gap` | `--m3-sys-space-2` | |
 | `--m3-btn-icon-size` | 20px | leading icon slot |
 | `--m3-btn-shape` | `corner-full` | resolved to half the height for the morph |
-| `--m3-btn-outline-width` | `--m3-stroke-hairline` | outlined variant |
+| `--m3-btn-outline-width` | `--m3-sys-stroke-hairline` | outlined variant |
 | `--m3-btn-container-color` | `primary` | filled container |
 | `--m3-btn-label-color` | `on-primary` | filled label |
 | `--m3-btn-tonal-container-color` | `secondary-container` | |
@@ -505,9 +547,10 @@ than in disagreement with M3:
   existing Bootstrap page does not re-flow it. `.m3-btn--small` is the alias
   of the 32px size, as `.m3-icon-btn--small` is. M3's own ramp is the table
   above.
-- **Spacing tokens are a library extension.** M3 publishes no spacing token
-  set, so `--m3-space-*` and the density scale are m3x's, documented as
-  extensions.
+- **Spacing and the other globals are library extensions.** M3 publishes no
+  token set for spacing, density, stroke widths or z-index, so those are
+  m3x's own, under `--m3-sys-*` rather than mixed in with the per-component
+  tier.
 
 Where a component's anatomy needs an element M3 draws but HTML does not
 provide, it is drawn with a pseudo-element rather than asked of the consumer:
@@ -784,10 +827,10 @@ pure-CSS equivalent -- divergences are listed.
 editor: one 40px pill, 28px controls two pixels apart, hairlines between
 groups, compact native selects and popover menus, a stepper, color swatches,
 and an overflow button. It is not an M3 component of its own; it is the M3
-toolbar at maximum density, so the bar pins `--m3-density` to `0` inside
+toolbar at maximum density, so the bar pins `--m3-sys-density` to `0` inside
 itself and re-points the tokens every control reads:
 
-- `--m3-target-size` becomes the control size. Two pixels apart, a 48dp hit
+- `--m3-sys-target-size` becomes the control size. Two pixels apart, a 48dp hit
   area would sit over the neighbors and take their clicks; desktop editor bars
   are the one place M3 accepts the smaller target.
 - `--m3-icon-btn-*` and `--m3-btn-*` sizes, icon sizes, and shapes become the
@@ -881,7 +924,9 @@ no `@import`).
   $motion-scheme: "expressive",    // spring physics set: expressive | standard
   $window-size-classes: (...),     // compact 0 / medium 600px / expanded 840px / large 1200px / extra-large 1600px
   $icon-blank-fallback: true,      // embedded 332-byte blank face behind --m3-icon-font (missing icon font renders nothing)
-  $prefix: "m3",                   // class + tier-3 token prefix
+  $prefix: "m3",                   // class prefix + the library's own token tiers (--m3-sys-*, --m3-<component>-*)
+  $sys-prefix: "md",               // the M3 tier: --md-ref-*, --md-sys-*, --md-extended-*, --md-seed
+  $legacy-global-aliases: true,    // also emit the pre-1.0 global names (--m3-space-4 beside --m3-sys-space-4)
   $enable-bootstrap-compat: true,  // --bs-* remap (9a)
   $enable-bootstrap-reskin: true,  // component re-skin (9b)
   $enable-bootstrap-grid: true,    // containers + .row/.col grid
@@ -930,12 +975,18 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
 
 ### Tests
 
-`npm test` runs six suites against the built CSS:
+`npm test` runs seven suites against the built CSS:
 
 - **contrast** (`test/contrast.js`, no browser): reads the static sRGB tier
   and asserts M3's minimum ratios for every accent / on-accent, container /
   on-container, surface / on-surface, outline and inverse pair in light and
   dark, at the configured level and at high contrast.
+- **namespace** (`test/namespace.js`, no browser): the token namespace
+  contract. Every `--m3-*` token is either a library global (`--m3-sys-*`) or
+  resolves to exactly one component stem, the stems are read from the partials
+  that declare them, both `$prefix` and `$sys-prefix` are honoured (it compiles
+  a build with neither default and asserts no `--md-*` or `--m3-*` name
+  survives), and the exported token file is grouped by tier.
 - **audit** (`test/audit.js`, headless Chromium): the differential audits the
   library is built with. *Box ownership* compares every chrome element's
   computed style on a clean page against a hostile host (stock `bootstrap.css`

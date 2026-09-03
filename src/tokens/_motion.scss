@@ -104,35 +104,35 @@ $springs: ();
 }
 
 @mixin tokens {
-  --md-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
-  --md-sys-motion-easing-standard-decelerate: cubic-bezier(0, 0, 0, 1);
-  --md-sys-motion-easing-standard-accelerate: cubic-bezier(0.3, 0, 1, 1);
-  --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
-  --md-sys-motion-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
-  --md-sys-motion-easing-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
-  --md-sys-motion-easing-linear: cubic-bezier(0, 0, 1, 1);
+  --#{config.$sys-prefix}-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --#{config.$sys-prefix}-sys-motion-easing-standard-decelerate: cubic-bezier(0, 0, 0, 1);
+  --#{config.$sys-prefix}-sys-motion-easing-standard-accelerate: cubic-bezier(0.3, 0, 1, 1);
+  --#{config.$sys-prefix}-sys-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --#{config.$sys-prefix}-sys-motion-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --#{config.$sys-prefix}-sys-motion-easing-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --#{config.$sys-prefix}-sys-motion-easing-linear: cubic-bezier(0, 0, 1, 1);
 
-  --md-sys-motion-duration-short1: 50ms;
-  --md-sys-motion-duration-short2: 100ms;
-  --md-sys-motion-duration-short3: 150ms;
-  --md-sys-motion-duration-short4: 200ms;
-  --md-sys-motion-duration-medium1: 250ms;
-  --md-sys-motion-duration-medium2: 300ms;
-  --md-sys-motion-duration-medium3: 350ms;
-  --md-sys-motion-duration-medium4: 400ms;
-  --md-sys-motion-duration-long1: 450ms;
-  --md-sys-motion-duration-long2: 500ms;
-  --md-sys-motion-duration-long3: 550ms;
-  --md-sys-motion-duration-long4: 600ms;
-  --md-sys-motion-duration-extra-long1: 700ms;
-  --md-sys-motion-duration-extra-long2: 800ms;
-  --md-sys-motion-duration-extra-long3: 900ms;
-  --md-sys-motion-duration-extra-long4: 1000ms;
+  --#{config.$sys-prefix}-sys-motion-duration-short1: 50ms;
+  --#{config.$sys-prefix}-sys-motion-duration-short2: 100ms;
+  --#{config.$sys-prefix}-sys-motion-duration-short3: 150ms;
+  --#{config.$sys-prefix}-sys-motion-duration-short4: 200ms;
+  --#{config.$sys-prefix}-sys-motion-duration-medium1: 250ms;
+  --#{config.$sys-prefix}-sys-motion-duration-medium2: 300ms;
+  --#{config.$sys-prefix}-sys-motion-duration-medium3: 350ms;
+  --#{config.$sys-prefix}-sys-motion-duration-medium4: 400ms;
+  --#{config.$sys-prefix}-sys-motion-duration-long1: 450ms;
+  --#{config.$sys-prefix}-sys-motion-duration-long2: 500ms;
+  --#{config.$sys-prefix}-sys-motion-duration-long3: 550ms;
+  --#{config.$sys-prefix}-sys-motion-duration-long4: 600ms;
+  --#{config.$sys-prefix}-sys-motion-duration-extra-long1: 700ms;
+  --#{config.$sys-prefix}-sys-motion-duration-extra-long2: 800ms;
+  --#{config.$sys-prefix}-sys-motion-duration-extra-long3: 900ms;
+  --#{config.$sys-prefix}-sys-motion-duration-extra-long4: 1000ms;
 
   // Springs: bezier stand-ins here, linear() curves via the springs mixin.
   @each $name, $def in $springs {
-    --md-sys-motion-spring-#{$name}: #{-fallback(list.nth($def, 1))};
-    --md-sys-motion-spring-#{$name}-duration: #{list.nth($def, 3)}ms;
+    --#{config.$sys-prefix}-sys-motion-spring-#{$name}: #{-fallback(list.nth($def, 1))};
+    --#{config.$sys-prefix}-sys-motion-spring-#{$name}-duration: #{list.nth($def, 3)}ms;
   }
 }
 
@@ -140,7 +140,7 @@ $springs: ();
   @supports (transition-timing-function: linear(0, 1)) {
     :root {
       @each $name, $def in $springs {
-        --md-sys-motion-spring-#{$name}: #{-linear(
+        --#{config.$sys-prefix}-sys-motion-spring-#{$name}: #{-linear(
             list.nth($def, 1),
             list.nth($def, 2),
             list.nth($def, 3)

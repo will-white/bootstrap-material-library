@@ -13,12 +13,12 @@
 
 // Gutter steps 0-5 -> spacing tokens (Bootstrap: 0/.25/.5/1/1.5/3rem).
 $-gutters: (
-  0: var(--m3-space-none),
-  1: var(--m3-space-1),
-  2: var(--m3-space-2),
-  3: var(--m3-space-4),
-  4: var(--m3-space-5),
-  5: var(--m3-space-7),
+  0: var(--#{c.$prefix}-sys-space-none),
+  1: var(--#{c.$prefix}-sys-space-1),
+  2: var(--#{c.$prefix}-sys-space-2),
+  3: var(--#{c.$prefix}-sys-space-4),
+  4: var(--#{c.$prefix}-sys-space-5),
+  5: var(--#{c.$prefix}-sys-space-7),
 );
 
 // "" for xs, "-sm" .. "-xxl" for the rest.
@@ -126,8 +126,8 @@ $-gutters: (
   }
 
   #{$container-selectors} {
-    --bs-gutter-x: var(--m3-space-5);
-    --bs-gutter-y: var(--m3-space-none);
+    --bs-gutter-x: var(--#{c.$prefix}-sys-space-5);
+    --bs-gutter-y: var(--#{c.$prefix}-sys-space-none);
     inline-size: 100%;
     padding-inline: calc(var(--bs-gutter-x) * 0.5);
     margin-inline: auto;
@@ -151,8 +151,8 @@ $-gutters: (
 
   // --- flex grid ---------------------------------------------------------------
   .row {
-    --bs-gutter-x: var(--m3-space-5);
-    --bs-gutter-y: var(--m3-space-none);
+    --bs-gutter-x: var(--#{c.$prefix}-sys-space-5);
+    --bs-gutter-y: var(--#{c.$prefix}-sys-space-none);
     display: flex;
     flex-wrap: wrap;
     margin-block-start: calc(-1 * var(--bs-gutter-y));
@@ -171,7 +171,7 @@ $-gutters: (
   .grid {
     --bs-rows: 1;
     --bs-columns: #{c.$grid-columns};
-    --bs-gap: var(--m3-space-5);
+    --bs-gap: var(--#{c.$prefix}-sys-space-5);
     display: grid;
     grid-template-rows: repeat(var(--bs-rows), 1fr);
     grid-template-columns: repeat(var(--bs-columns), 1fr);

@@ -28,11 +28,11 @@
 
 @mixin tokens {
   --#{c.$prefix}-carousel-item-width: 75%;
-  --#{c.$prefix}-carousel-gap: var(--m3-space-2);
-  --#{c.$prefix}-carousel-shape: var(--md-sys-shape-corner-extra-large);
+  --#{c.$prefix}-carousel-gap: var(--#{c.$prefix}-sys-space-2);
+  --#{c.$prefix}-carousel-shape: var(--#{c.$sys-prefix}-sys-shape-corner-extra-large);
   --#{c.$prefix}-carousel-indicator-size: #{fn.rem(8)};
-  --#{c.$prefix}-carousel-indicator-color: var(--md-sys-color-on-surface-variant);
-  --#{c.$prefix}-carousel-indicator-active-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-carousel-indicator-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+  --#{c.$prefix}-carousel-indicator-active-color: var(--#{c.$sys-prefix}-sys-color-primary);
 }
 
 // The scroll-snap track: a one-row column grid that scrolls inline.
@@ -44,7 +44,7 @@
   gap: var(--#{c.$prefix}-carousel-gap);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  scroll-padding-inline: var(--m3-space-4);
+  scroll-padding-inline: var(--#{c.$prefix}-sys-space-4);
   overscroll-behavior-x: contain;
   scrollbar-width: none;
 
@@ -77,8 +77,8 @@
   @include m.own-box;
   display: flex;
   justify-content: center;
-  gap: var(--m3-space-2);
-  padding-block: var(--m3-space-3);
+  gap: var(--#{c.$prefix}-sys-space-2);
+  padding-block: var(--#{c.$prefix}-sys-space-3);
 }
 
 // One dot (a real <button>); resting tint is the indicator color at the M3
@@ -91,13 +91,13 @@
   color: var(--#{c.$prefix}-carousel-indicator-color);
   inline-size: var(--#{c.$prefix}-carousel-indicator-size);
   block-size: var(--#{c.$prefix}-carousel-indicator-size);
-  border-radius: var(--md-sys-shape-corner-full);
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   border: none;
-  padding: var(--m3-space-none);
+  padding: var(--#{c.$prefix}-sys-space-none);
   background-color: color-mix(
     in srgb,
     var(--#{c.$prefix}-carousel-indicator-color)
-      var(--md-sys-state-disabled-content-opacity),
+      var(--#{c.$sys-prefix}-sys-state-disabled-content-opacity),
     transparent
   );
   cursor: pointer;

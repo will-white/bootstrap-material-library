@@ -29,8 +29,8 @@
 //   --m3-split-button-action-padding-end      12px
 //   --m3-split-button-toggle-width            48px     trailing half
 //   --m3-split-button-toggle-padding-inline   13px
-//   --m3-split-button-chevron-size            --m3-chevron-size (10px)
-//   --m3-split-button-chevron-stroke          --m3-stroke-thick (2px)
+//   --m3-split-button-chevron-size            --m3-sys-chevron-size (10px)
+//   --m3-split-button-chevron-stroke          --m3-sys-stroke-thick (2px)
 //   --m3-split-button-menu-offset             space-1 (4px) gap under the toggle
 //                                                      (anchor-positioned menu)
 //
@@ -87,30 +87,30 @@
 @mixin tokens {
   --#{c.$prefix}-split-button-gap: #{fn.rem(2)};
   --#{c.$prefix}-split-button-min-width: #{fn.rem(48)};
-  --#{c.$prefix}-split-button-menu-offset: var(--m3-space-1);
+  --#{c.$prefix}-split-button-menu-offset: var(--#{c.$prefix}-sys-space-1);
   // Size small (the default).
   --#{c.$prefix}-split-button-height: #{fn.rem(40)};
-  --#{c.$prefix}-split-button-inner-shape: var(--md-sys-shape-corner-extra-small);
-  --#{c.$prefix}-split-button-inner-shape-active: var(--md-sys-shape-corner-medium);
+  --#{c.$prefix}-split-button-inner-shape: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
+  --#{c.$prefix}-split-button-inner-shape-active: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
   --#{c.$prefix}-split-button-action-padding-start: #{fn.rem(16)};
   --#{c.$prefix}-split-button-action-padding-end: #{fn.rem(12)};
   --#{c.$prefix}-split-button-toggle-width: #{fn.rem(48)};
   --#{c.$prefix}-split-button-toggle-padding-inline: #{fn.rem(13)};
-  --#{c.$prefix}-split-button-chevron-size: var(--m3-chevron-size);
-  --#{c.$prefix}-split-button-chevron-stroke: var(--m3-stroke-thick);
+  --#{c.$prefix}-split-button-chevron-size: var(--#{c.$prefix}-sys-chevron-size);
+  --#{c.$prefix}-split-button-chevron-stroke: var(--#{c.$prefix}-sys-stroke-thick);
   // Extra small.
   --#{c.$prefix}-split-button-height-xs: #{fn.rem(32)};
-  --#{c.$prefix}-split-button-inner-shape-xs: var(--md-sys-shape-corner-extra-small);
-  --#{c.$prefix}-split-button-inner-shape-active-xs: var(--md-sys-shape-corner-small);
+  --#{c.$prefix}-split-button-inner-shape-xs: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
+  --#{c.$prefix}-split-button-inner-shape-active-xs: var(--#{c.$sys-prefix}-sys-shape-corner-small);
   --#{c.$prefix}-split-button-action-padding-start-xs: #{fn.rem(12)};
   --#{c.$prefix}-split-button-action-padding-end-xs: #{fn.rem(10)};
   --#{c.$prefix}-split-button-toggle-width-xs: #{fn.rem(48)};
   --#{c.$prefix}-split-button-toggle-padding-inline-xs: #{fn.rem(13)};
-  --#{c.$prefix}-split-button-chevron-size-xs: var(--m3-chevron-size);
+  --#{c.$prefix}-split-button-chevron-size-xs: var(--#{c.$prefix}-sys-chevron-size);
   // Medium.
   --#{c.$prefix}-split-button-height-medium: #{fn.rem(56)};
-  --#{c.$prefix}-split-button-inner-shape-medium: var(--md-sys-shape-corner-extra-small);
-  --#{c.$prefix}-split-button-inner-shape-active-medium: var(--md-sys-shape-corner-medium);
+  --#{c.$prefix}-split-button-inner-shape-medium: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
+  --#{c.$prefix}-split-button-inner-shape-active-medium: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
   --#{c.$prefix}-split-button-action-padding-start-medium: #{fn.rem(24)};
   --#{c.$prefix}-split-button-action-padding-end-medium: #{fn.rem(24)};
   --#{c.$prefix}-split-button-toggle-width-medium: #{fn.rem(56)};
@@ -118,8 +118,8 @@
   --#{c.$prefix}-split-button-chevron-size-medium: #{fn.rem(12)};
   // Large.
   --#{c.$prefix}-split-button-height-large: #{fn.rem(96)};
-  --#{c.$prefix}-split-button-inner-shape-large: var(--md-sys-shape-corner-small);
-  --#{c.$prefix}-split-button-inner-shape-active-large: var(--md-sys-shape-corner-large-increased);
+  --#{c.$prefix}-split-button-inner-shape-large: var(--#{c.$sys-prefix}-sys-shape-corner-small);
+  --#{c.$prefix}-split-button-inner-shape-active-large: var(--#{c.$sys-prefix}-sys-shape-corner-large-increased);
   --#{c.$prefix}-split-button-action-padding-start-large: #{fn.rem(48)};
   --#{c.$prefix}-split-button-action-padding-end-large: #{fn.rem(48)};
   --#{c.$prefix}-split-button-toggle-width-large: #{fn.rem(96)};
@@ -127,8 +127,8 @@
   --#{c.$prefix}-split-button-chevron-size-large: #{fn.rem(16)};
   // Extra large.
   --#{c.$prefix}-split-button-height-xl: #{fn.rem(136)};
-  --#{c.$prefix}-split-button-inner-shape-xl: var(--md-sys-shape-corner-medium);
-  --#{c.$prefix}-split-button-inner-shape-active-xl: var(--md-sys-shape-corner-large-increased);
+  --#{c.$prefix}-split-button-inner-shape-xl: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
+  --#{c.$prefix}-split-button-inner-shape-active-xl: var(--#{c.$sys-prefix}-sys-shape-corner-large-increased);
   --#{c.$prefix}-split-button-action-padding-start-xl: #{fn.rem(64)};
   --#{c.$prefix}-split-button-action-padding-end-xl: #{fn.rem(64)};
   --#{c.$prefix}-split-button-toggle-width-xl: #{fn.rem(136)};
@@ -211,7 +211,7 @@
       var(--#{c.$prefix}-split-button-chevron-size),
       var(--#{c.$prefix}-split-button-chevron-stroke)
     );
-    margin-inline-start: var(--m3-space-none);
+    margin-inline-start: var(--#{c.$prefix}-sys-space-none);
     // Optical centering: the rotated L's visual center sits below the box
     // center.
     translate: 0 -25%;
@@ -229,8 +229,8 @@
 }
 
 @mixin -toggle-open {
-  --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
-  border-radius: m.pill(var(--md-sys-shape-corner-full));
+  --_state-opacity: var(--#{c.$sys-prefix}-sys-state-pressed-state-layer-opacity);
+  border-radius: m.pill(var(--#{c.$sys-prefix}-sys-shape-corner-full));
 
   &::after {
     rotate: 225deg;
@@ -245,7 +245,7 @@
   @include m.own-box;
   display: block;
   position: absolute;
-  opacity: var(--m3-opacity-hidden);
+  opacity: var(--#{c.$prefix}-sys-opacity-hidden);
   pointer-events: none;
 }
 
@@ -287,8 +287,8 @@
       @include m.disabled-bare;
       border-color: color-mix(
         in srgb,
-        var(--md-sys-color-on-surface)
-          var(--md-sys-state-disabled-container-opacity),
+        var(--#{c.$sys-prefix}-sys-color-on-surface)
+          var(--#{c.$sys-prefix}-sys-state-disabled-container-opacity),
         transparent
       );
     }
@@ -358,7 +358,7 @@
 @mixin large {
   @include -size("large");
   --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-large);
-  --#{c.$prefix}-split-button-chevron-stroke: var(--m3-stroke-heavy);
+  --#{c.$prefix}-split-button-chevron-stroke: var(--#{c.$prefix}-sys-stroke-heavy);
 
   > .#{c.$prefix}-split-button__action {
     @include m.typescale("headline-small");
@@ -368,7 +368,7 @@
 @mixin xl {
   @include -size("xl");
   --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-btn-icon-size-xl);
-  --#{c.$prefix}-split-button-chevron-stroke: var(--m3-stroke-heavy);
+  --#{c.$prefix}-split-button-chevron-stroke: var(--#{c.$prefix}-sys-stroke-heavy);
 
   > .#{c.$prefix}-split-button__action {
     @include m.typescale("headline-large");
@@ -381,7 +381,7 @@
 @mixin menu-placement {
   @supports (position-area: block-end) {
     inset: auto;
-    margin: var(--m3-space-none);
+    margin: var(--#{c.$prefix}-sys-space-none);
     margin-block-start: var(--#{c.$prefix}-split-button-menu-offset);
     position-area: block-end span-inline-start;
     position-try-fallbacks: flip-block;

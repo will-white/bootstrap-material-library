@@ -1,16 +1,24 @@
 // ============================================================================
-// m3x spacing + density tokens (library extensions -- M3 defines no official
-// spacing token set; documented as extensions in the README).
+// m3x spacing, density and structural globals (library extensions -- M3
+// defines no official token set for these; they are documented as extensions
+// in the README).
+//
+// They are emitted under --<prefix>-sys-*, the library's own system tier,
+// which keeps them distinguishable from the per-component tier
+// (--<prefix>-<component>-*). $legacy-global-aliases also emits the pre-1.0
+// names and has the sys token read them, so either name works as an override.
 // ============================================================================
 
 @use "sass:list";
+@use "../config";
 @use "../functions" as fn;
+@use "../mixins" as m;
 
-// --m3-space-1 .. --m3-space-8: 4, 8, 12, 16, 24, 32, 48, 64px (as rem).
+// --m3-sys-space-1 .. -8: 4, 8, 12, 16, 24, 32, 48, 64px (as rem).
 $steps: (4, 8, 12, 16, 24, 32, 48, 64);
 
 @mixin properties {
-  @property --m3-density {
+  @property --#{config.$prefix}-sys-density {
     syntax: "<number>";
     inherits: true;
     initial-value: 0;
@@ -18,36 +26,36 @@ $steps: (4, 8, 12, 16, 24, 32, 48, 64);
 }
 
 @mixin tokens {
-  --m3-space-none: 0px;
+  @include m.global-token("space-none", 0px);
   @for $i from 1 through list.length($steps) {
-    --m3-space-#{$i}: #{fn.rem(list.nth($steps, $i))};
+    @include m.global-token("space-#{$i}", fn.rem(list.nth($steps, $i)));
   }
 
   // Density: 0 (default) to -3 (densest). Interactive control heights are
   // computed as calc(height-token + density * step).
-  --m3-density: 0;
-  --m3-density-step: 4px;
+  @include m.global-token("density", 0);
+  @include m.global-token("density-step", 4px);
 
   // Minimum hit-target for small controls (accessibility floor).
-  --m3-selection-layer-size: #{fn.rem(40)};
-  --m3-target-size: 48px;
+  @include m.global-token("selection-layer-size", fn.rem(40));
+  @include m.global-token("target-size", 48px);
 
   // Default icon footprint used by CSS-drawn icons.
-  --m3-icon-size: #{fn.rem(24)};
-  --m3-icon-size-small: #{fn.rem(18)};
-  --m3-chevron-size: #{fn.rem(10)};
+  @include m.global-token("icon-size", fn.rem(24));
+  @include m.global-token("icon-size-small", fn.rem(18));
+  @include m.global-token("chevron-size", fn.rem(10));
 
   // Structural opacities (section 0: even opacities resolve through tokens).
-  --m3-opacity-hidden: 0;
-  --m3-opacity-full: 1;
-  --m3-opacity-scrim: 32%;
+  @include m.global-token("opacity-hidden", 0);
+  @include m.global-token("opacity-full", 1);
+  @include m.global-token("opacity-scrim", 32%);
 
-  // z-index scale (library extension; native <dialog> and [popover] use the
-  // top layer and need none of these).
-  --m3-z-raised: 10;
-  --m3-z-sticky: 30;
-  --m3-z-nav: 40;
-  --m3-z-overlay: 50;
-  --m3-z-snackbar: 60;
-  --m3-z-tooltip: 70;
+  // z-index scale (native <dialog> and [popover] use the top layer and need
+  // none of these).
+  @include m.global-token("z-raised", 10);
+  @include m.global-token("z-sticky", 30);
+  @include m.global-token("z-nav", 40);
+  @include m.global-token("z-overlay", 50);
+  @include m.global-token("z-snackbar", 60);
+  @include m.global-token("z-tooltip", 70);
 }

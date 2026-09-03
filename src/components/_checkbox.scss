@@ -27,13 +27,13 @@
 @mixin tokens {
   --#{c.$prefix}-checkbox-size: #{fn.rem(18)};
   --#{c.$prefix}-checkbox-shape: #{fn.rem(2)};
-  --#{c.$prefix}-checkbox-outline-color: var(--md-sys-color-on-surface-variant);
-  --#{c.$prefix}-checkbox-selected-container-color: var(--md-sys-color-primary);
-  --#{c.$prefix}-checkbox-mark-color: var(--md-sys-color-on-primary);
+  --#{c.$prefix}-checkbox-outline-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+  --#{c.$prefix}-checkbox-selected-container-color: var(--#{c.$sys-prefix}-sys-color-primary);
+  --#{c.$prefix}-checkbox-mark-color: var(--#{c.$sys-prefix}-sys-color-on-primary);
   --#{c.$prefix}-checkbox-icon-size: #{fn.rem(18)};
   --#{c.$prefix}-checkbox-dash-length: #{fn.rem(12)};
-  --#{c.$prefix}-checkbox-state-layer-color: var(--md-sys-color-on-surface);
-  --#{c.$prefix}-checkbox-selected-state-layer-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-checkbox-state-layer-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+  --#{c.$prefix}-checkbox-selected-state-layer-color: var(--#{c.$sys-prefix}-sys-color-primary);
 }
 
 // The whole control, applied to the real input (reused by the Bootstrap
@@ -46,7 +46,7 @@
   appearance: none;
   inline-size: var(--#{c.$prefix}-checkbox-size);
   block-size: var(--#{c.$prefix}-checkbox-size);
-  border: var(--m3-stroke-thick) solid var(--#{c.$prefix}-checkbox-outline-color);
+  border: var(--#{c.$prefix}-sys-stroke-thick) solid var(--#{c.$prefix}-checkbox-outline-color);
   border-radius: var(--#{c.$prefix}-checkbox-shape);
   background-color: transparent;
   @include m.typescale("body-medium");
@@ -92,7 +92,7 @@
 
   &:checked::after {
     visibility: visible;
-    @include m.check-glyph(var(--#{c.$prefix}-checkbox-icon-size), var(--m3-stroke-thick));
+    @include m.check-glyph(var(--#{c.$prefix}-checkbox-icon-size), var(--#{c.$prefix}-sys-stroke-thick));
     color: var(--#{c.$prefix}-checkbox-mark-color);
   }
 
@@ -106,8 +106,8 @@
   &:indeterminate::after {
     visibility: visible;
     inline-size: var(--#{c.$prefix}-checkbox-dash-length);
-    block-size: var(--m3-space-none);
-    border-block-end: var(--m3-stroke-thick) solid currentColor;
+    block-size: var(--#{c.$prefix}-sys-space-none);
+    border-block-end: var(--#{c.$prefix}-sys-stroke-thick) solid currentColor;
     border-inline-end: none;
     rotate: none;
     translate: none;
@@ -117,8 +117,8 @@
     cursor: not-allowed;
     border-color: color-mix(
       in srgb,
-      var(--md-sys-color-on-surface)
-        var(--md-sys-state-disabled-content-opacity),
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-disabled-content-opacity),
       transparent
     );
 
@@ -130,8 +130,8 @@
   &:checked:disabled {
     background-color: color-mix(
       in srgb,
-      var(--md-sys-color-on-surface)
-        var(--md-sys-state-disabled-content-opacity),
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-disabled-content-opacity),
       transparent
     );
   }
@@ -139,8 +139,8 @@
   &:indeterminate:disabled {
     background-color: color-mix(
       in srgb,
-      var(--md-sys-color-on-surface)
-        var(--md-sys-state-disabled-content-opacity),
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-disabled-content-opacity),
       transparent
     );
   }

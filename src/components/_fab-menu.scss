@@ -10,7 +10,7 @@
 //   --m3-fab-menu-item-content-color    on-primary-container item label + icon
 //   --m3-fab-menu-item-padding-inline   space-4 (16px)       item inline padding
 //   --m3-fab-menu-item-icon-gap         space-2 (8px)        icon-to-label gap
-//   --m3-fab-menu-item-icon-size        24px (--m3-icon-size)
+//   --m3-fab-menu-item-icon-size        24px (--m3-sys-icon-size)
 //   --m3-fab-menu-gap                   space-1 (4px)        gap between items
 //   --m3-fab-menu-offset                space-2 (8px)        gap above the fab
 //   --m3-fab-menu-open-container-color  primary              fab surface, open
@@ -48,16 +48,16 @@
 
 @mixin tokens {
   --#{c.$prefix}-fab-menu-item-height: #{fn.rem(56)};
-  --#{c.$prefix}-fab-menu-item-shape: var(--md-sys-shape-corner-full);
-  --#{c.$prefix}-fab-menu-item-container-color: var(--md-sys-color-primary-container);
-  --#{c.$prefix}-fab-menu-item-content-color: var(--md-sys-color-on-primary-container);
-  --#{c.$prefix}-fab-menu-item-padding-inline: var(--m3-space-4);
-  --#{c.$prefix}-fab-menu-item-icon-gap: var(--m3-space-2);
-  --#{c.$prefix}-fab-menu-item-icon-size: var(--m3-icon-size);
-  --#{c.$prefix}-fab-menu-gap: var(--m3-space-1);
-  --#{c.$prefix}-fab-menu-offset: var(--m3-space-2);
-  --#{c.$prefix}-fab-menu-open-container-color: var(--md-sys-color-primary);
-  --#{c.$prefix}-fab-menu-open-content-color: var(--md-sys-color-on-primary);
+  --#{c.$prefix}-fab-menu-item-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  --#{c.$prefix}-fab-menu-item-container-color: var(--#{c.$sys-prefix}-sys-color-primary-container);
+  --#{c.$prefix}-fab-menu-item-content-color: var(--#{c.$sys-prefix}-sys-color-on-primary-container);
+  --#{c.$prefix}-fab-menu-item-padding-inline: var(--#{c.$prefix}-sys-space-4);
+  --#{c.$prefix}-fab-menu-item-icon-gap: var(--#{c.$prefix}-sys-space-2);
+  --#{c.$prefix}-fab-menu-item-icon-size: var(--#{c.$prefix}-sys-icon-size);
+  --#{c.$prefix}-fab-menu-gap: var(--#{c.$prefix}-sys-space-1);
+  --#{c.$prefix}-fab-menu-offset: var(--#{c.$prefix}-sys-space-2);
+  --#{c.$prefix}-fab-menu-open-container-color: var(--#{c.$sys-prefix}-sys-color-primary);
+  --#{c.$prefix}-fab-menu-open-content-color: var(--#{c.$sys-prefix}-sys-color-on-primary);
 }
 
 // Root: the anchor context. Its box is the fab's box (the popover leaves
@@ -109,7 +109,7 @@
 @mixin items-popover {
   display: none;
   position: fixed;
-  inset: var(--m3-space-none);
+  inset: var(--#{c.$prefix}-sys-space-none);
   inline-size: fit-content;
   block-size: fit-content;
   overflow: visible;
@@ -129,7 +129,7 @@
     position-area: block-start span-inline-start;
     position-try-fallbacks: flip-block;
     inset: auto;
-    margin: var(--m3-space-none);
+    margin: var(--#{c.$prefix}-sys-space-none);
     margin-block: var(--#{c.$prefix}-fab-menu-offset);
   }
 }
@@ -138,16 +138,16 @@
 // on a selector that stands alone: :popover-open never shares a list.
 @mixin popover-entry {
   @media (prefers-reduced-motion: no-preference) {
-    opacity: var(--m3-opacity-full);
+    opacity: var(--#{c.$prefix}-sys-opacity-full);
     translate: 0 0;
     transition-property: opacity, translate;
-    transition-duration: var(--md-sys-motion-duration-short4);
-    transition-timing-function: var(--md-sys-motion-easing-emphasized-decelerate);
+    transition-duration: var(--#{c.$sys-prefix}-sys-motion-duration-short4);
+    transition-timing-function: var(--#{c.$sys-prefix}-sys-motion-easing-emphasized-decelerate);
     transition-behavior: allow-discrete;
 
     @starting-style {
-      opacity: var(--m3-opacity-hidden);
-      translate: 0 var(--m3-space-1);
+      opacity: var(--#{c.$prefix}-sys-opacity-hidden);
+      translate: 0 var(--#{c.$prefix}-sys-space-1);
     }
   }
 }

@@ -1,6 +1,6 @@
-// npm test: contrast (static), then the Chromium audits, hit-area, icon,
-// shape-morph and M3 spec-conformance checks.
-const suites = [['contrast', require('./contrast')], ['audit', require('./audit')], ['hit-areas', require('./hit-areas')], ['icon', require('./icon')], ['morph', require('./morph')], ['spec', require('./spec')]];
+// npm test: contrast and the token-namespace contract (static), then the
+// Chromium audits, hit-area, icon, shape-morph and M3 spec-conformance checks.
+const suites = [['contrast', require('./contrast')], ['namespace', require('./namespace')], ['audit', require('./audit')], ['hit-areas', require('./hit-areas')], ['icon', require('./icon')], ['morph', require('./morph')], ['spec', require('./spec')]];
 (async () => {
   const failures = [];
   for (const [name, suite] of suites) {

@@ -15,6 +15,27 @@
 // Hover styles only where a hovering pointer exists: touch screens otherwise
 // keep the hover state stuck on after a tap. `&:hover` inside a media query,
 // so the guard costs nothing in the selector.
+// --- library globals -------------------------------------------------------
+//
+// The library's own system tier: values M3 does not define a token set for
+// (spacing, density, stroke widths, z-index, structural opacities, the icon
+// and touch-target footprints). They live under --<prefix>-sys-* so they are
+// distinguishable from per-component tokens, which are --<prefix>-<component>-*
+// -- before the split both shared one namespace, and --m3-sys-icon-size (a global)
+// sat beside --m3-icon-weight (the icon component) and --m3-icon-btn-size (a
+// different component) with nothing in the name to tell them apart.
+//
+// With $legacy-global-aliases on, the pre-1.0 name is emitted too and the sys
+// token reads it, so overriding either name still works.
+@mixin global-token($name, $value) {
+  @if config.$legacy-global-aliases {
+    --#{config.$prefix}-#{$name}: #{$value};
+    --#{config.$prefix}-sys-#{$name}: var(--#{config.$prefix}-#{$name});
+  } @else {
+    --#{config.$prefix}-sys-#{$name}: #{$value};
+  }
+}
+
 @mixin hover {
   @media (hover: hover) {
     &:hover {
@@ -36,11 +57,11 @@
 
 // Apply one role of the M3 typescale, e.g. @include typescale("label-large");
 @mixin typescale($scale) {
-  font-family: var(--md-sys-typescale-#{$scale}-font);
-  font-size: var(--md-sys-typescale-#{$scale}-size);
-  line-height: var(--md-sys-typescale-#{$scale}-line-height);
-  font-weight: var(--md-sys-typescale-#{$scale}-weight);
-  letter-spacing: var(--md-sys-typescale-#{$scale}-tracking);
+  font-family: var(--#{config.$sys-prefix}-sys-typescale-#{$scale}-font);
+  font-size: var(--#{config.$sys-prefix}-sys-typescale-#{$scale}-size);
+  line-height: var(--#{config.$sys-prefix}-sys-typescale-#{$scale}-line-height);
+  font-weight: var(--#{config.$sys-prefix}-sys-typescale-#{$scale}-weight);
+  letter-spacing: var(--#{config.$sys-prefix}-sys-typescale-#{$scale}-tracking);
 }
 
 // --- state system (section 6: color-mix only) -------------------------------
@@ -52,7 +73,7 @@
 // exactly matching M3's srgb alpha compositing.
 @mixin state-layer {
   --_state-color: var(--_content);
-  --_state-opacity: var(--md-sys-state-none);
+  --_state-opacity: var(--#{config.$sys-prefix}-sys-state-none);
   color: var(--_content);
   background-color: color-mix(
     in srgb,
@@ -61,13 +82,13 @@
   );
 
   @include hover {
-    --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
+    --_state-opacity: var(--#{config.$sys-prefix}-sys-state-hover-state-layer-opacity);
   }
   &:focus-visible {
-    --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
+    --_state-opacity: var(--#{config.$sys-prefix}-sys-state-focus-state-layer-opacity);
   }
   &:active {
-    --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+    --_state-opacity: var(--#{config.$sys-prefix}-sys-state-pressed-state-layer-opacity);
   }
 }
 
@@ -76,7 +97,7 @@
 @mixin state-layer-for($child) {
   #{$child} {
     --_state-color: var(--_content);
-    --_state-opacity: var(--md-sys-state-none);
+    --_state-opacity: var(--#{config.$sys-prefix}-sys-state-none);
     color: var(--_content);
     background-color: color-mix(
       in srgb,
@@ -86,14 +107,14 @@
   }
   @media (hover: hover) {
     &:hover #{$child} {
-      --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
+      --_state-opacity: var(--#{config.$sys-prefix}-sys-state-hover-state-layer-opacity);
     }
   }
   &:focus-within #{$child} {
-    --_state-opacity: var(--md-sys-state-focus-state-layer-opacity);
+    --_state-opacity: var(--#{config.$sys-prefix}-sys-state-focus-state-layer-opacity);
   }
   &:active #{$child} {
-    --_state-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+    --_state-opacity: var(--#{config.$sys-prefix}-sys-state-pressed-state-layer-opacity);
   }
 }
 
@@ -101,15 +122,15 @@
 @mixin disabled {
   --_container: color-mix(
     in srgb,
-    var(--md-sys-color-on-surface) var(--md-sys-state-disabled-container-opacity),
+    var(--#{config.$sys-prefix}-sys-color-on-surface) var(--#{config.$sys-prefix}-sys-state-disabled-container-opacity),
     transparent
   );
   --_content: color-mix(
     in srgb,
-    var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity),
+    var(--#{config.$sys-prefix}-sys-color-on-surface) var(--#{config.$sys-prefix}-sys-state-disabled-content-opacity),
     transparent
   );
-  --_state-opacity: var(--md-sys-state-none);
+  --_state-opacity: var(--#{config.$sys-prefix}-sys-state-none);
   box-shadow: none;
   cursor: not-allowed;
   pointer-events: none;
@@ -120,10 +141,10 @@
   --_container: transparent;
   --_content: color-mix(
     in srgb,
-    var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity),
+    var(--#{config.$sys-prefix}-sys-color-on-surface) var(--#{config.$sys-prefix}-sys-state-disabled-content-opacity),
     transparent
   );
-  --_state-opacity: var(--md-sys-state-none);
+  --_state-opacity: var(--#{config.$sys-prefix}-sys-state-none);
   box-shadow: none;
   cursor: not-allowed;
   pointer-events: none;
@@ -156,9 +177,9 @@
 // M3 focus indicator: tokenized thickness + offset, secondary role color.
 @mixin focus-ring {
   &:focus-visible {
-    outline: var(--md-sys-state-focus-indicator-thickness) solid
-      var(--md-sys-color-secondary);
-    outline-offset: var(--md-sys-state-focus-indicator-offset);
+    outline: var(--#{config.$sys-prefix}-sys-state-focus-indicator-thickness) solid
+      var(--#{config.$sys-prefix}-sys-color-secondary);
+    outline-offset: var(--#{config.$sys-prefix}-sys-state-focus-indicator-offset);
   }
 }
 
@@ -166,21 +187,21 @@
 // separate rules so browsers without :has() keep the second one.
 @mixin focus-ring-within($input: "input") {
   &:has(#{$input}:focus-visible) {
-    outline: var(--md-sys-state-focus-indicator-thickness) solid
-      var(--md-sys-color-secondary);
-    outline-offset: var(--md-sys-state-focus-indicator-offset);
+    outline: var(--#{config.$sys-prefix}-sys-state-focus-indicator-thickness) solid
+      var(--#{config.$sys-prefix}-sys-color-secondary);
+    outline-offset: var(--#{config.$sys-prefix}-sys-state-focus-indicator-offset);
   }
   &:focus-within {
-    outline: var(--md-sys-state-focus-indicator-thickness) solid
-      var(--md-sys-color-secondary);
-    outline-offset: var(--md-sys-state-focus-indicator-offset);
+    outline: var(--#{config.$sys-prefix}-sys-state-focus-indicator-thickness) solid
+      var(--#{config.$sys-prefix}-sys-color-secondary);
+    outline-offset: var(--#{config.$sys-prefix}-sys-state-focus-indicator-offset);
   }
 }
 
 // --- elevation --------------------------------------------------------------
 
 @mixin elevation($level) {
-  box-shadow: var(--md-sys-elevation-#{$level});
+  box-shadow: var(--#{config.$sys-prefix}-sys-elevation-#{$level});
 }
 
 // --- density ----------------------------------------------------------------
@@ -188,11 +209,11 @@
 // Interactive control heights participate in density (-3..0):
 // height = token + density * 4px.
 @mixin control-height($height-token) {
-  height: calc(var(#{$height-token}) + var(--m3-density) * var(--m3-density-step));
+  height: calc(var(#{$height-token}) + var(--#{config.$prefix}-sys-density) * var(--#{config.$prefix}-sys-density-step));
 }
 
 @mixin control-min-height($height-token) {
-  min-height: calc(var(#{$height-token}) + var(--m3-density) * var(--m3-density-step));
+  min-height: calc(var(#{$height-token}) + var(--#{config.$prefix}-sys-density) * var(--#{config.$prefix}-sys-density-step));
 }
 
 // --- shape morphs -----------------------------------------------------------
@@ -211,7 +232,7 @@
 
 @mixin pill-radius($height-token) {
   --_pill-radius: calc(
-    (var(#{$height-token}) + var(--m3-density) * var(--m3-density-step)) / 2
+    (var(#{$height-token}) + var(--#{config.$prefix}-sys-density) * var(--#{config.$prefix}-sys-density-step)) / 2
   );
 }
 
@@ -335,12 +356,12 @@ $-own-pseudo-selectors: ();
   clear: none;
   inline-size: auto;
   block-size: auto;
-  min-inline-size: var(--m3-space-none);
-  min-block-size: var(--m3-space-none);
+  min-inline-size: var(--#{config.$prefix}-sys-space-none);
+  min-block-size: var(--#{config.$prefix}-sys-space-none);
   max-inline-size: none;
   max-block-size: none;
-  margin: var(--m3-space-none);
-  padding: var(--m3-space-none);
+  margin: var(--#{config.$prefix}-sys-space-none);
+  padding: var(--#{config.$prefix}-sys-space-none);
   overflow: visible;
   flex: 0 1 auto;
   order: 0;
@@ -350,13 +371,13 @@ $-own-pseudo-selectors: ();
   columns: auto;
   aspect-ratio: auto;
   border: none;
-  border-radius: var(--md-sys-shape-corner-none);
+  border-radius: var(--#{config.$sys-prefix}-sys-shape-corner-none);
   border-image: none;
   outline: none;
-  outline-offset: var(--m3-space-none);
+  outline-offset: var(--#{config.$prefix}-sys-space-none);
   background: transparent;
-  box-shadow: var(--md-sys-elevation-0);
-  opacity: var(--m3-opacity-full);
+  box-shadow: var(--#{config.$sys-prefix}-sys-elevation-0);
+  opacity: var(--#{config.$prefix}-sys-opacity-full);
   transform: none;
   translate: none;
   rotate: none;
@@ -396,7 +417,7 @@ $-own-pseudo-selectors: ();
   font-feature-settings: normal;
   letter-spacing: normal;
   word-spacing: normal;
-  text-indent: var(--m3-space-none);
+  text-indent: var(--#{config.$prefix}-sys-space-none);
   text-transform: none;
   text-shadow: none;
   text-align: start;
@@ -478,56 +499,56 @@ $-own-pseudo-selectors: ();
 // pseudo with radial gradients, so the target stays one element. Set
 // --_layer-color / --_layer-opacity per state on the control.
 @mixin selection-layer($pseudo: "::before") {
-  --_layer-opacity: var(--md-sys-state-none);
+  --_layer-opacity: var(--#{config.$sys-prefix}-sys-state-none);
   --_ring: transparent;
 
   &#{$pseudo} {
     // 40dp layer + 2dp offset + 3dp ring on each side.
     inline-size: calc(
-      var(--m3-selection-layer-size) + 2 *
-        (var(--md-sys-state-focus-indicator-offset) + var(--md-sys-state-focus-indicator-thickness))
+      var(--#{config.$prefix}-sys-selection-layer-size) + 2 *
+        (var(--#{config.$sys-prefix}-sys-state-focus-indicator-offset) + var(--#{config.$sys-prefix}-sys-state-focus-indicator-thickness))
     );
     block-size: calc(
-      var(--m3-selection-layer-size) + 2 *
-        (var(--md-sys-state-focus-indicator-offset) + var(--md-sys-state-focus-indicator-thickness))
+      var(--#{config.$prefix}-sys-selection-layer-size) + 2 *
+        (var(--#{config.$sys-prefix}-sys-state-focus-indicator-offset) + var(--#{config.$sys-prefix}-sys-state-focus-indicator-thickness))
     );
-    border-radius: var(--md-sys-shape-corner-full);
+    border-radius: var(--#{config.$sys-prefix}-sys-shape-corner-full);
     background: radial-gradient(
       circle,
       color-mix(in srgb, var(--_layer-color) var(--_layer-opacity), transparent)
-        calc(var(--m3-selection-layer-size) / 2),
-      transparent calc(var(--m3-selection-layer-size) / 2 + var(--m3-stroke-hairline) / 2),
-      transparent calc(var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset)),
-      var(--_ring) calc(var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset)),
+        calc(var(--#{config.$prefix}-sys-selection-layer-size) / 2),
+      transparent calc(var(--#{config.$prefix}-sys-selection-layer-size) / 2 + var(--#{config.$prefix}-sys-stroke-hairline) / 2),
+      transparent calc(var(--#{config.$prefix}-sys-selection-layer-size) / 2 + var(--#{config.$sys-prefix}-sys-state-focus-indicator-offset)),
+      var(--_ring) calc(var(--#{config.$prefix}-sys-selection-layer-size) / 2 + var(--#{config.$sys-prefix}-sys-state-focus-indicator-offset)),
       var(--_ring)
         calc(
-          var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset) +
-            var(--md-sys-state-focus-indicator-thickness)
+          var(--#{config.$prefix}-sys-selection-layer-size) / 2 + var(--#{config.$sys-prefix}-sys-state-focus-indicator-offset) +
+            var(--#{config.$sys-prefix}-sys-state-focus-indicator-thickness)
         ),
       transparent
         calc(
-          var(--m3-selection-layer-size) / 2 + var(--md-sys-state-focus-indicator-offset) +
-            var(--md-sys-state-focus-indicator-thickness) + var(--m3-stroke-hairline) / 2
+          var(--#{config.$prefix}-sys-selection-layer-size) / 2 + var(--#{config.$sys-prefix}-sys-state-focus-indicator-offset) +
+            var(--#{config.$sys-prefix}-sys-state-focus-indicator-thickness) + var(--#{config.$prefix}-sys-stroke-hairline) / 2
         )
     );
   }
 
   @include hover {
-    --_layer-opacity: var(--md-sys-state-hover-state-layer-opacity);
+    --_layer-opacity: var(--#{config.$sys-prefix}-sys-state-hover-state-layer-opacity);
   }
   &:focus-visible {
-    --_layer-opacity: var(--md-sys-state-focus-state-layer-opacity);
-    --_ring: var(--md-sys-color-secondary);
+    --_layer-opacity: var(--#{config.$sys-prefix}-sys-state-focus-state-layer-opacity);
+    --_ring: var(--#{config.$sys-prefix}-sys-color-secondary);
   }
   &:active {
-    --_layer-opacity: var(--md-sys-state-pressed-state-layer-opacity);
+    --_layer-opacity: var(--#{config.$sys-prefix}-sys-state-pressed-state-layer-opacity);
   }
 
   // Gradients are dropped in forced-colors mode: fall back to an outline ring.
   @media (forced-colors: active) {
     &:focus-visible {
-      outline: var(--md-sys-state-focus-indicator-thickness) solid Highlight;
-      outline-offset: var(--md-sys-state-focus-indicator-offset);
+      outline: var(--#{config.$sys-prefix}-sys-state-focus-indicator-thickness) solid Highlight;
+      outline-offset: var(--#{config.$sys-prefix}-sys-state-focus-indicator-offset);
     }
   }
 }
@@ -546,8 +567,8 @@ $-own-pseudo-selectors: ();
     top: 50%;
     left: 50%;
     translate: -50% -50%;
-    width: max(100%, var(--m3-target-size));
-    height: max(100%, var(--m3-target-size));
+    width: max(100%, var(--#{config.$prefix}-sys-target-size));
+    height: max(100%, var(--#{config.$prefix}-sys-target-size));
   }
 }
 
@@ -561,8 +582,8 @@ $-own-pseudo-selectors: ();
     top: 50%;
     left: 50%;
     translate: -50% -50%;
-    width: max(100%, var(--m3-target-size));
-    height: max(100%, var(--m3-target-size));
+    width: max(100%, var(--#{config.$prefix}-sys-target-size));
+    height: max(100%, var(--#{config.$prefix}-sys-target-size));
   }
 }
 
@@ -573,12 +594,12 @@ $-own-pseudo-selectors: ();
   @include own-box;
   display: block;
   position: absolute;
-  inset-block-start: var(--m3-space-none);
-  inset-inline-start: var(--m3-space-none);
+  inset-block-start: var(--#{config.$prefix}-sys-space-none);
+  inset-inline-start: var(--#{config.$prefix}-sys-space-none);
   inline-size: 100%;
   block-size: 100%;
   box-sizing: border-box;
-  opacity: var(--m3-opacity-hidden);
+  opacity: var(--#{config.$prefix}-sys-opacity-hidden);
   cursor: pointer;
   appearance: none;
 
@@ -595,8 +616,8 @@ $-own-pseudo-selectors: ();
 // duration/easing arguments (shape morphs, handle travel, chevron turns).
 @mixin transition(
   $properties,
-  $duration: var(--md-sys-motion-duration-short4),
-  $easing: var(--md-sys-motion-easing-standard),
+  $duration: var(--#{config.$sys-prefix}-sys-motion-duration-short4),
+  $easing: var(--#{config.$sys-prefix}-sys-motion-easing-standard),
   $spring-properties: (),
   $spring: "default-spatial"
 ) {
@@ -618,10 +639,10 @@ $-own-pseudo-selectors: ();
         $props: list.append($props, $property, comma);
         $durations: list.append(
           $durations,
-          var(--md-sys-motion-spring-#{$spring}-duration),
+          var(--#{config.$sys-prefix}-sys-motion-spring-#{$spring}-duration),
           comma
         );
-        $easings: list.append($easings, var(--md-sys-motion-spring-#{$spring}), comma);
+        $easings: list.append($easings, var(--#{config.$sys-prefix}-sys-motion-spring-#{$spring}), comma);
       }
       transition-property: $props;
       transition-duration: $durations;
@@ -636,8 +657,8 @@ $-own-pseudo-selectors: ();
 @mixin spring-transition($properties, $spring: "default-spatial") {
   @media (prefers-reduced-motion: no-preference) {
     transition-property: $properties;
-    transition-duration: var(--md-sys-motion-spring-#{$spring}-duration);
-    transition-timing-function: var(--md-sys-motion-spring-#{$spring});
+    transition-duration: var(--#{config.$sys-prefix}-sys-motion-spring-#{$spring}-duration);
+    transition-timing-function: var(--#{config.$sys-prefix}-sys-motion-spring-#{$spring});
   }
 }
 
@@ -651,7 +672,7 @@ $-own-pseudo-selectors: ();
 // --- iconography ------------------------------------------------------------
 
 // CSS-drawn cross (close buttons) using currentColor; no images, no fonts.
-@mixin cross-icon($size: var(--m3-icon-size), $stroke: var(--m3-stroke-thick)) {
+@mixin cross-icon($size: var(--#{config.$prefix}-sys-icon-size), $stroke: var(--#{config.$prefix}-sys-stroke-thick)) {
   background-image: linear-gradient(
       45deg,
       transparent calc(50% - #{$stroke} / 2),
@@ -673,7 +694,7 @@ $-own-pseudo-selectors: ();
 
 // CSS-drawn chevron (selects, accordions, dropdowns): a rotated square made
 // of two borders, drawn on the element this is included on (usually ::after).
-@mixin chevron-icon($size: var(--m3-chevron-size), $stroke: var(--m3-stroke-thick)) {
+@mixin chevron-icon($size: var(--#{config.$prefix}-sys-chevron-size), $stroke: var(--#{config.$prefix}-sys-stroke-thick)) {
   width: $size;
   height: $size;
   border-right: $stroke solid currentColor;
@@ -686,7 +707,7 @@ $-own-pseudo-selectors: ();
 // (M4.1,12.7 9,17.6 20.3,6.3): short arm 0.289 x size, long arm 0.667 x
 // size. The rotated L's visual center sits (short / 2*sqrt2) below the box
 // center, so the mark is nudged up by 0.102 x size to sit optically centered.
-@mixin check-glyph($size, $stroke: var(--m3-stroke-thick)) {
+@mixin check-glyph($size, $stroke: var(--#{config.$prefix}-sys-stroke-thick)) {
   width: calc(#{$size} * 0.289);
   height: calc(#{$size} * 0.667);
   border-right: $stroke solid currentColor;
@@ -696,7 +717,7 @@ $-own-pseudo-selectors: ();
 }
 
 // CSS-drawn checkmark: rotated half-square of borders.
-@mixin check-icon($width, $height, $stroke: var(--m3-stroke-thick)) {
+@mixin check-icon($width, $height, $stroke: var(--#{config.$prefix}-sys-stroke-thick)) {
   width: $width;
   height: $height;
   border-right: $stroke solid currentColor;
@@ -709,6 +730,6 @@ $-own-pseudo-selectors: ();
 // In forced-colors mode, hand controls back to the system palette.
 @mixin forced-colors-border {
   @media (forced-colors: active) {
-    border: var(--m3-stroke-hairline) solid ButtonBorder;
+    border: var(--#{config.$prefix}-sys-stroke-hairline) solid ButtonBorder;
   }
 }

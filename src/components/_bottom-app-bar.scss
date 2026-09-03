@@ -23,8 +23,8 @@
 
 @mixin tokens {
   --#{c.$prefix}-bottom-app-bar-height: #{fn.rem(80)};
-  --#{c.$prefix}-bottom-app-bar-container-color: var(--md-sys-color-surface-container);
-  --#{c.$prefix}-bottom-app-bar-content-color: var(--md-sys-color-on-surface);
+  --#{c.$prefix}-bottom-app-bar-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container);
+  --#{c.$prefix}-bottom-app-bar-content-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
 }
 
 // Structural bar container.
@@ -32,8 +32,8 @@
   @include m.own-box;
   display: flex;
   align-items: center;
-  gap: var(--m3-space-2);
-  padding-inline: var(--m3-space-4);
+  gap: var(--#{c.$prefix}-sys-space-2);
+  padding-inline: var(--#{c.$prefix}-sys-space-4);
   @include m.control-height(--#{c.$prefix}-bottom-app-bar-height);
   background-color: var(--#{c.$prefix}-bottom-app-bar-container-color);
   color: var(--#{c.$prefix}-bottom-app-bar-content-color);
@@ -49,9 +49,9 @@
 // Pinned to the bottom of the viewport.
 @mixin fixed {
   position: fixed;
-  inset-block-end: var(--m3-space-none);
-  inset-inline: var(--m3-space-none);
-  z-index: var(--m3-z-nav);
+  inset-block-end: var(--#{c.$prefix}-sys-space-none);
+  inset-inline: var(--#{c.$prefix}-sys-space-none);
+  z-index: var(--#{c.$prefix}-sys-z-nav);
 }
 
 @mixin classes {

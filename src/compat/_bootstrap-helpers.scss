@@ -45,7 +45,7 @@
 
     > * {
       position: absolute;
-      inset: var(--m3-space-none);
+      inset: var(--#{c.$prefix}-sys-space-none);
       inline-size: 100%;
       block-size: 100%;
     }
@@ -66,16 +66,16 @@
 
   .fixed-top {
     position: fixed;
-    inset-block-start: var(--m3-space-none);
-    inset-inline: var(--m3-space-none);
-    z-index: var(--m3-z-nav);
+    inset-block-start: var(--#{c.$prefix}-sys-space-none);
+    inset-inline: var(--#{c.$prefix}-sys-space-none);
+    z-index: var(--#{c.$prefix}-sys-z-nav);
   }
 
   .fixed-bottom {
     position: fixed;
-    inset-block-end: var(--m3-space-none);
-    inset-inline: var(--m3-space-none);
-    z-index: var(--m3-z-nav);
+    inset-block-end: var(--#{c.$prefix}-sys-space-none);
+    inset-inline: var(--#{c.$prefix}-sys-space-none);
+    z-index: var(--#{c.$prefix}-sys-z-nav);
   }
 
   @each $bp, $w in c.$grid-breakpoints {
@@ -86,14 +86,14 @@
     @include -media-up($bp) {
       .sticky#{$infix}-top {
         position: sticky;
-        inset-block-start: var(--m3-space-none);
-        z-index: var(--m3-z-sticky);
+        inset-block-start: var(--#{c.$prefix}-sys-space-none);
+        z-index: var(--#{c.$prefix}-sys-z-sticky);
       }
 
       .sticky#{$infix}-bottom {
         position: sticky;
-        inset-block-end: var(--m3-space-none);
-        z-index: var(--m3-z-sticky);
+        inset-block-end: var(--#{c.$prefix}-sys-space-none);
+        z-index: var(--#{c.$prefix}-sys-z-sticky);
       }
     }
   }
@@ -115,10 +115,10 @@
   .visually-hidden,
   .visually-hidden-focusable:not(:focus):not(:focus-within) {
     position: absolute;
-    inline-size: var(--m3-stroke-hairline);
-    block-size: var(--m3-stroke-hairline);
-    padding: var(--m3-space-none);
-    margin: calc(-1 * var(--m3-stroke-hairline));
+    inline-size: var(--#{c.$prefix}-sys-stroke-hairline);
+    block-size: var(--#{c.$prefix}-sys-stroke-hairline);
+    padding: var(--#{c.$prefix}-sys-space-none);
+    margin: calc(-1 * var(--#{c.$prefix}-sys-stroke-hairline));
     overflow: hidden;
     clip-path: inset(50%);
     white-space: nowrap;
@@ -128,44 +128,44 @@
   .stretched-link::after {
     @include m.own-pseudo;
     position: absolute;
-    inset: var(--m3-space-none);
-    z-index: var(--m3-z-raised);
+    inset: var(--#{c.$prefix}-sys-space-none);
+    z-index: var(--#{c.$prefix}-sys-z-raised);
     content: "";
   }
 
   .vr {
     display: inline-block;
     align-self: stretch;
-    inline-size: var(--m3-stroke-hairline);
-    min-block-size: var(--md-sys-typescale-body-medium-line-height);
-    background-color: var(--md-sys-color-outline-variant);
-    opacity: var(--m3-opacity-full);
+    inline-size: var(--#{c.$prefix}-sys-stroke-hairline);
+    min-block-size: var(--#{c.$sys-prefix}-sys-typescale-body-medium-line-height);
+    background-color: var(--#{c.$sys-prefix}-sys-color-outline-variant);
+    opacity: var(--#{c.$prefix}-sys-opacity-full);
   }
 
   .icon-link {
     display: inline-flex;
-    gap: var(--m3-space-1);
+    gap: var(--#{c.$prefix}-sys-space-1);
     align-items: center;
     text-decoration-color: color-mix(
       in srgb,
       currentColor 50%,
       transparent
     );
-    text-underline-offset: var(--m3-stroke-thick);
+    text-underline-offset: var(--#{c.$prefix}-sys-stroke-thick);
 
     > svg,
     > .bi {
       flex-shrink: 0;
-      inline-size: var(--m3-icon-size-small);
-      block-size: var(--m3-icon-size-small);
+      inline-size: var(--#{c.$prefix}-sys-icon-size-small);
+      block-size: var(--#{c.$prefix}-sys-icon-size-small);
       fill: currentColor;
-      @include m.transition((translate), var(--md-sys-motion-duration-short4));
+      @include m.transition((translate), var(--#{c.$sys-prefix}-sys-motion-duration-short4));
     }
   }
 
   .icon-link-hover:hover > svg,
   .icon-link-hover:hover > .bi {
-    translate: var(--m3-space-1) 0;
+    translate: var(--#{c.$prefix}-sys-space-1) 0;
   }
 
   // --- content / typography classes -----------------------------------------
@@ -193,18 +193,18 @@
   }
 
   .blockquote {
-    margin-block-end: var(--m3-space-4);
+    margin-block-end: var(--#{c.$prefix}-sys-space-4);
     @include m.typescale("body-large");
 
     > :last-child {
-      margin-block-end: var(--m3-space-none);
+      margin-block-end: var(--#{c.$prefix}-sys-space-none);
     }
   }
 
   .blockquote-footer {
-    margin-block-start: calc(-1 * var(--m3-space-4));
-    margin-block-end: var(--m3-space-4);
-    color: var(--md-sys-color-on-surface-variant);
+    margin-block-start: calc(-1 * var(--#{c.$prefix}-sys-space-4));
+    margin-block-end: var(--#{c.$prefix}-sys-space-4);
+    color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
     @include m.typescale("body-small");
 
     // CSS-drawn dash keeps the output ASCII-only.
@@ -212,31 +212,31 @@
       @include m.own-pseudo;
       content: "";
       display: inline-block;
-      inline-size: var(--m3-space-3);
-      border-block-start: var(--m3-stroke-hairline) solid currentColor;
+      inline-size: var(--#{c.$prefix}-sys-space-3);
+      border-block-start: var(--#{c.$prefix}-sys-stroke-hairline) solid currentColor;
       vertical-align: middle;
-      margin-inline-end: var(--m3-space-1);
+      margin-inline-end: var(--#{c.$prefix}-sys-space-1);
     }
   }
 
   .mark {
-    padding-inline: var(--m3-space-1);
-    background-color: var(--md-extended-color-warning-container);
-    color: var(--md-extended-color-on-warning-container);
+    padding-inline: var(--#{c.$prefix}-sys-space-1);
+    background-color: var(--#{c.$sys-prefix}-extended-color-warning-container);
+    color: var(--#{c.$sys-prefix}-extended-color-on-warning-container);
   }
 
   .small {
-    font-size: var(--md-sys-typescale-body-small-size);
+    font-size: var(--#{c.$sys-prefix}-sys-typescale-body-small-size);
   }
 
   .initialism {
-    font-size: var(--md-sys-typescale-label-medium-size);
+    font-size: var(--#{c.$sys-prefix}-sys-typescale-label-medium-size);
     text-transform: uppercase;
   }
 
   .list-unstyled,
   .list-inline {
-    padding-inline-start: var(--m3-space-none);
+    padding-inline-start: var(--#{c.$prefix}-sys-space-none);
     list-style: none;
   }
 
@@ -244,7 +244,7 @@
     display: inline-block;
 
     &:not(:last-child) {
-      margin-inline-end: var(--m3-space-2);
+      margin-inline-end: var(--#{c.$prefix}-sys-space-2);
     }
   }
 
@@ -254,10 +254,10 @@
   }
 
   .img-thumbnail {
-    padding: var(--m3-space-1);
-    background-color: var(--md-sys-color-surface);
-    border: var(--m3-stroke-hairline) solid var(--md-sys-color-outline-variant);
-    border-radius: var(--md-sys-shape-corner-small);
+    padding: var(--#{c.$prefix}-sys-space-1);
+    background-color: var(--#{c.$sys-prefix}-sys-color-surface);
+    border: var(--#{c.$prefix}-sys-stroke-hairline) solid var(--#{c.$sys-prefix}-sys-color-outline-variant);
+    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-small);
     max-inline-size: 100%;
     block-size: auto;
   }
@@ -267,12 +267,12 @@
   }
 
   .figure-img {
-    margin-block-end: var(--m3-space-2);
+    margin-block-end: var(--#{c.$prefix}-sys-space-2);
     line-height: 1;
   }
 
   .figure-caption {
-    color: var(--md-sys-color-on-surface-variant);
+    color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
     @include m.typescale("body-small");
   }
 }

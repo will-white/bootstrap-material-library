@@ -51,25 +51,25 @@
 @use "../mixins" as m;
 
 @mixin tokens {
-  --#{c.$prefix}-list-container-color: var(--md-sys-color-surface);
-  --#{c.$prefix}-list-subheader-color: var(--md-sys-color-on-surface-variant);
+  --#{c.$prefix}-list-container-color: var(--#{c.$sys-prefix}-sys-color-surface);
+  --#{c.$prefix}-list-subheader-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
   --#{c.$prefix}-list-subheader-height: #{fn.rem(48)};
-  --#{c.$prefix}-list-divider-color: var(--md-sys-color-outline-variant);
+  --#{c.$prefix}-list-divider-color: var(--#{c.$sys-prefix}-sys-color-outline-variant);
   --#{c.$prefix}-list-divider-inset: calc(
-    var(--#{c.$prefix}-list-item-padding-inline) + var(--m3-icon-size) +
+    var(--#{c.$prefix}-list-item-padding-inline) + var(--#{c.$prefix}-sys-icon-size) +
       var(--#{c.$prefix}-list-item-gap)
   );
   --#{c.$prefix}-list-item-height: #{fn.rem(56)};
   --#{c.$prefix}-list-item-height-two-line: #{fn.rem(72)};
   --#{c.$prefix}-list-item-height-three-line: #{fn.rem(88)};
-  --#{c.$prefix}-list-item-padding-inline: var(--m3-space-4);
-  --#{c.$prefix}-list-item-gap: var(--m3-space-4);
-  --#{c.$prefix}-list-item-headline-color: var(--md-sys-color-on-surface);
-  --#{c.$prefix}-list-item-supporting-color: var(--md-sys-color-on-surface-variant);
-  --#{c.$prefix}-list-item-overline-color: var(--md-sys-color-on-surface-variant);
+  --#{c.$prefix}-list-item-padding-inline: var(--#{c.$prefix}-sys-space-4);
+  --#{c.$prefix}-list-item-gap: var(--#{c.$prefix}-sys-space-4);
+  --#{c.$prefix}-list-item-headline-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+  --#{c.$prefix}-list-item-supporting-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+  --#{c.$prefix}-list-item-overline-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
   --#{c.$prefix}-list-item-avatar-size: #{fn.rem(40)};
-  --#{c.$prefix}-list-item-avatar-container-color: var(--md-sys-color-primary-container);
-  --#{c.$prefix}-list-item-avatar-label-color: var(--md-sys-color-on-primary-container);
+  --#{c.$prefix}-list-item-avatar-container-color: var(--#{c.$sys-prefix}-sys-color-primary-container);
+  --#{c.$prefix}-list-item-avatar-label-color: var(--#{c.$sys-prefix}-sys-color-on-primary-container);
   --#{c.$prefix}-list-item-image-size: #{fn.rem(56)};
   --#{c.$prefix}-list-item-video-width: #{fn.rem(114)};
   --#{c.$prefix}-list-item-video-height: #{fn.rem(64)};
@@ -78,12 +78,12 @@
 @mixin list {
   @include m.own-box;
   // Divider start, read by .m3-list--dividers items; --inset re-points it.
-  --_divider-inset: var(--m3-space-none);
+  --_divider-inset: var(--#{c.$prefix}-sys-space-none);
 
   display: block;
   list-style: none;
-  padding-inline: var(--m3-space-none);
-  padding-block: var(--m3-space-2);
+  padding-inline: var(--#{c.$prefix}-sys-space-none);
+  padding-block: var(--#{c.$prefix}-sys-space-2);
   background-color: var(--#{c.$prefix}-list-container-color);
 }
 
@@ -103,10 +103,10 @@
       content: "";
       display: block;
       position: absolute;
-      inset-block-end: var(--m3-space-none);
+      inset-block-end: var(--#{c.$prefix}-sys-space-none);
       inset-inline-start: var(--_divider-inset);
-      inset-inline-end: var(--m3-space-none);
-      block-size: var(--m3-stroke-hairline);
+      inset-inline-end: var(--#{c.$prefix}-sys-space-none);
+      block-size: var(--#{c.$prefix}-sys-stroke-hairline);
       background-color: var(--#{c.$prefix}-list-divider-color);
     }
   }
@@ -119,7 +119,7 @@
   align-items: center;
   @include m.control-min-height(--#{c.$prefix}-list-subheader-height);
   padding-inline: var(--#{c.$prefix}-list-item-padding-inline);
-  padding-block: var(--m3-space-2);
+  padding-block: var(--#{c.$prefix}-sys-space-2);
   @include m.typescale("title-small");
   color: var(--#{c.$prefix}-list-subheader-color);
 }
@@ -139,7 +139,7 @@
   gap: var(--#{c.$prefix}-list-item-gap);
   @include m.control-min-height(--#{c.$prefix}-list-item-height);
   padding-inline: var(--#{c.$prefix}-list-item-padding-inline);
-  padding-block: var(--m3-space-2);
+  padding-block: var(--#{c.$prefix}-sys-space-2);
   color: var(--_content);
   background-color: var(--_container);
 }
@@ -151,7 +151,7 @@
 @mixin item-three-line {
   --_align: flex-start;
   @include m.control-min-height(--#{c.$prefix}-list-item-height-three-line);
-  padding-block: var(--m3-space-3);
+  padding-block: var(--#{c.$prefix}-sys-space-3);
 }
 
 // Item carrying a __trailing--meta: the row becomes a single wrapped flex
@@ -163,7 +163,7 @@
   align-content: var(--_align);
 
   > .#{c.$prefix}-list-item__body {
-    flex-basis: var(--m3-space-none);
+    flex-basis: var(--#{c.$prefix}-sys-space-none);
     align-self: baseline;
   }
 }
@@ -188,8 +188,8 @@
 
 // Selected/active item (aria-selected, .active): secondary container.
 @mixin item-selected {
-  --_container: var(--md-sys-color-secondary-container);
-  --_content: var(--md-sys-color-on-secondary-container);
+  --_container: var(--#{c.$sys-prefix}-sys-color-secondary-container);
+  --_content: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
 }
 
 @mixin body {
@@ -197,7 +197,7 @@
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
-  min-inline-size: var(--m3-space-none);
+  min-inline-size: var(--#{c.$prefix}-sys-space-none);
 }
 
 @mixin overline {
@@ -249,7 +249,7 @@
 @mixin leading-avatar {
   inline-size: var(--#{c.$prefix}-list-item-avatar-size);
   block-size: var(--#{c.$prefix}-list-item-avatar-size);
-  border-radius: var(--md-sys-shape-corner-full);
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   background-color: var(--#{c.$prefix}-list-item-avatar-container-color);
   @include m.typescale("title-medium");
   color: var(--#{c.$prefix}-list-item-avatar-label-color);
@@ -260,7 +260,7 @@
 @mixin leading-image {
   inline-size: var(--#{c.$prefix}-list-item-image-size);
   block-size: var(--#{c.$prefix}-list-item-image-size);
-  border-radius: var(--md-sys-shape-corner-small);
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-small);
   @include -leading-media;
 }
 
@@ -271,7 +271,7 @@
 @mixin leading-video {
   inline-size: var(--#{c.$prefix}-list-item-video-width);
   block-size: var(--#{c.$prefix}-list-item-video-height);
-  border-radius: var(--md-sys-shape-corner-none);
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
   @include -leading-media;
 }
 
@@ -307,9 +307,9 @@
 ) {
   @scope (#{$root}) to (#{$slot}) {
     img {
-      inline-size: var(--m3-space-6);
-      block-size: var(--m3-space-6);
-      border-radius: var(--md-sys-shape-corner-full);
+      inline-size: var(--#{c.$prefix}-sys-space-6);
+      block-size: var(--#{c.$prefix}-sys-space-6);
+      border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
       object-fit: cover;
     }
 

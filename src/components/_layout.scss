@@ -49,15 +49,15 @@
 @use "navigation-drawer" as drawer;
 
 @mixin tokens {
-  --#{c.$prefix}-layout-padding: var(--m3-space-4);
-  --#{c.$prefix}-layout-pane-gap: var(--m3-space-6);
+  --#{c.$prefix}-layout-padding: var(--#{c.$prefix}-sys-space-4);
+  --#{c.$prefix}-layout-pane-gap: var(--#{c.$prefix}-sys-space-6);
   --#{c.$prefix}-layout-list-width: #{fn.rem(360)};
   --#{c.$prefix}-layout-supporting-width: #{fn.rem(360)};
   --#{c.$prefix}-layout-feed-min: #{fn.rem(280)};
-  --#{c.$prefix}-pane-container-color: var(--md-sys-color-surface-container-low);
-  --#{c.$prefix}-pane-content-color: var(--md-sys-color-on-surface);
-  --#{c.$prefix}-pane-shape: var(--md-sys-shape-corner-large);
-  --#{c.$prefix}-pane-padding: var(--m3-space-4);
+  --#{c.$prefix}-pane-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container-low);
+  --#{c.$prefix}-pane-content-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+  --#{c.$prefix}-pane-shape: var(--#{c.$sys-prefix}-sys-shape-corner-large);
+  --#{c.$prefix}-pane-padding: var(--#{c.$prefix}-sys-space-4);
 }
 
 // --- window size classes ----------------------------------------------------
@@ -119,7 +119,7 @@
   padding: var(--#{c.$prefix}-layout-padding);
 
   @include at("medium") {
-    --#{c.$prefix}-layout-padding: var(--m3-space-6);
+    --#{c.$prefix}-layout-padding: var(--#{c.$prefix}-sys-space-6);
   }
 }
 
@@ -164,11 +164,11 @@
   min-block-size: 100vh;
   min-block-size: 100dvh;
   padding-block-end: calc(
-    var(--#{c.$prefix}-nav-bar-height) + var(--m3-density) * var(--m3-density-step)
+    var(--#{c.$prefix}-nav-bar-height) + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
   );
 
   @include at("medium") {
-    padding-block-end: var(--m3-space-none);
+    padding-block-end: var(--#{c.$prefix}-sys-space-none);
     padding-inline-start: var(--#{c.$prefix}-rail-width);
   }
 
@@ -205,7 +205,7 @@
     @include rail.fixed;
     justify-content: flex-start;
     inset-block-end: auto;
-    padding-inline: var(--m3-space-none);
+    padding-inline: var(--#{c.$prefix}-sys-space-none);
 
     #{$item} {
       @include rail.item($icon);
@@ -224,9 +224,9 @@
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: var(--m3-space-none);
+    gap: var(--#{c.$prefix}-sys-space-none);
     max-inline-size: none;
-    padding: var(--m3-space-3);
+    padding: var(--#{c.$prefix}-sys-space-3);
 
     #{$item} {
       @include drawer.item;
@@ -237,16 +237,16 @@
       text-align: start;
 
       @include m.hover {
-        --_state-opacity: var(--md-sys-state-hover-state-layer-opacity);
+        --_state-opacity: var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity);
       }
     }
 
     #{$icon} {
       --_container: transparent;
-      --_state-opacity: var(--md-sys-state-none);
-      inline-size: var(--m3-icon-size);
-      block-size: var(--m3-icon-size);
-      border-radius: var(--md-sys-shape-corner-none);
+      --_state-opacity: var(--#{c.$sys-prefix}-sys-state-none);
+      inline-size: var(--#{c.$prefix}-sys-icon-size);
+      block-size: var(--#{c.$prefix}-sys-icon-size);
+      border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
       background-color: transparent;
       color: inherit;
     }

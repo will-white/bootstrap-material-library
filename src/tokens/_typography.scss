@@ -29,22 +29,22 @@ $scale: (
 );
 
 @mixin tokens {
-  --md-ref-typeface-plain: #{config.$font-family-plain};
-  --md-ref-typeface-brand: #{config.$font-family-brand};
+  --#{config.$sys-prefix}-ref-typeface-plain: #{config.$font-family-plain};
+  --#{config.$sys-prefix}-ref-typeface-brand: #{config.$font-family-brand};
 
   @each $role, $def in $scale {
     $size: list.nth($def, 1);
     $line: list.nth($def, 2);
     $weight: list.nth($def, 3);
     $tracking: list.nth($def, 4);
-    --md-sys-typescale-#{$role}-font: var(--md-ref-typeface-plain);
-    --md-sys-typescale-#{$role}-size: #{fn.rem($size)};
-    --md-sys-typescale-#{$role}-line-height: #{fn.rem($line)};
-    --md-sys-typescale-#{$role}-weight: #{$weight};
+    --#{config.$sys-prefix}-sys-typescale-#{$role}-font: var(--#{config.$sys-prefix}-ref-typeface-plain);
+    --#{config.$sys-prefix}-sys-typescale-#{$role}-size: #{fn.rem($size)};
+    --#{config.$sys-prefix}-sys-typescale-#{$role}-line-height: #{fn.rem($line)};
+    --#{config.$sys-prefix}-sys-typescale-#{$role}-weight: #{$weight};
     @if $tracking == 0 {
-      --md-sys-typescale-#{$role}-tracking: normal;
+      --#{config.$sys-prefix}-sys-typescale-#{$role}-tracking: normal;
     } @else {
-      --md-sys-typescale-#{$role}-tracking: #{$tracking * 1px};
+      --#{config.$sys-prefix}-sys-typescale-#{$role}-tracking: #{$tracking * 1px};
     }
   }
 }

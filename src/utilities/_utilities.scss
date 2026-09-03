@@ -69,14 +69,14 @@ $-text-roles: (
   // --- color/surface utilities ----------------------------------------------
   @each $role, $on in $-bg-pairs {
     .#{$p}-bg-#{$role} {
-      background-color: var(--md-sys-color-#{$role});
-      color: var(--md-sys-color-#{$on});
+      background-color: var(--#{c.$sys-prefix}-sys-color-#{$role});
+      color: var(--#{c.$sys-prefix}-sys-color-#{$on});
     }
   }
 
   @each $role in $-text-roles {
     .#{$p}-text-#{$role} {
-      color: var(--md-sys-color-#{$role});
+      color: var(--#{c.$sys-prefix}-sys-color-#{$role});
     }
   }
 
@@ -84,15 +84,15 @@ $-text-roles: (
   // color: .m3-bg-<name>, .m3-bg-<name>-container, .m3-text-<name>.
   @each $name in -extended-names() {
     .#{$p}-bg-#{$name} {
-      background-color: var(--md-extended-color-#{$name});
-      color: var(--md-extended-color-on-#{$name});
+      background-color: var(--#{c.$sys-prefix}-extended-color-#{$name});
+      color: var(--#{c.$sys-prefix}-extended-color-on-#{$name});
     }
     .#{$p}-bg-#{$name}-container {
-      background-color: var(--md-extended-color-#{$name}-container);
-      color: var(--md-extended-color-on-#{$name}-container);
+      background-color: var(--#{c.$sys-prefix}-extended-color-#{$name}-container);
+      color: var(--#{c.$sys-prefix}-extended-color-on-#{$name}-container);
     }
     .#{$p}-text-#{$name} {
-      color: var(--md-extended-color-#{$name});
+      color: var(--#{c.$sys-prefix}-extended-color-#{$name});
     }
   }
 
@@ -101,15 +101,15 @@ $-text-roles: (
     "extra-large", "full")
   {
     .#{$p}-shape-#{$name} {
-      border-radius: var(--md-sys-shape-corner-#{$name});
+      border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-#{$name});
     }
   }
 
   // --- elevation utilities ----------------------------------------------------
   @for $level from 0 through 5 {
     .#{$p}-elevation-#{$level} {
-      --m3-elevation-level: #{$level};
-      box-shadow: var(--md-sys-elevation-#{$level});
+      --#{c.$prefix}-sys-elevation-level: #{$level};
+      box-shadow: var(--#{c.$sys-prefix}-sys-elevation-#{$level});
     }
   }
 
@@ -121,111 +121,111 @@ $-text-roles: (
   // load-bearing structure).
   @scope (.#{$p}-island--inverse) {
     :scope {
-      --md-sys-color-surface: var(--md-sys-color-inverse-surface);
-      --md-sys-color-on-surface: var(--md-sys-color-inverse-on-surface);
-      --md-sys-color-on-surface-variant: var(--md-sys-color-inverse-on-surface);
-      --md-sys-color-primary: var(--md-sys-color-inverse-primary);
-      --md-sys-color-surface-container-lowest: var(--md-sys-color-inverse-surface);
-      --md-sys-color-surface-container-low: color-mix(
+      --#{c.$sys-prefix}-sys-color-surface: var(--#{c.$sys-prefix}-sys-color-inverse-surface);
+      --#{c.$sys-prefix}-sys-color-on-surface: var(--#{c.$sys-prefix}-sys-color-inverse-on-surface);
+      --#{c.$sys-prefix}-sys-color-on-surface-variant: var(--#{c.$sys-prefix}-sys-color-inverse-on-surface);
+      --#{c.$sys-prefix}-sys-color-primary: var(--#{c.$sys-prefix}-sys-color-inverse-primary);
+      --#{c.$sys-prefix}-sys-color-surface-container-lowest: var(--#{c.$sys-prefix}-sys-color-inverse-surface);
+      --#{c.$sys-prefix}-sys-color-surface-container-low: color-mix(
         in srgb,
-        var(--md-sys-color-inverse-on-surface) 4%,
-        var(--md-sys-color-inverse-surface)
+        var(--#{c.$sys-prefix}-sys-color-inverse-on-surface) 4%,
+        var(--#{c.$sys-prefix}-sys-color-inverse-surface)
       );
-      --md-sys-color-surface-container: color-mix(
+      --#{c.$sys-prefix}-sys-color-surface-container: color-mix(
         in srgb,
-        var(--md-sys-color-inverse-on-surface) 6%,
-        var(--md-sys-color-inverse-surface)
+        var(--#{c.$sys-prefix}-sys-color-inverse-on-surface) 6%,
+        var(--#{c.$sys-prefix}-sys-color-inverse-surface)
       );
-      --md-sys-color-surface-container-high: color-mix(
+      --#{c.$sys-prefix}-sys-color-surface-container-high: color-mix(
         in srgb,
-        var(--md-sys-color-inverse-on-surface) 8%,
-        var(--md-sys-color-inverse-surface)
+        var(--#{c.$sys-prefix}-sys-color-inverse-on-surface) 8%,
+        var(--#{c.$sys-prefix}-sys-color-inverse-surface)
       );
-      --md-sys-color-surface-container-highest: color-mix(
+      --#{c.$sys-prefix}-sys-color-surface-container-highest: color-mix(
         in srgb,
-        var(--md-sys-color-inverse-on-surface) 11%,
-        var(--md-sys-color-inverse-surface)
+        var(--#{c.$sys-prefix}-sys-color-inverse-on-surface) 11%,
+        var(--#{c.$sys-prefix}-sys-color-inverse-surface)
       );
-      --md-sys-color-outline-variant: color-mix(
+      --#{c.$sys-prefix}-sys-color-outline-variant: color-mix(
         in srgb,
-        var(--md-sys-color-inverse-on-surface) 30%,
-        var(--md-sys-color-inverse-surface)
+        var(--#{c.$sys-prefix}-sys-color-inverse-on-surface) 30%,
+        var(--#{c.$sys-prefix}-sys-color-inverse-surface)
       );
-      background-color: var(--md-sys-color-surface);
-      color: var(--md-sys-color-on-surface);
+      background-color: var(--#{c.$sys-prefix}-sys-color-surface);
+      color: var(--#{c.$sys-prefix}-sys-color-on-surface);
     }
   }
 
   @scope (.#{$p}-island--primary) {
     :scope {
-      --md-sys-color-surface: var(--md-sys-color-primary-container);
-      --md-sys-color-on-surface: var(--md-sys-color-on-primary-container);
-      --md-sys-color-on-surface-variant: var(--md-sys-color-on-primary-container);
-      --md-sys-color-surface-container-lowest: var(--md-sys-color-primary-container);
-      --md-sys-color-surface-container-low: color-mix(
+      --#{c.$sys-prefix}-sys-color-surface: var(--#{c.$sys-prefix}-sys-color-primary-container);
+      --#{c.$sys-prefix}-sys-color-on-surface: var(--#{c.$sys-prefix}-sys-color-on-primary-container);
+      --#{c.$sys-prefix}-sys-color-on-surface-variant: var(--#{c.$sys-prefix}-sys-color-on-primary-container);
+      --#{c.$sys-prefix}-sys-color-surface-container-lowest: var(--#{c.$sys-prefix}-sys-color-primary-container);
+      --#{c.$sys-prefix}-sys-color-surface-container-low: color-mix(
         in srgb,
-        var(--md-sys-color-on-primary-container) 4%,
-        var(--md-sys-color-primary-container)
+        var(--#{c.$sys-prefix}-sys-color-on-primary-container) 4%,
+        var(--#{c.$sys-prefix}-sys-color-primary-container)
       );
-      --md-sys-color-surface-container: color-mix(
+      --#{c.$sys-prefix}-sys-color-surface-container: color-mix(
         in srgb,
-        var(--md-sys-color-on-primary-container) 6%,
-        var(--md-sys-color-primary-container)
+        var(--#{c.$sys-prefix}-sys-color-on-primary-container) 6%,
+        var(--#{c.$sys-prefix}-sys-color-primary-container)
       );
-      --md-sys-color-surface-container-high: color-mix(
+      --#{c.$sys-prefix}-sys-color-surface-container-high: color-mix(
         in srgb,
-        var(--md-sys-color-on-primary-container) 8%,
-        var(--md-sys-color-primary-container)
+        var(--#{c.$sys-prefix}-sys-color-on-primary-container) 8%,
+        var(--#{c.$sys-prefix}-sys-color-primary-container)
       );
-      --md-sys-color-surface-container-highest: color-mix(
+      --#{c.$sys-prefix}-sys-color-surface-container-highest: color-mix(
         in srgb,
-        var(--md-sys-color-on-primary-container) 11%,
-        var(--md-sys-color-primary-container)
+        var(--#{c.$sys-prefix}-sys-color-on-primary-container) 11%,
+        var(--#{c.$sys-prefix}-sys-color-primary-container)
       );
-      --md-sys-color-outline-variant: color-mix(
+      --#{c.$sys-prefix}-sys-color-outline-variant: color-mix(
         in srgb,
-        var(--md-sys-color-on-primary-container) 30%,
-        var(--md-sys-color-primary-container)
+        var(--#{c.$sys-prefix}-sys-color-on-primary-container) 30%,
+        var(--#{c.$sys-prefix}-sys-color-primary-container)
       );
-      background-color: var(--md-sys-color-surface);
-      color: var(--md-sys-color-on-surface);
+      background-color: var(--#{c.$sys-prefix}-sys-color-surface);
+      color: var(--#{c.$sys-prefix}-sys-color-on-surface);
     }
   }
 
   @scope (.#{$p}-island--tertiary) {
     :scope {
-      --md-sys-color-surface: var(--md-sys-color-tertiary-container);
-      --md-sys-color-on-surface: var(--md-sys-color-on-tertiary-container);
-      --md-sys-color-on-surface-variant: var(--md-sys-color-on-tertiary-container);
-      --md-sys-color-primary: var(--md-sys-color-tertiary);
-      --md-sys-color-surface-container-lowest: var(--md-sys-color-tertiary-container);
-      --md-sys-color-surface-container-low: color-mix(
+      --#{c.$sys-prefix}-sys-color-surface: var(--#{c.$sys-prefix}-sys-color-tertiary-container);
+      --#{c.$sys-prefix}-sys-color-on-surface: var(--#{c.$sys-prefix}-sys-color-on-tertiary-container);
+      --#{c.$sys-prefix}-sys-color-on-surface-variant: var(--#{c.$sys-prefix}-sys-color-on-tertiary-container);
+      --#{c.$sys-prefix}-sys-color-primary: var(--#{c.$sys-prefix}-sys-color-tertiary);
+      --#{c.$sys-prefix}-sys-color-surface-container-lowest: var(--#{c.$sys-prefix}-sys-color-tertiary-container);
+      --#{c.$sys-prefix}-sys-color-surface-container-low: color-mix(
         in srgb,
-        var(--md-sys-color-on-tertiary-container) 4%,
-        var(--md-sys-color-tertiary-container)
+        var(--#{c.$sys-prefix}-sys-color-on-tertiary-container) 4%,
+        var(--#{c.$sys-prefix}-sys-color-tertiary-container)
       );
-      --md-sys-color-surface-container: color-mix(
+      --#{c.$sys-prefix}-sys-color-surface-container: color-mix(
         in srgb,
-        var(--md-sys-color-on-tertiary-container) 6%,
-        var(--md-sys-color-tertiary-container)
+        var(--#{c.$sys-prefix}-sys-color-on-tertiary-container) 6%,
+        var(--#{c.$sys-prefix}-sys-color-tertiary-container)
       );
-      --md-sys-color-surface-container-high: color-mix(
+      --#{c.$sys-prefix}-sys-color-surface-container-high: color-mix(
         in srgb,
-        var(--md-sys-color-on-tertiary-container) 8%,
-        var(--md-sys-color-tertiary-container)
+        var(--#{c.$sys-prefix}-sys-color-on-tertiary-container) 8%,
+        var(--#{c.$sys-prefix}-sys-color-tertiary-container)
       );
-      --md-sys-color-surface-container-highest: color-mix(
+      --#{c.$sys-prefix}-sys-color-surface-container-highest: color-mix(
         in srgb,
-        var(--md-sys-color-on-tertiary-container) 11%,
-        var(--md-sys-color-tertiary-container)
+        var(--#{c.$sys-prefix}-sys-color-on-tertiary-container) 11%,
+        var(--#{c.$sys-prefix}-sys-color-tertiary-container)
       );
-      --md-sys-color-outline-variant: color-mix(
+      --#{c.$sys-prefix}-sys-color-outline-variant: color-mix(
         in srgb,
-        var(--md-sys-color-on-tertiary-container) 30%,
-        var(--md-sys-color-tertiary-container)
+        var(--#{c.$sys-prefix}-sys-color-on-tertiary-container) 30%,
+        var(--#{c.$sys-prefix}-sys-color-tertiary-container)
       );
-      background-color: var(--md-sys-color-surface);
-      color: var(--md-sys-color-on-surface);
+      background-color: var(--#{c.$sys-prefix}-sys-color-surface);
+      color: var(--#{c.$sys-prefix}-sys-color-on-surface);
     }
   }
 
@@ -240,8 +240,8 @@ $-text-roles: (
     .#{$p}-theme-transition *::after {
       transition-property: background-color, color, border-color, box-shadow,
         outline-color, fill, stroke;
-      transition-duration: var(--md-sys-motion-duration-medium2);
-      transition-timing-function: var(--md-sys-motion-easing-standard);
+      transition-duration: var(--#{c.$sys-prefix}-sys-motion-duration-medium2);
+      transition-timing-function: var(--#{c.$sys-prefix}-sys-motion-easing-standard);
     }
   }
 }

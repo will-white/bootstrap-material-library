@@ -13,49 +13,49 @@
 
 // Bootstrap theme-color name -> m3x color role custom property.
 $-theme-map: (
-  "primary": ("--md-sys-color-primary", "primary"),
-  "secondary": ("--md-sys-color-secondary", "secondary"),
-  "success": ("--md-extended-color-success", "success"),
-  "danger": ("--md-sys-color-error", "error"),
-  "warning": ("--md-extended-color-warning", "warning"),
-  "info": ("--md-extended-color-info", "info"),
-  "light": ("--md-sys-color-surface-container-low", "surface-container-low"),
-  "dark": ("--md-sys-color-inverse-surface", "inverse-surface"),
+  "primary": ("--#{c.$sys-prefix}-sys-color-primary", "primary"),
+  "secondary": ("--#{c.$sys-prefix}-sys-color-secondary", "secondary"),
+  "success": ("--#{c.$sys-prefix}-extended-color-success", "success"),
+  "danger": ("--#{c.$sys-prefix}-sys-color-error", "error"),
+  "warning": ("--#{c.$sys-prefix}-extended-color-warning", "warning"),
+  "info": ("--#{c.$sys-prefix}-extended-color-info", "info"),
+  "light": ("--#{c.$sys-prefix}-sys-color-surface-container-low", "surface-container-low"),
+  "dark": ("--#{c.$sys-prefix}-sys-color-inverse-surface", "inverse-surface"),
 );
 
 // Subtle background / border / text-emphasis roles per theme color.
 $-subtle-map: (
   "primary": (
-    "--md-sys-color-primary-container",
-    "--md-sys-color-on-primary-container",
+    "--#{c.$sys-prefix}-sys-color-primary-container",
+    "--#{c.$sys-prefix}-sys-color-on-primary-container",
   ),
   "secondary": (
-    "--md-sys-color-secondary-container",
-    "--md-sys-color-on-secondary-container",
+    "--#{c.$sys-prefix}-sys-color-secondary-container",
+    "--#{c.$sys-prefix}-sys-color-on-secondary-container",
   ),
   "success": (
-    "--md-extended-color-success-container",
-    "--md-extended-color-on-success-container",
+    "--#{c.$sys-prefix}-extended-color-success-container",
+    "--#{c.$sys-prefix}-extended-color-on-success-container",
   ),
   "danger": (
-    "--md-sys-color-error-container",
-    "--md-sys-color-on-error-container",
+    "--#{c.$sys-prefix}-sys-color-error-container",
+    "--#{c.$sys-prefix}-sys-color-on-error-container",
   ),
   "warning": (
-    "--md-extended-color-warning-container",
-    "--md-extended-color-on-warning-container",
+    "--#{c.$sys-prefix}-extended-color-warning-container",
+    "--#{c.$sys-prefix}-extended-color-on-warning-container",
   ),
   "info": (
-    "--md-extended-color-info-container",
-    "--md-extended-color-on-info-container",
+    "--#{c.$sys-prefix}-extended-color-info-container",
+    "--#{c.$sys-prefix}-extended-color-on-info-container",
   ),
   "light": (
-    "--md-sys-color-surface-container-lowest",
-    "--md-sys-color-on-surface-variant",
+    "--#{c.$sys-prefix}-sys-color-surface-container-lowest",
+    "--#{c.$sys-prefix}-sys-color-on-surface-variant",
   ),
   "dark": (
-    "--md-sys-color-surface-container-highest",
-    "--md-sys-color-on-surface",
+    "--#{c.$sys-prefix}-sys-color-surface-container-highest",
+    "--#{c.$sys-prefix}-sys-color-on-surface",
   ),
 );
 
@@ -88,8 +88,8 @@ $-extra-triplets: (
 // per-instance overrides keep working.
 @mixin tokens {
   // Absolute black/white (the neutral palette's end tones).
-  --bs-black: var(--md-ref-palette-neutral0);
-  --bs-white: var(--md-ref-palette-neutral100);
+  --bs-black: var(--#{c.$sys-prefix}-ref-palette-neutral0);
+  --bs-white: var(--#{c.$sys-prefix}-ref-palette-neutral100);
   --bs-black-rgb: 0, 0, 0;
   --bs-white-rgb: 255, 255, 255;
   --bs-gradient: linear-gradient(
@@ -108,8 +108,8 @@ $-extra-triplets: (
   }
 
   // Grid gutters (the .row/.container/.g-* contract re-points these).
-  --bs-gutter-x: var(--m3-space-5);
-  --bs-gutter-y: var(--m3-space-none);
+  --bs-gutter-x: var(--#{c.$prefix}-sys-space-5);
+  --bs-gutter-y: var(--#{c.$prefix}-sys-space-none);
 
   --bs-modal-width: #{fn.rem(500)};
   --bs-modal-width-sm: #{fn.rem(300)};
@@ -141,61 +141,61 @@ $-extra-triplets: (
     }
 
     // Body + emphasis.
-    --bs-body-bg: var(--md-sys-color-surface);
-    --bs-body-color: var(--md-sys-color-on-surface);
-    --bs-emphasis-color: var(--md-sys-color-on-surface);
-    --bs-secondary-color: var(--md-sys-color-on-surface-variant);
-    --bs-tertiary-color: var(--md-sys-color-outline);
-    --bs-secondary-bg: var(--md-sys-color-surface-container);
-    --bs-tertiary-bg: var(--md-sys-color-surface-container-high);
+    --bs-body-bg: var(--#{c.$sys-prefix}-sys-color-surface);
+    --bs-body-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+    --bs-emphasis-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+    --bs-secondary-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+    --bs-tertiary-color: var(--#{c.$sys-prefix}-sys-color-outline);
+    --bs-secondary-bg: var(--#{c.$sys-prefix}-sys-color-surface-container);
+    --bs-tertiary-bg: var(--#{c.$sys-prefix}-sys-color-surface-container-high);
 
     // Borders.
-    --bs-border-color: var(--md-sys-color-outline-variant);
-    --bs-border-color-translucent: var(--md-sys-color-outline-variant);
-    --bs-border-width: var(--m3-stroke-hairline);
+    --bs-border-color: var(--#{c.$sys-prefix}-sys-color-outline-variant);
+    --bs-border-color-translucent: var(--#{c.$sys-prefix}-sys-color-outline-variant);
+    --bs-border-width: var(--#{c.$prefix}-sys-stroke-hairline);
     --bs-border-style: solid;
 
     // Links, headings, code.
-    --bs-link-color: var(--md-sys-color-primary);
+    --bs-link-color: var(--#{c.$sys-prefix}-sys-color-primary);
     --bs-link-hover-color: color-mix(
       in srgb,
-      var(--md-sys-color-on-surface)
-        var(--md-sys-state-hover-state-layer-opacity),
-      var(--md-sys-color-primary)
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity),
+      var(--#{c.$sys-prefix}-sys-color-primary)
     );
     --bs-link-color-rgb: var(--bs-primary-rgb);
     --bs-link-hover-color-rgb: var(--bs-primary-rgb);
-    --bs-heading-color: var(--md-sys-color-on-surface);
-    --bs-code-color: var(--md-sys-color-tertiary);
+    --bs-heading-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+    --bs-code-color: var(--#{c.$sys-prefix}-sys-color-tertiary);
     --bs-font-monospace: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
       "Liberation Mono", "Courier New", monospace;
 
     // Typography.
-    --bs-body-font-family: var(--md-ref-typeface-plain);
-    --bs-font-sans-serif: var(--md-ref-typeface-plain);
-    --bs-body-font-size: var(--md-sys-typescale-body-medium-size);
-    --bs-body-font-weight: var(--md-sys-typescale-body-medium-weight);
+    --bs-body-font-family: var(--#{c.$sys-prefix}-ref-typeface-plain);
+    --bs-font-sans-serif: var(--#{c.$sys-prefix}-ref-typeface-plain);
+    --bs-body-font-size: var(--#{c.$sys-prefix}-sys-typescale-body-medium-size);
+    --bs-body-font-weight: var(--#{c.$sys-prefix}-sys-typescale-body-medium-weight);
     --bs-body-line-height: 1.5;
 
     // Radius scale -> M3 shape scale.
-    --bs-border-radius-sm: var(--md-sys-shape-corner-extra-small);
-    --bs-border-radius: var(--md-sys-shape-corner-small);
-    --bs-border-radius-lg: var(--md-sys-shape-corner-medium);
-    --bs-border-radius-xl: var(--md-sys-shape-corner-large);
-    --bs-border-radius-xxl: var(--md-sys-shape-corner-extra-large);
-    --bs-border-radius-pill: var(--md-sys-shape-corner-full);
+    --bs-border-radius-sm: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
+    --bs-border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-small);
+    --bs-border-radius-lg: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
+    --bs-border-radius-xl: var(--#{c.$sys-prefix}-sys-shape-corner-large);
+    --bs-border-radius-xxl: var(--#{c.$sys-prefix}-sys-shape-corner-extra-large);
+    --bs-border-radius-pill: var(--#{c.$sys-prefix}-sys-shape-corner-full);
 
     // Shadows -> elevation tokens.
-    --bs-box-shadow-sm: var(--md-sys-elevation-1);
-    --bs-box-shadow: var(--md-sys-elevation-2);
-    --bs-box-shadow-lg: var(--md-sys-elevation-4);
-    --bs-box-shadow-inset: var(--md-sys-elevation-0);
+    --bs-box-shadow-sm: var(--#{c.$sys-prefix}-sys-elevation-1);
+    --bs-box-shadow: var(--#{c.$sys-prefix}-sys-elevation-2);
+    --bs-box-shadow-lg: var(--#{c.$sys-prefix}-sys-elevation-4);
+    --bs-box-shadow-inset: var(--#{c.$sys-prefix}-sys-elevation-0);
 
     // Focus ring (Bootstrap 5.3 forms/buttons).
-    --bs-focus-ring-width: var(--md-sys-state-focus-indicator-thickness);
+    --bs-focus-ring-width: var(--#{c.$sys-prefix}-sys-state-focus-indicator-thickness);
     --bs-focus-ring-color: color-mix(
       in srgb,
-      var(--md-sys-color-primary) 25%,
+      var(--#{c.$sys-prefix}-sys-color-primary) 25%,
       transparent
     );
 

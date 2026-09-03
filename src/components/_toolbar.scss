@@ -25,7 +25,7 @@
 //                                                         edge (docked: 0)
 //
 //   Dense (--dense) -- fixed sizes; the dense bar is already at maximum
-//   density and pins --m3-density to 0 inside itself:
+//   density and pins --m3-sys-density to 0 inside itself:
 //   --m3-toolbar-dense-height                   40px   the bar
 //   --m3-toolbar-dense-control-size             28px   icon buttons, text
 //                                                      buttons, dropdowns,
@@ -153,7 +153,7 @@
 // keep their own container colors.
 //
 // The dense bar additionally re-points the button, icon-button, and
-// --m3-target-size tokens inside itself, so .m3-btn / .m3-icon-btn /
+// --m3-sys-target-size tokens inside itself, so .m3-btn / .m3-icon-btn /
 // .m3-btn-check -- and Bootstrap's .btn / .btn-group / .btn-check /
 // .dropdown-toggle -- compact automatically; Bootstrap's .form-select inside
 // it takes the __select look (compat layer). Toggled controls
@@ -193,33 +193,33 @@
 @use "button";
 
 @mixin tokens {
-  --#{c.$prefix}-toolbar-container-color: var(--md-sys-color-surface-container);
-  --#{c.$prefix}-toolbar-content-color: var(--md-sys-color-on-surface);
-  --#{c.$prefix}-toolbar-vibrant-container-color: var(--md-sys-color-primary-container);
-  --#{c.$prefix}-toolbar-vibrant-content-color: var(--md-sys-color-on-primary-container);
-  --#{c.$prefix}-toolbar-shape: var(--md-sys-shape-corner-full);
-  --#{c.$prefix}-toolbar-docked-shape: var(--md-sys-shape-corner-large);
+  --#{c.$prefix}-toolbar-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container);
+  --#{c.$prefix}-toolbar-content-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+  --#{c.$prefix}-toolbar-vibrant-container-color: var(--#{c.$sys-prefix}-sys-color-primary-container);
+  --#{c.$prefix}-toolbar-vibrant-content-color: var(--#{c.$sys-prefix}-sys-color-on-primary-container);
+  --#{c.$prefix}-toolbar-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  --#{c.$prefix}-toolbar-docked-shape: var(--#{c.$sys-prefix}-sys-shape-corner-large);
   --#{c.$prefix}-toolbar-height: #{fn.rem(64)};
-  --#{c.$prefix}-toolbar-gap: var(--m3-space-1);
-  --#{c.$prefix}-toolbar-padding: var(--m3-space-2);
-  --#{c.$prefix}-toolbar-docked-padding-inline: var(--m3-space-4);
-  --#{c.$prefix}-toolbar-fixed-offset: var(--m3-space-4);
+  --#{c.$prefix}-toolbar-gap: var(--#{c.$prefix}-sys-space-1);
+  --#{c.$prefix}-toolbar-padding: var(--#{c.$prefix}-sys-space-2);
+  --#{c.$prefix}-toolbar-docked-padding-inline: var(--#{c.$prefix}-sys-space-4);
+  --#{c.$prefix}-toolbar-fixed-offset: var(--#{c.$prefix}-sys-space-4);
   --#{c.$prefix}-toolbar-dense-height: #{fn.rem(40)};
   --#{c.$prefix}-toolbar-dense-control-size: #{fn.rem(28)};
   --#{c.$prefix}-toolbar-dense-icon-size: #{fn.rem(20)};
   --#{c.$prefix}-toolbar-dense-gap: #{fn.rem(2)};
-  --#{c.$prefix}-toolbar-dense-padding-inline: var(--m3-space-2);
-  --#{c.$prefix}-toolbar-dense-shape: var(--md-sys-shape-corner-full);
-  --#{c.$prefix}-toolbar-dense-control-shape: var(--md-sys-shape-corner-extra-small);
-  --#{c.$prefix}-toolbar-dense-selected-container-color: var(--md-sys-color-secondary-container);
-  --#{c.$prefix}-toolbar-dense-selected-color: var(--md-sys-color-on-secondary-container);
-  --#{c.$prefix}-toolbar-dense-separator-color: var(--md-sys-color-outline-variant);
+  --#{c.$prefix}-toolbar-dense-padding-inline: var(--#{c.$prefix}-sys-space-2);
+  --#{c.$prefix}-toolbar-dense-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  --#{c.$prefix}-toolbar-dense-control-shape: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
+  --#{c.$prefix}-toolbar-dense-selected-container-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
+  --#{c.$prefix}-toolbar-dense-selected-color: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
+  --#{c.$prefix}-toolbar-dense-separator-color: var(--#{c.$sys-prefix}-sys-color-outline-variant);
   --#{c.$prefix}-toolbar-dense-separator-height: #{fn.rem(20)};
   --#{c.$prefix}-toolbar-dense-chevron-size: #{fn.rem(5)};
   --#{c.$prefix}-toolbar-dense-field-width: #{fn.rem(40)};
-  --#{c.$prefix}-toolbar-dense-field-outline-color: var(--md-sys-color-outline);
+  --#{c.$prefix}-toolbar-dense-field-outline-color: var(--#{c.$sys-prefix}-sys-color-outline);
   --#{c.$prefix}-toolbar-dense-swatch-height: #{fn.rem(3)};
-  --#{c.$prefix}-toolbar-dense-menu-offset: var(--m3-space-1);
+  --#{c.$prefix}-toolbar-dense-menu-offset: var(--#{c.$prefix}-sys-space-1);
   --#{c.$prefix}-toolbar-dense-split-toggle-width: #{fn.rem(14)};
   --#{c.$prefix}-toolbar-dense-split-chevron-size: #{fn.rem(5)};
 }
@@ -260,7 +260,7 @@
 // Docked: a full-width bar with rounded top corners, no shadow, that grows
 // with its content (min-height from the height token, block padding).
 @mixin docked {
-  --_offset: var(--m3-space-none);
+  --_offset: var(--#{c.$prefix}-sys-space-none);
   display: flex;
   inline-size: 100%;
   height: auto;
@@ -269,8 +269,8 @@
   padding-block: var(--#{c.$prefix}-toolbar-padding);
   border-start-start-radius: var(--#{c.$prefix}-toolbar-docked-shape);
   border-start-end-radius: var(--#{c.$prefix}-toolbar-docked-shape);
-  border-end-start-radius: var(--md-sys-shape-corner-none);
-  border-end-end-radius: var(--md-sys-shape-corner-none);
+  border-end-start-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
+  border-end-end-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
   @include m.elevation(0);
 }
 
@@ -290,9 +290,9 @@
   flex-direction: column;
   height: auto;
   width: calc(
-    var(--#{c.$prefix}-toolbar-height) + var(--m3-density) * var(--m3-density-step)
+    var(--#{c.$prefix}-toolbar-height) + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
   );
-  padding-inline: var(--m3-space-none);
+  padding-inline: var(--#{c.$prefix}-sys-space-none);
   padding-block: var(--#{c.$prefix}-toolbar-padding);
 }
 
@@ -304,7 +304,7 @@
   inset-block-end: var(--_offset);
   inset-inline-start: 50%;
   translate: -50% 0;
-  z-index: var(--m3-z-raised);
+  z-index: var(--#{c.$prefix}-sys-z-raised);
 }
 
 // --- dense (editor bar) -----------------------------------------------------
@@ -316,8 +316,8 @@
   // Already at maximum density: fixed control heights, and no 48dp target
   // overhang (controls sit 2px apart; a 48dp hit area would sit over the
   // neighbors and steal their clicks).
-  --m3-density: 0;
-  --m3-target-size: 100%;
+  --#{c.$prefix}-sys-density: 0;
+  --#{c.$prefix}-sys-target-size: 100%;
   // Every button vocabulary compacts through the tokens it reads.
   --#{c.$prefix}-icon-btn-size: var(--#{c.$prefix}-toolbar-dense-control-size);
   --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-toolbar-dense-icon-size);
@@ -330,8 +330,8 @@
   );
   --#{c.$prefix}-icon-btn-selected-color: var(--#{c.$prefix}-toolbar-dense-selected-color);
   --#{c.$prefix}-btn-height: var(--#{c.$prefix}-toolbar-dense-control-size);
-  --#{c.$prefix}-btn-padding-inline: var(--m3-space-2);
-  --#{c.$prefix}-btn-icon-gap: var(--m3-space-1);
+  --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-sys-space-2);
+  --#{c.$prefix}-btn-icon-gap: var(--#{c.$prefix}-sys-space-1);
   --#{c.$prefix}-btn-icon-size: var(--#{c.$prefix}-toolbar-dense-icon-size);
   --#{c.$prefix}-btn-icon-optical-size: 20;
   --#{c.$prefix}-btn-shape: var(--#{c.$prefix}-toolbar-dense-control-shape);
@@ -341,15 +341,15 @@
   // control shape (no hover morph at this size), and the trailing sliver
   // narrows to a small chevron.
   --#{c.$prefix}-split-button-height: var(--#{c.$prefix}-toolbar-dense-control-size);
-  --#{c.$prefix}-split-button-min-width: var(--m3-space-none);
+  --#{c.$prefix}-split-button-min-width: var(--#{c.$prefix}-sys-space-none);
   --#{c.$prefix}-split-button-inner-shape: var(--#{c.$prefix}-toolbar-dense-control-shape);
   --#{c.$prefix}-split-button-inner-shape-active: var(
     --#{c.$prefix}-toolbar-dense-control-shape
   );
-  --#{c.$prefix}-split-button-action-padding-start: var(--m3-space-2);
-  --#{c.$prefix}-split-button-action-padding-end: var(--m3-space-2);
+  --#{c.$prefix}-split-button-action-padding-start: var(--#{c.$prefix}-sys-space-2);
+  --#{c.$prefix}-split-button-action-padding-end: var(--#{c.$prefix}-sys-space-2);
   --#{c.$prefix}-split-button-toggle-width: var(--#{c.$prefix}-toolbar-dense-split-toggle-width);
-  --#{c.$prefix}-split-button-toggle-padding-inline: var(--m3-space-none);
+  --#{c.$prefix}-split-button-toggle-padding-inline: var(--#{c.$prefix}-sys-space-none);
   --#{c.$prefix}-split-button-chevron-size: var(--#{c.$prefix}-toolbar-dense-split-chevron-size);
 
   container-type: inline-size;
@@ -384,7 +384,7 @@
 
   // An icon button as a split control's leading half keeps its square box.
   .#{c.$prefix}-icon-btn.#{c.$prefix}-split-button__action {
-    padding-inline: var(--m3-space-none);
+    padding-inline: var(--#{c.$prefix}-sys-space-none);
   }
 
   // A checked hidden input toggles its label like aria-pressed="true" does.
@@ -402,7 +402,7 @@
     :is(.#{c.$prefix}-menu, .#{c.$prefix}-color-palette)[popover]:not(.#{c.$prefix}-menu--static) {
     @supports (position-area: block-end) {
       inset: auto;
-      margin: var(--m3-space-none);
+      margin: var(--#{c.$prefix}-sys-space-none);
       margin-block-start: var(--#{c.$prefix}-toolbar-dense-menu-offset);
       position-area: block-end span-inline-end;
       position-try-fallbacks: flip-block, flip-inline;
@@ -424,7 +424,7 @@
     .#{c.$prefix}-toolbar__choice
     > .#{c.$prefix}-menu:not([popover]) {
     inset-inline-start: auto;
-    inset-inline-end: var(--m3-space-none);
+    inset-inline-end: var(--#{c.$prefix}-sys-space-none);
   }
 
   // A split control's menu hangs under the whole control, not its sliver.
@@ -448,9 +448,9 @@
     content: "";
     display: block;
     flex: none;
-    inline-size: var(--m3-stroke-hairline);
+    inline-size: var(--#{c.$prefix}-sys-stroke-hairline);
     block-size: var(--#{c.$prefix}-toolbar-dense-separator-height);
-    margin-inline: var(--m3-space-1);
+    margin-inline: var(--#{c.$prefix}-sys-space-1);
     background-color: var(--#{c.$prefix}-toolbar-dense-separator-color);
   }
 }
@@ -461,8 +461,8 @@
 @mixin dense-dropdown {
   @include button.base;
   @include button.text-variant;
-  gap: var(--m3-space-1);
-  padding-inline: var(--m3-space-2);
+  gap: var(--#{c.$prefix}-sys-space-1);
+  padding-inline: var(--#{c.$prefix}-sys-space-2);
 
   &::after {
     @include m.own-pseudo;
@@ -470,10 +470,10 @@
     display: block;
     flex: none;
     @include m.chevron-icon(
-      calc(var(--m3-chevron-size) / 2 + var(--m3-stroke-thick)),
-      var(--m3-stroke-thick)
+      calc(var(--#{c.$prefix}-sys-chevron-size) / 2 + var(--#{c.$prefix}-sys-stroke-thick)),
+      var(--#{c.$prefix}-sys-stroke-thick)
     );
-    margin-inline-start: var(--m3-space-1);
+    margin-inline-start: var(--#{c.$prefix}-sys-space-1);
     translate: 0 -25%;
     @include m.spring-transition((rotate, translate), "fast-spatial");
   }
@@ -502,12 +502,12 @@
   inline-size: auto;
   max-inline-size: 100%;
   block-size: var(--#{c.$prefix}-toolbar-dense-control-size);
-  min-block-size: var(--m3-space-none);
-  padding-block: var(--m3-space-none);
-  padding-inline: var(--m3-space-2)
+  min-block-size: var(--#{c.$prefix}-sys-space-none);
+  padding-block: var(--#{c.$prefix}-sys-space-none);
+  padding-inline: var(--#{c.$prefix}-sys-space-2)
     calc(
-      var(--m3-space-2) + 2 * var(--#{c.$prefix}-toolbar-dense-chevron-size) +
-        var(--m3-space-1)
+      var(--#{c.$prefix}-sys-space-2) + 2 * var(--#{c.$prefix}-toolbar-dense-chevron-size) +
+        var(--#{c.$prefix}-sys-space-1)
     );
   border: none;
   border-radius: var(--#{c.$prefix}-toolbar-dense-control-shape);
@@ -521,9 +521,9 @@
   background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
     linear-gradient(135deg, currentColor 50%, transparent 50%);
   background-position:
-    calc(100% - var(--m3-space-2) - var(--#{c.$prefix}-toolbar-dense-chevron-size))
+    calc(100% - var(--#{c.$prefix}-sys-space-2) - var(--#{c.$prefix}-toolbar-dense-chevron-size))
       50%,
-    calc(100% - var(--m3-space-2)) 50%;
+    calc(100% - var(--#{c.$prefix}-sys-space-2)) 50%;
   background-size: var(--#{c.$prefix}-toolbar-dense-chevron-size)
     var(--#{c.$prefix}-toolbar-dense-chevron-size);
   background-repeat: no-repeat;
@@ -562,13 +562,13 @@
   display: inline-block;
   inline-size: var(--#{c.$prefix}-toolbar-dense-field-width);
   block-size: var(--#{c.$prefix}-toolbar-dense-control-size);
-  padding-inline: var(--m3-space-1);
-  border: var(--m3-stroke-hairline) solid
+  padding-inline: var(--#{c.$prefix}-sys-space-1);
+  border: var(--#{c.$prefix}-sys-stroke-hairline) solid
     var(--#{c.$prefix}-toolbar-dense-field-outline-color);
   border-radius: var(--#{c.$prefix}-toolbar-dense-control-shape);
   background-color: transparent;
   color: inherit;
-  caret-color: var(--md-sys-color-primary);
+  caret-color: var(--#{c.$sys-prefix}-sys-color-primary);
   text-align: center;
   cursor: text;
   appearance: textfield;
@@ -577,28 +577,28 @@
   &::-webkit-inner-spin-button,
   &::-webkit-outer-spin-button {
     appearance: none;
-    margin: var(--m3-space-none);
+    margin: var(--#{c.$prefix}-sys-space-none);
   }
 
   @include m.hover {
-    border-color: var(--md-sys-color-on-surface);
+    border-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
   }
 
   &:focus-visible {
     outline: none;
-    border-color: var(--md-sys-color-primary);
-    box-shadow: inset 0 0 0 var(--m3-stroke-hairline) var(--md-sys-color-primary);
+    border-color: var(--#{c.$sys-prefix}-sys-color-primary);
+    box-shadow: inset 0 0 0 var(--#{c.$prefix}-sys-stroke-hairline) var(--#{c.$sys-prefix}-sys-color-primary);
   }
 
   &:disabled {
     color: color-mix(
       in srgb,
-      var(--md-sys-color-on-surface) var(--md-sys-state-disabled-content-opacity),
+      var(--#{c.$sys-prefix}-sys-color-on-surface) var(--#{c.$sys-prefix}-sys-state-disabled-content-opacity),
       transparent
     );
     border-color: color-mix(
       in srgb,
-      var(--md-sys-color-on-surface) var(--md-sys-state-disabled-container-opacity),
+      var(--#{c.$sys-prefix}-sys-color-on-surface) var(--#{c.$sys-prefix}-sys-state-disabled-container-opacity),
       transparent
     );
     cursor: not-allowed;
@@ -622,9 +622,9 @@
     );
     inset-inline-start: 50%;
     translate: -50% 0;
-    inline-size: calc(var(--#{c.$prefix}-toolbar-dense-icon-size) - var(--m3-space-1));
+    inline-size: calc(var(--#{c.$prefix}-toolbar-dense-icon-size) - var(--#{c.$prefix}-sys-space-1));
     block-size: var(--#{c.$prefix}-toolbar-dense-swatch-height);
-    border-radius: var(--m3-stroke-hairline);
+    border-radius: var(--#{c.$prefix}-sys-stroke-hairline);
     background-color: var(--#{c.$prefix}-toolbar-swatch-color, currentColor);
   }
 }
@@ -663,8 +663,8 @@
     display: block;
     position: absolute;
     inset-block-start: calc(100% + var(--#{c.$prefix}-toolbar-dense-menu-offset));
-    inset-inline-start: var(--m3-space-none);
-    z-index: var(--m3-z-overlay);
+    inset-inline-start: var(--#{c.$prefix}-sys-space-none);
+    z-index: var(--#{c.$prefix}-sys-z-overlay);
   }
 
   // Same entry motion as a popover menu when the details opens.
@@ -678,7 +678,7 @@
   @include m.own-box;
   display: block;
   position: absolute;
-  opacity: var(--m3-opacity-hidden);
+  opacity: var(--#{c.$prefix}-sys-opacity-hidden);
   pointer-events: none;
 }
 

@@ -31,13 +31,13 @@
 @use "../mixins" as m;
 
 @mixin tokens {
-  --#{c.$prefix}-menu-container-color: var(--md-sys-color-surface-container);
-  --#{c.$prefix}-menu-content-color: var(--md-sys-color-on-surface);
-  --#{c.$prefix}-menu-shape: var(--md-sys-shape-corner-extra-small);
+  --#{c.$prefix}-menu-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container);
+  --#{c.$prefix}-menu-content-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+  --#{c.$prefix}-menu-shape: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
   --#{c.$prefix}-menu-item-height: #{fn.rem(48)};
   --#{c.$prefix}-menu-min-width: #{fn.rem(112)};
   --#{c.$prefix}-menu-max-width: #{fn.rem(280)};
-  --#{c.$prefix}-menu-header-color: var(--md-sys-color-on-surface-variant);
+  --#{c.$prefix}-menu-header-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
 }
 
 // The menu surface (also Bootstrap's .dropdown-menu).
@@ -47,7 +47,7 @@
   color: var(--#{c.$prefix}-menu-content-color);
   border: none;
   border-radius: var(--#{c.$prefix}-menu-shape);
-  padding-block: var(--m3-space-2);
+  padding-block: var(--#{c.$prefix}-sys-space-2);
   min-inline-size: var(--#{c.$prefix}-menu-min-width);
   max-inline-size: var(--#{c.$prefix}-menu-max-width);
   @include m.elevation(2);
@@ -55,7 +55,7 @@
   // Dividers between items: spacing only; the divider component owns the
   // border color treatment.
   hr {
-    margin-block: var(--m3-space-2);
+    margin-block: var(--#{c.$prefix}-sys-space-2);
   }
 }
 
@@ -74,10 +74,10 @@
 
   display: flex;
   align-items: center;
-  gap: var(--m3-space-3);
+  gap: var(--#{c.$prefix}-sys-space-3);
   inline-size: 100%;
   @include m.control-min-height(--#{c.$prefix}-menu-item-height);
-  padding-inline: var(--m3-space-3);
+  padding-inline: var(--#{c.$prefix}-sys-space-3);
   border: none;
   text-align: start;
   text-decoration: none;
@@ -89,7 +89,7 @@
 
   // Pull the focus ring inside the item so the surface does not clip it.
   &:focus-visible {
-    outline-offset: calc(-1 * var(--md-sys-state-focus-indicator-offset));
+    outline-offset: calc(-1 * var(--#{c.$sys-prefix}-sys-state-focus-indicator-offset));
   }
 
   // A chosen item (a selected option, a checked radio inside a label item):
@@ -97,20 +97,20 @@
   &.active,
   &[aria-checked="true"],
   &[aria-selected="true"] {
-    --_container: var(--md-sys-color-secondary-container);
-    --_content: var(--md-sys-color-on-secondary-container);
+    --_container: var(--#{c.$sys-prefix}-sys-color-secondary-container);
+    --_content: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
   }
 
   &:has(> input:checked) {
-    --_container: var(--md-sys-color-secondary-container);
-    --_content: var(--md-sys-color-on-secondary-container);
+    --_container: var(--#{c.$sys-prefix}-sys-color-secondary-container);
+    --_content: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
   }
 
   // Keyboard focus on a hidden input inside a label item shows on the item.
   &:has(> input:focus-visible) {
-    outline: var(--md-sys-state-focus-indicator-thickness) solid
-      var(--md-sys-color-secondary);
-    outline-offset: calc(-1 * var(--md-sys-state-focus-indicator-offset));
+    outline: var(--#{c.$sys-prefix}-sys-state-focus-indicator-thickness) solid
+      var(--#{c.$sys-prefix}-sys-color-secondary);
+    outline-offset: calc(-1 * var(--#{c.$sys-prefix}-sys-state-focus-indicator-offset));
   }
 
   &:disabled,
@@ -123,8 +123,8 @@
 @mixin header {
   @include m.own-box;
   display: block;
-  padding-inline: var(--m3-space-3);
-  padding-block: var(--m3-space-2) var(--m3-space-1);
+  padding-inline: var(--#{c.$prefix}-sys-space-3);
+  padding-block: var(--#{c.$prefix}-sys-space-2) var(--#{c.$prefix}-sys-space-1);
   color: var(--#{c.$prefix}-menu-header-color);
   @include m.typescale("label-small");
 }
@@ -133,18 +133,18 @@
 // alone: :popover-open must never share a selector list (contract rule 10).
 @mixin popover-entry {
   @media (prefers-reduced-motion: no-preference) {
-    opacity: var(--m3-opacity-full);
+    opacity: var(--#{c.$prefix}-sys-opacity-full);
     translate: 0 0;
     transition-property: opacity, translate;
-    transition-duration: var(--md-sys-motion-spring-fast-effects-duration),
-      var(--md-sys-motion-spring-default-spatial-duration);
-    transition-timing-function: var(--md-sys-motion-spring-fast-effects),
-      var(--md-sys-motion-spring-default-spatial);
+    transition-duration: var(--#{c.$sys-prefix}-sys-motion-spring-fast-effects-duration),
+      var(--#{c.$sys-prefix}-sys-motion-spring-default-spatial-duration);
+    transition-timing-function: var(--#{c.$sys-prefix}-sys-motion-spring-fast-effects),
+      var(--#{c.$sys-prefix}-sys-motion-spring-default-spatial);
     transition-behavior: allow-discrete;
 
     @starting-style {
-      opacity: var(--m3-opacity-hidden);
-      translate: 0 calc(-1 * var(--m3-space-1));
+      opacity: var(--#{c.$prefix}-sys-opacity-hidden);
+      translate: 0 calc(-1 * var(--#{c.$prefix}-sys-space-1));
     }
   }
 }
@@ -162,7 +162,7 @@
     // The UA's [popover] layout, restated because the box is owned.
     display: none;
     position: fixed;
-    inset: var(--m3-space-none);
+    inset: var(--#{c.$prefix}-sys-space-none);
     inline-size: fit-content;
     block-size: fit-content;
     overflow: auto;

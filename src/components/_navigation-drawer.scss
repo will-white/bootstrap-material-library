@@ -32,13 +32,13 @@
 
 @mixin tokens {
   --#{c.$prefix}-drawer-width: #{fn.rem(360)};
-  --#{c.$prefix}-drawer-container-color: var(--md-sys-color-surface-container-low);
-  --#{c.$prefix}-drawer-content-color: var(--md-sys-color-on-surface);
+  --#{c.$prefix}-drawer-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container-low);
+  --#{c.$prefix}-drawer-content-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
   --#{c.$prefix}-drawer-item-height: #{fn.rem(56)};
-  --#{c.$prefix}-drawer-item-color: var(--md-sys-color-on-surface-variant);
-  --#{c.$prefix}-drawer-active-container-color: var(--md-sys-color-secondary-container);
-  --#{c.$prefix}-drawer-active-color: var(--md-sys-color-on-secondary-container);
-  --#{c.$prefix}-drawer-shape: var(--md-sys-shape-corner-large);
+  --#{c.$prefix}-drawer-item-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+  --#{c.$prefix}-drawer-active-container-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
+  --#{c.$prefix}-drawer-active-color: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
+  --#{c.$prefix}-drawer-shape: var(--#{c.$sys-prefix}-sys-shape-corner-large);
 }
 
 // The drawer surface, shared by standard and modal.
@@ -48,7 +48,7 @@
   inline-size: var(--#{c.$prefix}-drawer-width);
   max-inline-size: 80%;
   block-size: 100%;
-  padding: var(--m3-space-3);
+  padding: var(--#{c.$prefix}-sys-space-3);
   background-color: var(--#{c.$prefix}-drawer-container-color);
   color: var(--#{c.$prefix}-drawer-content-color);
   overflow-y: auto;
@@ -60,9 +60,9 @@
   @include container;
   // The UA's <dialog> layout, restated because the box is owned (see dialog).
   position: absolute;
-  inset-inline: var(--m3-space-none);
+  inset-inline: var(--#{c.$prefix}-sys-space-none);
   overflow: auto;
-  margin: var(--m3-space-none);
+  margin: var(--#{c.$prefix}-sys-space-none);
   margin-inline-end: auto;
 
   &:not([open]) {
@@ -71,7 +71,7 @@
 
   &:modal {
     position: fixed;
-    inset: var(--m3-space-none);
+    inset: var(--#{c.$prefix}-sys-space-none);
   }
   block-size: 100%;
   max-block-size: 100%;
@@ -83,7 +83,7 @@
   &::backdrop {
     background-color: color-mix(
       in srgb,
-      var(--md-sys-color-scrim) var(--m3-opacity-scrim),
+      var(--#{c.$sys-prefix}-sys-color-scrim) var(--#{c.$prefix}-sys-opacity-scrim),
       transparent
     );
   }
@@ -91,8 +91,8 @@
   @media (prefers-reduced-motion: no-preference) {
     &[open] {
       transition-property: translate, display, overlay;
-      transition-duration: var(--md-sys-motion-duration-medium2);
-      transition-timing-function: var(--md-sys-motion-easing-emphasized-decelerate);
+      transition-duration: var(--#{c.$sys-prefix}-sys-motion-duration-medium2);
+      transition-timing-function: var(--#{c.$sys-prefix}-sys-motion-easing-emphasized-decelerate);
       transition-behavior: allow-discrete;
       translate: 0 0;
 
@@ -112,10 +112,10 @@
 
   display: flex;
   align-items: center;
-  gap: var(--m3-space-3);
+  gap: var(--#{c.$prefix}-sys-space-3);
   @include m.control-height(--#{c.$prefix}-drawer-item-height);
-  padding-inline: var(--m3-space-4);
-  border-radius: var(--md-sys-shape-corner-full);
+  padding-inline: var(--#{c.$prefix}-sys-space-4);
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   text-decoration: none;
   cursor: pointer;
   @include m.typescale("label-large");
@@ -125,7 +125,7 @@
 
   &.active,
   &[aria-current="page"] {
-    --m3-icon-fill: 1;
+    --#{c.$prefix}-icon-fill: 1;
     --_container: var(--#{c.$prefix}-drawer-active-container-color);
     --_content: var(--#{c.$prefix}-drawer-active-color);
   }
@@ -137,8 +137,8 @@
   display: block;
   @include m.typescale("title-small");
   color: var(--#{c.$prefix}-drawer-item-color);
-  padding-inline: var(--m3-space-4);
-  padding-block: var(--m3-space-3) var(--m3-space-2);
+  padding-inline: var(--#{c.$prefix}-sys-space-4);
+  padding-block: var(--#{c.$prefix}-sys-space-3) var(--#{c.$prefix}-sys-space-2);
 }
 
 // Trailing badge (label-large count) inside an item.

@@ -22,11 +22,11 @@
 
 @mixin tokens {
   --#{c.$prefix}-radio-size: #{fn.rem(20)};
-  --#{c.$prefix}-radio-outline-color: var(--md-sys-color-on-surface-variant);
-  --#{c.$prefix}-radio-selected-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-radio-outline-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+  --#{c.$prefix}-radio-selected-color: var(--#{c.$sys-prefix}-sys-color-primary);
   --#{c.$prefix}-radio-dot-size: #{fn.rem(10)};
-  --#{c.$prefix}-radio-state-layer-color: var(--md-sys-color-on-surface);
-  --#{c.$prefix}-radio-selected-state-layer-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-radio-state-layer-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+  --#{c.$prefix}-radio-selected-state-layer-color: var(--#{c.$sys-prefix}-sys-color-primary);
 }
 
 // The whole control: ring on the input's own border, dot on ::after,
@@ -42,8 +42,8 @@
   appearance: none;
   inline-size: var(--#{c.$prefix}-radio-size);
   block-size: var(--#{c.$prefix}-radio-size);
-  border: var(--m3-stroke-thick) solid var(--#{c.$prefix}-radio-outline-color);
-  border-radius: var(--md-sys-shape-corner-full);
+  border: var(--#{c.$prefix}-sys-stroke-thick) solid var(--#{c.$prefix}-radio-outline-color);
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   @include m.typescale("body-medium");
   color: var(--#{c.$prefix}-radio-outline-color);
   display: inline-grid;
@@ -65,13 +65,13 @@
     grid-area: 1 / 1;
     inline-size: var(--#{c.$prefix}-radio-dot-size);
     block-size: var(--#{c.$prefix}-radio-dot-size);
-    border-radius: var(--md-sys-shape-corner-full);
+    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
     background-color: var(--#{c.$prefix}-radio-selected-color);
     scale: 0;
     @include m.transition(
       scale,
-      var(--md-sys-motion-duration-short3),
-      var(--md-sys-motion-easing-emphasized-decelerate)
+      var(--#{c.$sys-prefix}-sys-motion-duration-short3),
+      var(--#{c.$sys-prefix}-sys-motion-easing-emphasized-decelerate)
     );
   }
 
@@ -92,8 +92,8 @@
     cursor: not-allowed;
     border-color: color-mix(
       in srgb,
-      var(--md-sys-color-on-surface)
-        var(--md-sys-state-disabled-content-opacity),
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-disabled-content-opacity),
       transparent
     );
 
@@ -104,8 +104,8 @@
     &::after {
       background-color: color-mix(
         in srgb,
-        var(--md-sys-color-on-surface)
-          var(--md-sys-state-disabled-content-opacity),
+        var(--#{c.$sys-prefix}-sys-color-on-surface)
+          var(--#{c.$sys-prefix}-sys-state-disabled-content-opacity),
         transparent
       );
     }

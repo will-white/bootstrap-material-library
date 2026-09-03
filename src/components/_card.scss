@@ -21,14 +21,14 @@
 @use "../mixins" as m;
 
 @mixin tokens {
-  --#{c.$prefix}-card-container-color: var(--md-sys-color-surface-container-low);
-  --#{c.$prefix}-card-filled-container-color: var(--md-sys-color-surface-container-highest);
-  --#{c.$prefix}-card-outlined-container-color: var(--md-sys-color-surface);
-  --#{c.$prefix}-card-content-color: var(--md-sys-color-on-surface);
-  --#{c.$prefix}-card-shape: var(--md-sys-shape-corner-medium);
-  --#{c.$prefix}-card-padding: var(--m3-space-4);
-  --#{c.$prefix}-card-outline-color: var(--md-sys-color-outline-variant);
-  --#{c.$prefix}-card-outline-width: var(--m3-stroke-hairline);
+  --#{c.$prefix}-card-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container-low);
+  --#{c.$prefix}-card-filled-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container-highest);
+  --#{c.$prefix}-card-outlined-container-color: var(--#{c.$sys-prefix}-sys-color-surface);
+  --#{c.$prefix}-card-content-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+  --#{c.$prefix}-card-shape: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
+  --#{c.$prefix}-card-padding: var(--#{c.$prefix}-sys-space-4);
+  --#{c.$prefix}-card-outline-color: var(--#{c.$sys-prefix}-sys-color-outline-variant);
+  --#{c.$prefix}-card-outline-width: var(--#{c.$prefix}-sys-stroke-hairline);
 }
 
 // Structural container, default = elevated look.
@@ -98,10 +98,10 @@
   #{$root}__actions {
     @include m.own-region;
     display: flex;
-    gap: var(--m3-space-2);
+    gap: var(--#{c.$prefix}-sys-space-2);
     justify-content: flex-end;
     padding: var(--#{c.$prefix}-card-padding);
-    padding-block-start: var(--m3-space-none);
+    padding-block-start: var(--#{c.$prefix}-sys-space-none);
   }
 }
 
@@ -114,13 +114,13 @@
     h4 {
       @include m.typescale("title-large");
       color: var(--_content);
-      margin-block-end: var(--m3-space-1);
+      margin-block-end: var(--#{c.$prefix}-sys-space-1);
     }
 
     p {
       @include m.typescale("body-medium");
-      color: var(--md-sys-color-on-surface-variant);
-      margin-block: var(--m3-space-1);
+      color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+      margin-block: var(--#{c.$prefix}-sys-space-1);
     }
 
     img {

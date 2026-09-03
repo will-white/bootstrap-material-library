@@ -9,14 +9,14 @@
   <style>
     /* Demo shell scaffolding only -- everything visual comes from m3x.css. */
     .demo-shell { display: grid; grid-template-columns: auto 1fr; min-height: 100dvh; }
-    .demo-main { padding: var(--m3-space-5); max-width: 72rem; margin-inline: auto; width: 100%; display: grid; gap: var(--m3-space-6); }
-    .demo-grid { display: grid; gap: var(--m3-space-4); grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); align-items: start; }
-    .demo-row { display: flex; flex-wrap: wrap; gap: var(--m3-space-3); align-items: center; }
-    .demo-pair { display: grid; gap: var(--m3-space-2); }
+    .demo-main { padding: var(--m3-sys-space-5); max-width: 72rem; margin-inline: auto; width: 100%; display: grid; gap: var(--m3-sys-space-6); }
+    .demo-grid { display: grid; gap: var(--m3-sys-space-4); grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); align-items: start; }
+    .demo-row { display: flex; flex-wrap: wrap; gap: var(--m3-sys-space-3); align-items: center; }
+    .demo-pair { display: grid; gap: var(--m3-sys-space-2); }
     .demo-pair > small { color: var(--md-sys-color-on-surface-variant); }
     /* Popover menu anchored below its trigger (CSS anchor positioning; elsewhere it opens at its static position). */
-    .demo-popover { position-anchor: --demo-menu; position-area: block-end span-inline-end; inset: auto; margin: var(--m3-space-1) 0 0; }
-    section > h2 { margin-block-end: var(--m3-space-3); }
+    .demo-popover { position-anchor: --demo-menu; position-area: block-end span-inline-end; inset: auto; margin: var(--m3-sys-space-1) 0 0; }
+    section > h2 { margin-block-end: var(--m3-sys-space-3); }
     @media (max-width: 48rem) { .demo-shell { grid-template-columns: 1fr; } .demo-shell > .m3-rail { display: none; } }
   </style>
 </head>
@@ -24,11 +24,11 @@
 
 <header class="m3-top-app-bar m3-top-app-bar--sticky">
   <h1 class="m3-top-app-bar__title m3-title-large">Aurora Mail &mdash; Settings</h1>
-  <label class="m3-body-medium" for="seed" style="display: inline-flex; align-items: center; gap: var(--m3-space-2);">
+  <label class="m3-body-medium" for="seed" style="display: inline-flex; align-items: center; gap: var(--m3-sys-space-2);">
     Seed
-    <input type="color" id="seed" value="#6750a4" style="inline-size: var(--m3-space-6); block-size: var(--m3-space-6); border: none; padding: 0; background: none; cursor: pointer;">
+    <input type="color" id="seed" value="#6750a4" style="inline-size: var(--m3-sys-space-6); block-size: var(--m3-sys-space-6); border: none; padding: 0; background: none; cursor: pointer;">
   </label>
-  <label class="m3-body-medium" for="theme" style="display: inline-flex; align-items: center; gap: var(--m3-space-2);">
+  <label class="m3-body-medium" for="theme" style="display: inline-flex; align-items: center; gap: var(--m3-sys-space-2);">
     Theme
     <select id="theme" class="m3-select" style="--m3-field-height: 2.5rem; min-inline-size: 7rem;">
       <option value="auto" selected>Auto</option>
@@ -36,7 +36,7 @@
       <option value="dark">Dark</option>
     </select>
   </label>
-  <label class="m3-body-medium" for="contrast" style="display: inline-flex; align-items: center; gap: var(--m3-space-2);">
+  <label class="m3-body-medium" for="contrast" style="display: inline-flex; align-items: center; gap: var(--m3-sys-space-2);">
     Contrast
     <select id="contrast" class="m3-select" style="--m3-field-height: 2.5rem; min-inline-size: 7rem;">
       <option value="" selected>Auto</option>
@@ -93,7 +93,7 @@
         </div>
 
         <form class="m3-card m3-card--outlined" novalidate>
-          <div class="m3-card__slot" style="display: grid; gap: var(--m3-space-4);">
+          <div class="m3-card__slot" style="display: grid; gap: var(--m3-sys-space-4);">
             <h3>Profile</h3>
             <label class="m3-field m3-field--filled">
               <input class="m3-field__input" type="text" placeholder=" " value="Riley Chen">
@@ -178,26 +178,26 @@
                 <span class="m3-segmented__label">Never</span>
               </label>
             </fieldset>
-            <div class="demo-row" style="margin-block-start: var(--m3-space-4);">
-              <label class="demo-row" style="gap: var(--m3-space-2);">
+            <div class="demo-row" style="margin-block-start: var(--m3-sys-space-4);">
+              <label class="demo-row" style="gap: var(--m3-sys-space-2);">
                 <input type="checkbox" class="m3-checkbox" checked> Mute threads I leave
               </label>
-              <label class="demo-row" style="gap: var(--m3-space-2);">
+              <label class="demo-row" style="gap: var(--m3-sys-space-2);">
                 <input type="checkbox" class="m3-checkbox"> Include spam
               </label>
-              <label class="demo-row" style="gap: var(--m3-space-2);">
+              <label class="demo-row" style="gap: var(--m3-sys-space-2);">
                 <input type="checkbox" class="m3-checkbox" data-indeterminate aria-label="Labels, some selected"> Labels (2 of 5)
               </label>
-              <label class="demo-row" style="gap: var(--m3-space-2);">
+              <label class="demo-row" style="gap: var(--m3-sys-space-2);">
                 <input type="checkbox" class="m3-checkbox" checked disabled> Archive on read
               </label>
             </div>
-            <div class="demo-row" role="radiogroup" aria-label="Sound" style="margin-block-start: var(--m3-space-3);">
-              <label class="demo-row" style="gap: var(--m3-space-2);"><input type="radio" name="snd" class="m3-radio" checked> Chime</label>
-              <label class="demo-row" style="gap: var(--m3-space-2);"><input type="radio" name="snd" class="m3-radio"> Pop</label>
-              <label class="demo-row" style="gap: var(--m3-space-2);"><input type="radio" name="snd" class="m3-radio"> Silent</label>
+            <div class="demo-row" role="radiogroup" aria-label="Sound" style="margin-block-start: var(--m3-sys-space-3);">
+              <label class="demo-row" style="gap: var(--m3-sys-space-2);"><input type="radio" name="snd" class="m3-radio" checked> Chime</label>
+              <label class="demo-row" style="gap: var(--m3-sys-space-2);"><input type="radio" name="snd" class="m3-radio"> Pop</label>
+              <label class="demo-row" style="gap: var(--m3-sys-space-2);"><input type="radio" name="snd" class="m3-radio"> Silent</label>
             </div>
-            <label style="display: block; margin-block-start: var(--m3-space-4);">
+            <label style="display: block; margin-block-start: var(--m3-sys-space-4);">
               <span class="m3-label-large">Preview length</span>
               <input type="range" class="m3-slider m3-slider--ticks" min="0" max="100" step="10" value="60" aria-label="Preview length">
             </label>
@@ -205,10 +205,10 @@
         </div>
 
         <div class="demo-pair">
-          <div class="m3-card m3-card--outlined" style="--m3-density: -2;">
+          <div class="m3-card m3-card--outlined" style="--m3-sys-density: -2;">
             <div class="m3-card__slot">
               <h3>Compact density island</h3>
-              <p>This card sets <code>--m3-density: -2</code>. Every control inside shrinks through the density formula.</p>
+              <p>This card sets <code>--m3-sys-density: -2</code>. Every control inside shrinks through the density formula.</p>
               <div class="demo-row">
                 <button class="m3-btn m3-btn--filled">Dense button</button>
                 <button class="m3-btn m3-btn--outlined">Dense outlined</button>
@@ -312,7 +312,7 @@
 
       </div>
 
-      <div class="m3-carousel" role="group" aria-label="Theme previews" style="margin-block-start: var(--m3-space-4);">
+      <div class="m3-carousel" role="group" aria-label="Theme previews" style="margin-block-start: var(--m3-sys-space-4);">
         <div class="m3-carousel__item m3-bg-primary-container" style="min-block-size: 8rem; display: grid; place-content: center;">
           <span class="m3-title-large">Primary container</span>
         </div>
@@ -331,7 +331,7 @@
     <!-- ================================================================ -->
     <section id="islands" aria-labelledby="islands-h">
       <h2 id="islands-h" class="m3-headline-small">Nested token islands</h2>
-      <div class="m3-island--inverse" style="padding: var(--m3-space-5); border-radius: var(--md-sys-shape-corner-extra-large); display: grid; gap: var(--m3-space-4);">
+      <div class="m3-island--inverse" style="padding: var(--m3-sys-space-5); border-radius: var(--md-sys-shape-corner-extra-large); display: grid; gap: var(--m3-sys-space-4);">
         <p class="m3-body-large" style="margin: 0;">An inverse hero region. Tokens are re-pointed on the nearest scope root, so everything inside adapts.</p>
         <div class="demo-row">
           <button class="m3-btn m3-btn--filled">Inverse-aware button</button>
@@ -341,7 +341,7 @@
           <div class="m3-card__slot">
             <h3>A normal card</h3>
             <p>It reads the island's surface-container tokens by inheritance.</p>
-            <div class="m3-island--tertiary" style="padding: var(--m3-space-4); border-radius: var(--md-sys-shape-corner-large);">
+            <div class="m3-island--tertiary" style="padding: var(--m3-sys-space-4); border-radius: var(--md-sys-shape-corner-large);">
               <p class="m3-body-medium" style="margin: 0;">And a tertiary island nested inside the card inside the inverse hero. Proximity wins.</p>
             </div>
           </div>
@@ -548,7 +548,7 @@
       <h2 id="expressive-h" class="m3-headline-small">Toolbars, button groups, split buttons</h2>
       <p class="m3-body-medium">The M3 Expressive additions. Groups mark their selected member with <code>aria-pressed</code> or a hidden <code>.m3-btn-check</code>; the split button's toggle opens a native popover menu. Bootstrap <code>.btn-group</code> markup renders as a connected group. The dense bar below is the editor-toolbar shape (a slide or document editor's formatting row): one 40px row, 28px controls two pixels apart, hairlines between groups, compact native selects and popover menus, a stepper, and color swatches. Narrow the window and the low-priority groups fold away from the right while the overflow button appears.</p>
 
-      <div class="demo-pair" style="margin-block-end: var(--m3-space-4);">
+      <div class="demo-pair" style="margin-block-end: var(--m3-sys-space-4);">
         <small class="m3-label-medium">.m3-toolbar--dense with __group, a native __select for zoom (chevron flips while its picker is open where :open exists), a &lt;details&gt; __choice for the font (works in every browser, menu picks the label), __stepper, __color swatches opening a .m3-color-palette (the bar follows the choice), __dropdown popover menus, compact .m3-split-button list controls, __spacer, __more; groups marked --priority-low / --priority-medium collapse first</small>
         <div class="m3-toolbar m3-toolbar--dense" role="toolbar" aria-label="Slide formatting">
           <div class="m3-toolbar__group">
@@ -923,9 +923,9 @@
         <div class="demo-pair">
           <small class="m3-label-medium">details.m3-disclosure (exclusive group via name; animated ::details-content)</small>
           <div>
-            <details class="m3-disclosure" name="faq" open><summary>Where is my data stored?</summary><p class="m3-body-medium" style="margin: 0 var(--m3-space-3) var(--m3-space-3);">In the region you picked when the account was created.</p></details>
-            <details class="m3-disclosure" name="faq"><summary>Can I export everything?</summary><p class="m3-body-medium" style="margin: 0 var(--m3-space-3) var(--m3-space-3);">Yes: Settings, Export, then pick a format.</p></details>
-            <details class="m3-disclosure" name="faq"><summary>How do I delete my account?</summary><p class="m3-body-medium" style="margin: 0 var(--m3-space-3) var(--m3-space-3);">Settings, Delete forever. It takes thirty days.</p></details>
+            <details class="m3-disclosure" name="faq" open><summary>Where is my data stored?</summary><p class="m3-body-medium" style="margin: 0 var(--m3-sys-space-3) var(--m3-sys-space-3);">In the region you picked when the account was created.</p></details>
+            <details class="m3-disclosure" name="faq"><summary>Can I export everything?</summary><p class="m3-body-medium" style="margin: 0 var(--m3-sys-space-3) var(--m3-sys-space-3);">Yes: Settings, Export, then pick a format.</p></details>
+            <details class="m3-disclosure" name="faq"><summary>How do I delete my account?</summary><p class="m3-body-medium" style="margin: 0 var(--m3-sys-space-3) var(--m3-sys-space-3);">Settings, Delete forever. It takes thirty days.</p></details>
           </div>
         </div>
         <div class="demo-pair">
@@ -947,7 +947,7 @@
           <div class="demo-row">
             <button class="m3-btn m3-btn--filled" type="button">Page level</button>
             <button class="m3-btn m3-btn--tonal" type="button">Tonal</button>
-            <span data-contrast="high" class="demo-row" style="padding: var(--m3-space-2); border-radius: var(--md-sys-shape-corner-medium); background: var(--md-sys-color-surface-container);">
+            <span data-contrast="high" class="demo-row" style="padding: var(--m3-sys-space-2); border-radius: var(--md-sys-shape-corner-medium); background: var(--md-sys-color-surface-container);">
               <button class="m3-btn m3-btn--filled" type="button">High contrast</button>
               <button class="m3-btn m3-btn--tonal" type="button">Tonal</button>
             </span>
@@ -1032,7 +1032,7 @@
       </div>
     </section>
 
-    <footer class="m3-body-small" style="color: var(--md-sys-color-on-surface-variant); padding-block: var(--m3-space-5);">
+    <footer class="m3-body-small" style="color: var(--md-sys-color-on-surface-variant); padding-block: var(--m3-sys-space-5);">
       m3x demo &mdash; zero runtime JavaScript in the library; the only script on this page is the theme, contrast and seed pickers and the aria-pressed toggles below (&le; 30 lines).
     </footer>
 

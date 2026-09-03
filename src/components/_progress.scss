@@ -60,8 +60,8 @@
 @use "../mixins" as m;
 
 @mixin tokens {
-  --#{c.$prefix}-progress-track-color: var(--md-sys-color-secondary-container);
-  --#{c.$prefix}-progress-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-progress-track-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
+  --#{c.$prefix}-progress-color: var(--#{c.$sys-prefix}-sys-color-primary);
   --#{c.$prefix}-progress-thickness: #{fn.rem(4)};
   --#{c.$prefix}-progress-value: 0;
   --#{c.$prefix}-progress-circle-size: #{fn.rem(48)};
@@ -83,7 +83,7 @@
   position: relative;
   display: block;
   block-size: var(--#{c.$prefix}-progress-thickness);
-  border-radius: var(--md-sys-shape-corner-full);
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   background: transparent;
   overflow: clip;
 
@@ -122,7 +122,7 @@
     inline-size: var(--#{c.$prefix}-progress-stop-size);
     block-size: var(--#{c.$prefix}-progress-stop-size);
     translate: 0 -50%;
-    border-radius: var(--md-sys-shape-corner-full);
+    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
     color: var(--#{c.$prefix}-progress-stop-color);
     background: currentColor;
     // The dot never renders text, but the box is owned: pinning a typescale
@@ -178,8 +178,8 @@
 
   @media (prefers-reduced-motion: no-preference) {
     animation: #{c.$prefix}-progress-slide
-      var(--md-sys-motion-duration-extra-long2)
-      var(--md-sys-motion-easing-standard) infinite;
+      var(--#{c.$sys-prefix}-sys-motion-duration-extra-long2)
+      var(--#{c.$sys-prefix}-sys-motion-easing-standard) infinite;
   }
 }
 
@@ -202,7 +202,7 @@
   display: inline-block;
   inline-size: var(--#{c.$prefix}-progress-circle-size);
   block-size: var(--#{c.$prefix}-progress-circle-size);
-  border-radius: var(--md-sys-shape-corner-full);
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   background: conic-gradient(
     var(--_active) 0deg var(--_sweep),
     transparent var(--_sweep) calc(var(--_sweep) + var(--_gap)),
@@ -232,7 +232,7 @@
   border: var(--#{c.$prefix}-progress-circle-thickness) solid
     var(--#{c.$prefix}-progress-track-color);
   border-block-start-color: var(--#{c.$prefix}-progress-color);
-  border-radius: var(--md-sys-shape-corner-full);
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
 
   @keyframes #{c.$prefix}-progress-rotate {
     to {
@@ -242,8 +242,8 @@
 
   @media (prefers-reduced-motion: no-preference) {
     animation: #{c.$prefix}-progress-rotate
-      var(--md-sys-motion-duration-extra-long4)
-      var(--md-sys-motion-easing-linear) infinite;
+      var(--#{c.$sys-prefix}-sys-motion-duration-extra-long4)
+      var(--#{c.$sys-prefix}-sys-motion-easing-linear) infinite;
   }
 }
 
@@ -254,25 +254,25 @@
   display: inline-block;
   inline-size: var(--#{c.$prefix}-progress-circle-size);
   block-size: var(--#{c.$prefix}-progress-circle-size);
-  border-radius: var(--md-sys-shape-corner-full);
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   color: var(--#{c.$prefix}-progress-color);
   background: currentColor;
 
   @keyframes #{c.$prefix}-progress-pulse {
     0% {
       scale: 0;
-      opacity: var(--m3-opacity-full);
+      opacity: var(--#{c.$prefix}-sys-opacity-full);
     }
     100% {
       scale: 1;
-      opacity: var(--m3-opacity-hidden);
+      opacity: var(--#{c.$prefix}-sys-opacity-hidden);
     }
   }
 
   @media (prefers-reduced-motion: no-preference) {
     animation: #{c.$prefix}-progress-pulse
-      var(--md-sys-motion-duration-extra-long4)
-      var(--md-sys-motion-easing-standard) infinite;
+      var(--#{c.$sys-prefix}-sys-motion-duration-extra-long4)
+      var(--#{c.$sys-prefix}-sys-motion-easing-standard) infinite;
   }
 }
 
@@ -296,7 +296,7 @@
     background-size: 100% var(--#{c.$prefix}-progress-thickness);
     background-position: center;
     background-repeat: no-repeat;
-    border-radius: var(--md-sys-shape-corner-full);
+    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   }
 }
 
@@ -312,10 +312,10 @@
   $amp: var(--#{c.$prefix}-progress-wave-amplitude);
   $wl: var(--#{c.$prefix}-progress-wave-wavelength);
   $ring: (
-    transparent calc(var(--_wave-inner) - var(--m3-stroke-hairline)),
+    transparent calc(var(--_wave-inner) - var(--#{c.$prefix}-sys-stroke-hairline)),
     currentColor var(--_wave-inner),
     currentColor var(--_wave-outer),
-    transparent calc(var(--_wave-outer) + var(--m3-stroke-hairline))
+    transparent calc(var(--_wave-outer) + var(--#{c.$prefix}-sys-stroke-hairline))
   );
   $crest: radial-gradient(
     circle var(--_wave-radius) at 25% calc(100% + var(--_wave-center)),
@@ -335,7 +335,7 @@
   --_wave-outer: calc(
     var(--_wave-radius) + var(--#{c.$prefix}-progress-thickness) / 2
   );
-  border-radius: var(--md-sys-shape-corner-none);
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
   -webkit-mask-image: $crest, $trough;
   mask-image: $crest, $trough;
   -webkit-mask-size: #{$wl} var(--_wave-half);
@@ -354,8 +354,8 @@
     }
 
     animation: #{c.$prefix}-progress-wave
-      var(--md-sys-motion-duration-extra-long4)
-      var(--md-sys-motion-easing-linear) infinite;
+      var(--#{c.$sys-prefix}-sys-motion-duration-extra-long4)
+      var(--#{c.$sys-prefix}-sys-motion-easing-linear) infinite;
   }
 }
 
@@ -365,11 +365,11 @@
   @media (prefers-reduced-motion: no-preference) {
     animation:
       #{c.$prefix}-progress-slide
-        var(--md-sys-motion-duration-extra-long2)
-        var(--md-sys-motion-easing-standard) infinite,
+        var(--#{c.$sys-prefix}-sys-motion-duration-extra-long2)
+        var(--#{c.$sys-prefix}-sys-motion-easing-standard) infinite,
       #{c.$prefix}-progress-wave
-        var(--md-sys-motion-duration-extra-long4)
-        var(--md-sys-motion-easing-linear) infinite;
+        var(--#{c.$sys-prefix}-sys-motion-duration-extra-long4)
+        var(--#{c.$sys-prefix}-sys-motion-easing-linear) infinite;
   }
 }
 
@@ -389,10 +389,10 @@ $-scallops: 12;
   $layers: (
     radial-gradient(
       farthest-side,
-      transparent calc(100% - #{$amp} - #{$thick} - var(--m3-stroke-hairline)),
+      transparent calc(100% - #{$amp} - #{$thick} - var(--#{c.$prefix}-sys-stroke-hairline)),
       currentColor calc(100% - #{$amp} - #{$thick}),
       currentColor calc(100% - #{$amp}),
-      transparent calc(100% - #{$amp} + var(--m3-stroke-hairline))
+      transparent calc(100% - #{$amp} + var(--#{c.$prefix}-sys-stroke-hairline))
     ),
   );
   @for $i from 0 to $-scallops {
@@ -404,7 +404,7 @@ $-scallops: 12;
       radial-gradient(
         circle #{$amp} at calc(50% + #{$cx} * (50% - #{$amp}))
           calc(50% + #{$cy} * (50% - #{$amp})),
-        currentColor calc(100% - var(--m3-stroke-hairline)),
+        currentColor calc(100% - var(--#{c.$prefix}-sys-stroke-hairline)),
         transparent 100%
       ),
       comma

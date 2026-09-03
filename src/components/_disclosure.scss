@@ -27,8 +27,8 @@
 
 @mixin tokens {
   --#{c.$prefix}-disclosure-summary-height: #{fn.rem(48)};
-  --#{c.$prefix}-disclosure-color: var(--md-sys-color-on-surface);
-  --#{c.$prefix}-disclosure-shape: var(--md-sys-shape-corner-small);
+  --#{c.$prefix}-disclosure-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+  --#{c.$prefix}-disclosure-shape: var(--#{c.$sys-prefix}-sys-shape-corner-small);
 }
 
 @mixin base {
@@ -42,9 +42,9 @@
     --_content: var(--#{c.$prefix}-disclosure-color);
     display: flex;
     align-items: center;
-    gap: var(--m3-space-3);
+    gap: var(--#{c.$prefix}-sys-space-3);
     @include m.control-min-height(--#{c.$prefix}-disclosure-summary-height);
-    padding-inline: var(--m3-space-3);
+    padding-inline: var(--#{c.$prefix}-sys-space-3);
     border-radius: var(--#{c.$prefix}-disclosure-shape);
     cursor: pointer;
     user-select: none;

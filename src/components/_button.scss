@@ -25,7 +25,7 @@
 //   --m3-btn-icon-gap                 space-2 (8px)
 //   --m3-btn-icon-size                20px
 //   --m3-btn-icon-size-xs             20px            .m3-btn--xs
-//   --m3-btn-icon-size-medium         24px (--m3-icon-size) .m3-btn--medium
+//   --m3-btn-icon-size-medium         24px (--m3-sys-icon-size) .m3-btn--medium
 //   --m3-btn-icon-size-large          32px            .m3-btn--large
 //   --m3-btn-icon-size-xl             40px            .m3-btn--xl
 //   --m3-btn-icon-optical-size(-medium/-large/-xl)  20 / 24 / 32 / 40
@@ -79,45 +79,45 @@
   --#{c.$prefix}-btn-height-xl: #{fn.rem(136)};
   --#{c.$prefix}-btn-height-small: #{fn.rem(32)};
   --#{c.$prefix}-btn-height-bootstrap-large: #{fn.rem(48)};
-  --#{c.$prefix}-btn-padding-inline: var(--m3-space-4);
-  --#{c.$prefix}-btn-padding-inline-xs: var(--m3-space-3);
-  --#{c.$prefix}-btn-padding-inline-medium: var(--m3-space-5);
-  --#{c.$prefix}-btn-padding-inline-large: var(--m3-space-7);
+  --#{c.$prefix}-btn-padding-inline: var(--#{c.$prefix}-sys-space-4);
+  --#{c.$prefix}-btn-padding-inline-xs: var(--#{c.$prefix}-sys-space-3);
+  --#{c.$prefix}-btn-padding-inline-medium: var(--#{c.$prefix}-sys-space-5);
+  --#{c.$prefix}-btn-padding-inline-large: var(--#{c.$prefix}-sys-space-7);
   --#{c.$prefix}-btn-padding-inline-xl: #{fn.rem(64)};
-  --#{c.$prefix}-btn-padding-inline-small: var(--m3-space-4);
-  --#{c.$prefix}-btn-padding-inline-bootstrap-large: var(--m3-space-6);
-  --#{c.$prefix}-btn-icon-gap: var(--m3-space-2);
+  --#{c.$prefix}-btn-padding-inline-small: var(--#{c.$prefix}-sys-space-4);
+  --#{c.$prefix}-btn-padding-inline-bootstrap-large: var(--#{c.$prefix}-sys-space-6);
+  --#{c.$prefix}-btn-icon-gap: var(--#{c.$prefix}-sys-space-2);
   --#{c.$prefix}-btn-icon-size: #{fn.rem(20)};
   --#{c.$prefix}-btn-icon-size-xs: #{fn.rem(20)};
-  --#{c.$prefix}-btn-icon-size-medium: var(--m3-icon-size);
+  --#{c.$prefix}-btn-icon-size-medium: var(--#{c.$prefix}-sys-icon-size);
   --#{c.$prefix}-btn-icon-size-large: #{fn.rem(32)};
   --#{c.$prefix}-btn-icon-size-xl: #{fn.rem(40)};
-  --#{c.$prefix}-btn-icon-size-small: var(--m3-icon-size-small);
+  --#{c.$prefix}-btn-icon-size-small: var(--#{c.$prefix}-sys-icon-size-small);
   // opsz axis of a child .m3-icon: the icon size in px (axis minimum 20).
   --#{c.$prefix}-btn-icon-optical-size: 20;
   --#{c.$prefix}-btn-icon-optical-size-medium: 24;
   --#{c.$prefix}-btn-icon-optical-size-large: 32;
   --#{c.$prefix}-btn-icon-optical-size-xl: 40;
-  --#{c.$prefix}-btn-shape: var(--md-sys-shape-corner-full);
-  --#{c.$prefix}-btn-shape-square: var(--md-sys-shape-corner-medium);
-  --#{c.$prefix}-btn-shape-square-medium: var(--md-sys-shape-corner-large);
-  --#{c.$prefix}-btn-shape-square-large: var(--md-sys-shape-corner-extra-large);
-  --#{c.$prefix}-btn-shape-pressed: var(--md-sys-shape-corner-small);
-  --#{c.$prefix}-btn-shape-pressed-medium: var(--md-sys-shape-corner-medium);
-  --#{c.$prefix}-btn-shape-pressed-large: var(--md-sys-shape-corner-large);
-  --#{c.$prefix}-btn-shape-selected: var(--md-sys-shape-corner-medium);
-  --#{c.$prefix}-btn-shape-selected-medium: var(--md-sys-shape-corner-large);
-  --#{c.$prefix}-btn-shape-selected-large: var(--md-sys-shape-corner-extra-large);
-  --#{c.$prefix}-btn-outline-width: var(--m3-stroke-hairline);
-  --#{c.$prefix}-btn-container-color: var(--md-sys-color-primary);
-  --#{c.$prefix}-btn-label-color: var(--md-sys-color-on-primary);
-  --#{c.$prefix}-btn-tonal-container-color: var(--md-sys-color-secondary-container);
-  --#{c.$prefix}-btn-tonal-label-color: var(--md-sys-color-on-secondary-container);
-  --#{c.$prefix}-btn-elevated-container-color: var(--md-sys-color-surface-container-low);
-  --#{c.$prefix}-btn-elevated-label-color: var(--md-sys-color-primary);
-  --#{c.$prefix}-btn-outlined-label-color: var(--md-sys-color-primary);
-  --#{c.$prefix}-btn-outlined-outline-color: var(--md-sys-color-outline);
-  --#{c.$prefix}-btn-text-label-color: var(--md-sys-color-primary);
+  --#{c.$prefix}-btn-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  --#{c.$prefix}-btn-shape-square: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
+  --#{c.$prefix}-btn-shape-square-medium: var(--#{c.$sys-prefix}-sys-shape-corner-large);
+  --#{c.$prefix}-btn-shape-square-large: var(--#{c.$sys-prefix}-sys-shape-corner-extra-large);
+  --#{c.$prefix}-btn-shape-pressed: var(--#{c.$sys-prefix}-sys-shape-corner-small);
+  --#{c.$prefix}-btn-shape-pressed-medium: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
+  --#{c.$prefix}-btn-shape-pressed-large: var(--#{c.$sys-prefix}-sys-shape-corner-large);
+  --#{c.$prefix}-btn-shape-selected: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
+  --#{c.$prefix}-btn-shape-selected-medium: var(--#{c.$sys-prefix}-sys-shape-corner-large);
+  --#{c.$prefix}-btn-shape-selected-large: var(--#{c.$sys-prefix}-sys-shape-corner-extra-large);
+  --#{c.$prefix}-btn-outline-width: var(--#{c.$prefix}-sys-stroke-hairline);
+  --#{c.$prefix}-btn-container-color: var(--#{c.$sys-prefix}-sys-color-primary);
+  --#{c.$prefix}-btn-label-color: var(--#{c.$sys-prefix}-sys-color-on-primary);
+  --#{c.$prefix}-btn-tonal-container-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
+  --#{c.$prefix}-btn-tonal-label-color: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
+  --#{c.$prefix}-btn-elevated-container-color: var(--#{c.$sys-prefix}-sys-color-surface-container-low);
+  --#{c.$prefix}-btn-elevated-label-color: var(--#{c.$sys-prefix}-sys-color-primary);
+  --#{c.$prefix}-btn-outlined-label-color: var(--#{c.$sys-prefix}-sys-color-primary);
+  --#{c.$prefix}-btn-outlined-outline-color: var(--#{c.$sys-prefix}-sys-color-outline);
+  --#{c.$prefix}-btn-text-label-color: var(--#{c.$sys-prefix}-sys-color-primary);
 }
 
 // Structure + state machinery shared by every variant (and by Bootstrap's
@@ -173,7 +173,7 @@
   }
   &[aria-pressed="true"],
   #{$check}:checked + & {
-    --m3-icon-fill: 1;
+    --#{c.$prefix}-icon-fill: 1;
     border-radius: m.pill(var(--#{c.$prefix}-btn-shape-selected));
   }
 
@@ -234,8 +234,8 @@
     @include m.disabled-bare;
     border-color: color-mix(
       in srgb,
-      var(--md-sys-color-on-surface)
-        var(--md-sys-state-disabled-container-opacity),
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-disabled-container-opacity),
       transparent
     );
   }
@@ -244,7 +244,7 @@
 @mixin text-variant {
   --_container: transparent;
   --_content: var(--#{c.$prefix}-btn-text-label-color);
-  padding-inline: var(--m3-space-3);
+  padding-inline: var(--#{c.$prefix}-sys-space-3);
 
   &:disabled,
   &.disabled {
@@ -324,7 +324,7 @@
   // Square toggles morph the other way: round when selected.
   &[aria-pressed="true"],
   #{$check}:checked + & {
-    border-radius: m.pill(var(--md-sys-shape-corner-full));
+    border-radius: m.pill(var(--#{c.$sys-prefix}-sys-shape-corner-full));
   }
 }
 
@@ -339,14 +339,14 @@
     @include m.focus-ring;
 
     &:not(:first-child) {
-      border-start-start-radius: var(--md-sys-shape-corner-extra-small);
-      border-end-start-radius: var(--md-sys-shape-corner-extra-small);
-      margin-inline-start: var(--m3-stroke-hairline);
+      border-start-start-radius: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
+      border-end-start-radius: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
+      margin-inline-start: var(--#{c.$prefix}-sys-stroke-hairline);
     }
 
     &:not(:last-child) {
-      border-start-end-radius: var(--md-sys-shape-corner-extra-small);
-      border-end-end-radius: var(--md-sys-shape-corner-extra-small);
+      border-start-end-radius: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
+      border-end-end-radius: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
     }
   }
 }

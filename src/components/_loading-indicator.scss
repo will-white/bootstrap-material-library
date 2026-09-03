@@ -38,12 +38,12 @@
   --#{c.$prefix}-loading-indicator-size: #{fn.rem(48)};
   --#{c.$prefix}-loading-indicator-size-small: #{fn.rem(32)};
   --#{c.$prefix}-loading-indicator-size-large: #{fn.rem(64)};
-  --#{c.$prefix}-loading-indicator-color: var(--md-sys-color-primary);
-  --#{c.$prefix}-loading-indicator-container-color: var(--md-sys-color-primary-container);
-  --#{c.$prefix}-loading-indicator-contained-color: var(--md-sys-color-on-primary-container);
-  --#{c.$prefix}-loading-indicator-container-shape: var(--md-sys-shape-corner-full);
+  --#{c.$prefix}-loading-indicator-color: var(--#{c.$sys-prefix}-sys-color-primary);
+  --#{c.$prefix}-loading-indicator-container-color: var(--#{c.$sys-prefix}-sys-color-primary-container);
+  --#{c.$prefix}-loading-indicator-contained-color: var(--#{c.$sys-prefix}-sys-color-on-primary-container);
+  --#{c.$prefix}-loading-indicator-container-shape: var(--#{c.$sys-prefix}-sys-shape-corner-full);
   --#{c.$prefix}-loading-indicator-container-padding: #{fn.rem(5)};
-  --#{c.$prefix}-loading-indicator-cycle: calc(var(--md-sys-motion-duration-extra-long4) * 4);
+  --#{c.$prefix}-loading-indicator-cycle: calc(var(--#{c.$sys-prefix}-sys-motion-duration-extra-long4) * 4);
 }
 
 // --- shape geometry (build time) ---------------------------------------------
@@ -94,7 +94,7 @@ $-vertices: 24;
   @include m.typescale("body-medium"); // text-less, but its ::before inherits the font
   --_container: transparent;
   --_content: var(--#{c.$prefix}-loading-indicator-color);
-  --_padding: var(--m3-space-none);
+  --_padding: var(--#{c.$prefix}-sys-space-none);
 
   display: inline-block;
   inline-size: var(--#{c.$prefix}-loading-indicator-size);
@@ -142,10 +142,10 @@ $-vertices: 24;
       animation:
         #{c.$prefix}-loading-indicator-morph
           var(--#{c.$prefix}-loading-indicator-cycle)
-          var(--md-sys-motion-easing-emphasized) infinite,
+          var(--#{c.$sys-prefix}-sys-motion-easing-emphasized) infinite,
         #{c.$prefix}-loading-indicator-turn
           var(--#{c.$prefix}-loading-indicator-cycle)
-          var(--md-sys-motion-easing-linear) infinite;
+          var(--#{c.$sys-prefix}-sys-motion-easing-linear) infinite;
     }
   }
 }
