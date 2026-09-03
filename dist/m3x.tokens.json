@@ -2949,6 +2949,26 @@
         "$type": "number",
         "$value": 70
       },
+      "elevation-tint-1": {
+        "$type": "dimension",
+        "$value": "5.12%"
+      },
+      "elevation-tint-2": {
+        "$type": "dimension",
+        "$value": "8.24%"
+      },
+      "elevation-tint-3": {
+        "$type": "dimension",
+        "$value": "10.76%"
+      },
+      "elevation-tint-4": {
+        "$type": "dimension",
+        "$value": "11.89%"
+      },
+      "elevation-tint-5": {
+        "$type": "dimension",
+        "$value": "13.54%"
+      },
       "emphasis-pressed-state-layer-opacity": {
         "$value": "{md.sys.state.pressed-state-layer-opacity}",
         "$type": "number",
@@ -2968,6 +2988,15 @@
         }
       },
       "container-color": {
+        "$value": "{md.sys.color.surface}",
+        "$type": "color",
+        "$extensions": {
+          "m3x": {
+            "css": "var(--md-sys-color-surface)"
+          }
+        }
+      },
+      "surface-tint-base": {
         "$value": "{md.sys.color.surface}",
         "$type": "color",
         "$extensions": {

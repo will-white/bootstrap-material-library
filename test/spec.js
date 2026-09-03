@@ -85,6 +85,11 @@ ${Object.keys(BUTTON_RAMP).map((s) => `<div class="${mod('m3-split-button', s)}"
 <div class="m3-card" id="card">Card</div>
 <div class="m3-nav-bar" id="navbar"><a class="m3-nav-bar__item" href="#">${ICON}<span class="m3-nav-bar__label">A</span></a></div>
 ${Object.keys(EMPHASIZED).map((role) => `<p class="m3-${role}" id="ts-${role}">Aa</p><p class="m3-${role}-emphasized" id="tse-${role}">Aa</p>`).join('\n')}
+<div id="probe-surface" style="background-color: var(--md-sys-color-surface)"></div>
+<div id="probe-surface-srgb" style="background-color: color-mix(in srgb, var(--md-sys-color-surface) 100%, transparent)"></div>
+<div id="probe-tint" style="background-color: color-mix(in srgb, var(--md-sys-color-surface-tint) 100%, transparent)"></div>
+${[0, 1, 2, 3, 4, 5].map((n) => `<div class="m3-surface-tint-${n}" id="tint-${n}">T</div>`).join('\n')}
+<div class="m3-elevation-3" id="elev-only">E</div>
 </body></html>`;
 
 // M3 foundation tokens: name -> expected computed value on :root.
@@ -227,6 +232,22 @@ async function run() {
         out.misc.cardRadius = num(cs('card').borderTopLeftRadius);
         out.misc.navBar = num(box('navbar').height);
 
+        // M3 tonal elevation: the surface-tint role composited over surface at
+        // the level's opacity. The roles compute as oklch(), so the probes mix
+        // them into srgb at 100% -- the same space the tint composites in, and
+        // the same serialisation the tinted surfaces come back as.
+        out.tint = {
+          surfaceRaw: cs('probe-surface').backgroundColor,
+          surface: cs('probe-surface-srgb').backgroundColor,
+          tint: cs('probe-tint').backgroundColor,
+          opacities: [1, 2, 3, 4, 5].map((n) => root.getPropertyValue(`--m3-sys-elevation-tint-${n}`).trim()),
+          levels: [0, 1, 2, 3, 4, 5].map((n) => cs('tint-' + n).backgroundColor),
+          // Tint and shadow are independent channels.
+          tintShadow: cs('tint-3').boxShadow,
+          elevOnlyBg: cs('elev-only').backgroundColor,
+          elevOnlyShadow: cs('elev-only').boxShadow,
+        };
+
         // The emphasized scale, read off rendered specimens: weight and
         // tracking are its own, while font, size and line height must come
         // back identical to the baseline style they alias.
@@ -274,6 +295,36 @@ async function run() {
     // The point of the scale: emphasized is always heavier than baseline.
     expect(Number(got.weight) > Number(got.baseWeight), `.m3-${role}-emphasized weight ${got.weight} should exceed baseline ${got.baseWeight}`);
   }
+
+  // M3 tonal elevation. Compose computes a surface at N dp as the surface-tint
+  // role over `surface` at (4.5 * ln(dp + 1) + 2)%; M3's five levels are
+  // 1, 3, 6, 8 and 12dp, which is where these opacities come from.
+  const TINT_DP = [1, 3, 6, 8, 12];
+  const wantOpacities = TINT_DP.map((dp) => `${Math.round((4.5 * Math.log(dp + 1) + 2) * 100) / 100}%`);
+  expect(eq(r.tint.opacities, wantOpacities), `tonal elevation opacities ${JSON.stringify(r.tint.opacities)}, expected ${JSON.stringify(wantOpacities)}`);
+
+  // color(srgb r g b), three floats; the channel values can run slightly out
+  // of gamut, which is fine -- they are being compared, not painted.
+  const srgb = (v) => v.match(/-?[\d.]+(?:e-?\d+)?/g).slice(0, 3).map(Number);
+  const surface = srgb(r.tint.surface);
+  const tint = srgb(r.tint.tint);
+  const show = (c) => `color(srgb ${c.map((n) => Math.round(n * 1e4) / 1e4).join(' ')})`;
+  const near = (a, b) => Math.max(...a.map((c, k) => Math.abs(c - b[k]))) <= 0.002;
+  // Level 0 sets the role straight through, so it comes back in the role's
+  // own space rather than the mixed srgb the tinted levels serialise in.
+  expect(r.tint.levels[0] === r.tint.surfaceRaw, `.m3-surface-tint-0 ${r.tint.levels[0]}, expected surface ${r.tint.surfaceRaw}`);
+  r.tint.opacities.forEach((op, i) => {
+    const p = parseFloat(op) / 100;
+    // color-mix(in srgb, ...) blends the gamma-encoded channels, so the
+    // expected composite is a plain per-channel lerp.
+    const want = surface.map((c, k) => tint[k] * p + c * (1 - p));
+    expect(near(srgb(r.tint.levels[i + 1]), want), `.m3-surface-tint-${i + 1} ${r.tint.levels[i + 1]}, expected ~${show(want)}`);
+  });
+  // Shadow and tint are M3's two independent elevation channels, so neither
+  // utility may reach into the other's property.
+  expect(r.tint.tintShadow === 'none', `.m3-surface-tint-3 box-shadow ${r.tint.tintShadow}, expected none`);
+  expect(r.tint.elevOnlyShadow !== 'none', '.m3-elevation-3 should carry a shadow');
+  expect(/rgba\(0, 0, 0, 0\)/.test(r.tint.elevOnlyBg), `.m3-elevation-3 background ${r.tint.elevOnlyBg}, expected untouched`);
 
   // M3: filled active indicator and outlined outline are 1dp at rest, 3dp focused.
   expect(eq(r.misc.filledIndicator, [1, 3]), `filled field indicator rest/focus ${JSON.stringify(r.misc.filledIndicator)}, expected [1,3]`);
@@ -333,7 +384,7 @@ async function run() {
   expect(r.misc.navBar === 80, `navigation bar height ${r.misc.navBar}, expected 80`);
 
   if (!failures.length) {
-    console.log(`[spec] ${Object.keys(TOKENS).length} tokens, ${Object.keys(BUTTON_RAMP).length}-rung button/icon-button/split ramps, ${Object.keys(EMPHASIZED).length} emphasized typescale styles, fields, chips, selection, progress (stop indicator + gap), tabs, tooltip, list, rail: ok`);
+    console.log(`[spec] ${Object.keys(TOKENS).length} tokens, ${Object.keys(BUTTON_RAMP).length}-rung button/icon-button/split ramps, ${Object.keys(EMPHASIZED).length} emphasized typescale styles, 6 tonal-elevation surfaces, fields, chips, selection, progress (stop indicator + gap), tabs, tooltip, list, rail: ok`);
   }
   return failures;
 }

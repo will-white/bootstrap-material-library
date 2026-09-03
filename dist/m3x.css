@@ -894,6 +894,16 @@
     --md-sys-elevation-key-opacity: 30%;
     --md-sys-elevation-ambient-opacity: 15%;
     --md-sys-elevation-0: none;
+    --m3-elevation-tint-1: 5.12%;
+    --m3-sys-elevation-tint-1: var(--m3-elevation-tint-1);
+    --m3-elevation-tint-2: 8.24%;
+    --m3-sys-elevation-tint-2: var(--m3-elevation-tint-2);
+    --m3-elevation-tint-3: 10.76%;
+    --m3-sys-elevation-tint-3: var(--m3-elevation-tint-3);
+    --m3-elevation-tint-4: 11.89%;
+    --m3-sys-elevation-tint-4: var(--m3-elevation-tint-4);
+    --m3-elevation-tint-5: 13.54%;
+    --m3-sys-elevation-tint-5: var(--m3-elevation-tint-5);
     --md-sys-elevation-1:
       0 1px 2px
         color-mix(
@@ -17192,6 +17202,30 @@
     .m3-elevation-5 {
       --m3-sys-elevation-level: 5;
       box-shadow: var(--md-sys-elevation-5);
+    }
+    .m3-surface-tint-0 {
+      background-color: var(--m3-sys-surface-tint-base, var(--md-sys-color-surface));
+      color: var(--md-sys-color-on-surface);
+    }
+    .m3-surface-tint-1 {
+      background-color: color-mix(in srgb, var(--md-sys-color-surface-tint) var(--m3-sys-elevation-tint-1), var(--m3-sys-surface-tint-base, var(--md-sys-color-surface)));
+      color: var(--md-sys-color-on-surface);
+    }
+    .m3-surface-tint-2 {
+      background-color: color-mix(in srgb, var(--md-sys-color-surface-tint) var(--m3-sys-elevation-tint-2), var(--m3-sys-surface-tint-base, var(--md-sys-color-surface)));
+      color: var(--md-sys-color-on-surface);
+    }
+    .m3-surface-tint-3 {
+      background-color: color-mix(in srgb, var(--md-sys-color-surface-tint) var(--m3-sys-elevation-tint-3), var(--m3-sys-surface-tint-base, var(--md-sys-color-surface)));
+      color: var(--md-sys-color-on-surface);
+    }
+    .m3-surface-tint-4 {
+      background-color: color-mix(in srgb, var(--md-sys-color-surface-tint) var(--m3-sys-elevation-tint-4), var(--m3-sys-surface-tint-base, var(--md-sys-color-surface)));
+      color: var(--md-sys-color-on-surface);
+    }
+    .m3-surface-tint-5 {
+      background-color: color-mix(in srgb, var(--md-sys-color-surface-tint) var(--m3-sys-elevation-tint-5), var(--m3-sys-surface-tint-base, var(--md-sys-color-surface)));
+      color: var(--md-sys-color-on-surface);
     }
     @scope (.m3-island--inverse) {
       :scope {

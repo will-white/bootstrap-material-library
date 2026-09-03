@@ -4,10 +4,31 @@
 // container FILLS come from the surface-container roles (current M3), never
 // from tonal overlay hacks. --m3-sys-elevation-level is a registered <integer>
 // hook for typed animation of a component's own elevation state.
+//
+// TONAL elevation is M3's other elevation channel, and the only consumer of
+// the --md-sys-color-surface-tint role: a surface at level N is the tint
+// composited over `surface` at an opacity that grows with the level. Compose
+// computes it as (4.5 * ln(dp + 1) + 2)%, so the five levels' dp values
+// (1, 3, 6, 8, 12) give the opacities below. m3x's own components do NOT use
+// it -- they take their fills from the surface-container roles, which is what
+// current M3 does -- but the role is real and the channel has to exist for it
+// to mean anything, so the opacities are tokens and `m3.surface-tint()` and
+// .m3-surface-tint-1..5 apply them.
 // ============================================================================
 
 @use "sass:list";
 @use "../config";
+@use "../mixins" as m;
+
+// level -> tonal-elevation tint opacity, from Compose's
+// surfaceColorAtElevation() at M3's dp per level: 1, 3, 6, 8, 12dp.
+$tint-opacities: (
+  1: 5.12%,
+  2: 8.24%,
+  3: 10.76%,
+  4: 11.89%,
+  5: 13.54%,
+);
 
 // level -> (key offset-y, key blur, ambient offset-y, ambient blur, spread)
 $levels: (
@@ -30,6 +51,10 @@ $levels: (
   --#{config.$sys-prefix}-sys-elevation-key-opacity: 30%;
   --#{config.$sys-prefix}-sys-elevation-ambient-opacity: 15%;
   --#{config.$sys-prefix}-sys-elevation-0: none;
+
+  @each $level, $opacity in $tint-opacities {
+    @include m.global-token("elevation-tint-#{$level}", $opacity);
+  }
 
   @each $level, $def in $levels {
     --#{config.$sys-prefix}-sys-elevation-#{$level}:

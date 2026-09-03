@@ -114,6 +114,16 @@ $-text-roles: (
     }
   }
 
+  // M3's tonal elevation, the surface-tint role's one job. Separate from the
+  // shadow utilities on purpose: M3 raises a surface with a shadow, a tint, or
+  // both, so `.m3-elevation-3 .m3-surface-tint-3` is the both case and either
+  // class alone is the one-channel case.
+  @for $level from 0 through 5 {
+    .#{$p}-surface-tint-#{$level} {
+      @include m.surface-tint($level);
+    }
+  }
+
   // --- token islands (section 7.3) -------------------------------------------
   // Context regions that re-point system tokens on the scope root; nested
   // islands resolve by inheritance from the NEAREST island root. Implemented

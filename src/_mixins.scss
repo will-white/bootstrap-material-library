@@ -283,6 +283,30 @@
   box-shadow: var(--#{config.$sys-prefix}-sys-elevation-#{$level});
 }
 
+// M3's TONAL elevation, the other elevation channel and the only consumer of
+// the surface-tint role: the tint composited over a surface at the level's
+// opacity. Shadow and tint are independent -- M3 raises a surface with one,
+// the other, or both -- so this sets only the fill and leaves box-shadow to
+// `elevation()`. Level 0 is the untinted surface, as in Compose.
+//
+// The base composited under the tint is a read-site fallback, so a subtree
+// sitting on a container role can re-point it once
+// (--m3-sys-surface-tint-base: var(--md-sys-color-surface-container-low))
+// and every tinted surface inside follows.
+@mixin surface-tint($level) {
+  $base: var(--#{config.$prefix}-sys-surface-tint-base, var(--#{config.$sys-prefix}-sys-color-surface));
+  @if $level == 0 {
+    background-color: #{$base};
+  } @else {
+    background-color: color-mix(
+      in srgb,
+      var(--#{config.$sys-prefix}-sys-color-surface-tint) var(--#{config.$prefix}-sys-elevation-tint-#{$level}),
+      #{$base}
+    );
+  }
+  color: var(--#{config.$sys-prefix}-sys-color-on-surface);
+}
+
 // --- density ----------------------------------------------------------------
 
 // Interactive control heights participate in density (-3..0):

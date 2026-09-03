@@ -538,6 +538,59 @@ the difference, which is legible but not the designed cut.
 
 ---
 
+## Elevation
+
+M3 raises a surface on two independent channels, and m3x ships both.
+
+**Shadow.** `--md-sys-elevation-0` through `-5` are the six key/ambient shadow
+pairs, each mixed from `--md-sys-color-shadow` at M3's 30% and 15% opacities.
+Cards, menus, dialogs and FABs read them; `.m3-elevation-0`...`-5` and
+`m3.elevation($level)` apply them directly. `--m3-sys-elevation-level` is a
+registered `<integer>` so a component's own level can be animated.
+
+**Tonal.** M3's other channel, and the only consumer of the
+`--md-sys-color-surface-tint` role: a surface at level N is the tint
+composited over `surface` at an opacity that grows with the level. Compose
+computes it as `(4.5 · ln(dp + 1) + 2)%`, and M3's five levels are 1, 3, 6, 8
+and 12dp, which is where these come from:
+
+| Level | dp | Tint opacity | Token |
+|---|---|---|---|
+| 0 | 0 | — (plain `surface`) | |
+| 1 | 1 | 5.12% | `--m3-sys-elevation-tint-1` |
+| 2 | 3 | 8.24% | `--m3-sys-elevation-tint-2` |
+| 3 | 6 | 10.76% | `--m3-sys-elevation-tint-3` |
+| 4 | 8 | 11.89% | `--m3-sys-elevation-tint-4` |
+| 5 | 12 | 13.54% | `--m3-sys-elevation-tint-5` |
+
+```html
+<div class="m3-surface-tint-2">tint only</div>
+<div class="m3-elevation-2">shadow only</div>
+<div class="m3-elevation-3 m3-surface-tint-3">both</div>
+```
+
+The classes stay separate because the channels are: neither one touches the
+other's property, so a surface can be raised with a shadow, a tint, or both.
+`m3.surface-tint($level)` is the mixin form. The base composited under the
+tint is a read-site fallback, so a subtree sitting on a container role can
+re-point it once and every tinted surface inside follows:
+
+```css
+.sheet { --m3-sys-surface-tint-base: var(--md-sys-color-surface-container-low); }
+```
+
+**m3x's own components use the shadow channel and the surface-container
+roles, never the tint.** That is current M3: the container roles
+(`surface-container-lowest` ... `-highest`) replaced tonal elevation as the
+way a component's fill conveys its level, and mixing both would double the
+signal. But `surface-tint` is a real role in M3's baseline scheme, and a role
+whose one job is never done is a gap, not a simplification — so the channel
+exists, documented, for consumers who want it or who need to match a Compose
+or Flutter surface. `test/spec.js` asserts the five opacities and the rendered
+composite at every level.
+
+---
+
 ## Motion and shape (M3 Expressive)
 
 **Springs.** `--md-sys-motion-spring-{fast,default,slow}-{spatial,effects}`
@@ -776,8 +829,9 @@ Material Symbols glyph proportions and optically centered.
 
 ## Spec conformance
 
-The token tiers carry M3's published values: the full typescale, the five
-elevation shadow pairs, the shape scale from `none` through
+The token tiers carry M3's published values: the full typescale (baseline and
+emphasized), the five elevation shadow pairs and the tonal-elevation tint
+opacities, the shape scale from `none` through
 `extra-extra-large` (48px) plus `full`, state-layer and disabled opacities,
 the easing curves and duration ramp, the Expressive spring physics, and the
 color-role tone assignments in light and dark. `test/spec.js` asserts them
@@ -1217,7 +1271,8 @@ no `@import`).
 
 Functions and mixins are forwarded for building your own components:
 `tone($hue, $chroma, $t)`, `palette()`, `okl()`, `rem()`, `hex()`, plus
-`state-layer()`, `typescale()`, `focus-ring()`, `elevation()`, `transition()`
+`state-layer()`, `typescale()`, `focus-ring()`, `elevation()`,
+`surface-tint()`, `transition()`
 (with `$spring-properties`), `spring-transition()`, `hover()`, `touch-target()`,
 the ownership mixins `own-box()` / `own-region()` / `own-pseudo()`, the
 layout helpers `layout-at("medium")` / `layout-only("compact")`, and every
@@ -1310,7 +1365,9 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
   typescale (including all fifteen emphasized weights and trackings, and that
   each emphasized style's font, size and line height still resolve to its
   baseline style's), state-layer opacities, the focus indicator, the shape
-  scale, the easing and duration ramps; the five-rung Expressive size ramp on
+  scale, the easing and duration ramps; the five tonal-elevation opacities and
+  the surface each renders as, with the shadow and tint channels proven not to
+  touch each other's property; the five-rung Expressive size ramp on
   `.m3-btn`,
   `.m3-icon-btn` and `.m3-split-button`; the 1dp/3dp resting and focused text
   field indicators; chip label space; checkbox, radio, switch and slider
