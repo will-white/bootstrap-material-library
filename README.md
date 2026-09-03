@@ -1121,7 +1121,7 @@ pure-CSS equivalent -- divergences are listed.
 | Snackbar | `.m3-snackbar` (+ `--fixed`) | show/hide timing is yours |
 | Tooltips | `.m3-tooltip`, `--rich`, `.m3-tooltip-anchor` | anchor positioning behind `@supports`, hidden gracefully otherwise |
 | Cards | `.m3-card` + variants, donut-scoped chrome | -- |
-| Carousel | `.m3-carousel` | CSS scroll-snap, no autoplay |
+| Carousel | `.m3-carousel` + `--multi-browse`, `--hero`, `--uncontained` | CSS scroll-snap, no autoplay; the layouts are M3's resting arrangements, not its scroll-driven size morphing |
 | Dialogs | `.m3-dialog` on native `<dialog>` (+ `--fullscreen`, `--static` for an in-flow surface) | consumer calls `showModal()` |
 | Divider | `.m3-divider` on `<hr>` | -- |
 | Lists | `.m3-list` (+ `--dividers`, `--inset`), `.m3-list__subheader`, `.m3-list-item` (one to three lines, donut) with `__overline`, `__leading--avatar/--image/--video`, `__trailing--meta`, trailing controls | -- |
@@ -1142,6 +1142,33 @@ pure-CSS equivalent -- divergences are listed.
 | Text fields | `.m3-field` filled/outlined, floating label, supporting text, leading/trailing icon, prefix/suffix, character counter | the counter's number is your script's; an affix's width is a token (see below) |
 | Search | `.m3-search` (+ `[popover]`/focus panel) | -- |
 | Select | `.m3-select` on native `<select>` | the picker is an M3 menu under `appearance: base-select` (also `.form-select` and the dense toolbar select); native option list elsewhere, CSS chevron either way |
+
+---
+
+### Carousel layouts
+
+M3 has four carousel layouts. Three of them are layout, and all three are
+here as one class on the track — the item markup never changes.
+
+| Class | Layout | Item width |
+|---|---|---|
+| `.m3-carousel` | one large item, snapped to the centre | `--m3-carousel-item-width` (75%) |
+| `--multi-browse` | large, medium and small visible at once | 60% / 35% / `clamp(40px, 12%, 56px)`, cycling |
+| `--hero` | one large centred item, a small one either side | the track less a small item and a gap on each side |
+| `--uncontained` | uniform items running off the edge | `--m3-carousel-uncontained-width` (40%) |
+
+The fourth, full-screen, is one item filling the viewport and scrolling
+vertically — a page layout rather than a component variant.
+
+Multi-browse comes out of one declaration: `grid-auto-columns` takes a track
+*list* that repeats, so `large medium small` gives the whole strip its
+rhythm however many items it holds. The small item is clamped between M3's
+published `MinSmallItemSize` (40dp) and `MaxSmallItemSize` (56dp).
+
+**What is not here.** In M3 the item sizes *morph* as you scroll — a small
+item grows into the large slot as it reaches the centre. That is a per-frame
+function of scroll offset; these four are the resting arrangement each layout
+settles into, which is what actually distinguishes them.
 
 ---
 
@@ -1557,7 +1584,7 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
   inputs and hands the pointer to its handles, and that a vertical slider's
   rotated input lands flush on its wrapper; the rail's expanded width, its
   56px horizontal item, the icon going back to a glyph box, and the 40px
-  header gap;
+  header gap; the four carousel layouts on a fixed track;
   the five tonal-elevation opacities and
   the surface each renders as, with the shadow and tint channels proven not to
   touch each other's property; the five-rung Expressive size ramp on

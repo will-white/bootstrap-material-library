@@ -8,6 +8,12 @@
 //   --m3-carousel-indicator-size         8px      indicator dot diameter
 //   --m3-carousel-indicator-color        on-surface-variant  resting dot tint
 //   --m3-carousel-indicator-active-color primary  active dot color
+//   --m3-carousel-small-width            clamp(40px, 12%, 56px)  M3's small
+//                                        item, between MinSmallItemSize and
+//                                        MaxSmallItemSize
+//   --m3-carousel-medium-width           35%      M3's medium item
+//   --m3-carousel-large-width            60%      M3's large item
+//   --m3-carousel-uncontained-width      40%      uniform item, uncontained
 //
 // Markup (the track is the scroll container; indicators sit outside it so
 // they never become a snap column; .active or aria-current="true" marks the
@@ -20,6 +26,21 @@
 //     <button class="m3-carousel__indicator active" aria-label="Slide 1"></button>
 //     <button class="m3-carousel__indicator" aria-label="Slide 2"></button>
 //   </div>
+//
+// LAYOUTS. M3 has four; three of them are layout, and those three are here:
+//   (default)         one large item snapped to the centre
+//   --multi-browse    large, medium and small items visible at once
+//   --hero            one large centred item with a small one either side
+//   --uncontained     uniform items that simply run off the edge
+// The fourth, full-screen, is one item filling the viewport and scrolling
+// vertically, which is a page layout rather than a component variant.
+//
+// What is NOT here: M3's item sizes MORPH as you scroll -- a small item grows
+// into the large slot as it reaches the centre. That is a per-frame function
+// of scroll offset, and the layouts below are the resting arrangement each
+// one settles into. grid-auto-columns takes a track LIST that repeats, which
+// is what gives multi-browse its large / medium / small rhythm from one
+// declaration.
 // ============================================================================
 
 @use "../config" as c;
@@ -37,6 +58,12 @@ $tokens: (
   "carousel-indicator-size": #{fn.rem(8)},
   "carousel-indicator-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
   "carousel-indicator-active-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  // M3's MinSmallItemSize and MaxSmallItemSize are 40 and 56dp, with the
+  // real width chosen between them; clamp() is that choice.
+  "carousel-small-width": clamp(#{fn.rem(40)}, 12%, #{fn.rem(56)}),
+  "carousel-medium-width": 35%,
+  "carousel-large-width": 60%,
+  "carousel-uncontained-width": 40%,
 );
 
 @function v($name) {
@@ -64,6 +91,39 @@ $tokens: (
   @media (prefers-reduced-motion: no-preference) {
     scroll-behavior: smooth;
   }
+}
+
+// M3's multi-browse: large, medium and small items visible together, so more
+// of the collection is browsable at once. grid-auto-columns repeats its track
+// list, so those three widths cycle across however many items there are.
+@mixin multi-browse {
+  grid-auto-columns:
+    #{v("carousel-large-width")}
+    #{v("carousel-medium-width")}
+    #{v("carousel-small-width")};
+  scroll-padding-inline: var(--#{c.$prefix}-sys-space-none);
+}
+
+// M3's centred hero: one large item in the middle with a small one showing on
+// each side. The large item is the track less those two and their gaps, and
+// the scroll padding keeps the leading small item in view at either end.
+@mixin hero {
+  --_edge: calc(#{v("carousel-small-width")} + #{v("carousel-gap")});
+  grid-auto-columns: calc(100% - 2 * var(--_edge));
+  scroll-padding-inline: var(--_edge);
+}
+
+// M3's uncontained: uniform items that run off the edge of the container
+// rather than being masked into it, so the track reads as a plain list.
+@mixin uncontained {
+  grid-auto-columns: #{v("carousel-uncontained-width")};
+  scroll-padding-inline: var(--#{c.$prefix}-sys-space-none);
+}
+
+// Uncontained and multi-browse snap to the start of an item, not its centre:
+// their point is a row of items, not one focal item.
+@mixin item-snap-start {
+  scroll-snap-align: start;
 }
 
 // One slide; media fills the rounded frame.
@@ -128,6 +188,23 @@ $tokens: (
 
   .#{c.$prefix}-carousel__item {
     @include item;
+  }
+
+  .#{c.$prefix}-carousel--multi-browse {
+    @include multi-browse;
+  }
+
+  .#{c.$prefix}-carousel--hero {
+    @include hero;
+  }
+
+  .#{c.$prefix}-carousel--uncontained {
+    @include uncontained;
+  }
+
+  .#{c.$prefix}-carousel--multi-browse > .#{c.$prefix}-carousel__item,
+  .#{c.$prefix}-carousel--uncontained > .#{c.$prefix}-carousel__item {
+    @include item-snap-start;
   }
 
   .#{c.$prefix}-carousel__indicators {

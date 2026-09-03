@@ -114,6 +114,12 @@ ${Object.keys(BUTTON_RAMP).map((s) => `<div class="${mod('m3-split-button', s)}"
 
 <div class="m3-fab" id="fab">${ICON}</div>
 <div class="m3-card" id="card">Card</div>
+<div style="width:672px">
+  <div class="m3-carousel" id="car-default"><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div></div>
+  <div class="m3-carousel m3-carousel--multi-browse" id="car-multi"><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div></div>
+  <div class="m3-carousel m3-carousel--hero" id="car-hero"><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div></div>
+  <div class="m3-carousel m3-carousel--uncontained" id="car-unc"><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div><div class="m3-carousel__item"></div></div>
+</div>
 <div class="m3-nav-bar" id="navbar"><a class="m3-nav-bar__item" href="#">${ICON}<span class="m3-nav-bar__label">A</span></a></div>
 ${Object.keys(EMPHASIZED).map((role) => `<p class="m3-${role}" id="ts-${role}">Aa</p><p class="m3-${role}-emphasized" id="tse-${role}">Aa</p>`).join('\n')}
 <div id="probe-surface" style="background-color: var(--md-sys-color-surface)"></div>
@@ -263,6 +269,17 @@ async function run() {
         out.misc.cardRadius = num(cs('card').borderTopLeftRadius);
         out.misc.navBar = num(box('navbar').height);
 
+        // M3's carousel layouts, measured on a 672px track.
+        const carWidths = (id) => [...el(id).children].map((e) => num(e.getBoundingClientRect().width));
+        out.misc.carousel = {
+          track: num(box('car-default').width),
+          def: carWidths('car-default'),
+          multi: carWidths('car-multi'),
+          hero: carWidths('car-hero'),
+          unc: carWidths('car-unc'),
+          snap: [cs('car-default').scrollSnapType, getComputedStyle(el('car-unc').firstElementChild).scrollSnapAlign],
+        };
+
         // M3 Expressive's navigation rail: a 96dp collapsed rail, a 220dp
         // expanded one (its published minimum), a 56dp horizontal item, and
         // HeaderSpaceMinimum between the header and the first destination.
@@ -399,6 +416,28 @@ async function run() {
     expect(Number(got.weight) > Number(got.baseWeight), `.m3-${role}-emphasized weight ${got.weight} should exceed baseline ${got.baseWeight}`);
   }
 
+  // M3's carousel layouts. The default is one large item; multi-browse cycles
+  // large / medium / small out of one repeating grid-auto-columns track list;
+  // hero is the track less a small item and a gap on each side; uncontained
+  // is uniform. M3's small item is clamped between its Min and Max (40, 56).
+  {
+    const car = r.misc.carousel;
+    const W = car.track;
+    const small = Math.min(56, Math.max(40, W * 0.12));
+    const edge = small + 8;
+    // A percentage track quantises to the engine's 1/64px layout unit, so
+    // these compare within a fraction of a pixel rather than exactly.
+    const px = (n) => Math.round(n * 100) / 100;
+    const all = (got, want) => got.length === 4 && got.every((w) => Math.abs(w - want) < 0.05);
+    expect(all(car.def, 0.75 * W), `carousel default ${JSON.stringify(car.def)}, expected ${px(0.75 * W)}`);
+    const wantMulti = [0.6 * W, 0.35 * W, small, 0.6 * W];
+    expect(car.multi.every((w, i) => Math.abs(w - wantMulti[i]) < 0.05),
+      `carousel multi-browse ${JSON.stringify(car.multi)}, expected ${JSON.stringify(wantMulti.map(px))}`);
+    expect(all(car.hero, W - 2 * edge), `carousel hero ${JSON.stringify(car.hero)}, expected ${W - 2 * edge}`);
+    expect(all(car.unc, 0.4 * W), `carousel uncontained ${JSON.stringify(car.unc)}, expected ${px(0.4 * W)}`);
+    expect(eq(car.snap, ['x mandatory', 'start']), `carousel snap ${JSON.stringify(car.snap)}, expected ["x mandatory","start"]`);
+  }
+
   // M3 Expressive's navigation rail anatomy.
   expect(r.misc.rail2.expandedWidth === 220, `expanded rail width ${r.misc.rail2.expandedWidth}, expected 220 (M3's minimum)`);
   expect(r.misc.rail2.itemHeight === 56, `expanded rail item ${r.misc.rail2.itemHeight}, expected 56`);
@@ -527,7 +566,7 @@ async function run() {
   expect(r.misc.navBar === 80, `navigation bar height ${r.misc.navBar}, expected 80`);
 
   if (!failures.length) {
-    console.log(`[spec] ${Object.keys(TOKENS).length} tokens, ${Object.keys(BUTTON_RAMP).length}-rung button/icon-button/split ramps, ${Object.keys(EMPHASIZED).length} emphasized typescale styles, 6 tonal-elevation surfaces, field anatomy, slider anatomy, fields, chips, selection, progress (stop indicator + gap), tabs, tooltip, list, rail (collapsed + expanded + header): ok`);
+    console.log(`[spec] ${Object.keys(TOKENS).length} tokens, ${Object.keys(BUTTON_RAMP).length}-rung button/icon-button/split ramps, ${Object.keys(EMPHASIZED).length} emphasized typescale styles, 6 tonal-elevation surfaces, field anatomy, slider anatomy, fields, chips, selection, progress (stop indicator + gap), tabs, tooltip, list, 4 carousel layouts, rail (collapsed + expanded + header): ok`);
   }
   return failures;
 }

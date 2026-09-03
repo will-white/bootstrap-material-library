@@ -1653,8 +1653,38 @@
 
     <div class="cat-item cat-item--wide">
       <header><h3 class="m3-title-medium">Carousel</h3>
-        <span class="cat-api"><code>.m3-carousel</code><code>.m3-carousel__item</code><code>.carousel</code></span></header>
+        <span class="cat-api"><code>.m3-carousel</code><code>--multi-browse</code><code>--hero</code><code>--uncontained</code><code>.m3-carousel__item</code><code>.carousel</code></span></header>
+      <p class="cat-note m3-body-small">M3 has four carousel layouts; three of them are layout and all three are
+        here. <code>grid-auto-columns</code> takes a track <em>list</em> that repeats, which is what gives
+        multi-browse its large / medium / small rhythm from one declaration; the small item is clamped between
+        M3&rsquo;s 40 and 56px. What is not here is M3&rsquo;s item-size morphing as you scroll &mdash; these are
+        the resting arrangement each layout settles into.</p>
+      <p class="cat-note m3-body-small">Default &mdash; one large item, snapped to the centre.</p>
       <div class="m3-carousel" role="group" aria-label="Themes">
+        <div class="m3-carousel__item m3-bg-primary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Primary</div>
+        <div class="m3-carousel__item m3-bg-secondary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Secondary</div>
+        <div class="m3-carousel__item m3-bg-tertiary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Tertiary</div>
+        <div class="m3-carousel__item m3-bg-error-container" style="min-block-size: 7rem; display: grid; place-content: center;">Error</div>
+        <div class="m3-carousel__item m3-bg-surface-container-highest" style="min-block-size: 7rem; display: grid; place-content: center;">Surface</div>
+      </div>
+      <p class="cat-note m3-body-small"><code>--multi-browse</code> &mdash; large, medium and small at once.</p>
+      <div class="m3-carousel m3-carousel--multi-browse" role="group" aria-label="Themes, multi-browse">
+        <div class="m3-carousel__item m3-bg-primary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Primary</div>
+        <div class="m3-carousel__item m3-bg-secondary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Secondary</div>
+        <div class="m3-carousel__item m3-bg-tertiary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Tertiary</div>
+        <div class="m3-carousel__item m3-bg-error-container" style="min-block-size: 7rem; display: grid; place-content: center;">Error</div>
+        <div class="m3-carousel__item m3-bg-surface-container-highest" style="min-block-size: 7rem; display: grid; place-content: center;">Surface</div>
+      </div>
+      <p class="cat-note m3-body-small"><code>--hero</code> &mdash; one large centred item, a small one either side.</p>
+      <div class="m3-carousel m3-carousel--hero" role="group" aria-label="Themes, hero">
+        <div class="m3-carousel__item m3-bg-primary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Primary</div>
+        <div class="m3-carousel__item m3-bg-secondary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Secondary</div>
+        <div class="m3-carousel__item m3-bg-tertiary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Tertiary</div>
+        <div class="m3-carousel__item m3-bg-error-container" style="min-block-size: 7rem; display: grid; place-content: center;">Error</div>
+        <div class="m3-carousel__item m3-bg-surface-container-highest" style="min-block-size: 7rem; display: grid; place-content: center;">Surface</div>
+      </div>
+      <p class="cat-note m3-body-small"><code>--uncontained</code> &mdash; uniform items running off the edge.</p>
+      <div class="m3-carousel m3-carousel--uncontained" role="group" aria-label="Themes, uncontained">
         <div class="m3-carousel__item m3-bg-primary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Primary</div>
         <div class="m3-carousel__item m3-bg-secondary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Secondary</div>
         <div class="m3-carousel__item m3-bg-tertiary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Tertiary</div>

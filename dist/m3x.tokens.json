@@ -5479,6 +5479,27 @@
               "css": "var(--m3-sys-space-2)"
             }
           }
+        },
+        "large-width": {
+          "$type": "dimension",
+          "$value": "60%"
+        },
+        "medium-width": {
+          "$type": "dimension",
+          "$value": "35%"
+        },
+        "small-width": {
+          "$type": "dimension",
+          "$value": "clamp(2.5rem, 12%, 3.5rem)",
+          "$extensions": {
+            "m3x": {
+              "css": "clamp(2.5rem, 12%, 3.5rem)"
+            }
+          }
+        },
+        "uncontained-width": {
+          "$type": "dimension",
+          "$value": "40%"
         }
       },
       "fab": {
