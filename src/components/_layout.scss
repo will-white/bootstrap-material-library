@@ -124,7 +124,10 @@ $tokens: (
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: #{v("layout-pane-gap")};
-  align-items: start;
+  // Panes are the layout's surfaces, not cards floating in it: a list beside
+  // a detail (or a row of feed panes) is one band of equal-height containers,
+  // each scrolling its own content. `start` left the shorter one ragged.
+  align-items: stretch;
   padding: #{v("layout-padding")};
 
   @include at("medium") {

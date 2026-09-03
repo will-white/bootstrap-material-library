@@ -125,6 +125,13 @@ $-text-roles: (
       --#{c.$sys-prefix}-sys-color-on-surface: var(--#{c.$sys-prefix}-sys-color-inverse-on-surface);
       --#{c.$sys-prefix}-sys-color-on-surface-variant: var(--#{c.$sys-prefix}-sys-color-inverse-on-surface);
       --#{c.$sys-prefix}-sys-color-primary: var(--#{c.$sys-prefix}-sys-color-inverse-primary);
+      // inverse-primary is the OTHER scheme's primary, so the page's
+      // on-primary (which pairs with the page's primary) is the wrong label
+      // colour on it: a filled button came out light-on-light. M3 has no
+      // on-inverse-primary role; inverse-surface is the tone that pairs with
+      // inverse-primary in both schemes, and it is what the island already
+      // sits on.
+      --#{c.$sys-prefix}-sys-color-on-primary: var(--#{c.$sys-prefix}-sys-color-inverse-surface);
       --#{c.$sys-prefix}-sys-color-surface-container-lowest: var(--#{c.$sys-prefix}-sys-color-inverse-surface);
       --#{c.$sys-prefix}-sys-color-surface-container-low: color-mix(
         in srgb,
@@ -198,6 +205,11 @@ $-text-roles: (
       --#{c.$sys-prefix}-sys-color-on-surface: var(--#{c.$sys-prefix}-sys-color-on-tertiary-container);
       --#{c.$sys-prefix}-sys-color-on-surface-variant: var(--#{c.$sys-prefix}-sys-color-on-tertiary-container);
       --#{c.$sys-prefix}-sys-color-primary: var(--#{c.$sys-prefix}-sys-color-tertiary);
+      // An island that re-points an accent role re-points its on- partner in
+      // the same breath, or a filled control keeps a label mixed for the
+      // accent it no longer has -- including one inherited from an island
+      // this one is nested in.
+      --#{c.$sys-prefix}-sys-color-on-primary: var(--#{c.$sys-prefix}-sys-color-on-tertiary);
       --#{c.$sys-prefix}-sys-color-surface-container-lowest: var(--#{c.$sys-prefix}-sys-color-tertiary-container);
       --#{c.$sys-prefix}-sys-color-surface-container-low: color-mix(
         in srgb,

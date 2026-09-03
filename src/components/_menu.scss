@@ -57,7 +57,10 @@ $tokens: (
   color: #{v("menu-content-color")};
   border: none;
   border-radius: #{v("menu-shape")};
-  padding-block: var(--#{c.$prefix}-sys-space-2);
+  // Stock Bootstrap's `.dropdown-menu { padding: .5rem 0 }`. The inline half
+  // matters: a <ul> menu would otherwise keep the list reboot's indent, which
+  // is a longhand and outranks the shared `padding: 0` ownership shorthand.
+  padding: var(--#{c.$prefix}-sys-space-2) var(--#{c.$prefix}-sys-space-none);
   min-inline-size: #{v("menu-min-width")};
   max-inline-size: #{v("menu-max-width")};
   @include m.elevation(2);

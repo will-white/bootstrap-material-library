@@ -359,6 +359,16 @@ This is what makes `.m3-island--*`, a `[data-contrast]` subtree and a plain
 `--md-sys-color-*` re-point on any wrapper reach the components inside them
 rather than only the inherited text. `test/cascade.js` holds it.
 
+The same rule applies one tier out. The `--bs-*` colour aliases are re-emitted
+on every context that re-points a role -- the islands and `[data-contrast]` --
+so Bootstrap's colour utilities follow an island exactly as the M3 vocabulary
+does; only the `--bs-*-rgb` triplets cannot, since a raw channel list is not a
+`var()` reference. And an island that re-points an accent role re-points that
+role's `on-` partner in the same breath: `.m3-island--inverse` moves
+`--md-sys-color-primary` to `inverse-primary`, so it moves
+`--md-sys-color-on-primary` too, or a filled control inside it keeps a label
+mixed for an accent it no longer has.
+
 Each partial keeps its defaults in one `$tokens` map and reads them through a
 `v()` function, so a default has a single source however many places read it,
 and `dist/m3x.tokens.json` collects them back out of the compiled fallbacks.
@@ -684,8 +694,13 @@ that layer cannot leak spacing, borders, typography or effects into
 components. Stock Bootstrap's own `!important` declarations (its utilities,
 helpers and responsive navbar/offcanvas rules) are `var(--bs-*)`-driven almost
 without exception, and m3x defines those variables, so they compute to M3
-values too. The handful with literal values (`.text-bg-*` forces `#fff`/`#000`
-text) are covered by **importance parity**:
+values too. The exceptions are covered by **importance parity**: the handful
+with literal values (`.text-bg-*` forces `#fff`/`#000` text, `.link-*:hover`
+a shaded hex), and the colour utilities stock drives through
+`RGBA(var(--bs-*-rgb))` -- a raw channel list cannot be a `var()` reference,
+so those triplets are build-time literals that stay on the page palette inside
+a token island or a `[data-contrast]` subtree, where `--bs-primary` itself
+re-resolves and m3x's own utilities follow:
 
 ```scss
 @use "m3x/src" with ($enable-bootstrap-important-parity: true);
@@ -701,11 +716,12 @@ with stock Bootstrap, nothing more. Off (the default), m3x ships no
 With the flag on, the parity audit -- every component, re-skinned class,
 utility and helper in the audit page, light and dark scheme -- computes
 identically with and without `bootstrap.css` in the reserved layer: 0
-differing declarations. Off, the only differences are the `.text-bg-*` text
-colors. (Bootstrap's `--bs-*-rgb` triplets are build-time sRGB renderings of
-the OKLCH tokens; where a stock important utility reads one, the color can
-differ from the token by up to 5/255 per channel in the dark scheme, below
-visual threshold.)
+differing declarations. Off, the differences are the `.text-bg-*` text colors
+and, inside an island or a forced-contrast subtree, stock's triplet-driven
+colour utilities. (Bootstrap's `--bs-*-rgb` triplets are build-time sRGB
+renderings of the OKLCH tokens; where a stock important utility reads one on
+an unre-pointed page, the color can differ from the token by up to 5/255 per
+channel in the dark scheme, below visual threshold.)
 
 Two details make the "with or without" invariant hold:
 
@@ -1022,10 +1038,17 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
 
 `npm test` runs nine suites against the built CSS:
 
-- **contrast** (`test/contrast.js`, no browser): reads the static sRGB tier
-  and asserts M3's minimum ratios for every accent / on-accent, container /
-  on-container, surface / on-surface, outline and inverse pair in light and
-  dark, at the configured level and at high contrast.
+- **contrast** (`test/contrast.js`), in two passes. The first reads the static
+  sRGB tier out of the built CSS and asserts M3's minimum ratios for every
+  accent / on-accent, container / on-container, surface / on-surface, outline
+  and inverse pair in light and dark, at the configured level and at high
+  contrast. The second renders the fixture in headless Chromium and measures
+  what a browser actually paints: every element carrying its own text against
+  the nearest opaque background behind it, in both schemes, islands and
+  forced-contrast subtrees included. Pass one proves the pairs M3 names are
+  sound; only pass two catches a component reaching for the *wrong* pair --
+  which is how a filled button inside `.m3-island--inverse` was found painting
+  a 1.6:1 label while every role pair involved was individually fine.
 - **namespace** (`test/namespace.js`, no browser): the token namespace
   contract. Every `--m3-*` token is either a library global (`--m3-sys-*`) or
   resolves to exactly one component stem, the stems are read from the partials

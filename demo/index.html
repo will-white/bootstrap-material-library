@@ -17,28 +17,38 @@
     /* Popover menu anchored below its trigger (CSS anchor positioning; elsewhere it opens at its static position). */
     .demo-popover { position-anchor: --demo-menu; position-area: block-end span-inline-end; inset: auto; margin: var(--m3-sys-space-1) 0 0; }
     section > h2 { margin-block-end: var(--m3-sys-space-3); }
+    .demo-bar-label { display: inline-flex; align-items: center; gap: var(--m3-sys-space-2); }
+    .demo-bar-select { --m3-field-height: 2.5rem; min-inline-size: 7rem; }
     @media (max-width: 48rem) { .demo-shell { grid-template-columns: 1fr; } .demo-shell > .m3-rail { display: none; } }
+    /* Demo shell only: the app bar is one nowrap row by design, and this demo
+       puts three theme controls in it. Below the compact size class they wrap
+       onto their own line instead of pushing the page wider than the window. */
+    @media (max-width: 36rem) {
+      .m3-top-app-bar--sticky { flex-wrap: wrap; block-size: auto; padding-block: var(--m3-sys-space-2); row-gap: var(--m3-sys-space-2); }
+      .m3-top-app-bar__title { flex-basis: 100%; }
+      .demo-bar-select { min-inline-size: 0; flex: 1 1 4rem; }
+    }
   </style>
 </head>
 <body>
 
 <header class="m3-top-app-bar m3-top-app-bar--sticky">
   <h1 class="m3-top-app-bar__title m3-title-large">Aurora Mail &mdash; Settings</h1>
-  <label class="m3-body-medium" for="seed" style="display: inline-flex; align-items: center; gap: var(--m3-sys-space-2);">
+  <label class="m3-body-medium demo-bar-label" for="seed">
     Seed
     <input type="color" id="seed" value="#6750a4" style="inline-size: var(--m3-sys-space-6); block-size: var(--m3-sys-space-6); border: none; padding: 0; background: none; cursor: pointer;">
   </label>
-  <label class="m3-body-medium" for="theme" style="display: inline-flex; align-items: center; gap: var(--m3-sys-space-2);">
+  <label class="m3-body-medium demo-bar-label" for="theme">
     Theme
-    <select id="theme" class="m3-select" style="--m3-field-height: 2.5rem; min-inline-size: 7rem;">
+    <select id="theme" class="m3-select demo-bar-select">
       <option value="auto" selected>Auto</option>
       <option value="light">Light</option>
       <option value="dark">Dark</option>
     </select>
   </label>
-  <label class="m3-body-medium" for="contrast" style="display: inline-flex; align-items: center; gap: var(--m3-sys-space-2);">
+  <label class="m3-body-medium demo-bar-label" for="contrast">
     Contrast
-    <select id="contrast" class="m3-select" style="--m3-field-height: 2.5rem; min-inline-size: 7rem;">
+    <select id="contrast" class="m3-select demo-bar-select">
       <option value="" selected>Auto</option>
       <option value="standard">Standard</option>
       <option value="medium">Medium</option>
@@ -984,7 +994,7 @@
             <div class="p-3 rounded-3 border bg-body-tertiary">Drive</div>
           </div>
           <div class="col-6 col-md-3 offset-md-3">
-            <div class="p-3 rounded-pill bg-dark text-white text-center small">.offset-md-3</div>
+            <div class="p-3 rounded-pill text-bg-dark text-center small">.offset-md-3</div>
           </div>
         </div>
       </div>

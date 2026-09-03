@@ -4,6 +4,7 @@
 // PUBLIC VARIABLE API (tier-3 tokens)
 //   --m3-select-chevron-size   6px      half-size of the CSS-drawn dropdown
 //                                       chevron (two gradient triangles)
+//   --m3-select-chevron-color  on-surface-variant   the chevron's ink
 //   --m3-select-padding-end    space-7  inline-end padding reserving room for
 //                                       the chevron
 //
@@ -44,6 +45,11 @@
 // ancestor still wins (see mixins.scss "component token defaults").
 $tokens: (
   "select-chevron-size": #{fn.rem(6)},
+  // M3 draws a text field's trailing affordance in on-surface-variant, not in
+  // the field's own text colour; currentColor put a full-strength on-surface
+  // triangle next to on-surface-variant supporting text.
+  "select-chevron-color":
+    var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
   "select-padding-end": var(--#{c.$prefix}-sys-space-7),
 );
 
@@ -63,8 +69,12 @@ $tokens: (
   appearance: none;
   cursor: pointer;
   padding-inline-end: #{v("select-padding-end")};
-  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
-    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-image: linear-gradient(
+      45deg,
+      transparent 50%,
+      #{v("select-chevron-color")} 50%
+    ),
+    linear-gradient(135deg, #{v("select-chevron-color")} 50%, transparent 50%);
   background-position: calc(100% - var(--#{c.$prefix}-sys-space-5)) 50%,
     calc(
         100% - var(--#{c.$prefix}-sys-space-5) + #{v("select-chevron-size")}
@@ -77,8 +87,12 @@ $tokens: (
   // While the native picker is showing, the chevron points up (browsers
   // without :open keep it pointing down).
   &:open {
-    background-image: linear-gradient(135deg, transparent 50%, currentColor 50%),
-      linear-gradient(45deg, currentColor 50%, transparent 50%);
+    background-image: linear-gradient(
+        135deg,
+        transparent 50%,
+        #{v("select-chevron-color")} 50%
+      ),
+      linear-gradient(45deg, #{v("select-chevron-color")} 50%, transparent 50%);
   }
 
   @include base-select;

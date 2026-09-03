@@ -126,90 +126,105 @@ $-extra-triplets: (
   // a hairline. Colour and shape come from M3, the box from Bootstrap.
   --bs-progress-height: #{fn.rem(16)};
   --bs-progress-font-size: var(--#{c.$sys-prefix}-sys-typescale-label-small-size);
-  --bs-progress-bg: var(--#{c.$sys-prefix}-sys-color-secondary-container);
   --bs-progress-border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+}
+
+// The colour half of the remap. Every declaration here resolves an M3 role,
+// so it has to be re-emitted wherever a subtree re-points those roles -- a
+// single :root declaration substitutes the role AT :root and freezes there,
+// which left Bootstrap's colour utilities on the page palette inside an
+// island or a forced-contrast subtree while the M3 vocabulary followed.
+// The --bs-*-rgb triplets cannot follow: they are raw channel lists computed
+// at build time, so rgba(var(--bs-primary-rgb), a) stays the page's primary.
+@mixin color-aliases {
+  // Theme colors.
+  @each $name, $def in $-theme-map {
+    --bs-#{$name}: var(#{list.nth($def, 1)});
+  }
+
+  // Subtle backgrounds, borders, and text emphasis (alerts, list groups,
+  // tables lean on these).
+  @each $name, $def in $-subtle-map {
+    --bs-#{$name}-bg-subtle: var(#{list.nth($def, 1)});
+    --bs-#{$name}-text-emphasis: var(#{list.nth($def, 2)});
+    --bs-#{$name}-border-subtle: color-mix(
+      in srgb,
+      var(#{list.nth($def, 2)}) 25%,
+      var(#{list.nth($def, 1)})
+    );
+  }
+
+  // Body + emphasis.
+  --bs-body-bg: var(--#{c.$sys-prefix}-sys-color-surface);
+  --bs-body-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+  --bs-emphasis-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+  --bs-secondary-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+  --bs-tertiary-color: var(--#{c.$sys-prefix}-sys-color-outline);
+  --bs-secondary-bg: var(--#{c.$sys-prefix}-sys-color-surface-container);
+  --bs-tertiary-bg: var(--#{c.$sys-prefix}-sys-color-surface-container-high);
+
+  // Border and focus-ring colors (their widths are static, below).
+  --bs-border-color: var(--#{c.$sys-prefix}-sys-color-outline-variant);
+  --bs-border-color-translucent: var(--#{c.$sys-prefix}-sys-color-outline-variant);
+  --bs-focus-ring-color: color-mix(
+    in srgb,
+    var(--#{c.$sys-prefix}-sys-color-primary) 25%,
+    transparent
+  );
+
+  // Links, headings, code.
+  --bs-link-color: var(--#{c.$sys-prefix}-sys-color-primary);
+  --bs-link-hover-color: color-mix(
+    in srgb,
+    var(--#{c.$sys-prefix}-sys-color-on-surface)
+      var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity),
+    var(--#{c.$sys-prefix}-sys-color-primary)
+  );
+  --bs-link-color-rgb: var(--bs-primary-rgb);
+  --bs-link-hover-color-rgb: var(--bs-primary-rgb);
+  --bs-heading-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+  --bs-code-color: var(--#{c.$sys-prefix}-sys-color-tertiary);
+
+  // Progress paint (its box is a dimension token, in -static-aliases).
+  --bs-progress-bg: var(--#{c.$sys-prefix}-sys-color-secondary-container);
   --bs-progress-bar-color: var(--#{c.$sys-prefix}-sys-color-on-primary);
   --bs-progress-bar-bg: var(--#{c.$sys-prefix}-sys-color-primary);
 }
 
+// The rest of the remap: type, shape, elevation and stroke widths. Nothing
+// here resolves a color role, so :root is the whole story.
+@mixin -static-aliases {
+  --bs-border-width: var(--#{c.$prefix}-sys-stroke-hairline);
+  --bs-border-style: solid;
+  --bs-focus-ring-width: var(--#{c.$sys-prefix}-sys-state-focus-indicator-thickness);
+
+  --bs-font-monospace: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  --bs-body-font-family: var(--#{c.$sys-prefix}-ref-typeface-plain);
+  --bs-font-sans-serif: var(--#{c.$sys-prefix}-ref-typeface-plain);
+  --bs-body-font-size: var(--#{c.$sys-prefix}-sys-typescale-body-medium-size);
+  --bs-body-font-weight: var(--#{c.$sys-prefix}-sys-typescale-body-medium-weight);
+  --bs-body-line-height: 1.5;
+
+  // Radius scale -> M3 shape scale.
+  --bs-border-radius-sm: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
+  --bs-border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-small);
+  --bs-border-radius-lg: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
+  --bs-border-radius-xl: var(--#{c.$sys-prefix}-sys-shape-corner-large);
+  --bs-border-radius-xxl: var(--#{c.$sys-prefix}-sys-shape-corner-extra-large);
+  --bs-border-radius-pill: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+
+  // Shadows -> elevation tokens.
+  --bs-box-shadow-sm: var(--#{c.$sys-prefix}-sys-elevation-1);
+  --bs-box-shadow: var(--#{c.$sys-prefix}-sys-elevation-2);
+  --bs-box-shadow-lg: var(--#{c.$sys-prefix}-sys-elevation-4);
+  --bs-box-shadow-inset: var(--#{c.$sys-prefix}-sys-elevation-0);
+}
+
 @mixin remap {
   :root {
-    // Theme colors.
-    @each $name, $def in $-theme-map {
-      --bs-#{$name}: var(#{list.nth($def, 1)});
-    }
-
-    // Subtle backgrounds, borders, and text emphasis (alerts, list groups,
-    // tables lean on these).
-    @each $name, $def in $-subtle-map {
-      --bs-#{$name}-bg-subtle: var(#{list.nth($def, 1)});
-      --bs-#{$name}-text-emphasis: var(#{list.nth($def, 2)});
-      --bs-#{$name}-border-subtle: color-mix(
-        in srgb,
-        var(#{list.nth($def, 2)}) 25%,
-        var(#{list.nth($def, 1)})
-      );
-    }
-
-    // Body + emphasis.
-    --bs-body-bg: var(--#{c.$sys-prefix}-sys-color-surface);
-    --bs-body-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-    --bs-emphasis-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-    --bs-secondary-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
-    --bs-tertiary-color: var(--#{c.$sys-prefix}-sys-color-outline);
-    --bs-secondary-bg: var(--#{c.$sys-prefix}-sys-color-surface-container);
-    --bs-tertiary-bg: var(--#{c.$sys-prefix}-sys-color-surface-container-high);
-
-    // Borders.
-    --bs-border-color: var(--#{c.$sys-prefix}-sys-color-outline-variant);
-    --bs-border-color-translucent: var(--#{c.$sys-prefix}-sys-color-outline-variant);
-    --bs-border-width: var(--#{c.$prefix}-sys-stroke-hairline);
-    --bs-border-style: solid;
-
-    // Links, headings, code.
-    --bs-link-color: var(--#{c.$sys-prefix}-sys-color-primary);
-    --bs-link-hover-color: color-mix(
-      in srgb,
-      var(--#{c.$sys-prefix}-sys-color-on-surface)
-        var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity),
-      var(--#{c.$sys-prefix}-sys-color-primary)
-    );
-    --bs-link-color-rgb: var(--bs-primary-rgb);
-    --bs-link-hover-color-rgb: var(--bs-primary-rgb);
-    --bs-heading-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
-    --bs-code-color: var(--#{c.$sys-prefix}-sys-color-tertiary);
-    --bs-font-monospace: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-      "Liberation Mono", "Courier New", monospace;
-
-    // Typography.
-    --bs-body-font-family: var(--#{c.$sys-prefix}-ref-typeface-plain);
-    --bs-font-sans-serif: var(--#{c.$sys-prefix}-ref-typeface-plain);
-    --bs-body-font-size: var(--#{c.$sys-prefix}-sys-typescale-body-medium-size);
-    --bs-body-font-weight: var(--#{c.$sys-prefix}-sys-typescale-body-medium-weight);
-    --bs-body-line-height: 1.5;
-
-    // Radius scale -> M3 shape scale.
-    --bs-border-radius-sm: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
-    --bs-border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-small);
-    --bs-border-radius-lg: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
-    --bs-border-radius-xl: var(--#{c.$sys-prefix}-sys-shape-corner-large);
-    --bs-border-radius-xxl: var(--#{c.$sys-prefix}-sys-shape-corner-extra-large);
-    --bs-border-radius-pill: var(--#{c.$sys-prefix}-sys-shape-corner-full);
-
-    // Shadows -> elevation tokens.
-    --bs-box-shadow-sm: var(--#{c.$sys-prefix}-sys-elevation-1);
-    --bs-box-shadow: var(--#{c.$sys-prefix}-sys-elevation-2);
-    --bs-box-shadow-lg: var(--#{c.$sys-prefix}-sys-elevation-4);
-    --bs-box-shadow-inset: var(--#{c.$sys-prefix}-sys-elevation-0);
-
-    // Focus ring (Bootstrap 5.3 forms/buttons).
-    --bs-focus-ring-width: var(--#{c.$sys-prefix}-sys-state-focus-indicator-thickness);
-    --bs-focus-ring-color: color-mix(
-      in srgb,
-      var(--#{c.$sys-prefix}-sys-color-primary) 25%,
-      transparent
-    );
-
+    @include color-aliases;
+    @include -static-aliases;
     @include tokens;
   }
 
@@ -228,6 +243,15 @@ $-extra-triplets: (
     :root:not([data-theme="light"]):not([data-bs-theme="light"]) {
       @include -triplets(dark);
     }
+  }
+
+  // Contexts that re-point the M3 roles on a subtree: forced contrast levels
+  // and the token islands. Same declarations, re-resolved where they apply.
+  [data-contrast],
+  .#{c.$prefix}-island--inverse,
+  .#{c.$prefix}-island--primary,
+  .#{c.$prefix}-island--tertiary {
+    @include color-aliases;
   }
 
   // Bootstrap 5.3's own theme switch keeps working: it simply drives

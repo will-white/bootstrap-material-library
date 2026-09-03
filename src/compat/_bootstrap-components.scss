@@ -164,8 +164,13 @@ $-themes: (
     margin-block: var(--#{c.$prefix}-sys-space-none) var(--#{c.$prefix}-sys-space-4);
   }
 
+  // Bootstrap's reboot is `padding-left: 2rem`. Components that are lists
+  // (.dropdown-menu, .list-group, .nav, .pagination) restate their own inline
+  // padding below, exactly as stock bootstrap.css does -- a longhand here
+  // would otherwise beat the shared `padding: 0` ownership rule, which is a
+  // shorthand in an earlier sub-layer.
   :where(ul[class], ol[class]) {
-    padding-inline-start: var(--#{c.$prefix}-sys-space-8);
+    padding-inline-start: var(--#{c.$prefix}-sys-space-6);
   }
 
   :where(h1[class], h2[class], h3[class], h4[class], h5[class], h6[class]) {
@@ -768,7 +773,9 @@ $-themes: (
     inset-inline-start: var(--#{c.$prefix}-sys-space-none);
     z-index: var(--#{c.$prefix}-sys-z-overlay);
     display: none;
-    margin-block-start: var(--#{c.$prefix}-sys-space-1);
+    // Stock is `margin: 0` plus the popper spacer; the <ul> reboot above
+    // would otherwise leave a bottom margin on an absolutely positioned menu.
+    margin-block: var(--#{c.$prefix}-sys-space-1) var(--#{c.$prefix}-sys-space-none);
     list-style: none;
 
     &.show {
@@ -2109,10 +2116,70 @@ $-themes: (
 // Only what stock forces with a literal: everything else is var(--bs-*)
 // driven and already computes to M3 values through the remap.
 @mixin important-parity {
-  // .text-bg-*: stock forces #fff / #000 text; M3 uses the role's on-color.
   @each $name, $def in $-themes {
+    // .text-bg-*: stock forces #fff / #000 text; M3 uses the role's on-color.
+    // Its background is triplet-driven, so it needs re-emitting too (below).
     .text-bg-#{$name} {
+      background-color: var(#{list.nth($def, 1)}) !important;
       color: var(#{list.nth($def, 2)}) !important;
+    }
+
+    // Stock's colour utilities read RGBA(var(--bs-*-rgb)). A raw channel list
+    // cannot be a var() reference, so the triplets are build-time literals
+    // that stay on the page palette inside a token island or a forced
+    // [data-contrast] subtree -- where --bs-#{$name} itself re-resolves and
+    // m3x's own utilities follow. Re-emit the same declarations m3x's
+    // utilities layer makes, with !important, so both agree everywhere.
+    .text-#{$name} {
+      color: color-mix(
+        in srgb,
+        var(--bs-#{$name}) calc(var(--bs-text-opacity, 1) * 100%),
+        transparent
+      ) !important;
+    }
+    .bg-#{$name} {
+      background-color: color-mix(
+        in srgb,
+        var(--bs-#{$name}) calc(var(--bs-bg-opacity, 1) * 100%),
+        transparent
+      ) !important;
+    }
+    .border-#{$name} {
+      border-color: color-mix(
+        in srgb,
+        var(--bs-#{$name}) calc(var(--bs-border-opacity, 1) * 100%),
+        transparent
+      ) !important;
+    }
+    .link-#{$name} {
+      color: color-mix(
+        in srgb,
+        var(--bs-#{$name}) calc(var(--bs-link-opacity, 1) * 100%),
+        transparent
+      ) !important;
+      text-decoration-color: color-mix(
+        in srgb,
+        var(--bs-#{$name}) calc(var(--bs-link-underline-opacity, 1) * 100%),
+        transparent
+      ) !important;
+
+      // Stock hardcodes a shaded hex here, so this one is literal-valued in
+      // every context, island or not.
+      &:hover,
+      &:focus {
+        color: color-mix(
+          in srgb,
+          var(--#{c.$sys-prefix}-sys-color-on-surface)
+            var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity),
+          var(--bs-#{$name})
+        ) !important;
+        text-decoration-color: color-mix(
+          in srgb,
+          var(--#{c.$sys-prefix}-sys-color-on-surface)
+            var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity),
+          var(--bs-#{$name})
+        ) !important;
+      }
     }
   }
 }
