@@ -5009,12 +5009,52 @@
             }
           }
         },
+        "icon-slot": {
+          "$type": "dimension",
+          "$value": "3.25rem"
+        },
+        "affix-size": {
+          "$value": "{m3.sys.space-5}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--m3-sys-space-5)"
+            }
+          }
+        },
         "label-bg": {
           "$value": "{md.sys.color.surface}",
           "$type": "color",
           "$extensions": {
             "m3x": {
               "css": "var(--md-sys-color-surface)"
+            }
+          }
+        },
+        "icon-color": {
+          "$value": "{md.sys.color.on-surface-variant}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-on-surface-variant)"
+            }
+          }
+        },
+        "affix-color": {
+          "$value": "{md.sys.color.on-surface-variant}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-on-surface-variant)"
+            }
+          }
+        },
+        "counter-color": {
+          "$value": "{md.sys.color.on-surface-variant}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-on-surface-variant)"
             }
           }
         }

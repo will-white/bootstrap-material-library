@@ -20,6 +20,12 @@
 //   --m3-field-label-bg            surface (outlined label cutout; re-point
 //                                  when the field sits on another surface)
 //   --m3-field-padding-inline      space-4
+//   --m3-field-icon-color          on-surface-variant
+//   --m3-field-icon-slot           52px, where text starts beside an icon
+//                                  (M3's 12dp inset + 24dp icon + 16dp gap)
+//   --m3-field-affix-color         on-surface-variant (prefix / suffix)
+//   --m3-field-affix-size          space-5, the inline space an affix reserves
+//   --m3-field-counter-color       on-surface-variant
 //
 // Markup (input first, so every state is reachable with sibling selectors --
 // no :has() dependency; `placeholder=" "` drives the floating label):
@@ -28,6 +34,35 @@
 //     <span class="m3-field__label">Label</span>
 //     <span class="m3-field__supporting">Supporting text</span>
 //   </label>
+//
+// ANATOMY SLOTS (M3's leading icon, trailing icon, prefix, suffix, counter):
+//   <label class="m3-field m3-field--outlined m3-field--leading-icon">
+//     <input class="m3-field__input" placeholder=" ">
+//     <span class="m3-field__label">Search</span>
+//     <span class="m3-field__leading"><span class="m3-icon">search</span></span>
+//     <span class="m3-field__trailing"><button class="m3-icon-btn" ...></button></span>
+//     <span class="m3-field__supporting">Supporting text</span>
+//     <span class="m3-field__counter">0/50</span>
+//   </label>
+//
+// The input DRAWS ITS OWN CONTAINER -- that is what lets Bootstrap's bare
+// `.form-control` inherit the whole look -- so the slots cannot sit in flow
+// beside it. They are positioned into the container instead, and the space
+// they occupy is reserved by growing the input's padding through four private
+// variables (--_icon-start / --_icon-end / --_affix-start / --_affix-end),
+// which add up so a field can carry a leading icon AND a prefix.
+//
+// Those variables are set two ways, and both set the same value:
+//   * the --leading-icon / --trailing-icon / --prefix / --suffix modifiers,
+//     which work at the library's `@layer` support floor, and
+//   * a :has() rule per slot, so a browser with :has() gets it right whether
+//     or not the modifier was written.
+// The modifier is therefore only required for Firefox < 121 / Chrome < 105.
+//
+// An affix's width is a token rather than its own content width: nothing in
+// CSS can hand an absolutely positioned element's width to a sibling's
+// padding. --m3-field-affix-size fits one glyph ($, @, #); re-point it for
+// a longer one.
 //
 // Error rendering is IDENTICAL for :user-invalid (native constraint
 // validation) and the .is-invalid / .was-validated interop classes.
@@ -59,6 +94,15 @@ $tokens: (
   "field-outline-width-focus": var(--#{c.$prefix}-sys-stroke-heavy),
   "field-label-bg": var(--#{c.$sys-prefix}-sys-color-surface),
   "field-padding-inline": var(--#{c.$prefix}-sys-space-4),
+  "field-icon-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  // Where the text starts when the field carries an icon on that side: M3
+  // sets the icon 12dp in from the container edge and starts the text 16dp
+  // after it, so 12 + 24 + 16 = 52dp -- the same geometry as Android's 48dp
+  // icon view plus its 4dp margin.
+  "field-icon-slot": #{fn.rem(52)},
+  "field-affix-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "field-affix-size": var(--#{c.$prefix}-sys-space-5),
+  "field-counter-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
 );
 
 @function v($name) {
@@ -66,13 +110,52 @@ $tokens: (
 }
 
 
-// Positioning context for the floated label.
+// Positioning context for the floated label and the anatomy slots. The grid
+// is one row for the field (the input spans it) and one for the supporting
+// row, whose two columns put supporting text at the start and the character
+// counter at the end. Every other slot is positioned, so it takes no cell.
 @mixin wrapper {
   @include m.own-box;
-  display: block;
+  display: grid;
+  grid-template-columns: 1fr auto;
   position: relative;
   inline-size: 100%;
   cursor: text;
+}
+
+// Inline space an anatomy slot reserves inside the container. Each is read
+// with a 0px fallback, so an input outside a wrapper -- Bootstrap's bare
+// .form-control -- resolves to exactly the padding it had before.
+// M3 measures a leading icon's 12dp inset from the CONTAINER edge, not from
+// the text padding, so --m3-field-icon-slot is where the text starts (52dp)
+// rather than an amount added to the 16dp a plain field uses -- hence max()
+// and not a sum. An affix then sits inside whatever that leaves, so it does
+// add.
+@function -text-start() {
+  @return max(#{v("field-padding-inline")}, var(--_icon-start, 0px));
+}
+
+@function -text-end() {
+  @return max(#{v("field-padding-inline")}, var(--_icon-end, 0px));
+}
+
+@function -slot-start() {
+  @return calc(#{-text-start()} + var(--_affix-start, 0px));
+}
+
+@function -slot-end() {
+  @return calc(#{-text-end()} + var(--_affix-end, 0px));
+}
+
+// Block box of a slot positioned into the container: the first row's worth of
+// the field, so a textarea keeps its icons at the top rather than centred
+// down its whole height.
+@mixin -slot-block {
+  position: absolute;
+  inset-block-start: 0;
+  block-size: calc(
+    #{v("field-height")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
+  );
 }
 
 // Shared input rules for both variants.
@@ -83,7 +166,8 @@ $tokens: (
   display: block;
   inline-size: 100%;
   @include m.control-min-height(v("field-height"));
-  padding-inline: #{v("field-padding-inline")};
+  padding-inline-start: #{-slot-start()};
+  padding-inline-end: #{-slot-end()};
   color: var(--_content);
   caret-color: #{v("field-focus-color")};
   cursor: text;
@@ -263,7 +347,7 @@ $tokens: (
   @include m.own-box;
   display: block;
   position: absolute;
-  inset-inline-start: #{v("field-padding-inline")};
+  inset-inline-start: #{-slot-start()};
   inset-block-start: calc(
     (#{v("field-height")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)) / 2
   );
@@ -299,6 +383,94 @@ $tokens: (
   color: #{v("field-error-color")};
 }
 
+// --- anatomy slots ----------------------------------------------------------
+//
+// M3's leading and trailing icons. The slot is a 48dp touch target flush with
+// the container edge, which puts a centred 24dp icon exactly 12dp in -- M3's
+// inset -- and leaves the 16dp gap to the text that --m3-field-icon-slot
+// reserves. Drop a bare .m3-icon in for a decorative icon or an .m3-icon-btn
+// for an interactive one; the slot itself paints neither container nor state.
+// The icon's SIZE stays the global --m3-sys-icon-size (24px, which is M3's
+// text-field icon size): a per-field size token would have to shadow that
+// global while its own default read it, which is a custom-property cycle.
+@mixin icon-slot {
+  @include m.own-box;
+  @include -slot-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--#{c.$prefix}-sys-target-size);
+  color: #{v("field-icon-color")};
+}
+
+@mixin icon-leading {
+  inset-inline-start: 0;
+}
+
+@mixin icon-trailing {
+  inset-inline-end: 0;
+}
+
+// M3's error state carries through to the trailing icon, which is where the
+// error icon sits.
+@mixin icon-invalid {
+  color: #{v("field-error-color")};
+}
+
+// Prefix and suffix: the affix text sits on the input's own text line, so it
+// repeats the variant's block padding rather than centring in the container
+// (a filled field's text is pushed down by its floated label, an outlined
+// field's is centred).
+@mixin affix {
+  @include m.own-box;
+  @include -slot-block;
+  display: flex;
+  align-items: center;
+  color: #{v("field-affix-color")};
+  pointer-events: none;
+  white-space: nowrap;
+  @include m.typescale("body-large");
+}
+
+@mixin affix-filled {
+  padding-block-start: var(--#{c.$prefix}-sys-space-4);
+  padding-block-end: var(--#{c.$prefix}-sys-space-1);
+}
+
+@mixin affix-outlined {
+  padding-block: var(--#{c.$prefix}-sys-space-3);
+}
+
+// An affix sits inside whatever an icon already reserved, so it reads only
+// the icon variable and not its own.
+@mixin affix-prefix {
+  inset-inline-start: #{-text-start()};
+}
+
+@mixin affix-suffix {
+  inset-inline-end: #{-text-end()};
+}
+
+// --- character counter ------------------------------------------------------
+//
+// The end of the supporting row. M3 leaves 16dp between supporting text and
+// the counter, which is this element's start padding.
+@mixin counter {
+  @include m.own-box;
+  display: block;
+  padding-inline-start: var(--#{c.$prefix}-sys-space-4);
+  padding-inline-end: #{v("field-padding-inline")};
+  padding-block-start: var(--#{c.$prefix}-sys-space-1);
+  color: #{v("field-counter-color")};
+  text-align: end;
+  white-space: nowrap;
+  @include m.typescale("body-small");
+}
+
+@mixin counter-invalid {
+  color: #{v("field-error-color")};
+}
+
 // --- supporting text --------------------------------------------------------
 
 @mixin supporting {
@@ -329,6 +501,39 @@ $tokens: (
 
   .#{$p}-field__input {
     @include input-base;
+    // The field row; the supporting row below it is the wrapper's second.
+    grid-column: 1 / -1;
+  }
+
+  // --- anatomy slot reservations --------------------------------------------
+  // Explicit modifiers first: they are what a browser without :has() needs,
+  // and they set exactly what the :has() rules below set.
+  .#{$p}-field--leading-icon {
+    --_icon-start: #{v("field-icon-slot")};
+  }
+  .#{$p}-field--trailing-icon {
+    --_icon-end: #{v("field-icon-slot")};
+  }
+  .#{$p}-field--prefix {
+    --_affix-start: #{v("field-affix-size")};
+  }
+  .#{$p}-field--suffix {
+    --_affix-end: #{v("field-affix-size")};
+  }
+
+  // Enhancement: each rule stands alone in its selector list, so a browser
+  // without :has() drops it and keeps the modifier path.
+  .#{$p}-field:has(> .#{$p}-field__leading) {
+    --_icon-start: #{v("field-icon-slot")};
+  }
+  .#{$p}-field:has(> .#{$p}-field__trailing) {
+    --_icon-end: #{v("field-icon-slot")};
+  }
+  .#{$p}-field:has(> .#{$p}-field__prefix) {
+    --_affix-start: #{v("field-affix-size")};
+  }
+  .#{$p}-field:has(> .#{$p}-field__suffix) {
+    --_affix-end: #{v("field-affix-size")};
   }
 
   .#{$p}-field--filled .#{$p}-field__input {
@@ -387,8 +592,71 @@ $tokens: (
     @include label-invalid;
   }
 
+  // --- icon slots -----------------------------------------------------------
+  .#{$p}-field__leading {
+    @include icon-slot;
+    @include icon-leading;
+  }
+
+  .#{$p}-field__trailing {
+    @include icon-slot;
+    @include icon-trailing;
+  }
+
+  .#{$p}-field__input:user-invalid ~ .#{$p}-field__trailing {
+    @include icon-invalid;
+  }
+
+  .#{$p}-field__input.is-invalid ~ .#{$p}-field__trailing {
+    @include icon-invalid;
+  }
+
+  .was-validated .#{$p}-field__input:invalid ~ .#{$p}-field__trailing {
+    @include icon-invalid;
+  }
+
+  // --- prefix / suffix ------------------------------------------------------
+  .#{$p}-field__prefix {
+    @include affix;
+    @include affix-prefix;
+  }
+
+  .#{$p}-field__suffix {
+    @include affix;
+    @include affix-suffix;
+  }
+
+  .#{$p}-field--filled .#{$p}-field__prefix,
+  .#{$p}-field--filled .#{$p}-field__suffix {
+    @include affix-filled;
+  }
+
+  .#{$p}-field--outlined .#{$p}-field__prefix,
+  .#{$p}-field--outlined .#{$p}-field__suffix {
+    @include affix-outlined;
+  }
+
+  // --- character counter ----------------------------------------------------
+  .#{$p}-field__counter {
+    @include counter;
+    grid-column: 2;
+  }
+
+  .#{$p}-field__input:user-invalid ~ .#{$p}-field__counter {
+    @include counter-invalid;
+  }
+
+  .#{$p}-field__input.is-invalid ~ .#{$p}-field__counter {
+    @include counter-invalid;
+  }
+
+  .was-validated .#{$p}-field__input:invalid ~ .#{$p}-field__counter {
+    @include counter-invalid;
+  }
+
   .#{$p}-field__supporting {
     @include supporting;
+    grid-column: 1;
   }
 
   .#{$p}-field__input:user-invalid ~ .#{$p}-field__supporting {

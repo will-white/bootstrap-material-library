@@ -62,6 +62,7 @@ via `@supports`:
 | Dense toolbar overflow | `@container` (Baseline 2023) | groups never collapse; `__more` stays hidden |
 | `@scope` refinements | none -- see below | slightly less isolation, identical rendering |
 | Anchor-positioned tooltips/menus, Popover menus, `:has()` selection states | per-feature `@supports`; every `:has()` / `:popover-open` rule stands alone in its selector list | hidden gracefully / static fallback / the non-`:has()` state |
+| Automatic text-field slot reservation | one `:has()` rule per slot | write the `.m3-field--leading-icon` / `--trailing-icon` / `--prefix` / `--suffix` modifier, which sets exactly the same value |
 
 `@scope` (Chrome 118, Safari 17.4, Firefox 140) carries **refinement, never
 load-bearing structure**: donut slot protection, low-specificity internals, and
@@ -1058,7 +1059,7 @@ have an M3 counterpart that needs no JS at all.
 | `.form-check` / `.form-switch` | `.m3-checkbox`/`.m3-radio`/`.m3-switch` | No | |
 | `.form-range` | `.m3-slider` | No | |
 | `.input-group` | -- (field-aware joining) | No | |
-| `.form-floating` | `.m3-field` floating label | No | identical markup shape (input then label) |
+| `.form-floating` | `.m3-field` floating label | No | identical markup shape (input then label); the anatomy slots are m3x-only |
 | validation (`.is-invalid`/`.was-validated`) | `:user-invalid` | No | **pixel-identical error treatment by construction** |
 
 | grid (`.container`, `.row`, `.col-*`, `.g-*`, `.grid`) | -- (token-driven, same contract) | No | responsive across `$grid-breakpoints` |
@@ -1138,9 +1139,74 @@ pure-CSS equivalent -- divergences are listed.
 | Date/time inputs | `.m3-datetime` on native date/time inputs | the native popup calendar/clock is the browser's |
 | Date picker | `.m3-date-picker` (docked; `--modal` inside `.m3-dialog`; `--range`) with `__nav`, `__grid`, `__day` states (`--today`, `[aria-selected]`, `--outside`, `:disabled`, range start/end) | the calendar surface only: month navigation and selection are your script's or a form's |
 | Time picker | `.m3-time-picker` (input mode; `--modal`) with hour/minute fields and the AM/PM selector | the dial mode needs script and is not shipped |
-| Text fields | `.m3-field` filled/outlined, floating label, supporting text | -- |
+| Text fields | `.m3-field` filled/outlined, floating label, supporting text, leading/trailing icon, prefix/suffix, character counter | the counter's number is your script's; an affix's width is a token (see below) |
 | Search | `.m3-search` (+ `[popover]`/focus panel) | -- |
 | Select | `.m3-select` on native `<select>` | the picker is an M3 menu under `appearance: base-select` (also `.form-select` and the dense toolbar select); native option list elsewhere, CSS chevron either way |
+
+---
+
+### Text field anatomy
+
+Beyond the input, the label and the supporting text, M3's text field has a
+leading icon, a trailing icon, a prefix, a suffix and a character counter.
+All five are optional, and all five are elements you add:
+
+```html
+<label class="m3-field m3-field--outlined m3-field--leading-icon m3-field--trailing-icon">
+  <input class="m3-field__input" placeholder=" ">
+  <span class="m3-field__label">Search</span>
+  <span class="m3-field__leading"><span class="m3-icon">search</span></span>
+  <span class="m3-field__trailing">
+    <button class="m3-icon-btn" type="button" aria-label="Clear">
+      <span class="m3-icon">close</span>
+    </button>
+  </span>
+  <span class="m3-field__supporting">Supporting text</span>
+  <span class="m3-field__counter">0/50</span>
+</label>
+```
+
+The input keeps drawing its own container — that is what lets Bootstrap's
+bare `.form-control` inherit the whole look — so the slots are positioned
+into it rather than laid out beside it, and the space they take is reserved
+by growing the input's padding.
+
+**Geometry.** M3 sets a leading icon 12dp in from the container edge and
+starts the text 16dp after it, so the text starts at 52dp
+(`--m3-field-icon-slot`); the slot itself is a 48dp touch target flush with
+the edge, which is the same geometry as Android's 48dp icon view plus its 4dp
+margin. That 52dp *replaces* the 16dp a plain field uses rather than adding
+to it. A prefix or suffix then reserves `--m3-field-affix-size` inside
+whatever the icon left, so a field can carry both.
+
+**Reserving the space.** Two mechanisms set the same values:
+
+| | |
+|---|---|
+| `--leading-icon` / `--trailing-icon` / `--prefix` / `--suffix` modifiers | work at the library's `@layer` support floor |
+| one `:has()` rule per slot | does it automatically above the floor |
+
+So the modifier is only required for Firefox < 121 and Chrome < 105; write it
+if you support those, leave it off if you don't. Setting both is harmless —
+they set the same value.
+
+**An affix's width is a token, not its content width.** Nothing in CSS can
+hand an absolutely positioned element's width to a sibling's padding, and the
+input has to stay the container for the Bootstrap surface to work.
+`--m3-field-affix-size` defaults to 24px, which fits one glyph (`$`, `@`,
+`#`); re-point it for a longer one:
+
+```css
+.url-field { --m3-field-affix-size: 5.5rem; }  /* "https://" */
+```
+
+**Error state** reaches the trailing icon and the counter as well as the
+label and supporting text, through the same three selectors as everything
+else (`:user-invalid`, `.is-invalid`, `.was-validated :invalid`).
+
+**The counter's number is yours.** CSS cannot count characters; the element
+is styled and placed at the end of the supporting row, and your script (or
+your server) writes the text into it.
 
 ---
 
@@ -1365,7 +1431,10 @@ npm test         # contrast assertions, box-ownership + stock-parity audits, hit
   typescale (including all fifteen emphasized weights and trackings, and that
   each emphasized style's font, size and line height still resolve to its
   baseline style's), state-layer opacities, the focus indicator, the shape
-  scale, the easing and duration ramps; the five tonal-elevation opacities and
+  scale, the easing and duration ramps; the text field's anatomy geometry (the
+  icon inset and slot, where the text and the floating label start beside an
+  icon, an affix stacking on top of that, and a plain field left untouched);
+  the five tonal-elevation opacities and
   the surface each renders as, with the shadow and tint channels proven not to
   touch each other's property; the five-rung Expressive size ramp on
   `.m3-btn`,

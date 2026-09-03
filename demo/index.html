@@ -127,9 +127,18 @@
               <span class="m3-field__label">Recovery email</span>
               <span class="m3-field__supporting">Required. Type then clear it to see :user-invalid.</span>
             </label>
+            <label class="m3-field m3-field--outlined m3-field--leading-icon m3-field--trailing-icon">
+              <input class="m3-field__input" type="url" placeholder=" " value="riley.dev">
+              <span class="m3-field__label">Website</span>
+              <span class="m3-field__leading"><span class="m3-icon">link</span></span>
+              <span class="m3-field__trailing"><button class="m3-icon-btn" type="reset" aria-label="Clear website"><span class="m3-icon">close</span></button></span>
+              <span class="m3-field__supporting">Leading and trailing icon slots</span>
+            </label>
             <label class="m3-field m3-field--outlined">
-              <textarea class="m3-field__input" placeholder=" " rows="2"></textarea>
+              <textarea class="m3-field__input" placeholder=" " rows="2" maxlength="120"></textarea>
               <span class="m3-field__label">Signature</span>
+              <span class="m3-field__supporting">Appended to every message</span>
+              <span class="m3-field__counter">0/120</span>
             </label>
             <label class="m3-field">
               <select class="m3-select" aria-label="Reply behavior">

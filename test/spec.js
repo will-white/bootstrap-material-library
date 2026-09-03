@@ -55,6 +55,20 @@ ${Object.keys(BUTTON_RAMP).map((s) => `<div class="${mod('m3-split-button', s)}"
 
 <div class="m3-field m3-field--filled"><input class="m3-field__input" id="f-filled" placeholder=" "><label class="m3-field__label">L</label></div>
 <div class="m3-field m3-field--outlined"><input class="m3-field__input" id="f-outlined" placeholder=" "><label class="m3-field__label">L</label></div>
+<label class="m3-field m3-field--outlined m3-field--leading-icon m3-field--trailing-icon" id="f-icons">
+  <input class="m3-field__input" id="f-icons-input" placeholder=" " value="v">
+  <span class="m3-field__label">L</span>
+  <span class="m3-field__leading" id="f-leading">${ICON}</span>
+  <span class="m3-field__trailing" id="f-trailing">${ICON}</span>
+  <span class="m3-field__supporting">Help</span><span class="m3-field__counter" id="f-counter">0/50</span></label>
+<label class="m3-field m3-field--filled m3-field--prefix m3-field--suffix" id="f-affix">
+  <input class="m3-field__input" id="f-affix-input" placeholder=" " value="9">
+  <span class="m3-field__label">L</span>
+  <span class="m3-field__prefix" id="f-prefix">$</span><span class="m3-field__suffix">kg</span></label>
+<label class="m3-field m3-field--outlined m3-field--leading-icon m3-field--prefix" id="f-both">
+  <input class="m3-field__input" id="f-both-input" placeholder=" " value="v">
+  <span class="m3-field__label">L</span>
+  <span class="m3-field__leading">${ICON}</span><span class="m3-field__prefix">@</span></label>
 
 <button class="m3-chip m3-chip--assist" id="chip-plain">Assist</button>
 <button class="m3-chip m3-chip--assist" id="chip-icon">${ICON}Assist</button>
@@ -232,6 +246,32 @@ async function run() {
         out.misc.cardRadius = num(cs('card').borderTopLeftRadius);
         out.misc.navBar = num(box('navbar').height);
 
+        // M3 text field anatomy: a leading icon sits 12dp in from the
+        // container edge and the text starts 52dp in (12 + 24 + 16).
+        const iconsBox = box('f-icons');
+        const leadBox = box('f-leading');
+        const trailBox = box('f-trailing');
+        out.misc.fieldAnatomy = {
+          padStart: num(cs('f-icons-input').paddingLeft),
+          padEnd: num(cs('f-icons-input').paddingRight),
+          // The 48dp slot is flush with the edge; the 24dp icon centres to 12dp.
+          slotWidth: num(leadBox.width),
+          iconInset: num(leadBox.left - iconsBox.left + (leadBox.width - 24) / 2),
+          trailingInset: num(iconsBox.right - trailBox.right + (trailBox.width - 24) / 2),
+          // The label follows the text, not the container edge.
+          labelStart: num(el('f-icons').querySelector('.m3-field__label').getBoundingClientRect().left - iconsBox.left),
+          counterEnd: num(iconsBox.right - box('f-counter').right),
+          // An affix reserves its own space on top of whatever the text
+          // padding already was, and sits where the text starts.
+          affixPadStart: num(cs('f-affix-input').paddingLeft),
+          affixPadEnd: num(cs('f-affix-input').paddingRight),
+          prefixStart: num(box('f-prefix').left - box('f-affix').left),
+          // Icon and affix stack: 52 + 24.
+          bothPadStart: num(cs('f-both-input').paddingLeft),
+          // A field with no slots is untouched, and so is a bare .form-control.
+          plainPadStart: num(cs('f-outlined').paddingLeft),
+        };
+
         // M3 tonal elevation: the surface-tint role composited over surface at
         // the level's opacity. The roles compute as oklch(), so the probes mix
         // them into srgb at 100% -- the same space the tint composites in, and
@@ -294,6 +334,22 @@ async function run() {
     expect(eq(got.aliased, [true, true, true]), `.m3-${role}-emphasized [font,size,line-height] ${JSON.stringify(got.aliased)} should match .m3-${role}`);
     // The point of the scale: emphasized is always heavier than baseline.
     expect(Number(got.weight) > Number(got.baseWeight), `.m3-${role}-emphasized weight ${got.weight} should exceed baseline ${got.baseWeight}`);
+  }
+
+  // M3 text field anatomy. A leading icon sits 12dp in from the container
+  // edge and the text starts 52dp in; the 16dp a plain field uses is replaced
+  // by that, not added to it. A prefix then reserves its own space inside.
+  {
+    const a = r.misc.fieldAnatomy;
+    const want = {
+      padStart: 52, padEnd: 52, slotWidth: 48, iconInset: 12, trailingInset: 12,
+      labelStart: 52, counterEnd: 0,
+      affixPadStart: 40, affixPadEnd: 40, prefixStart: 16,
+      bothPadStart: 76, plainPadStart: 16,
+    };
+    for (const [k, v] of Object.entries(want)) {
+      expect(a[k] === v, `field anatomy ${k}: ${a[k]}, expected ${v}`);
+    }
   }
 
   // M3 tonal elevation. Compose computes a surface at N dp as the surface-tint
@@ -384,7 +440,7 @@ async function run() {
   expect(r.misc.navBar === 80, `navigation bar height ${r.misc.navBar}, expected 80`);
 
   if (!failures.length) {
-    console.log(`[spec] ${Object.keys(TOKENS).length} tokens, ${Object.keys(BUTTON_RAMP).length}-rung button/icon-button/split ramps, ${Object.keys(EMPHASIZED).length} emphasized typescale styles, 6 tonal-elevation surfaces, fields, chips, selection, progress (stop indicator + gap), tabs, tooltip, list, rail: ok`);
+    console.log(`[spec] ${Object.keys(TOKENS).length} tokens, ${Object.keys(BUTTON_RAMP).length}-rung button/icon-button/split ramps, ${Object.keys(EMPHASIZED).length} emphasized typescale styles, 6 tonal-elevation surfaces, field anatomy, fields, chips, selection, progress (stop indicator + gap), tabs, tooltip, list, rail: ok`);
   }
   return failures;
 }

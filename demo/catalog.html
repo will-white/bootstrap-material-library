@@ -2116,6 +2116,44 @@
       </div>
     </div>
 
+    <div class="cat-item cat-item--wide">
+      <header><h3 class="m3-title-medium">Anatomy slots</h3>
+        <span class="cat-api"><code>__leading</code><code>__trailing</code><code>__prefix</code><code>__suffix</code><code>__counter</code><code>--leading-icon</code><code>--trailing-icon</code><code>--prefix</code><code>--suffix</code></span></header>
+      <p class="cat-lede m3-body-small">M3&rsquo;s optional parts. A leading icon sits 12dp in from the container
+        edge and the text starts 52dp in &mdash; 12 + 24 + 16, the same geometry as Android&rsquo;s 48dp icon view.
+        The input draws its own container (that is what lets a bare <code>.form-control</code> inherit the whole
+        look), so the slots are positioned into it and the space they take is reserved by growing the input&rsquo;s
+        padding. The <code>--leading-icon</code> / <code>--trailing-icon</code> / <code>--prefix</code> /
+        <code>--suffix</code> modifiers do that at the library&rsquo;s support floor; a <code>:has()</code> rule
+        does the same automatically above it, so the modifier is only needed for Firefox&nbsp;&lt;&nbsp;121.</p>
+      <div class="cat-specimen" style="align-items: flex-start;">
+        <label class="m3-field m3-field--outlined m3-field--leading-icon m3-field--trailing-icon" style="flex: 1 1 16rem;">
+          <input class="m3-field__input" value="Aurora" placeholder=" ">
+          <span class="m3-field__label">Leading + trailing</span>
+          <span class="m3-field__leading"><span class="m3-icon">search</span></span>
+          <span class="m3-field__trailing"><button class="m3-icon-btn" type="button" aria-label="Clear"><span class="m3-icon">close</span></button></span>
+          <span class="m3-field__supporting">Supporting text</span>
+          <span class="m3-field__counter">6/50</span>
+        </label>
+        <label class="m3-field m3-field--filled m3-field--prefix m3-field--suffix" style="flex: 1 1 16rem;">
+          <input class="m3-field__input" value="12.50" placeholder=" " inputmode="decimal">
+          <span class="m3-field__label">Prefix + suffix</span>
+          <span class="m3-field__prefix">$</span>
+          <span class="m3-field__suffix">kg</span>
+          <span class="m3-field__supporting">An affix reserves <code>--m3-field-affix-size</code>; re-point it for a longer one</span>
+        </label>
+        <label class="m3-field m3-field--outlined m3-field--leading-icon m3-field--prefix" style="flex: 1 1 16rem;">
+          <input class="m3-field__input" type="email" value="bad" placeholder=" " required>
+          <span class="m3-field__label">Icon + prefix, invalid</span>
+          <span class="m3-field__leading"><span class="m3-icon">alternate_email</span></span>
+          <span class="m3-field__prefix">@</span>
+          <span class="m3-field__trailing"><span class="m3-icon">error</span></span>
+          <span class="m3-field__supporting">Error reaches the trailing icon and the counter</span>
+          <span class="m3-field__counter">3/4</span>
+        </label>
+      </div>
+    </div>
+
     <div class="cat-item">
       <header><h3 class="m3-title-medium">Select</h3>
         <span class="cat-api"><code>.m3-select</code><code>--filled</code><code>.form-select</code></span></header>
