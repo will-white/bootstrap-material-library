@@ -3150,7 +3150,7 @@
             }
           }
         },
-        "icon-size-small": {
+        "icon-size-bootstrap-small": {
           "$value": "{m3.sys.icon-size-small}",
           "$type": "dimension",
           "$extensions": {
@@ -3159,11 +3159,11 @@
             }
           }
         },
-        "height-small": {
+        "height-bootstrap-small": {
           "$type": "dimension",
           "$value": "2rem"
         },
-        "padding-inline-small": {
+        "padding-inline-bootstrap-small": {
           "$value": "{m3.sys.space-4}",
           "$type": "dimension",
           "$extensions": {
@@ -3211,6 +3211,23 @@
               "css": "var(--m3-sys-space-6)"
             }
           }
+        },
+        "height-small": {
+          "$type": "dimension",
+          "$value": "2.5rem"
+        },
+        "padding-inline-small": {
+          "$value": "{m3.sys.space-4}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--m3-sys-space-4)"
+            }
+          }
+        },
+        "icon-size-small": {
+          "$type": "dimension",
+          "$value": "1.25rem"
         },
         "elevated-container-color": {
           "$value": "{md.sys.color.surface-container-low}",
@@ -3471,6 +3488,53 @@
         "gap": {
           "$type": "dimension",
           "$value": "0.125rem"
+        },
+        "height-small": {
+          "$type": "dimension",
+          "$value": "2.5rem"
+        },
+        "inner-shape-small": {
+          "$value": "{md.sys.shape.corner-extra-small}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-shape-corner-extra-small)"
+            }
+          }
+        },
+        "inner-shape-active-small": {
+          "$value": "{md.sys.shape.corner-medium}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-shape-corner-medium)"
+            }
+          }
+        },
+        "action-padding-start-small": {
+          "$type": "dimension",
+          "$value": "1rem"
+        },
+        "action-padding-end-small": {
+          "$type": "dimension",
+          "$value": "0.75rem"
+        },
+        "toggle-width-small": {
+          "$type": "dimension",
+          "$value": "3rem"
+        },
+        "toggle-padding-inline-small": {
+          "$type": "dimension",
+          "$value": "0.8125rem"
+        },
+        "chevron-size-small": {
+          "$value": "{m3.sys.chevron-size}",
+          "$type": "dimension",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--m3-sys-chevron-size)"
+            }
+          }
         },
         "height-xs": {
           "$type": "dimension",
@@ -4084,13 +4148,9 @@
             }
           }
         },
-        "icon-optical-size-xs": {
-          "$type": "number",
-          "$value": 20
-        },
         "size-small": {
           "$type": "dimension",
-          "$value": "2rem"
+          "$value": "2.5rem"
         },
         "size-xs": {
           "$type": "dimension",
@@ -4099,6 +4159,10 @@
         "icon-size-xs": {
           "$type": "dimension",
           "$value": "1.25rem"
+        },
+        "icon-optical-size-xs": {
+          "$type": "number",
+          "$value": 20
         },
         "size-medium": {
           "$type": "dimension",
@@ -5508,6 +5572,15 @@
           "$extensions": {
             "m3x": {
               "css": "var(--m3-sys-space-2)"
+            }
+          }
+        },
+        "scrollbar-color": {
+          "$value": "{md.sys.color.outline-variant}",
+          "$type": "color",
+          "$extensions": {
+            "m3x": {
+              "css": "var(--md-sys-color-outline-variant)"
             }
           }
         },

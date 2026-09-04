@@ -1137,8 +1137,9 @@
     <header><h3 class="m3-title-medium">Scroll snap</h3>
       <span class="cat-support" data-feature="scroll-snap"></span></header>
     <p class="cat-note m3-body-small">The carousel is a scroll-snap container: no transform maths, no index state,
-      and the browser&rsquo;s own momentum and keyboard scrolling.</p>
-    <div class="m3-carousel" role="group" aria-label="Previews">
+      and the browser&rsquo;s own momentum and keyboard scrolling. Drag it, or tab to it and use the arrow keys
+      &mdash; <code>tabindex="0"</code> on the track is what makes that second one possible.</p>
+    <div class="m3-carousel" tabindex="0" role="group" aria-label="Previews">
       <div class="m3-carousel__item m3-bg-primary-container" style="min-block-size: 6rem; display: grid; place-content: center;">One</div>
       <div class="m3-carousel__item m3-bg-secondary-container" style="min-block-size: 6rem; display: grid; place-content: center;">Two</div>
       <div class="m3-carousel__item m3-bg-tertiary-container" style="min-block-size: 6rem; display: grid; place-content: center;">Three</div>
@@ -1486,8 +1487,8 @@
         <div class="cat-labelled"><div class="m3-split-button m3-split-button--tonal m3-split-button--xs">
           <button class="m3-btn m3-split-button__action" type="button">XS</button>
           <button class="m3-btn m3-split-button__toggle" type="button" aria-label="More" aria-expanded="false"></button></div><small class="m3-label-small">32px</small></div>
-        <div class="cat-labelled"><div class="m3-split-button m3-split-button--tonal">
-          <button class="m3-btn m3-split-button__action" type="button">Default</button>
+        <div class="cat-labelled"><div class="m3-split-button m3-split-button--tonal m3-split-button--small">
+          <button class="m3-btn m3-split-button__action" type="button">Small</button>
           <button class="m3-btn m3-split-button__toggle" type="button" aria-label="More" aria-expanded="false"></button></div><small class="m3-label-small">40px</small></div>
         <div class="cat-labelled"><div class="m3-split-button m3-split-button--tonal m3-split-button--medium">
           <button class="m3-btn m3-split-button__action" type="button">Medium</button>
@@ -1791,16 +1792,31 @@
         multi-browse its large / medium / small rhythm from one declaration; the small item is clamped between
         M3&rsquo;s 40 and 56px. What is not here is M3&rsquo;s item-size morphing as you scroll &mdash; these are
         the resting arrangement each layout settles into.</p>
+      <p class="cat-note m3-body-small">All four are drag-, wheel- and arrow-key scrollable. A horizontal scroller
+        that hides its bar is inert to a mouse, so the bar is hidden only under <code>(pointer: coarse)</code>,
+        where dragging is native; every other input keeps a thin one tinted
+        <code>--m3-carousel-scrollbar-color</code>. <code>tabindex="0"</code> puts the track in the tab order,
+        which CSS cannot do for you.</p>
       <p class="cat-note m3-body-small">Default &mdash; one large item, snapped to the centre.</p>
-      <div class="m3-carousel" role="group" aria-label="Themes">
+      <div class="m3-carousel" tabindex="0" role="group" aria-label="Themes" id="cat-carousel-default">
         <div class="m3-carousel__item m3-bg-primary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Primary</div>
         <div class="m3-carousel__item m3-bg-secondary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Secondary</div>
         <div class="m3-carousel__item m3-bg-tertiary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Tertiary</div>
         <div class="m3-carousel__item m3-bg-error-container" style="min-block-size: 7rem; display: grid; place-content: center;">Error</div>
         <div class="m3-carousel__item m3-bg-surface-container-highest" style="min-block-size: 7rem; display: grid; place-content: center;">Surface</div>
       </div>
+      <div class="m3-carousel__indicators" data-dots-for="cat-carousel-default">
+        <button class="m3-carousel__indicator active" type="button" aria-label="Slide 1"></button>
+        <button class="m3-carousel__indicator" type="button" aria-label="Slide 2"></button>
+        <button class="m3-carousel__indicator" type="button" aria-label="Slide 3"></button>
+        <button class="m3-carousel__indicator" type="button" aria-label="Slide 4"></button>
+        <button class="m3-carousel__indicator" type="button" aria-label="Slide 5"></button>
+      </div>
+      <p class="cat-note m3-body-small">The dots are <code>.m3-carousel__indicators</code>. m3x styles them and
+        stops there &mdash; which dot is <code>.active</code> is scroll state, and this page supplies the few
+        lines that track it.</p>
       <p class="cat-note m3-body-small"><code>--multi-browse</code> &mdash; large, medium and small at once.</p>
-      <div class="m3-carousel m3-carousel--multi-browse" role="group" aria-label="Themes, multi-browse">
+      <div class="m3-carousel m3-carousel--multi-browse" tabindex="0" role="group" aria-label="Themes, multi-browse">
         <div class="m3-carousel__item m3-bg-primary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Primary</div>
         <div class="m3-carousel__item m3-bg-secondary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Secondary</div>
         <div class="m3-carousel__item m3-bg-tertiary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Tertiary</div>
@@ -1808,7 +1824,7 @@
         <div class="m3-carousel__item m3-bg-surface-container-highest" style="min-block-size: 7rem; display: grid; place-content: center;">Surface</div>
       </div>
       <p class="cat-note m3-body-small"><code>--hero</code> &mdash; one large centred item, a small one either side.</p>
-      <div class="m3-carousel m3-carousel--hero" role="group" aria-label="Themes, hero">
+      <div class="m3-carousel m3-carousel--hero" tabindex="0" role="group" aria-label="Themes, hero">
         <div class="m3-carousel__item m3-bg-primary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Primary</div>
         <div class="m3-carousel__item m3-bg-secondary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Secondary</div>
         <div class="m3-carousel__item m3-bg-tertiary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Tertiary</div>
@@ -1816,7 +1832,7 @@
         <div class="m3-carousel__item m3-bg-surface-container-highest" style="min-block-size: 7rem; display: grid; place-content: center;">Surface</div>
       </div>
       <p class="cat-note m3-body-small"><code>--uncontained</code> &mdash; uniform items running off the edge.</p>
-      <div class="m3-carousel m3-carousel--uncontained" role="group" aria-label="Themes, uncontained">
+      <div class="m3-carousel m3-carousel--uncontained" tabindex="0" role="group" aria-label="Themes, uncontained">
         <div class="m3-carousel__item m3-bg-primary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Primary</div>
         <div class="m3-carousel__item m3-bg-secondary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Secondary</div>
         <div class="m3-carousel__item m3-bg-tertiary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Tertiary</div>
@@ -2588,6 +2604,37 @@
     if (e.target.value) root.setAttribute("data-contrast", e.target.value);
     else root.removeAttribute("data-contrast");
   });
+  // Carousel indicators. The library styles the dots and stops there: which
+  // one is .active is scroll state, and this is the consumer's share of it.
+  document.querySelectorAll("[data-dots-for]").forEach(function (dots) {
+    var track = document.getElementById(dots.dataset.dotsFor);
+    if (!track) return;
+    var items = track.querySelectorAll(".m3-carousel__item");
+    var buttons = dots.querySelectorAll(".m3-carousel__indicator");
+
+    function sync() {
+      var mid = track.scrollLeft + track.clientWidth / 2;
+      var near = 0, best = Infinity;
+      items.forEach(function (item, i) {
+        var centre = item.offsetLeft - track.offsetLeft + item.offsetWidth / 2;
+        var d = Math.abs(centre - mid);
+        if (d < best) { best = d; near = i; }
+      });
+      buttons.forEach(function (b, i) {
+        b.classList.toggle("active", i === near);
+        b.setAttribute("aria-current", i === near ? "true" : "false");
+      });
+    }
+
+    buttons.forEach(function (b, i) {
+      b.addEventListener("click", function () {
+        if (items[i]) items[i].scrollIntoView({ inline: "center", block: "nearest" });
+      });
+    });
+    track.addEventListener("scroll", sync, { passive: true });
+    sync();
+  });
+
   document.getElementById("density").addEventListener("change", function (e) {
     root.style.setProperty("--m3-sys-density", e.target.value);
   });

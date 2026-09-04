@@ -455,7 +455,8 @@ components.
 | `--m3-btn-height-medium` | 56px | `.m3-btn--medium` |
 | `--m3-btn-height-large` | 96px | `.m3-btn--large` |
 | `--m3-btn-height-xl` | 136px | `.m3-btn--xl` |
-| `--m3-btn-height-small` | 32px | `.m3-btn--small` / `.btn-sm` (Bootstrap's ramp) |
+| `--m3-btn-height-small` | 40px | `.m3-btn--small` (M3's small rung — the default height, named) |
+| `--m3-btn-height-bootstrap-small` | 32px | `.btn-sm` (Bootstrap's ramp) |
 | `--m3-btn-height-bootstrap-large` | 48px | `.btn-lg` (Bootstrap's ramp) |
 | `--m3-btn-padding-inline` | `--m3-sys-space-4` (16px) | |
 | `--m3-btn-padding-inline-xs` | `--m3-sys-space-3` (12px) | |
@@ -995,9 +996,15 @@ than in disagreement with M3:
 
 - **Bootstrap's size ramp is kept alongside M3's.** `.btn-sm` (32px) and
   `.btn-lg` (48px) render at Bootstrap's metrics, not M3's, so re-skinning an
-  existing Bootstrap page does not re-flow it. `.m3-btn--small` is the alias
-  of the 32px size, as `.m3-icon-btn--small` is. M3's own ramp is the table
+  existing Bootstrap page does not re-flow it. They read
+  `--m3-btn-height-bootstrap-small` / `-bootstrap-large`, tokens of their own,
+  so Bootstrap's ramp and M3's never share a rung. M3's own ramp is the table
   above.
+
+  `--small` on any of the three button families is M3's 40px rung, not
+  Bootstrap's 32px. It carries the same metrics as the default — M3's default
+  button *is* the small one — but the rung needs a name, or `--xs` and
+  `--small` render identically and the ramp reads as four sizes, not five.
 - **Spacing and the other globals are library extensions.** M3 publishes no
   token set for spacing, density, stroke widths or z-index, so those are
   m3x's own, under `--m3-sys-*` rather than mixed in with the per-component
@@ -1314,6 +1321,15 @@ here as one class on the track — the item markup never changes.
 
 The fourth, full-screen, is one item filling the viewport and scrolling
 vertically — a page layout rather than a component variant.
+
+Put `tabindex="0"` on the track. A scroll container is not in the tab order by
+default, so without it the arrow-key scrolling the browser already implements
+is unreachable and a keyboard user never sees past the first item; CSS cannot
+add an attribute for you. For the same reason the scrollbar is hidden only
+under `(pointer: coarse)`, where dragging is native — a horizontal scroller
+that hides its bar is inert to a mouse, since a vertical wheel does not scroll
+it and nothing on screen says it scrolls at all. Everywhere else the track
+keeps a thin bar tinted `--m3-carousel-scrollbar-color`.
 
 Multi-browse comes out of one declaration: `grid-auto-columns` takes a track
 *list* that repeats, so `large medium small` gives the whole strip its

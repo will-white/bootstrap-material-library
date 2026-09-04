@@ -12,15 +12,19 @@ const ICON = '<span class="m3-icon">home</span>';
 
 // M3 Expressive size ramp shared by .m3-btn, .m3-icon-btn and .m3-split-button:
 // size -> [container height, inline padding, icon size, label size]
+// --small is M3's 40px rung, the same metrics as the default: naming it is
+// the point, so the ramp cannot quietly collapse it onto --xs the way a
+// Bootstrap .btn-sm alias once did.
 const BUTTON_RAMP = {
   xs: [32, 12, 20, 14],
+  small: [40, 16, 20, 14],
   '': [40, 16, 20, 14],
   medium: [56, 24, 24, 16],
   large: [96, 48, 32, 24],
   xl: [136, 64, 40, 32],
 };
 // Icon buttons carry the same heights, square containers, and M3's icon ramp.
-const ICON_BUTTON_RAMP = { xs: [32, 20], '': [40, 24], medium: [56, 24], large: [96, 32], xl: [136, 40] };
+const ICON_BUTTON_RAMP = { xs: [32, 20], small: [40, 24], '': [40, 24], medium: [56, 24], large: [96, 32], xl: [136, 40] };
 
 // M3 Expressive's emphasized typescale: the same fifteen styles at the same
 // size and line height, set heavier and re-tracked. Regular goes to Medium;
@@ -498,6 +502,16 @@ async function run() {
     expect(eq(r.iconButtons[size], [h, icon, h]), `.m3-icon-btn${size ? '--' + size : ''} [h,icon,w] ${JSON.stringify(r.iconButtons[size])}, expected ${JSON.stringify([h, icon, h])}`);
   }
 
+  // Five named rungs, five distinct heights. Checking each modifier against
+  // its own expected height is not enough on its own: a modifier can hit the
+  // right number while a neighbour silently sits on the same one, which is
+  // how --xs and --small were both 32px, indistinguishable on the page.
+  const RUNGS = ['xs', 'small', 'medium', 'large', 'xl'];
+  for (const [family, got] of [['m3-btn', (s) => r.buttons[s][0]], ['m3-icon-btn', (s) => r.iconButtons[s][0]], ['m3-split-button', (s) => r.splitHeights[s]]]) {
+    const heights = RUNGS.map(got);
+    expect(new Set(heights).size === RUNGS.length, `.${family} size ramp collapses: ${RUNGS.map((s, i) => `--${s} ${heights[i]}px`).join(', ')}`);
+  }
+
   for (const [role, [weight, tracking]] of Object.entries(EMPHASIZED)) {
     const got = r.type[role];
     expect(got.weight === String(weight), `.m3-${role}-emphasized weight ${got.weight}, expected ${weight}`);
@@ -708,7 +722,7 @@ async function run() {
   expect(r.misc.navBar === 80, `navigation bar height ${r.misc.navBar}, expected 80`);
 
   if (!failures.length) {
-    console.log(`[spec] ${Object.keys(TOKENS).length} tokens, ${Object.keys(BUTTON_RAMP).length}-rung button/icon-button/split ramps, ${Object.keys(EMPHASIZED).length} emphasized typescale styles, 6 tonal-elevation surfaces, field anatomy, slider anatomy (track layers positioned), fields, chips, selection, progress (stop indicator + gap), tabs, tooltip, list, 4 carousel layouts, motion patterns inert under reduced motion, dial/year/shortcut/search-slot/hero-icon/avatar anatomy, rail (collapsed rhythm + expanded + header): ok`);
+    console.log(`[spec] ${Object.keys(TOKENS).length} tokens, ${Object.keys(BUTTON_RAMP).filter(Boolean).length}-rung button/icon-button/split ramps, ${Object.keys(EMPHASIZED).length} emphasized typescale styles, 6 tonal-elevation surfaces, field anatomy, slider anatomy (track layers positioned), fields, chips, selection, progress (stop indicator + gap), tabs, tooltip, list, 4 carousel layouts, motion patterns inert under reduced motion, dial/year/shortcut/search-slot/hero-icon/avatar anatomy, rail (collapsed rhythm + expanded + header): ok`);
   }
   return failures;
 }

@@ -306,7 +306,7 @@ $-themes: (
   }
 
   .btn-sm {
-    @include button.small;
+    @include button.bootstrap-small;
   }
 
   .btn-lg {

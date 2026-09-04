@@ -31,10 +31,14 @@
 //   --m3-btn-icon-optical-size(-medium/-large/-xl)  20 / 24 / 32 / 40
 //                                            opsz axis of a child .m3-icon
 //   Bootstrap's own ramp keeps Bootstrap's metrics (it is not an M3 ramp):
-//   --m3-btn-height-small             32px   .m3-btn--small / .btn-sm
+//   --m3-btn-height-small             40px   .m3-btn--small (M3's small rung,
+//                                            which is also the default height)
+//   --m3-btn-height-bootstrap-small   32px   .btn-sm
 //   --m3-btn-height-bootstrap-large   48px   .btn-lg
 //   --m3-btn-padding-inline-small     space-4 (16px)
 //   --m3-btn-padding-inline-bootstrap-large  space-6 (32px)
+//   --m3-btn-padding-inline-bootstrap-small  space-4 (16px)
+//   --m3-btn-icon-size-bootstrap-small       icon-size-small (18px)
 //   --m3-btn-icon-size-small          18px            .m3-btn--small
 //   --m3-btn-shape                    corner-full
 //   --m3-btn-shape-square             corner-medium   .m3-btn--square (default,
@@ -81,7 +85,8 @@ $tokens: (
   "btn-height-medium": #{fn.rem(56)},
   "btn-height-large": #{fn.rem(96)},
   "btn-height-xl": #{fn.rem(136)},
-  "btn-height-small": #{fn.rem(32)},
+  "btn-height-small": #{fn.rem(40)},
+  "btn-height-bootstrap-small": #{fn.rem(32)},
   "btn-height-bootstrap-large": #{fn.rem(48)},
   "btn-padding-inline": var(--#{c.$prefix}-sys-space-4),
   "btn-padding-inline-xs": var(--#{c.$prefix}-sys-space-3),
@@ -89,6 +94,7 @@ $tokens: (
   "btn-padding-inline-large": var(--#{c.$prefix}-sys-space-7),
   "btn-padding-inline-xl": #{fn.rem(64)},
   "btn-padding-inline-small": var(--#{c.$prefix}-sys-space-4),
+  "btn-padding-inline-bootstrap-small": var(--#{c.$prefix}-sys-space-4),
   "btn-padding-inline-bootstrap-large": var(--#{c.$prefix}-sys-space-6),
   "btn-icon-gap": var(--#{c.$prefix}-sys-space-2),
   "btn-icon-size": #{fn.rem(20)},
@@ -96,7 +102,8 @@ $tokens: (
   "btn-icon-size-medium": var(--#{c.$prefix}-sys-icon-size),
   "btn-icon-size-large": #{fn.rem(32)},
   "btn-icon-size-xl": #{fn.rem(40)},
-  "btn-icon-size-small": var(--#{c.$prefix}-sys-icon-size-small),
+  "btn-icon-size-small": #{fn.rem(20)},
+  "btn-icon-size-bootstrap-small": var(--#{c.$prefix}-sys-icon-size-small),
   "btn-icon-optical-size": 20,
   "btn-icon-optical-size-medium": 24,
   "btn-icon-optical-size-large": 32,
@@ -309,14 +316,25 @@ $tokens: (
   @include m.typescale("headline-large");
 }
 
+// M3's small rung, 40px. It is the same metrics the base already carries --
+// M3's default button IS the small one -- but the ramp needs a name for that
+// rung or --xs and --small collapse onto one size. Re-points the same tokens
+// the other rungs do, so it composes with --square and survives density.
+@mixin small {
+  --#{c.$prefix}-btn-height: #{v("btn-height-small")};
+  --#{c.$prefix}-btn-padding-inline: #{v("btn-padding-inline-small")};
+  --#{c.$prefix}-btn-icon-size: #{v("btn-icon-size-small")};
+}
+
 // --- Bootstrap parity sizes -------------------------------------------------
 // .btn-sm / .btn-lg are Bootstrap's ramp, not M3's, and keep Bootstrap's
-// metrics so a re-skinned Bootstrap page keeps its layout. .m3-btn--small is
-// kept as the alias of the 32px size (as .m3-icon-btn--small is).
-@mixin small {
-  --#{c.$prefix}-btn-icon-size: #{v("btn-icon-size-small")};
-  @include m.control-height(v("btn-height-small"));
-  padding-inline: #{v("btn-padding-inline-small")};
+// metrics so a re-skinned Bootstrap page keeps its layout. .btn-sm sets its
+// height directly rather than re-pointing --m3-btn-height, which keeps the
+// pill radius on the 40px base and matches what stock Bootstrap renders.
+@mixin bootstrap-small {
+  --#{c.$prefix}-btn-icon-size: #{v("btn-icon-size-bootstrap-small")};
+  @include m.control-height(v("btn-height-bootstrap-small"));
+  padding-inline: #{v("btn-padding-inline-bootstrap-small")};
   @include m.typescale("label-medium");
 }
 

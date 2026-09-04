@@ -5,7 +5,8 @@
 // ----------------------------------------------------------------------------
 //   --m3-icon-btn-size                        40px   square control size;
 //                                                    participates in density
-//   --m3-icon-btn-size-small                  32px   .m3-icon-btn--small
+//   --m3-icon-btn-size-small                  40px   .m3-icon-btn--small (M3's
+//                                            small rung, also the default size)
 //   --m3-icon-btn-size-xs                     32px   .m3-icon-btn--xs (M3 Expressive)
 //   --m3-icon-btn-size-medium                 56px   .m3-icon-btn--medium
 //   --m3-icon-btn-size-large                  96px   .m3-icon-btn--large
@@ -63,7 +64,7 @@
 // ancestor still wins (see mixins.scss "component token defaults").
 $tokens: (
   "icon-btn-size": #{fn.rem(40)},
-  "icon-btn-size-small": #{fn.rem(32)},
+  "icon-btn-size-small": #{fn.rem(40)},
   "icon-btn-size-xs": #{fn.rem(32)},
   "icon-btn-size-medium": #{fn.rem(56)},
   "icon-btn-size-large": #{fn.rem(96)},
@@ -254,20 +255,18 @@ $tokens: (
   }
 }
 
-@mixin small {
-  --#{c.$prefix}-icon-btn-icon-size: var(--#{c.$prefix}-sys-icon-size-small);
-  --#{c.$prefix}-icon-btn-icon-optical-size: #{v("icon-btn-icon-optical-size-xs")};
-  @include m.control-height(v("icon-btn-size-small"));
-  @include m.pill-radius(v("icon-btn-size-small"));
-  inline-size: calc(
-    #{v("icon-btn-size-small")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
-  );
-}
-
 // M3 Expressive sizes. Base derives both height and width from the size
 // token, so these re-point that token (plus the icon size and the
 // square-shape token --square reads); a size and --square compose on one
-// element. small above predates the Expressive scale and keeps its form.
+// element.
+//
+// --small is M3's 40px rung, the same metrics base already carries -- M3's
+// default icon button IS the small one -- but the ramp needs a name for that
+// rung or --xs and --small collapse onto one size.
+@mixin small {
+  --#{c.$prefix}-icon-btn-size: #{v("icon-btn-size-small")};
+}
+
 @mixin xs {
   --#{c.$prefix}-icon-btn-size: #{v("icon-btn-size-xs")};
   --#{c.$prefix}-icon-btn-icon-size: #{v("icon-btn-icon-size-xs")};

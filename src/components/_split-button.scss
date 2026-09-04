@@ -18,7 +18,7 @@
 //   pressed-opacity state layer, and its chevron flips. Hovering or pressing a
 //   half rounds its inner corners to the hovered/pressed size.
 //
-// PUBLIC VARIABLE API (tier-3 tokens; -xs/-medium/-large/-xl variants of the
+// PUBLIC VARIABLE API (tier-3 tokens; -xs/-small/-medium/-large/-xl variants of the
 // per-size ones are re-pointed by the size modifiers)
 //   --m3-split-button-gap                     2px      seam between halves
 //   --m3-split-button-min-width               48px     either half
@@ -37,7 +37,8 @@
 // Both halves are .m3-btn elements: every button variant token applies, and
 // the root's --tonal / --outlined / --elevated re-point the button tokens
 // both halves read, so a variant is written once. Sizes go on the root
-// (--xs / --medium / --large / --xl), which re-point the size tokens above and
+// (--xs / --small / --medium / --large / --xl), which re-point the size tokens
+// above and
 // the button height the halves read.
 //
 // Markup (related actions in the menu):
@@ -102,6 +103,18 @@ $tokens: (
   "split-button-toggle-padding-inline": #{fn.rem(13)},
   "split-button-chevron-size": var(--#{c.$prefix}-sys-chevron-size),
   "split-button-chevron-stroke": var(--#{c.$prefix}-sys-stroke-thick),
+  // M3's small rung. Its values are the defaults above -- M3's default split
+  // button IS the small one -- but the ramp needs a name for that rung, or
+  // --small on a split button is silence while it sizes its neighbours.
+  "split-button-height-small": #{fn.rem(40)},
+  "split-button-inner-shape-small": var(--#{c.$sys-prefix}-sys-shape-corner-extra-small),
+  "split-button-inner-shape-active-small": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "split-button-action-padding-start-small": #{fn.rem(16)},
+  "split-button-action-padding-end-small": #{fn.rem(12)},
+  "split-button-toggle-width-small": #{fn.rem(48)},
+  "split-button-toggle-padding-inline-small": #{fn.rem(13)},
+  "split-button-chevron-size-small": var(--#{c.$prefix}-sys-chevron-size),
+
   "split-button-height-xs": #{fn.rem(32)},
   "split-button-inner-shape-xs": var(--#{c.$sys-prefix}-sys-shape-corner-extra-small),
   "split-button-inner-shape-active-xs": var(--#{c.$sys-prefix}-sys-shape-corner-small),
@@ -331,6 +344,11 @@ $tokens: (
   }
 }
 
+@mixin small {
+  @include -size("small");
+  --#{c.$prefix}-btn-icon-size: #{button.v("btn-icon-size-small")};
+}
+
 @mixin xs {
   @include -size("xs");
   --#{c.$prefix}-btn-icon-size: #{button.v("btn-icon-size-xs")};
@@ -413,6 +431,10 @@ $tokens: (
 
   .#{$p}-split-button--elevated {
     @include elevated;
+  }
+
+  .#{$p}-split-button--small {
+    @include small;
   }
 
   .#{$p}-split-button--xs {

@@ -2927,9 +2927,9 @@
       pointer-events: none;
     }
     .btn-sm {
-      --m3-btn-icon-size: var(--m3-btn-icon-size-small, var(--m3-sys-icon-size-small));
-      height: calc(var(--m3-btn-height-small, 2rem) + var(--m3-sys-density) * var(--m3-sys-density-step));
-      padding-inline: var(--m3-btn-padding-inline-small, var(--m3-sys-space-4));
+      --m3-btn-icon-size: var(--m3-btn-icon-size-bootstrap-small, var(--m3-sys-icon-size-small));
+      height: calc(var(--m3-btn-height-bootstrap-small, 2rem) + var(--m3-sys-density) * var(--m3-sys-density-step));
+      padding-inline: var(--m3-btn-padding-inline-bootstrap-small, var(--m3-sys-space-4));
       font-family: var(--md-sys-typescale-label-medium-font);
       font-size: var(--md-sys-typescale-label-medium-size);
       line-height: var(--md-sys-typescale-label-medium-line-height);
@@ -3013,14 +3013,9 @@
       margin-block-start: var(--m3-sys-stroke-hairline);
     }
     .btn-group-sm > .btn {
-      --m3-btn-icon-size: var(--m3-btn-icon-size-small, var(--m3-sys-icon-size-small));
-      height: calc(var(--m3-btn-height-small, 2rem) + var(--m3-sys-density) * var(--m3-sys-density-step));
-      padding-inline: var(--m3-btn-padding-inline-small, var(--m3-sys-space-4));
-      font-family: var(--md-sys-typescale-label-medium-font);
-      font-size: var(--md-sys-typescale-label-medium-size);
-      line-height: var(--md-sys-typescale-label-medium-line-height);
-      font-weight: var(--md-sys-typescale-label-medium-weight);
-      letter-spacing: var(--md-sys-typescale-label-medium-tracking);
+      --m3-btn-height: var(--m3-btn-height-small, 2.5rem);
+      --m3-btn-padding-inline: var(--m3-btn-padding-inline-small, var(--m3-sys-space-4));
+      --m3-btn-icon-size: var(--m3-btn-icon-size-small, 1.25rem);
     }
     .btn-group-lg > .btn {
       --m3-btn-shape-square: var(--m3-btn-shape-square-medium, var(--md-sys-shape-corner-large));
@@ -9088,14 +9083,9 @@
       pointer-events: none;
     }
     .m3-btn--small {
-      --m3-btn-icon-size: var(--m3-btn-icon-size-small, var(--m3-sys-icon-size-small));
-      height: calc(var(--m3-btn-height-small, 2rem) + var(--m3-sys-density) * var(--m3-sys-density-step));
-      padding-inline: var(--m3-btn-padding-inline-small, var(--m3-sys-space-4));
-      font-family: var(--md-sys-typescale-label-medium-font);
-      font-size: var(--md-sys-typescale-label-medium-size);
-      line-height: var(--md-sys-typescale-label-medium-line-height);
-      font-weight: var(--md-sys-typescale-label-medium-weight);
-      letter-spacing: var(--md-sys-typescale-label-medium-tracking);
+      --m3-btn-height: var(--m3-btn-height-small, 2.5rem);
+      --m3-btn-padding-inline: var(--m3-btn-padding-inline-small, var(--m3-sys-space-4));
+      --m3-btn-icon-size: var(--m3-btn-icon-size-small, 1.25rem);
     }
     .m3-btn--large {
       --m3-btn-height: var(--m3-btn-height-large, 6rem);
@@ -9351,13 +9341,7 @@
       border-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--md-sys-state-disabled-container-opacity), transparent);
     }
     .m3-icon-btn--small {
-      --m3-icon-btn-icon-size: var(--m3-sys-icon-size-small);
-      --m3-icon-btn-icon-optical-size: var(--m3-icon-btn-icon-optical-size-xs, 20);
-      height: calc(var(--m3-icon-btn-size-small, 2rem) + var(--m3-sys-density) * var(--m3-sys-density-step));
-      --_pill-radius: calc(
-        (var(--m3-icon-btn-size-small, 2rem) + var(--m3-sys-density) * var(--m3-sys-density-step)) / 2
-      );
-      inline-size: calc(var(--m3-icon-btn-size-small, 2rem) + var(--m3-sys-density) * var(--m3-sys-density-step));
+      --m3-icon-btn-size: var(--m3-icon-btn-size-small, 2.5rem);
     }
     .m3-icon-btn--xs {
       --m3-icon-btn-size: var(--m3-icon-btn-size-xs, 2rem);
@@ -10322,10 +10306,17 @@
       scroll-snap-type: x mandatory;
       scroll-padding-inline: var(--m3-sys-space-4);
       overscroll-behavior-x: contain;
-      scrollbar-width: none;
+      scrollbar-width: thin;
+      scrollbar-color: var(--m3-carousel-scrollbar-color, var(--md-sys-color-outline-variant)) transparent;
     }
-    .m3-carousel::-webkit-scrollbar {
-      display: none;
+    @media (pointer: coarse) {
+      .m3-carousel {
+        scrollbar-width: none;
+        scrollbar-color: auto;
+      }
+      .m3-carousel::-webkit-scrollbar {
+        display: none;
+      }
     }
     @media (prefers-reduced-motion: no-preference) {
       .m3-carousel {
@@ -14854,9 +14845,9 @@
       --m3-icon-btn-icon-size: var(--m3-icon-btn-icon-size-xs, 1.25rem);
     }
     .m3-button-group--small {
-      --m3-btn-height: var(--m3-btn-height-small, 2rem);
+      --m3-btn-height: var(--m3-btn-height-small, 2.5rem);
       --m3-btn-padding-inline: var(--m3-btn-padding-inline-small, var(--m3-sys-space-4));
-      --m3-icon-btn-size: var(--m3-btn-height-small, 2rem);
+      --m3-icon-btn-size: var(--m3-btn-height-small, 2.5rem);
       --m3-icon-btn-icon-size: var(--m3-sys-icon-size-small);
     }
     .m3-button-group--small > .m3-btn {
@@ -15108,6 +15099,17 @@
       box-shadow: none;
       cursor: not-allowed;
       pointer-events: none;
+    }
+    .m3-split-button--small {
+      --m3-split-button-height: var(--m3-split-button-height-small, 2.5rem);
+      --m3-split-button-inner-shape: var(--m3-split-button-inner-shape-small, var(--md-sys-shape-corner-extra-small));
+      --m3-split-button-inner-shape-active: var(--m3-split-button-inner-shape-active-small, var(--md-sys-shape-corner-medium));
+      --m3-split-button-action-padding-start: var(--m3-split-button-action-padding-start-small, 1rem);
+      --m3-split-button-action-padding-end: var(--m3-split-button-action-padding-end-small, 0.75rem);
+      --m3-split-button-toggle-width: var(--m3-split-button-toggle-width-small, 3rem);
+      --m3-split-button-toggle-padding-inline: var(--m3-split-button-toggle-padding-inline-small, 0.8125rem);
+      --m3-split-button-chevron-size: var(--m3-split-button-chevron-size-small, var(--m3-sys-chevron-size));
+      --m3-btn-icon-size: var(--m3-btn-icon-size-small, 1.25rem);
     }
     .m3-split-button--xs {
       --m3-split-button-height: var(--m3-split-button-height-xs, 2rem);
