@@ -663,6 +663,19 @@ together and they stay in step. Durations and easings are M3 tokens
 throughout; the shared axes' 30px travel is
 `--m3-sys-motion-axis-distance`.
 
+Because one animation carries both the fade and the travel, the **transform is
+pinned at the split too**: every keyframe holding opacity also holds its
+translate or scale. Otherwise the transform interpolates across the whole
+timeline while the element is only visible for part of it, and the easing
+decides how much of the journey you actually see — on the outgoing half,
+`emphasized-accelerate` leaves ~95% of the travel until after the element has
+faded out, and a shared axis renders as a plain fade. Pinning spends the whole
+distance inside the window where the element can be seen.
+
+`--m3-sys-motion-axis-distance` is spatial, not timing. M3's 30dp is a
+phone-scale default; on a wide surface 30px reads as a twitch, so re-point it
+on the container the way you would any other token.
+
 That is also how you slow one down. At M3's specified 300ms the patterns are a
 few frames apart and hard to tell from one another — which matters when you are
 choosing between them, or showing a colleague why fade through is not a fade.
@@ -678,7 +691,11 @@ retimes, ratio intact:
 ```
 
 The catalog's transition-pattern demo is exactly this, wired to a segmented
-control, and it opens at ¼× for that reason.
+control, and it opens at ⅛× for that reason. Two things there are the demo's
+own rather than the library's, both teaching aids: its slowed settings insert a
+pause between the halves so they read as two events (M3 specifies no such
+pause, and its 1× setting runs without one), and it widens the axis distance
+for a 700px-wide stage.
 
 **Container transform** is the one pattern the web already has a mechanism
 for, so m3x drives that rather than reimplementing the morph:

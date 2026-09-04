@@ -22,6 +22,16 @@
 // put that split at 30% of the timeline, which keeps the two halves in step
 // however the duration token is re-pointed.
 //
+// Because one animation carries both the fade and the travel, the TRANSFORM
+// is pinned at the split too -- every keyframe that holds opacity also holds
+// its translate or scale. Otherwise the transform interpolates across the
+// whole timeline while the element is only visible for part of it, and the
+// easing decides how much of the journey you actually see: on the outgoing
+// half, `emphasized-accelerate` puts ~95% of the travel after the element has
+// already faded out, so a shared axis renders as a plain fade. Pinning spends
+// the whole distance inside the window where the element can be seen, which
+// is the motion M3 describes: travel and fade together.
+//
 // USAGE. Apply the class to the element that is arriving; apply the `--out`
 // class to the one leaving, and remove it from the DOM on `animationend`:
 //
@@ -80,12 +90,10 @@ $split: 30%;
   // The distance is read from a private so one keyframe pair serves both
   // directions: --reverse negates it.
   @keyframes #{$p}-shared-axis-x-in {
-    0% {
-      opacity: 0;
-      translate: var(--_axis) 0;
-    }
+    0%,
     #{$split} {
       opacity: 0;
+      translate: var(--_axis) 0;
     }
     100% {
       opacity: 1;
@@ -98,9 +106,7 @@ $split: 30%;
       opacity: 1;
       translate: 0 0;
     }
-    #{$split} {
-      opacity: 0;
-    }
+    #{$split},
     100% {
       opacity: 0;
       translate: calc(-1 * var(--_axis)) 0;
@@ -108,12 +114,10 @@ $split: 30%;
   }
 
   @keyframes #{$p}-shared-axis-y-in {
-    0% {
-      opacity: 0;
-      translate: 0 var(--_axis);
-    }
+    0%,
     #{$split} {
       opacity: 0;
+      translate: 0 var(--_axis);
     }
     100% {
       opacity: 1;
@@ -126,9 +130,7 @@ $split: 30%;
       opacity: 1;
       translate: 0 0;
     }
-    #{$split} {
-      opacity: 0;
-    }
+    #{$split},
     100% {
       opacity: 0;
       translate: 0 calc(-1 * var(--_axis));
@@ -137,12 +139,10 @@ $split: 30%;
 
   // --- shared axis, z -------------------------------------------------------
   @keyframes #{$p}-shared-axis-z-in {
-    0% {
-      opacity: 0;
-      scale: var(--_z-from);
-    }
+    0%,
     #{$split} {
       opacity: 0;
+      scale: var(--_z-from);
     }
     100% {
       opacity: 1;
@@ -155,9 +155,7 @@ $split: 30%;
       opacity: 1;
       scale: 1;
     }
-    #{$split} {
-      opacity: 0;
-    }
+    #{$split},
     100% {
       opacity: 0;
       scale: var(--_z-to);

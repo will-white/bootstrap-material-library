@@ -18180,12 +18180,9 @@
         }
       }
       @keyframes m3-shared-axis-x-in {
-        0% {
+        0%, 30% {
           opacity: 0;
           translate: var(--_axis) 0;
-        }
-        30% {
-          opacity: 0;
         }
         100% {
           opacity: 1;
@@ -18197,21 +18194,15 @@
           opacity: 1;
           translate: 0 0;
         }
-        30% {
-          opacity: 0;
-        }
-        100% {
+        30%, 100% {
           opacity: 0;
           translate: calc(-1 * var(--_axis)) 0;
         }
       }
       @keyframes m3-shared-axis-y-in {
-        0% {
+        0%, 30% {
           opacity: 0;
           translate: 0 var(--_axis);
-        }
-        30% {
-          opacity: 0;
         }
         100% {
           opacity: 1;
@@ -18223,21 +18214,15 @@
           opacity: 1;
           translate: 0 0;
         }
-        30% {
-          opacity: 0;
-        }
-        100% {
+        30%, 100% {
           opacity: 0;
           translate: 0 calc(-1 * var(--_axis));
         }
       }
       @keyframes m3-shared-axis-z-in {
-        0% {
+        0%, 30% {
           opacity: 0;
           scale: var(--_z-from);
-        }
-        30% {
-          opacity: 0;
         }
         100% {
           opacity: 1;
@@ -18249,10 +18234,7 @@
           opacity: 1;
           scale: 1;
         }
-        30% {
-          opacity: 0;
-        }
-        100% {
+        30%, 100% {
           opacity: 0;
           scale: var(--_z-to);
         }

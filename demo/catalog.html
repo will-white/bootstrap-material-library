@@ -80,22 +80,44 @@
        element moves. The speed control re-points M3's own duration tokens on
        this block, which is exactly how a consumer would retime the patterns;
        :has() reads the checked radio, so it costs no script. */
-    .cat-motion { display: grid; gap: var(--m3-sys-space-4); grid-template-columns: minmax(0, 14rem) minmax(0, 1fr); align-items: start; }
+    .cat-motion {
+      /* M3's shared-axis travel is 30dp, a phone metric. This stage is about
+         700px wide, where 30px reads as a twitch rather than a journey.
+         --m3-sys-motion-axis-distance is the library token for exactly that,
+         and it is spatial, not timing, so it does not move with the speed
+         control. --cat-hold is this page's own: a pause after the outgoing
+         screen has gone and before the incoming one starts, so the two halves
+         read as two events. M3 specifies no such pause -- 1x leaves it at 0. */
+      --m3-sys-motion-axis-distance: 4.5rem;
+      --cat-hold: 0ms;
+      display: grid; gap: var(--m3-sys-space-4); grid-template-columns: minmax(0, 14rem) minmax(0, 1fr); align-items: start; }
     .cat-motion__controls { display: grid; gap: var(--m3-sys-space-3); justify-items: start; }
     .cat-motion__buttons { display: grid; gap: var(--m3-sys-space-2); justify-items: stretch; inline-size: 100%; }
     .cat-motion__speed { align-self: start; }
     .cat-motion__stage { display: grid; min-block-size: 12rem; border-radius: var(--md-sys-shape-corner-large); overflow: clip; }
     .cat-motion__pane { grid-area: 1 / 1; align-self: stretch; }
     .cat-motion__pane--off { opacity: 0; pointer-events: none; }
+    /* animation-fill-mode is `both`, so through the delay the arriving pane
+       holds its 0% keyframe -- opacity 0, parked at the far end of its
+       travel -- instead of flashing in place first. */
+    .cat-motion__pane--in { animation-delay: var(--cat-hold); }
     .cat-motion:has(#motion-speed-2:checked) {
       --md-sys-motion-duration-medium2: 600ms;
       --md-sys-motion-duration-short3: 300ms;
       --md-sys-motion-duration-short1: 100ms;
+      --cat-hold: 200ms;
     }
     .cat-motion:has(#motion-speed-4:checked) {
       --md-sys-motion-duration-medium2: 1200ms;
       --md-sys-motion-duration-short3: 600ms;
       --md-sys-motion-duration-short1: 200ms;
+      --cat-hold: 400ms;
+    }
+    .cat-motion:has(#motion-speed-8:checked) {
+      --md-sys-motion-duration-medium2: 2400ms;
+      --md-sys-motion-duration-short3: 1200ms;
+      --md-sys-motion-duration-short1: 400ms;
+      --cat-hold: 800ms;
     }
     @media (max-width: 48rem) { .cat-motion { grid-template-columns: minmax(0, 1fr); } }
 
@@ -727,14 +749,21 @@
       Each pattern is one animation whose keyframes put that split at 30% of the timeline, which is why re-pointing
       a duration token moves both halves together and keeps the ratio.</p>
     <p class="cat-note m3-body-small">At M3&rsquo;s specified 300ms the difference between these patterns is a
-      matter of a few frames. <strong>Slow it down first</strong> &mdash; the speed control does nothing but
-      re-point <code>--md-sys-motion-duration-medium2</code>, <code>-short3</code> and <code>-short1</code> on this
-      block, which is exactly how you would retime the patterns in your own app. Watch the same button at 1&times;
+      matter of a few frames. <strong>Slow it down first</strong> &mdash; the speed control re-points
+      <code>--md-sys-motion-duration-medium2</code>, <code>-short3</code> and <code>-short1</code> on this block,
+      which is exactly how you would retime the patterns in your own app. Watch the same button at 1&times;
       afterwards and you will see what you were missing.</p>
+    <p class="cat-note m3-body-small">Two things here are the page&rsquo;s, not the library&rsquo;s, and both are
+      teaching aids. The slowed settings also insert a <strong>pause</strong> once the outgoing screen has gone and
+      before the incoming one starts, so you can see that they are two events and not a cross-dissolve; M3
+      specifies no such pause, and <code>1&times;</code> runs without it. And the stage re-points
+      <code>--m3-sys-motion-axis-distance</code> from M3&rsquo;s 30dp to 72px, because 30dp is a phone metric and
+      this pane is 700px wide &mdash; that token is spatial, so it does not change with the speed.</p>
     <div class="cat-motion">
       <div class="cat-motion__controls">
         <fieldset class="m3-segmented cat-motion__speed" aria-label="Playback speed">
-          <label class="m3-segmented__segment"><input class="m3-segmented__input" type="radio" name="motion-speed" id="motion-speed-4" checked><span class="m3-segmented__label">&frac14;&times;</span></label>
+          <label class="m3-segmented__segment"><input class="m3-segmented__input" type="radio" name="motion-speed" id="motion-speed-8" checked><span class="m3-segmented__label">&#8539;&times;</span></label>
+          <label class="m3-segmented__segment"><input class="m3-segmented__input" type="radio" name="motion-speed" id="motion-speed-4"><span class="m3-segmented__label">&frac14;&times;</span></label>
           <label class="m3-segmented__segment"><input class="m3-segmented__input" type="radio" name="motion-speed" id="motion-speed-2"><span class="m3-segmented__label">&frac12;&times;</span></label>
           <label class="m3-segmented__segment"><input class="m3-segmented__input" type="radio" name="motion-speed" id="motion-speed-1"><span class="m3-segmented__label">1&times; spec</span></label>
         </fieldset>
@@ -759,8 +788,9 @@
         <div class="m3-card m3-card--filled cat-motion__pane cat-motion__pane--off" data-pane>
           <div class="m3-card__slot">
             <h4 class="m3-title-medium">Screen two</h4>
-            <p class="m3-body-medium">The screen arriving. It waits out the first 90ms, then takes the
-              remaining 210ms &mdash; growing from 92% on a fade through, from 80% on a plain fade.</p>
+            <p class="m3-body-medium">The screen arriving. It waits out the first 90ms &mdash; plus this
+              page&rsquo;s pause &mdash; then takes the remaining 210ms, growing from 92% on a fade through and
+              from 80% on a plain fade.</p>
           </div>
         </div>
       </div>
@@ -1812,32 +1842,54 @@
         <button class="m3-carousel__indicator" type="button" aria-label="Slide 4"></button>
         <button class="m3-carousel__indicator" type="button" aria-label="Slide 5"></button>
       </div>
-      <p class="cat-note m3-body-small">The dots are <code>.m3-carousel__indicators</code>. m3x styles them and
-        stops there &mdash; which dot is <code>.active</code> is scroll state, and this page supplies the few
-        lines that track it.</p>
+      <p class="cat-note m3-body-small">The dots are <code>.m3-carousel__indicators</code>, and every layout
+        below carries a row. m3x styles them and stops there &mdash; which dot is <code>.active</code> is scroll
+        state, and this page supplies the few lines that track it, reading each layout&rsquo;s own
+        <code>scroll-snap-align</code> so the centred and start-aligned layouts both report the right item.</p>
       <p class="cat-note m3-body-small"><code>--multi-browse</code> &mdash; large, medium and small at once.</p>
-      <div class="m3-carousel m3-carousel--multi-browse" tabindex="0" role="group" aria-label="Themes, multi-browse">
+      <div class="m3-carousel m3-carousel--multi-browse" tabindex="0" role="group" aria-label="Themes, multi-browse" id="cat-carousel-multi">
         <div class="m3-carousel__item m3-bg-primary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Primary</div>
         <div class="m3-carousel__item m3-bg-secondary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Secondary</div>
         <div class="m3-carousel__item m3-bg-tertiary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Tertiary</div>
         <div class="m3-carousel__item m3-bg-error-container" style="min-block-size: 7rem; display: grid; place-content: center;">Error</div>
         <div class="m3-carousel__item m3-bg-surface-container-highest" style="min-block-size: 7rem; display: grid; place-content: center;">Surface</div>
+      </div>
+      <div class="m3-carousel__indicators" data-dots-for="cat-carousel-multi">
+        <button class="m3-carousel__indicator active" type="button" aria-label="Slide 1"></button>
+        <button class="m3-carousel__indicator" type="button" aria-label="Slide 2"></button>
+        <button class="m3-carousel__indicator" type="button" aria-label="Slide 3"></button>
+        <button class="m3-carousel__indicator" type="button" aria-label="Slide 4"></button>
+        <button class="m3-carousel__indicator" type="button" aria-label="Slide 5"></button>
       </div>
       <p class="cat-note m3-body-small"><code>--hero</code> &mdash; one large centred item, a small one either side.</p>
-      <div class="m3-carousel m3-carousel--hero" tabindex="0" role="group" aria-label="Themes, hero">
+      <div class="m3-carousel m3-carousel--hero" tabindex="0" role="group" aria-label="Themes, hero" id="cat-carousel-hero">
         <div class="m3-carousel__item m3-bg-primary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Primary</div>
         <div class="m3-carousel__item m3-bg-secondary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Secondary</div>
         <div class="m3-carousel__item m3-bg-tertiary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Tertiary</div>
         <div class="m3-carousel__item m3-bg-error-container" style="min-block-size: 7rem; display: grid; place-content: center;">Error</div>
         <div class="m3-carousel__item m3-bg-surface-container-highest" style="min-block-size: 7rem; display: grid; place-content: center;">Surface</div>
       </div>
+      <div class="m3-carousel__indicators" data-dots-for="cat-carousel-hero">
+        <button class="m3-carousel__indicator active" type="button" aria-label="Slide 1"></button>
+        <button class="m3-carousel__indicator" type="button" aria-label="Slide 2"></button>
+        <button class="m3-carousel__indicator" type="button" aria-label="Slide 3"></button>
+        <button class="m3-carousel__indicator" type="button" aria-label="Slide 4"></button>
+        <button class="m3-carousel__indicator" type="button" aria-label="Slide 5"></button>
+      </div>
       <p class="cat-note m3-body-small"><code>--uncontained</code> &mdash; uniform items running off the edge.</p>
-      <div class="m3-carousel m3-carousel--uncontained" tabindex="0" role="group" aria-label="Themes, uncontained">
+      <div class="m3-carousel m3-carousel--uncontained" tabindex="0" role="group" aria-label="Themes, uncontained" id="cat-carousel-uncontained">
         <div class="m3-carousel__item m3-bg-primary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Primary</div>
         <div class="m3-carousel__item m3-bg-secondary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Secondary</div>
         <div class="m3-carousel__item m3-bg-tertiary-container" style="min-block-size: 7rem; display: grid; place-content: center;">Tertiary</div>
         <div class="m3-carousel__item m3-bg-error-container" style="min-block-size: 7rem; display: grid; place-content: center;">Error</div>
         <div class="m3-carousel__item m3-bg-surface-container-highest" style="min-block-size: 7rem; display: grid; place-content: center;">Surface</div>
+      </div>
+      <div class="m3-carousel__indicators" data-dots-for="cat-carousel-uncontained">
+        <button class="m3-carousel__indicator active" type="button" aria-label="Slide 1"></button>
+        <button class="m3-carousel__indicator" type="button" aria-label="Slide 2"></button>
+        <button class="m3-carousel__indicator" type="button" aria-label="Slide 3"></button>
+        <button class="m3-carousel__indicator" type="button" aria-label="Slide 4"></button>
+        <button class="m3-carousel__indicator" type="button" aria-label="Slide 5"></button>
       </div>
     </div>
 
@@ -2612,14 +2664,26 @@
     var items = track.querySelectorAll(".m3-carousel__item");
     var buttons = dots.querySelectorAll(".m3-carousel__indicator");
 
+    // Which item counts as current depends on how the layout snaps: the
+    // default and hero centre their items, multi-browse and uncontained
+    // align them to the start. Read it off the item rather than hard-coding
+    // the class, so a layout added later is handled by the same few lines.
+    var centred = items.length && getComputedStyle(items[0]).scrollSnapAlign.indexOf("center") === 0;
+
     function sync() {
-      var mid = track.scrollLeft + track.clientWidth / 2;
+      var target = track.scrollLeft + (centred ? track.clientWidth / 2 : 0);
       var near = 0, best = Infinity;
       items.forEach(function (item, i) {
-        var centre = item.offsetLeft - track.offsetLeft + item.offsetWidth / 2;
-        var d = Math.abs(centre - mid);
+        var pos = item.offsetLeft - track.offsetLeft + (centred ? item.offsetWidth / 2 : 0);
+        var d = Math.abs(pos - target);
         if (d < best) { best = d; near = i; }
       });
+      // Clamp at the ends. A start-aligned track cannot scroll its last items
+      // to the start -- there is no room left -- so nearest-edge alone leaves
+      // the final dots permanently unreachable. At either limit the answer is
+      // the item at that limit, whatever the arithmetic says.
+      if (track.scrollLeft <= 1) near = 0;
+      else if (track.scrollLeft >= track.scrollWidth - track.clientWidth - 1) near = items.length - 1;
       buttons.forEach(function (b, i) {
         b.classList.toggle("active", i === near);
         b.setAttribute("aria-current", i === near ? "true" : "false");
@@ -2628,7 +2692,7 @@
 
     buttons.forEach(function (b, i) {
       b.addEventListener("click", function () {
-        if (items[i]) items[i].scrollIntoView({ inline: "center", block: "nearest" });
+        if (items[i]) items[i].scrollIntoView({ inline: centred ? "center" : "start", block: "nearest" });
       });
     });
     track.addEventListener("scroll", sync, { passive: true });
@@ -2683,7 +2747,8 @@
           return;
         }
         going.className = rest + " " + pattern + "-out" + reverse;
-        coming.className = rest + " " + pattern + reverse;
+        // --in carries the page's own pause; the library classes carry M3's.
+        coming.className = rest + " cat-motion__pane--in " + pattern + reverse;
         going.addEventListener("animationend", function done() {
           going.removeEventListener("animationend", done);
           going.className = off;              // hand off at opacity 0, no flash

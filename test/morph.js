@@ -22,6 +22,7 @@ const PAGE = `<!doctype html><html><head><style>@import url("/m3x.css");</style>
   <div class="m3-motion-fade-through" id="mo-ft-in"></div>
   <div class="m3-motion-fade-through-out" id="mo-ft-out"></div>
   <div class="m3-motion-shared-x" id="mo-x-in"></div>
+  <div class="m3-motion-shared-x-out" id="mo-x-out"></div>
   <div class="m3-motion-shared-x m3-motion--reverse" id="mo-x-rev"></div>
   <div class="m3-motion-shared-y" id="mo-y-in"></div>
   <div class="m3-motion-shared-z" id="mo-z-in"></div>
@@ -101,10 +102,11 @@ async function run() {
       ['ftIn', 'mo-ft-in', [0, SPLIT, 1]],
       ['ftOut', 'mo-ft-out', [0, SPLIT]],
       ['xIn', 'mo-x-in', [0, SPLIT, 1]],
+      ['xOut', 'mo-x-out', [0, SPLIT]],
       ['xRev', 'mo-x-rev', [0]],
       ['yIn', 'mo-y-in', [0, 1]],
-      ['zIn', 'mo-z-in', [0, 1]],
-      ['zOut', 'mo-z-out', [0, 1]],
+      ['zIn', 'mo-z-in', [0, SPLIT, 1]],
+      ['zOut', 'mo-z-out', [0, SPLIT, 1]],
       ['fade', 'mo-fade', [0, 1]],
       ['fadeOut', 'mo-fade-out', [0, 1]],
     ]) {
@@ -156,11 +158,26 @@ async function run() {
     expect(p.xIn.at[1].opacity === 0, `shared-axis-x is visible at the split (${p.xIn.at[1].opacity})`);
     expect(p.xRev.at[0].translate === '-30px', `shared-axis-x --reverse ${p.xRev.at[0].translate}, expected -30px`);
     expect(p.yIn.at[0].translate === '0px 30px', `shared-axis-y travel ${p.yIn.at[0].translate}, expected "0px 30px"`);
+    // The travel has to be spent where the element can be SEEN. One animation
+    // carries the fade and the transform, so if the transform is not pinned at
+    // the split it interpolates across the whole timeline while the element is
+    // visible for only part of it -- and the exit easing puts almost all of the
+    // outgoing journey after it has faded out, which renders a shared axis as a
+    // plain fade. At the split the arriving element must not have moved yet and
+    // the leaving one must have arrived.
+    expect(p.xIn.at[1].translate === '30px',
+      `shared-axis-x-in has already travelled to ${p.xIn.at[1].translate} at the split; the visible half of the slide is what is left, so it should still be at 30px`);
+    expect(p.xOut.at[1].translate === '-30px',
+      `shared-axis-x-out has only reached ${p.xOut.at[1].translate} by the split, when it is already invisible; it should have covered the whole -30px while it could still be seen`);
+    expect(p.zIn.at[1].scale === '0.8',
+      `shared-axis-z-in has already grown to ${p.zIn.at[1].scale} at the split, expected 0.8`);
+    expect(p.zOut.at[1].scale === '1.1',
+      `shared-axis-z-out has only reached ${p.zOut.at[1].scale} by the split, expected the full 1.1`);
     // Shared axis z travels by scale: in from 80%, out past the viewer to 110%.
-    expect(p.zIn.at[0].scale === '0.8' && p.zIn.at[1].scale === '1',
-      `shared-axis-z-in scale ${p.zIn.at[0].scale} -> ${p.zIn.at[1].scale}, expected 0.8 -> 1`);
-    expect(p.zOut.at[0].scale === '1' && p.zOut.at[1].scale === '1.1',
-      `shared-axis-z-out scale ${p.zOut.at[0].scale} -> ${p.zOut.at[1].scale}, expected 1 -> 1.1`);
+    expect(p.zIn.at[0].scale === '0.8' && p.zIn.at[2].scale === '1',
+      `shared-axis-z-in scale ${p.zIn.at[0].scale} -> ${p.zIn.at[2].scale}, expected 0.8 -> 1`);
+    expect(p.zOut.at[0].scale === '1' && p.zOut.at[2].scale === '1.1',
+      `shared-axis-z-out scale ${p.zOut.at[0].scale} -> ${p.zOut.at[2].scale}, expected 1 -> 1.1`);
     // The plain fade is asymmetric: in from 80% over 150ms, out faster.
     expect(p.fade.duration === 150, `fade-in duration ${p.fade.duration}, expected 150`);
     expect(p.fade.at[0].scale === '0.8' && p.fade.at[1].scale === '1',
