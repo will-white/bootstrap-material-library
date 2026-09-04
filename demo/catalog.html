@@ -2034,8 +2034,10 @@
       <header><h3 class="m3-title-medium">Search</h3>
         <span class="cat-api"><code>.m3-search</code><code>.m3-search__panel</code><code>__leading</code><code>__trailing</code></span></header>
       <p class="cat-note m3-body-small">A search bar that becomes a search view: focus the field to reveal the
-        suggestions panel. The icon slots sit 16px from the container edge with 16px to the text, and take a
-        bare icon or a whole control.</p>
+        suggestions panel. M3 builds it on the text field&rsquo;s decorator, so each slot is the same 48px
+        interactive box, nudged 4px outward &mdash; the <em>icon</em> lands 16px from the edge rather than the
+        text field&rsquo;s 12px, and the input still starts at 52px. The slot takes a bare icon or a whole
+        control; at 48px it is a real touch target either way.</p>
       <div class="cat-specimen cat-specimen--tall" style="align-items: stretch;">
         <form class="m3-search" role="search">
           <span class="m3-search__leading"><span class="m3-icon">search</span></span>

@@ -312,10 +312,19 @@ async function run() {
           yearCell: [num(box('year-cell').width), num(box('year-cell').height)],
           // Menu shortcut: pushed to the trailing edge of the item.
           shortcutEnd: num(box('menu-item-sc').right - box('menu-sc').right),
-          // Search slots: 16dp from the container edge, 16dp to the text.
-          searchLeadStart: num(box('search-lead').left - searchBox.left),
-          searchLeadGap: num(box('search-in').left - box('search-lead').right),
-          searchTrailEnd: num(searchBox.right - box('search-trail').right),
+          // Search slots. M3 builds the search bar on the TEXT FIELD's
+          // decorator: the icon sits in the same 48dp interactive box, nudged
+          // 4dp outward (androidx's SearchBarIconOffsetX) so the ICON reads
+          // 16dp from the edge rather than the text field's 12dp. The box
+          // therefore starts at 4dp and the input still begins at 52dp, where
+          // a text field with a leading icon begins it. Measure the icon, not
+          // the box: they are not the same element once the box is a real
+          // touch target.
+          searchLeadIcon: num(document.getElementById('search-lead').firstElementChild.getBoundingClientRect().left - searchBox.left),
+          searchTrailIcon: num(searchBox.right - document.getElementById('search-trail').firstElementChild.getBoundingClientRect().right),
+          searchLeadBox: [num(box('search-lead').width), num(box('search-lead').height)],
+          searchTrailBox: [num(box('search-trail').width), num(box('search-trail').height)],
+          searchTextStart: num(box('search-in').left - searchBox.left),
           // Dialog: an icon centres the headline; without one it does not.
           titleWithIcon: cs('dlg-icon-title').textAlign,
           titleWithout: cs('dlg-plain-title').textAlign,
@@ -536,9 +545,11 @@ async function run() {
     expect(eq(a.yearCell, [72, 36]), `year cell ${JSON.stringify(a.yearCell)}, expected [72,36]`);
     // The item's own 12dp inline padding is what the shortcut stops at.
     expect(a.shortcutEnd === 12, `menu shortcut trailing gap ${a.shortcutEnd}, expected 12`);
-    expect(a.searchLeadStart === 16, `search leading icon inset ${a.searchLeadStart}, expected 16`);
-    expect(a.searchLeadGap === 16, `search icon-to-text gap ${a.searchLeadGap}, expected 16`);
-    expect(a.searchTrailEnd === 16, `search trailing icon inset ${a.searchTrailEnd}, expected 16`);
+    expect(a.searchLeadIcon === 16, `search leading icon inset ${a.searchLeadIcon}, expected 16`);
+    expect(a.searchTrailIcon === 16, `search trailing icon inset ${a.searchTrailIcon}, expected 16`);
+    expect(eq(a.searchLeadBox, [48, 48]), `search leading slot ${JSON.stringify(a.searchLeadBox)}, expected [48,48] -- the text field's interactive box`);
+    expect(eq(a.searchTrailBox, [48, 48]), `search trailing slot ${JSON.stringify(a.searchTrailBox)}, expected [48,48] -- it is a real button`);
+    expect(a.searchTextStart === 52, `search input starts at ${a.searchTextStart}, expected 52 (the 48dp box nudged 4dp, as the text field does)`);
     expect(a.titleWithIcon === 'center', `dialog title with a hero icon ${a.titleWithIcon}, expected center`);
     expect(a.titleWithout === 'start', `dialog title without an icon ${a.titleWithout}, expected start`);
     expect(eq(a.avatar, [24, 24]), `chip avatar ${JSON.stringify(a.avatar)}, expected [24,24]`);

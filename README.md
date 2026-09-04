@@ -1494,7 +1494,7 @@ an element you add; none changes the markup that was already working.
 | Component | Slots |
 |---|---|
 | Menu | `.m3-menu__shortcut` (trailing supporting text), `.m3-menu__item--submenu` + `.m3-menu--submenu` (cascading) |
-| Search | `.m3-search__leading`, `.m3-search__trailing` |
+| Search | `.m3-search__leading`, `.m3-search__trailing` (the text field's 48px box, nudged 4px so the icon reads at M3's 16px) |
 | Dialog | `.m3-dialog__icon` (hero icon) |
 | Tabs | a `.m3-badge` or `.m3-badge-anchor` inside a tab |
 | Chip | `.m3-chip__avatar` (leading, 24px round) |
