@@ -1,0 +1,254 @@
+// ============================================================================
+// m3x fab (floating action button)
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-fab-size               56px   container size; participates in
+//                                      density: calc(size + density*4px)
+//   --m3-fab-size-small         40px   .m3-fab--small
+//   --m3-fab-size-medium        80px   .m3-fab--medium (M3 Expressive)
+//   --m3-fab-size-large         96px   .m3-fab--large
+//   --m3-fab-shape              corner-large
+//   --m3-fab-shape-small        corner-medium (.m3-fab--small)
+//   --m3-fab-shape-medium       corner-large (.m3-fab--medium; the spec's
+//                                      20px "large increased" has no token)
+//   --m3-fab-shape-large        corner-extra-large (.m3-fab--large)
+//   --m3-fab-container-color    primary-container   (default / .m3-fab--primary)
+//   --m3-fab-content-color      on-primary-container
+//   --m3-fab-secondary-container-color  secondary-container   (.m3-fab--secondary)
+//   --m3-fab-secondary-content-color    on-secondary-container
+//   --m3-fab-tertiary-container-color   tertiary-container    (.m3-fab--tertiary)
+//   --m3-fab-tertiary-content-color     on-tertiary-container
+//   --m3-fab-surface-container-color    surface-container-high (.m3-fab--surface)
+//   --m3-fab-surface-content-color      primary
+//   --m3-fab-icon-size          24px (--m3-sys-icon-size)
+//   --m3-fab-icon-size-medium   28px (.m3-fab--medium)
+//   --m3-fab-icon-size-large    36px (.m3-fab--large)
+//   --m3-fab-padding-inline     space-4 (16px; .m3-fab--extended)
+//   --m3-fab-icon-gap           space-2 (8px; .m3-fab--extended)
+//
+// Markup:
+//   <button class="m3-fab" aria-label="Compose"><svg ...></svg></button>
+//   <button class="m3-fab m3-fab--tertiary m3-fab--medium" aria-label="Edit">
+//     <svg ...></svg>
+//   </button>
+//   <button class="m3-fab m3-fab--extended m3-fab--fixed">
+//     <svg ...></svg>
+//     <span class="m3-fab__label">Compose</span>
+//   </button>
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "fab-size": #{fn.rem(56)},
+  "fab-size-small": #{fn.rem(40)},
+  "fab-size-medium": #{fn.rem(80)},
+  "fab-size-large": #{fn.rem(96)},
+  "fab-shape": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+  "fab-shape-small": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "fab-shape-medium": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+  "fab-shape-large": var(--#{c.$sys-prefix}-sys-shape-corner-extra-large),
+  "fab-container-color": var(--#{c.$sys-prefix}-sys-color-primary-container),
+  "fab-content-color": var(--#{c.$sys-prefix}-sys-color-on-primary-container),
+  "fab-secondary-container-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
+  "fab-secondary-content-color": var(--#{c.$sys-prefix}-sys-color-on-secondary-container),
+  "fab-tertiary-container-color": var(--#{c.$sys-prefix}-sys-color-tertiary-container),
+  "fab-tertiary-content-color": var(--#{c.$sys-prefix}-sys-color-on-tertiary-container),
+  "fab-surface-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-high),
+  "fab-surface-content-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "fab-icon-size": var(--#{c.$prefix}-sys-icon-size),
+  "fab-icon-size-medium": #{fn.rem(28)},
+  "fab-icon-size-large": #{fn.rem(36)},
+  "fab-padding-inline": var(--#{c.$prefix}-sys-space-4),
+  "fab-icon-gap": var(--#{c.$prefix}-sys-space-2),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// Structure + state machinery. Size modifiers re-include control-height with
+// their own size token and mirror it on width with the same density calc.
+@mixin base {
+  @include m.own-box;
+  text-align: center;
+  @include m.typescale("label-large");
+  --_container: #{v("fab-container-color")};
+  --_content: #{v("fab-content-color")};
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  @include m.control-height(v("fab-size"));
+  width: calc(
+    #{v("fab-size")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
+  );
+  border: none;
+  border-radius: #{v("fab-shape")};
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  text-decoration: none;
+  vertical-align: middle;
+  -webkit-tap-highlight-color: transparent;
+  @include m.elevation(3);
+  @include m.state-layer;
+  @include m.focus-ring;
+  @include m.transition((background-color, box-shadow));
+  @include m.forced-colors-border;
+
+  @include m.hover {
+    @include m.elevation(4);
+  }
+
+  > svg,
+  > img,
+  > .#{c.$prefix}-icon {
+    inline-size: #{v("fab-icon-size")};
+    font-size: #{v("fab-icon-size")};
+    block-size: #{v("fab-icon-size")};
+    --#{c.$prefix}-icon-optical-size: 24;
+  }
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled;
+  }
+}
+
+@mixin small {
+  @include m.control-height(v("fab-size-small"));
+  width: calc(
+    #{v("fab-size-small")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
+  );
+  border-radius: #{v("fab-shape-small")};
+  // 40px container: expand the hit area to the accessibility floor.
+  @include m.touch-target;
+}
+
+@mixin medium {
+  @include m.control-height(v("fab-size-medium"));
+  width: calc(
+    #{v("fab-size-medium")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
+  );
+  border-radius: #{v("fab-shape-medium")};
+
+  > svg,
+  > img,
+  > .#{c.$prefix}-icon {
+    inline-size: #{v("fab-icon-size-medium")};
+    font-size: #{v("fab-icon-size-medium")};
+    block-size: #{v("fab-icon-size-medium")};
+    --#{c.$prefix}-icon-optical-size: 28;
+  }
+}
+
+@mixin large {
+  @include m.control-height(v("fab-size-large"));
+  width: calc(
+    #{v("fab-size-large")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
+  );
+  border-radius: #{v("fab-shape-large")};
+
+  > svg,
+  > img,
+  > .#{c.$prefix}-icon {
+    inline-size: #{v("fab-icon-size-large")};
+    font-size: #{v("fab-icon-size-large")};
+    block-size: #{v("fab-icon-size-large")};
+    --#{c.$prefix}-icon-optical-size: 36;
+  }
+}
+
+// Color variants re-point the tier-4 privates only; elevation is the base's.
+@mixin primary {
+  --_container: #{v("fab-container-color")};
+  --_content: #{v("fab-content-color")};
+}
+
+@mixin secondary {
+  --_container: #{v("fab-secondary-container-color")};
+  --_content: #{v("fab-secondary-content-color")};
+}
+
+@mixin tertiary {
+  --_container: #{v("fab-tertiary-container-color")};
+  --_content: #{v("fab-tertiary-content-color")};
+}
+
+@mixin surface {
+  --_container: #{v("fab-surface-container-color")};
+  --_content: #{v("fab-surface-content-color")};
+}
+
+@mixin extended {
+  width: auto;
+  padding-inline: #{v("fab-padding-inline")};
+  gap: #{v("fab-icon-gap")};
+
+  .#{c.$prefix}-fab__label {
+    @include m.own-box;
+    display: inline;
+    @include m.typescale("label-large");
+    color: inherit;
+    white-space: nowrap;
+  }
+}
+
+// Viewport-anchored placement (the classic bottom-end corner FAB).
+@mixin fixed {
+  position: fixed;
+  inset-block-end: var(--#{c.$prefix}-sys-space-4);
+  inset-inline-end: var(--#{c.$prefix}-sys-space-4);
+  z-index: var(--#{c.$prefix}-sys-z-raised);
+}
+
+@mixin classes {
+  .#{c.$prefix}-fab {
+    @include base;
+  }
+
+  .#{c.$prefix}-fab--small {
+    @include small;
+  }
+
+  .#{c.$prefix}-fab--medium {
+    @include medium;
+  }
+
+  .#{c.$prefix}-fab--large {
+    @include large;
+  }
+
+  .#{c.$prefix}-fab--primary {
+    @include primary;
+  }
+
+  .#{c.$prefix}-fab--secondary {
+    @include secondary;
+  }
+
+  .#{c.$prefix}-fab--tertiary {
+    @include tertiary;
+  }
+
+  .#{c.$prefix}-fab--surface {
+    @include surface;
+  }
+
+  .#{c.$prefix}-fab--extended {
+    @include extended;
+  }
+
+  .#{c.$prefix}-fab--fixed {
+    @include fixed;
+  }
+}

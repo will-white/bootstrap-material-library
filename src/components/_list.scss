@@ -1,0 +1,432 @@
+// ============================================================================
+// m3x list + list items
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-list-container-color              surface
+//   --m3-list-subheader-color              on-surface-variant
+//   --m3-list-subheader-height             48px; participates in density
+//   --m3-list-divider-color                outline-variant (.m3-list--dividers)
+//   --m3-list-divider-inset                padding + icon (24px) + gap = 56px;
+//                                          the .m3-list--inset divider start
+//   --m3-list-item-height                  56px (one line); participates in density
+//   --m3-list-item-height-two-line         72px
+//   --m3-list-item-height-three-line       88px
+//   --m3-list-item-padding-inline          space-4
+//   --m3-list-item-gap                     space-4
+//   --m3-list-item-headline-color          on-surface
+//   --m3-list-item-supporting-color        on-surface-variant (also trailing
+//                                          text and --meta)
+//   --m3-list-item-overline-color          on-surface-variant
+//   --m3-list-item-avatar-size             40px  (__leading--avatar)
+//   --m3-list-item-avatar-container-color  primary-container
+//   --m3-list-item-avatar-label-color      on-primary-container
+//   --m3-list-item-image-size              56px  (__leading--image, square)
+//   --m3-list-item-video-width             114px (__leading--video; M3's
+//                                          16:9 thumbnail)
+//   --m3-list-item-video-height            64px
+//
+// Markup:
+//   <ul class="m3-list m3-list--dividers m3-list--inset">
+//     <li class="m3-list__subheader">Recent</li>
+//     <li class="m3-list-item m3-list-item--two-line">
+//       <span class="m3-list-item__leading m3-list-item__leading--avatar">A</span>
+//       <span class="m3-list-item__body">
+//         <span class="m3-list-item__overline">Overline</span>
+//         <span class="m3-list-item__headline">Headline</span>
+//         <span class="m3-list-item__supporting">Supporting text</span>
+//       </span>
+//       <span class="m3-list-item__trailing m3-list-item__trailing--meta">100+</span>
+//     </li>
+//   </ul>
+// Leading variants: __leading--avatar (40px circle, initials or an <img>),
+// __leading--image (56px, corner-small, <img>), __leading--video (114x64,
+// square corners, <img> or <video>). Trailing: plain text, __trailing--meta
+// (label-small text aligned to the headline's baseline), or a control
+// (.m3-checkbox / .m3-radio / .m3-switch), which is vertically centered.
+// Arbitrary consumer content goes in .m3-list-item__slot (donut boundary).
+// ============================================================================
+
+@use "sass:map";
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "list-container-color": var(--#{c.$sys-prefix}-sys-color-surface),
+  "list-subheader-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "list-subheader-height": #{fn.rem(48)},
+  "list-divider-color": var(--#{c.$sys-prefix}-sys-color-outline-variant),
+  "list-item-height": #{fn.rem(56)},
+  "list-item-height-two-line": #{fn.rem(72)},
+  "list-item-height-three-line": #{fn.rem(88)},
+  "list-item-padding-inline": var(--#{c.$prefix}-sys-space-4),
+  "list-item-gap": var(--#{c.$prefix}-sys-space-4),
+  "list-item-headline-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "list-item-supporting-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "list-item-overline-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "list-item-avatar-size": #{fn.rem(40)},
+  "list-item-avatar-container-color": var(--#{c.$sys-prefix}-sys-color-primary-container),
+  "list-item-avatar-label-color": var(--#{c.$sys-prefix}-sys-color-on-primary-container),
+  "list-item-image-size": #{fn.rem(56)},
+  "list-item-video-width": #{fn.rem(114)},
+  "list-item-video-height": #{fn.rem(64)},
+);
+
+// Defaults that build on another token in this map: resolved through
+// token() so the sibling's own default travels with them.
+$tokens: map.set($tokens, "list-divider-inset", calc( #{m.token($tokens, "list-item-padding-inline")} + var(--#{c.$prefix}-sys-icon-size) + #{m.token($tokens, "list-item-gap")} ));
+
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+@mixin list {
+  @include m.own-box;
+  // Divider start, read by .m3-list--dividers items; --inset re-points it.
+  --_divider-inset: var(--#{c.$prefix}-sys-space-none);
+
+  display: block;
+  list-style: none;
+  padding-inline: var(--#{c.$prefix}-sys-space-none);
+  padding-block: var(--#{c.$prefix}-sys-space-2);
+  background-color: #{v("list-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("list-container-color")};
+}
+
+// Dividers start at the headline text instead of the list edge.
+@mixin list-inset {
+  --_divider-inset: #{v("list-divider-inset")};
+}
+
+// Hairline between items: drawn by each item's ::after (a border cannot be
+// inset), on every item but the last.
+@mixin list-dividers {
+  > .#{c.$prefix}-list-item:not(:last-child) {
+    position: relative;
+
+    &::after {
+      @include m.own-pseudo;
+      content: "";
+      display: block;
+      position: absolute;
+      inset-block-end: var(--#{c.$prefix}-sys-space-none);
+      inset-inline-start: var(--_divider-inset);
+      inset-inline-end: var(--#{c.$prefix}-sys-space-none);
+      block-size: var(--#{c.$prefix}-sys-stroke-hairline);
+      background-color: #{v("list-divider-color")};
+    }
+  }
+}
+
+// Section label row above a run of items.
+@mixin subheader {
+  @include m.own-box;
+  display: flex;
+  align-items: center;
+  @include m.control-min-height(v("list-subheader-height"));
+  padding-inline: #{v("list-item-padding-inline")};
+  padding-block: var(--#{c.$prefix}-sys-space-2);
+  @include m.typescale("title-small");
+  color: #{v("list-subheader-color")};
+}
+
+@mixin item {
+  @include m.own-box;
+  // The row carries no text of its own, but its divider pseudo inherits the
+  // font: own it (parts set their own typescales).
+  @include m.typescale("body-large");
+  --_container: transparent;
+  --_content: #{v("list-item-headline-color")};
+  // Cross-axis alignment of the row; three-line items top-align.
+  --_align: center;
+
+  display: flex;
+  align-items: var(--_align);
+  gap: #{v("list-item-gap")};
+  @include m.control-min-height(v("list-item-height"));
+  padding-inline: #{v("list-item-padding-inline")};
+  padding-block: var(--#{c.$prefix}-sys-space-2);
+  color: var(--_content);
+  background-color: var(--_container);
+}
+
+@mixin item-two-line {
+  @include m.control-min-height(v("list-item-height-two-line"));
+}
+
+@mixin item-three-line {
+  --_align: flex-start;
+  @include m.control-min-height(v("list-item-height-three-line"));
+  padding-block: var(--#{c.$prefix}-sys-space-3);
+}
+
+// Item carrying a __trailing--meta: the row becomes a single wrapped flex
+// line sized to its content, so body and meta can share a baseline group
+// while the line itself keeps the item's cross-axis alignment. The body's
+// basis is zeroed so a long headline can never push it onto a second line.
+@mixin item-with-meta {
+  flex-wrap: wrap;
+  align-content: var(--_align);
+
+  > .#{c.$prefix}-list-item__body {
+    flex-basis: var(--#{c.$prefix}-sys-space-none);
+    align-self: baseline;
+  }
+}
+
+// Interactive item (a/button, or Bootstrap .list-group-item-action).
+@mixin item-interactive {
+  inline-size: 100%;
+  border: none;
+  cursor: pointer;
+  text-align: start;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  @include m.state-layer;
+  @include m.focus-ring;
+  @include m.transition((background-color, color));
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled-bare;
+  }
+}
+
+// Selected/active item (aria-selected, .active): secondary container.
+@mixin item-selected {
+  --_container: var(--#{c.$sys-prefix}-sys-color-secondary-container);
+  --_content: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
+}
+
+@mixin body {
+  @include m.own-box;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-inline-size: var(--#{c.$prefix}-sys-space-none);
+}
+
+@mixin overline {
+  @include m.own-box;
+  display: block;
+  @include m.typescale("label-small");
+  color: #{v("list-item-overline-color")};
+}
+
+@mixin headline {
+  @include m.own-box;
+  display: block;
+  @include m.typescale("body-large");
+  color: #{v("list-item-headline-color")};
+}
+
+@mixin supporting {
+  @include m.own-box;
+  display: block;
+  @include m.typescale("body-medium");
+  color: #{v("list-item-supporting-color")};
+}
+
+@mixin leading {
+  @include m.own-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #{v("list-item-supporting-color")};
+  flex: none;
+}
+
+// Media leading variants share the sizing contract: the leading box is the
+// frame, a direct <img>/<video> child fills it.
+@mixin -leading-media {
+  overflow: hidden;
+
+  > img,
+  > video {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    border-radius: inherit;
+    object-fit: cover;
+  }
+}
+
+// 40px circle: initials in title-medium on primary-container, or an <img>.
+@mixin leading-avatar {
+  @include m.always-round;
+  inline-size: #{v("list-item-avatar-size")};
+  block-size: #{v("list-item-avatar-size")};
+  border-radius: var(--#{c.$prefix}-sys-shape-pill);
+  background-color: #{v("list-item-avatar-container-color")};
+  @include m.typescale("title-medium");
+  color: #{v("list-item-avatar-label-color")};
+  @include -leading-media;
+}
+
+// 56px square thumbnail, small corners.
+@mixin leading-image {
+  inline-size: #{v("list-item-image-size")};
+  block-size: #{v("list-item-image-size")};
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-small);
+  @include -leading-media;
+}
+
+// 114x64 video thumbnail (M3's 16:9 leading frame), square corners. It is
+// sized for the three-line item, where 64px plus the 8px block padding is
+// exactly the 88px row; in a shorter row the item grows to fit rather than
+// cropping the frame.
+@mixin leading-video {
+  inline-size: #{v("list-item-video-width")};
+  block-size: #{v("list-item-video-height")};
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
+  @include -leading-media;
+}
+
+@mixin trailing {
+  @include m.own-box;
+  display: inline-flex;
+  align-items: center;
+  margin-inline-start: auto;
+  color: #{v("list-item-supporting-color")};
+  flex: none;
+  @include m.typescale("label-small");
+
+  // A selection control in the trailing slot is centered on the row, even
+  // in top-aligned three-line items.
+  &:has(> .#{c.$prefix}-checkbox, > .#{c.$prefix}-radio, > .#{c.$prefix}-switch) {
+    align-self: center;
+  }
+}
+
+// Trailing supporting text: label-small, baseline-aligned with the body's
+// first line (the headline, or the overline when there is one); see
+// item-with-meta for the row side of the alignment.
+@mixin trailing-meta {
+  align-self: baseline;
+  @include m.typescale("label-small");
+  color: #{v("list-item-supporting-color")};
+}
+
+// Chrome donut: bare-element defaults for item furniture stop at the slot.
+@mixin internals(
+  $root: ".#{c.$prefix}-list-item",
+  $slot: ".#{c.$prefix}-list-item__slot"
+) {
+  @scope (#{$root}) to (#{$slot}) {
+    img {
+      inline-size: var(--#{c.$prefix}-sys-space-6);
+      block-size: var(--#{c.$prefix}-sys-space-6);
+      border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+      object-fit: cover;
+    }
+
+    small {
+      @include m.typescale("label-small");
+      color: #{v("list-item-supporting-color")};
+    }
+  }
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-list {
+    @include list;
+  }
+
+  .#{$p}-list--inset {
+    @include list-inset;
+  }
+
+  .#{$p}-list--dividers {
+    @include list-dividers;
+  }
+
+  .#{$p}-list__subheader {
+    @include subheader;
+  }
+
+  .#{$p}-list-item {
+    @include item;
+  }
+
+  .#{$p}-list-item--two-line {
+    @include item-two-line;
+  }
+
+  .#{$p}-list-item--three-line {
+    @include item-three-line;
+  }
+
+  .#{$p}-list-item:has(> .#{$p}-list-item__trailing--meta) {
+    @include item-with-meta;
+  }
+
+  a.#{$p}-list-item,
+  button.#{$p}-list-item,
+  .#{$p}-list-item--interactive {
+    @include item-interactive;
+  }
+
+  .#{$p}-list-item.active,
+  .#{$p}-list-item[aria-selected="true"],
+  .#{$p}-list-item[aria-current="true"] {
+    @include item-selected;
+  }
+
+  .#{$p}-list-item__body {
+    @include body;
+  }
+
+  .#{$p}-list-item__overline {
+    @include overline;
+  }
+
+  .#{$p}-list-item__headline {
+    @include headline;
+  }
+
+  .#{$p}-list-item__supporting {
+    @include supporting;
+  }
+
+  .#{$p}-list-item__leading {
+    @include leading;
+  }
+
+  .#{$p}-list-item__leading--avatar {
+    @include leading-avatar;
+  }
+
+  .#{$p}-list-item__leading--image {
+    @include leading-image;
+  }
+
+  .#{$p}-list-item__leading--video {
+    @include leading-video;
+  }
+
+  .#{$p}-list-item__trailing {
+    @include trailing;
+  }
+
+  .#{$p}-list-item__trailing--meta {
+    @include trailing-meta;
+  }
+
+  // Consumer content region: box owned, typography left to the content.
+  .#{$p}-list-item__slot {
+    @include m.own-region;
+    display: block;
+    flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+
+  @include internals;
+}

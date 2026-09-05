@@ -1,0 +1,185 @@
+// ============================================================================
+// m3x navigation drawer (standard + modal), modal on native <dialog>.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-drawer-width                   360px  drawer inline size
+//   --m3-drawer-container-color         surface-container-low
+//   --m3-drawer-content-color           on-surface
+//   --m3-drawer-item-height             56px; participates in density
+//   --m3-drawer-item-color              on-surface-variant
+//   --m3-drawer-active-container-color  secondary-container
+//   --m3-drawer-active-color            on-secondary-container
+//   --m3-drawer-shape                   corner-large (modal trailing corners)
+//
+// Markup (standard, in the page flow):
+//   <aside class="m3-drawer">
+//     <h2 class="m3-drawer__headline">Mail</h2>
+//     <a class="m3-drawer__item active" href="#inbox">
+//       Inbox <span class="m3-drawer__badge">24</span>
+//     </a>
+//     <a class="m3-drawer__item" href="#sent">Sent</a>
+//   </aside>
+//
+// Markup (modal, opened with dialog.showModal() from the consumer's code):
+//   <dialog class="m3-drawer--modal"> ...same content... </dialog>
+//
+// Active item: .active or [aria-current="page"].
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "drawer-width": #{fn.rem(360)},
+  "drawer-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-low),
+  "drawer-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "drawer-item-height": #{fn.rem(56)},
+  "drawer-item-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "drawer-active-container-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
+  "drawer-active-color": var(--#{c.$sys-prefix}-sys-color-on-secondary-container),
+  "drawer-shape": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// The drawer surface, shared by standard and modal.
+@mixin container {
+  @include m.own-box;
+  display: block;
+  inline-size: #{v("drawer-width")};
+  max-inline-size: 80%;
+  block-size: 100%;
+  padding: var(--#{c.$prefix}-sys-space-3);
+  background-color: #{v("drawer-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("drawer-container-color")};
+  color: #{v("drawer-content-color")};
+  overflow-y: auto;
+}
+
+// Modal variant on native <dialog>: pinned to the inline-start edge, rounded
+// trailing corners, scrim backdrop, discrete slide-in via @starting-style.
+@mixin modal {
+  @include container;
+  // The UA's <dialog> layout, restated because the box is owned (see dialog).
+  position: absolute;
+  inset-inline: var(--#{c.$prefix}-sys-space-none);
+  overflow: auto;
+  margin: var(--#{c.$prefix}-sys-space-none);
+  margin-inline-end: auto;
+
+  &:not([open]) {
+    display: none;
+  }
+
+  &:modal {
+    position: fixed;
+    inset: var(--#{c.$prefix}-sys-space-none);
+  }
+  block-size: 100%;
+  max-block-size: 100%;
+  border: none;
+  border-start-end-radius: #{v("drawer-shape")};
+  border-end-end-radius: #{v("drawer-shape")};
+  @include m.elevation(1);
+
+  &::backdrop {
+    background-color: color-mix(
+      in srgb,
+      var(--#{c.$sys-prefix}-sys-color-scrim) var(--#{c.$prefix}-sys-opacity-scrim),
+      transparent
+    );
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    &[open] {
+      transition-property: translate, display, overlay;
+      transition-duration: var(--#{c.$sys-prefix}-sys-motion-duration-medium2);
+      transition-timing-function: var(--#{c.$sys-prefix}-sys-motion-easing-emphasized-decelerate);
+      transition-behavior: allow-discrete;
+      translate: 0 0;
+
+      @starting-style {
+        translate: -100% 0;
+      }
+    }
+  }
+}
+
+// One destination row (<a>). Full state system; the active row re-points
+// only the private container/content variables.
+@mixin item {
+  @include m.own-box;
+  --_container: transparent;
+  --_content: #{v("drawer-item-color")};
+
+  display: flex;
+  align-items: center;
+  gap: var(--#{c.$prefix}-sys-space-3);
+  @include m.control-height(v("drawer-item-height"));
+  padding-inline: var(--#{c.$prefix}-sys-space-4);
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  text-decoration: none;
+  cursor: pointer;
+  @include m.typescale("label-large");
+  @include m.state-layer;
+  @include m.focus-ring;
+  @include m.transition((background-color, color));
+
+  &.active,
+  &[aria-current="page"] {
+    --#{c.$prefix}-icon-fill: 1;
+    --_container: #{v("drawer-active-container-color")};
+    --_content: #{v("drawer-active-color")};
+  }
+}
+
+// Section headline above a group of items.
+@mixin headline {
+  @include m.own-box;
+  display: block;
+  @include m.typescale("title-small");
+  color: #{v("drawer-item-color")};
+  padding-inline: var(--#{c.$prefix}-sys-space-4);
+  padding-block: var(--#{c.$prefix}-sys-space-3) var(--#{c.$prefix}-sys-space-2);
+}
+
+// Trailing badge (label-large count) inside an item.
+@mixin badge {
+  @include m.own-box;
+  display: inline-block;
+  margin-inline-start: auto;
+  @include m.typescale("label-large");
+  color: #{v("drawer-item-color")};
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-drawer {
+    @include container;
+  }
+
+  .#{$p}-drawer--modal {
+    @include modal;
+  }
+
+  .#{$p}-drawer__item {
+    @include item;
+  }
+
+  .#{$p}-drawer__headline {
+    @include headline;
+  }
+
+  .#{$p}-drawer__badge {
+    @include badge;
+  }
+}

@@ -1,0 +1,235 @@
+// ============================================================================
+// m3x top app bar (small | center-aligned | medium | large)
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-top-app-bar-height           64px   small/center bar height;
+//                                            participates in density
+//   --m3-top-app-bar-height-medium    112px  .m3-top-app-bar--medium
+//   --m3-top-app-bar-height-large     152px  .m3-top-app-bar--large
+//   --m3-top-app-bar-container-color  surface
+//   --m3-top-app-bar-content-color    on-surface
+//   --m3-top-app-bar-scrolled-container-color  surface-container  on-scroll
+//                                            container color
+//   --m3-top-app-bar-scroll-range     64px   scroll distance over which the
+//                                            on-scroll state settles
+//
+// Markup (leading/trailing slots are plain icon buttons):
+//   <header class="m3-top-app-bar m3-top-app-bar--sticky">
+//     <button class="m3-icon-btn" aria-label="Open menu">...</button>
+//     <h1 class="m3-top-app-bar__title">Page title</h1>
+//     <button class="m3-icon-btn" aria-label="Search">...</button>
+//   </header>
+//
+// Medium/large drop the title onto its own bottom row (flex-wrap + order);
+// the bar/title mixins are reused by the Bootstrap compat layer for
+// .navbar / .navbar-brand.
+//
+// On-scroll state: a sticky bar tints to the scrolled container color as the
+// page scrolls, and a sticky medium/large bar collapses to the small height
+// while its headline fades. Both are scroll-driven animations (no script)
+// where animation-timeline is supported; elsewhere the bar keeps its resting
+// look and .m3-top-app-bar--scrolled applies the tint from a class the
+// consumer toggles (an IntersectionObserver sentinel is the usual way).
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "top-app-bar-height": #{fn.rem(64)},
+  "top-app-bar-height-medium": #{fn.rem(112)},
+  "top-app-bar-height-large": #{fn.rem(152)},
+  "top-app-bar-container-color": var(--#{c.$sys-prefix}-sys-color-surface),
+  "top-app-bar-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "top-app-bar-scrolled-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container),
+  "top-app-bar-scroll-range": #{fn.rem(64)},
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// Bar container (also emitted for Bootstrap's .navbar).
+@mixin bar {
+  @include m.own-box;
+  display: flex;
+  align-items: center;
+  gap: var(--#{c.$prefix}-sys-space-2);
+  padding-inline: var(--#{c.$prefix}-sys-space-2);
+  background-color: #{v("top-app-bar-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("top-app-bar-container-color")};
+  color: #{v("top-app-bar-content-color")};
+  @include m.control-height(v("top-app-bar-height"));
+}
+
+// Headline slot (also emitted for Bootstrap's .navbar-brand).
+@mixin title {
+  @include m.own-box;
+  display: block;
+  @include m.typescale("title-large");
+  color: #{v("top-app-bar-content-color")};
+  flex: 1 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-inline: var(--#{c.$prefix}-sys-space-2);
+}
+
+// Small is the default bar: nothing extra.
+@mixin small {
+}
+
+// Center-aligned variant: the title centers between the icon slots.
+@mixin center($title: ".#{c.$prefix}-top-app-bar__title") {
+  #{$title} {
+    text-align: center;
+  }
+}
+
+// Medium variant: taller bar, title wraps onto its own bottom row.
+@mixin medium($title: ".#{c.$prefix}-top-app-bar__title") {
+  @include m.control-height(v("top-app-bar-height-medium"));
+  flex-wrap: wrap;
+  align-content: space-between;
+  padding-block-end: var(--#{c.$prefix}-sys-space-4);
+
+  #{$title} {
+    @include m.typescale("headline-small");
+    flex-basis: 100%;
+    order: 1;
+    white-space: normal;
+  }
+}
+
+// Large variant: same wrap layout as medium, taller with a bigger headline.
+@mixin large($title: ".#{c.$prefix}-top-app-bar__title") {
+  @include m.control-height(v("top-app-bar-height-large"));
+  flex-wrap: wrap;
+  align-content: space-between;
+  padding-block-end: var(--#{c.$prefix}-sys-space-4);
+
+  #{$title} {
+    @include m.typescale("headline-medium");
+    flex-basis: 100%;
+    order: 1;
+    white-space: normal;
+  }
+}
+
+// Pin the bar to the top of its scroll container.
+@mixin sticky {
+  position: sticky;
+  inset-block-start: var(--#{c.$prefix}-sys-space-none);
+  z-index: var(--#{c.$prefix}-sys-z-nav);
+}
+
+// On-scroll container color, as a class (fallback / script-driven).
+@mixin scrolled {
+  background-color: #{v("top-app-bar-scrolled-container-color")};
+}
+
+// On-scroll container color driven by the nearest scroll container.
+@mixin scroll-driven {
+  @supports (animation-timeline: scroll()) {
+    animation-name: #{c.$prefix}-top-app-bar-scroll;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: scroll(nearest block);
+    animation-range: 0 #{v("top-app-bar-scroll-range")};
+  }
+}
+
+// Medium/large bars collapse to the small height over their extra height,
+// the headline fading out over the first half of that distance.
+@mixin collapse($height, $title: ".#{c.$prefix}-top-app-bar__title") {
+  @supports (animation-timeline: scroll()) {
+    overflow: clip;
+    animation-name: #{c.$prefix}-top-app-bar-scroll, #{c.$prefix}-top-app-bar-collapse;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: scroll(nearest block);
+    animation-range: 0 #{v("top-app-bar-scroll-range")},
+      0 calc(#{$height} - #{v("top-app-bar-height")});
+
+    #{$title} {
+      animation-name: #{c.$prefix}-top-app-bar-title-fade;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(nearest block);
+      animation-range: 0
+        calc((#{$height} - #{v("top-app-bar-height")}) / 2);
+    }
+  }
+}
+
+@mixin keyframes {
+  @keyframes #{c.$prefix}-top-app-bar-scroll {
+    to {
+      background-color: #{v("top-app-bar-scrolled-container-color")};
+    }
+  }
+
+  @keyframes #{c.$prefix}-top-app-bar-collapse {
+    to {
+      block-size: calc(
+        #{v("top-app-bar-height")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
+      );
+      padding-block-end: var(--#{c.$prefix}-sys-space-none);
+    }
+  }
+
+  @keyframes #{c.$prefix}-top-app-bar-title-fade {
+    to {
+      opacity: var(--#{c.$prefix}-sys-opacity-hidden);
+    }
+  }
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-top-app-bar {
+    @include bar;
+  }
+
+  .#{$p}-top-app-bar__title {
+    @include title;
+  }
+
+  .#{$p}-top-app-bar--center {
+    @include center;
+  }
+
+  .#{$p}-top-app-bar--medium {
+    @include medium;
+  }
+
+  .#{$p}-top-app-bar--large {
+    @include large;
+  }
+
+  .#{$p}-top-app-bar--sticky {
+    @include sticky;
+    @include scroll-driven;
+  }
+
+  .#{$p}-top-app-bar--scrolled {
+    @include scrolled;
+  }
+
+  .#{$p}-top-app-bar--sticky.#{$p}-top-app-bar--medium {
+    @include collapse(v("top-app-bar-height-medium"));
+  }
+
+  .#{$p}-top-app-bar--sticky.#{$p}-top-app-bar--large {
+    @include collapse(v("top-app-bar-height-large"));
+  }
+
+  @include keyframes;
+}

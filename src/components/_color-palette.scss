@@ -1,0 +1,360 @@
+// ============================================================================
+// m3x color palette: a popover surface of color swatches on hidden radios
+// (an editor's text-color / highlight picker). Zero JS: the popover opens
+// from its invoker, arrow keys move the choice, and inside a dense toolbar
+// the swatch button's color indicator follows the checked swatch.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-color-palette-container-color   surface-container (menu container)
+//   --m3-color-palette-content-color     on-surface
+//   --m3-color-palette-label-color       on-surface-variant   group labels
+//   --m3-color-palette-shape             corner-extra-small
+//   --m3-color-palette-padding           space-3 (12px)
+//   --m3-color-palette-gap               space-1 (4px)   between swatches
+//   --m3-color-palette-columns           10
+//   --m3-color-palette-swatch-size       20px
+//   --m3-color-palette-swatch-shape      corner-full
+//   --m3-color-palette-edge-color        on-surface at 12%   hairline inside
+//                                        every swatch (so white reads on white)
+//   --m3-color-palette-selected-ring-color   on-surface   ring on the checked
+//                                        swatch; the check mark inverts the
+//                                        swatch color underneath it
+//   --m3-swatch                          set on a swatch element: its color
+//                                        (otherwise painted from $color-palette)
+//
+// Sass: $color-palette ("theme": (...), "standard": (...)) -- the n-th swatch
+// of .m3-color-palette__<group> is painted from the group's list, so the
+// markup carries no colors. Groups are ten-column grids of
+// --m3-color-palette-swatch-size cells; .m3-color-palette__grid is the same
+// layout for a group of your own (--m3-swatch on each swatch).
+//
+// Markup (behind a dense toolbar swatch button; see the toolbar partial):
+//   <span class="m3-toolbar__color">
+//     <button class="m3-icon-btn m3-toolbar__swatch" type="button"
+//             popovertarget="text-color" aria-label="Text color"><svg ...></svg></button>
+//     <div class="m3-color-palette" id="text-color" popover>
+//       <div class="m3-color-palette__label">Theme</div>
+//       <div class="m3-color-palette__theme">
+//         <label class="m3-color-palette__swatch"><input type="radio"
+//                name="text-color" aria-label="On surface" checked></label>
+//         ... one label per color in $color-palette's "theme" list
+//       </div>
+//       <div class="m3-color-palette__label">Standard</div>
+//       <div class="m3-color-palette__standard">
+//         <label class="m3-color-palette__swatch"><input type="radio"
+//                name="text-color" aria-label="Black"></label>
+//         ... 80
+//       </div>
+//       <div class="m3-color-palette__label">Custom</div>
+//       <div class="m3-color-palette__grid">
+//         <label class="m3-color-palette__custom"><input type="color"
+//                value="#6750a4" aria-label="Custom color"></label>
+//       </div>
+//     </div>
+//   </span>
+//
+// A "none" swatch (highlight off) is .m3-color-palette__swatch--none inside a
+// .m3-color-palette__grid of its own. The custom swatch is a native color
+// input showing its own value; choosing there does not move the toolbar
+// indicator (that needs script). Picking a swatch leaves the popover open
+// until light dismiss, as labels are not popover invokers.
+// ============================================================================
+
+@use "sass:list";
+@use "sass:map";
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+@use "menu";
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "color-palette-container-color": #{menu.v("menu-container-color")},
+  "color-palette-content-color": #{menu.v("menu-content-color")},
+  "color-palette-label-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "color-palette-shape": var(--#{c.$sys-prefix}-sys-shape-corner-extra-small),
+  "color-palette-padding": var(--#{c.$prefix}-sys-space-3),
+  "color-palette-gap": var(--#{c.$prefix}-sys-space-1),
+  "color-palette-columns": 10,
+  "color-palette-swatch-size": #{fn.rem(20)},
+  "color-palette-swatch-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
+  "color-palette-edge-color": color-mix( in srgb, var(--#{c.$sys-prefix}-sys-color-on-surface) var(--#{c.$sys-prefix}-sys-state-disabled-container-opacity), transparent ),
+  "color-palette-selected-ring-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// The surface: a menu-colored card that is also a popover.
+@mixin surface {
+  @include m.own-box;
+  display: block;
+  inline-size: fit-content;
+  padding: #{v("color-palette-padding")};
+  background-color: #{v("color-palette-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("color-palette-container-color")};
+  color: #{v("color-palette-content-color")};
+  border: none;
+  border-radius: #{v("color-palette-shape")};
+  @include m.elevation(2);
+  @include m.typescale("label-medium");
+
+  // The UA's [popover] layout, restated because the box is owned. An
+  // un-anchored open centers in the viewport; consumers reposition with
+  // anchor positioning or insets (a dense toolbar anchors it to its invoker).
+  &[popover] {
+    display: none;
+    position: fixed;
+    inset: var(--#{c.$prefix}-sys-space-none);
+    inline-size: fit-content;
+    block-size: fit-content;
+    overflow: auto;
+    margin: auto;
+
+    &:popover-open {
+      display: block;
+    }
+  }
+}
+
+@mixin label {
+  @include m.own-box;
+  display: block;
+  padding-block: var(--#{c.$prefix}-sys-space-2) var(--#{c.$prefix}-sys-space-1);
+  color: #{v("color-palette-label-color")};
+  @include m.typescale("label-medium");
+
+  &:first-child {
+    padding-block-start: var(--#{c.$prefix}-sys-space-none);
+  }
+}
+
+// A group of swatches: a ten-column grid of swatch-sized cells.
+@mixin grid {
+  @include m.own-box;
+  display: grid;
+  grid-template-columns: repeat(
+    #{v("color-palette-columns")},
+    #{v("color-palette-swatch-size")}
+  );
+  gap: #{v("color-palette-gap")};
+}
+
+// One swatch: a label around a hidden radio. Painted from --m3-swatch (set
+// inline) or --_swatch (set per index from $color-palette).
+@mixin swatch {
+  @include m.own-box;
+  @include m.always-round;
+  position: relative;
+  display: block;
+  inline-size: #{v("color-palette-swatch-size")};
+  block-size: #{v("color-palette-swatch-size")};
+  border-radius: #{v("color-palette-swatch-shape")};
+  // The swatch's own colour. --m3-swatch is the pre-1.0 short name and still
+  // works; --m3-color-palette-swatch-color is the namespaced one, consistent
+  // with its -size and -shape siblings.
+  background-color: var(
+    --#{c.$prefix}-color-palette-swatch-color,
+    var(--#{c.$prefix}-swatch, var(--_swatch, currentColor))
+  );
+  box-shadow: inset 0 0 0 var(--#{c.$prefix}-sys-stroke-hairline)
+    #{v("color-palette-edge-color")};
+  cursor: pointer;
+  @include m.transition((outline-color, box-shadow));
+
+  > input {
+    @include m.own-box;
+    display: block;
+    position: absolute;
+    opacity: var(--#{c.$prefix}-sys-opacity-hidden);
+    pointer-events: none;
+  }
+
+  // The check mark: white, blended by difference so it inverts whatever
+  // color sits under it.
+  &::after {
+    @include m.own-pseudo;
+    content: "";
+    display: none;
+    position: absolute;
+    inset: var(--#{c.$prefix}-sys-space-none);
+    margin: auto;
+    @include m.check-glyph(
+      calc(#{v("color-palette-swatch-size")} * 0.6),
+      var(--#{c.$prefix}-sys-stroke-thick)
+    );
+    color: var(--#{c.$sys-prefix}-ref-palette-neutral100);
+    mix-blend-mode: difference;
+  }
+
+  @include m.hover {
+    outline: var(--#{c.$prefix}-sys-stroke-hairline) solid var(--#{c.$sys-prefix}-sys-color-outline);
+    outline-offset: var(--#{c.$prefix}-sys-stroke-thick);
+  }
+
+  &:has(> input:checked) {
+    outline: var(--#{c.$prefix}-sys-stroke-thick) solid
+      #{v("color-palette-selected-ring-color")};
+    outline-offset: var(--#{c.$prefix}-sys-stroke-thick);
+  }
+
+  &:has(> input:checked)::after {
+    display: block;
+  }
+
+  &:has(> input:focus-visible) {
+    outline: var(--#{c.$sys-prefix}-sys-state-focus-indicator-thickness) solid
+      var(--#{c.$sys-prefix}-sys-color-secondary);
+    outline-offset: var(--#{c.$sys-prefix}-sys-state-focus-indicator-offset);
+  }
+
+  &:has(> input:disabled) {
+    opacity: var(--#{c.$sys-prefix}-sys-state-disabled-content-opacity);
+    cursor: not-allowed;
+  }
+}
+
+// "None": an empty swatch with a diagonal error-colored slash.
+@mixin none {
+  --_swatch: transparent;
+  background-image: linear-gradient(
+    135deg,
+    transparent calc(50% - var(--#{c.$prefix}-sys-stroke-hairline)),
+    var(--#{c.$sys-prefix}-sys-color-error) calc(50% - var(--#{c.$prefix}-sys-stroke-hairline)),
+    var(--#{c.$sys-prefix}-sys-color-error) calc(50% + var(--#{c.$prefix}-sys-stroke-hairline)),
+    transparent calc(50% + var(--#{c.$prefix}-sys-stroke-hairline))
+  );
+  box-shadow: inset 0 0 0 var(--#{c.$prefix}-sys-stroke-hairline) var(--#{c.$sys-prefix}-sys-color-outline);
+}
+
+// Custom: a native color input as the visible circle (it shows its own
+// value), with a plus sign over it.
+@mixin custom {
+  @include m.own-box;
+  @include m.always-round;
+  position: relative;
+  display: block;
+  inline-size: #{v("color-palette-swatch-size")};
+  block-size: #{v("color-palette-swatch-size")};
+  border-radius: #{v("color-palette-swatch-shape")};
+  cursor: pointer;
+
+  > input {
+    @include m.own-box;
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    padding: var(--#{c.$prefix}-sys-space-none);
+    border: none;
+    border-radius: inherit;
+    background-color: transparent;
+    appearance: none;
+    cursor: pointer;
+    overflow: clip;
+
+    &::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+
+    &::-webkit-color-swatch {
+      border: var(--#{c.$prefix}-sys-stroke-hairline) solid var(--#{c.$sys-prefix}-sys-color-outline);
+      border-radius: inherit;
+    }
+
+    &::-moz-color-swatch {
+      border: var(--#{c.$prefix}-sys-stroke-hairline) solid var(--#{c.$sys-prefix}-sys-color-outline);
+      border-radius: inherit;
+    }
+
+    &:focus-visible {
+      outline: var(--#{c.$sys-prefix}-sys-state-focus-indicator-thickness) solid
+        var(--#{c.$sys-prefix}-sys-color-secondary);
+      outline-offset: var(--#{c.$sys-prefix}-sys-state-focus-indicator-offset);
+    }
+  }
+
+  &::after {
+    @include m.own-pseudo;
+    content: "";
+    display: block;
+    position: absolute;
+    inset: var(--#{c.$prefix}-sys-space-none);
+    margin: auto;
+    inline-size: calc(#{v("color-palette-swatch-size")} / 2);
+    block-size: calc(#{v("color-palette-swatch-size")} / 2);
+    pointer-events: none;
+    color: var(--#{c.$sys-prefix}-ref-palette-neutral100);
+    mix-blend-mode: difference;
+    background-image:
+      linear-gradient(currentColor, currentColor),
+      linear-gradient(currentColor, currentColor);
+    background-size:
+      100% var(--#{c.$prefix}-sys-stroke-thick),
+      var(--#{c.$prefix}-sys-stroke-thick) 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+}
+
+// Paint the n-th swatch of each configured group from $color-palette.
+@mixin paint {
+  $p: c.$prefix;
+  @each $group, $colors in c.$color-palette {
+    .#{$p}-color-palette__#{$group} {
+      @include grid;
+    }
+
+    @for $i from 1 through list.length($colors) {
+      .#{$p}-color-palette__#{$group} > .#{$p}-color-palette__swatch:nth-child(#{$i}) {
+        --_swatch: #{list.nth($colors, $i)};
+      }
+    }
+  }
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-color-palette {
+    @include surface;
+  }
+
+  // Browsers without the Popover API treat [popover] as an ordinary element;
+  // keep it hidden rather than in flow.
+  @supports not selector(:popover-open) {
+    .#{$p}-color-palette[popover] {
+      display: none;
+    }
+  }
+
+  .#{$p}-color-palette[popover]:popover-open {
+    @include menu.popover-entry;
+  }
+
+  .#{$p}-color-palette__label {
+    @include label;
+  }
+
+  .#{$p}-color-palette__grid {
+    @include grid;
+  }
+
+  .#{$p}-color-palette__swatch {
+    @include swatch;
+  }
+
+  .#{$p}-color-palette__swatch--none {
+    @include none;
+  }
+
+  .#{$p}-color-palette__custom {
+    @include custom;
+  }
+
+  @include paint;
+}

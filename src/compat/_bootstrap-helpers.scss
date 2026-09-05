@@ -1,0 +1,278 @@
+// ============================================================================
+// m3x Bootstrap helpers + content classes (layer: utilities)
+// Bootstrap 5.3's helpers (.visually-hidden, .stretched-link, .ratio,
+// .fixed-*/.sticky-*, .vstack/.hstack, .vr, .clearfix, .icon-link) and its
+// content/typography classes (.lead, .display-*, .blockquote, .mark, .small,
+// lists, images, figures), all from tokens. Emitted into the utilities layer
+// so they beat every component layer, exactly like Bootstrap's !important
+// helpers do -- without !important.
+// ============================================================================
+
+@use "sass:map";
+@use "../config" as c;
+@use "../mixins" as m;
+
+@mixin -media-up($bp) {
+  $w: map.get(c.$grid-breakpoints, $bp);
+  @if $w == 0 {
+    @content;
+  } @else {
+    @media (min-width: #{$w}) {
+      @content;
+    }
+  }
+}
+
+@mixin emit {
+  // --- helpers ---------------------------------------------------------------
+  .clearfix::after {
+    @include m.own-pseudo;
+    display: block;
+    clear: both;
+    content: "";
+  }
+
+  .ratio {
+    position: relative;
+    inline-size: 100%;
+
+    &::before {
+      @include m.own-pseudo;
+      display: block;
+      padding-block-start: var(--bs-aspect-ratio);
+      content: "";
+    }
+
+    > * {
+      position: absolute;
+      inset: var(--#{c.$prefix}-sys-space-none);
+      inline-size: 100%;
+      block-size: 100%;
+    }
+  }
+
+  .ratio-1x1 {
+    --bs-aspect-ratio: 100%;
+  }
+  .ratio-4x3 {
+    --bs-aspect-ratio: 75%;
+  }
+  .ratio-16x9 {
+    --bs-aspect-ratio: 56.25%;
+  }
+  .ratio-21x9 {
+    --bs-aspect-ratio: 42.857143%;
+  }
+
+  .fixed-top {
+    position: fixed;
+    inset-block-start: var(--#{c.$prefix}-sys-space-none);
+    inset-inline: var(--#{c.$prefix}-sys-space-none);
+    z-index: var(--#{c.$prefix}-sys-z-nav);
+  }
+
+  .fixed-bottom {
+    position: fixed;
+    inset-block-end: var(--#{c.$prefix}-sys-space-none);
+    inset-inline: var(--#{c.$prefix}-sys-space-none);
+    z-index: var(--#{c.$prefix}-sys-z-nav);
+  }
+
+  @each $bp, $w in c.$grid-breakpoints {
+    $infix: "";
+    @if $w != 0 {
+      $infix: "-#{$bp}";
+    }
+    @include -media-up($bp) {
+      .sticky#{$infix}-top {
+        position: sticky;
+        inset-block-start: var(--#{c.$prefix}-sys-space-none);
+        z-index: var(--#{c.$prefix}-sys-z-sticky);
+      }
+
+      .sticky#{$infix}-bottom {
+        position: sticky;
+        inset-block-end: var(--#{c.$prefix}-sys-space-none);
+        z-index: var(--#{c.$prefix}-sys-z-sticky);
+      }
+    }
+  }
+
+  .hstack {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-self: stretch;
+  }
+
+  .vstack {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-self: stretch;
+  }
+
+  .visually-hidden,
+  .visually-hidden-focusable:not(:focus):not(:focus-within) {
+    position: absolute;
+    inline-size: var(--#{c.$prefix}-sys-stroke-hairline);
+    block-size: var(--#{c.$prefix}-sys-stroke-hairline);
+    padding: var(--#{c.$prefix}-sys-space-none);
+    margin: calc(-1 * var(--#{c.$prefix}-sys-stroke-hairline));
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: none;
+  }
+
+  .stretched-link::after {
+    @include m.own-pseudo;
+    position: absolute;
+    inset: var(--#{c.$prefix}-sys-space-none);
+    z-index: var(--#{c.$prefix}-sys-z-raised);
+    content: "";
+  }
+
+  .vr {
+    display: inline-block;
+    align-self: stretch;
+    inline-size: var(--#{c.$prefix}-sys-stroke-hairline);
+    min-block-size: var(--#{c.$sys-prefix}-sys-typescale-body-medium-line-height);
+    background-color: var(--#{c.$sys-prefix}-sys-color-outline-variant);
+    opacity: var(--#{c.$prefix}-sys-opacity-full);
+  }
+
+  .icon-link {
+    display: inline-flex;
+    gap: var(--#{c.$prefix}-sys-space-1);
+    align-items: center;
+    text-decoration-color: color-mix(
+      in srgb,
+      currentColor 50%,
+      transparent
+    );
+    text-underline-offset: var(--#{c.$prefix}-sys-stroke-thick);
+
+    > svg,
+    > .bi {
+      flex-shrink: 0;
+      inline-size: var(--#{c.$prefix}-sys-icon-size-small);
+      block-size: var(--#{c.$prefix}-sys-icon-size-small);
+      fill: currentColor;
+      @include m.transition((translate), var(--#{c.$sys-prefix}-sys-motion-duration-short4));
+    }
+  }
+
+  .icon-link-hover:hover > svg,
+  .icon-link-hover:hover > .bi {
+    translate: var(--#{c.$prefix}-sys-space-1) 0;
+  }
+
+  // --- content / typography classes -----------------------------------------
+  .lead {
+    @include m.typescale("body-large");
+  }
+
+  .display-1 {
+    @include m.typescale("display-large");
+  }
+  .display-2 {
+    @include m.typescale("display-medium");
+  }
+  .display-3 {
+    @include m.typescale("display-small");
+  }
+  .display-4 {
+    @include m.typescale("headline-large");
+  }
+  .display-5 {
+    @include m.typescale("headline-medium");
+  }
+  .display-6 {
+    @include m.typescale("headline-small");
+  }
+
+  .blockquote {
+    margin-block-end: var(--#{c.$prefix}-sys-space-4);
+    @include m.typescale("body-large");
+
+    > :last-child {
+      margin-block-end: var(--#{c.$prefix}-sys-space-none);
+    }
+  }
+
+  .blockquote-footer {
+    margin-block-start: calc(-1 * var(--#{c.$prefix}-sys-space-4));
+    margin-block-end: var(--#{c.$prefix}-sys-space-4);
+    color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+    @include m.typescale("body-small");
+
+    // CSS-drawn dash keeps the output ASCII-only.
+    &::before {
+      @include m.own-pseudo;
+      content: "";
+      display: inline-block;
+      inline-size: var(--#{c.$prefix}-sys-space-3);
+      border-block-start: var(--#{c.$prefix}-sys-stroke-hairline) solid currentColor;
+      vertical-align: middle;
+      margin-inline-end: var(--#{c.$prefix}-sys-space-1);
+    }
+  }
+
+  .mark {
+    padding-inline: var(--#{c.$prefix}-sys-space-1);
+    background-color: var(--#{c.$sys-prefix}-extended-color-warning-container);
+    color: var(--#{c.$sys-prefix}-extended-color-on-warning-container);
+  }
+
+  .small {
+    font-size: var(--#{c.$sys-prefix}-sys-typescale-body-small-size);
+  }
+
+  .initialism {
+    font-size: var(--#{c.$sys-prefix}-sys-typescale-label-medium-size);
+    text-transform: uppercase;
+  }
+
+  .list-unstyled,
+  .list-inline {
+    padding-inline-start: var(--#{c.$prefix}-sys-space-none);
+    list-style: none;
+  }
+
+  .list-inline-item {
+    display: inline-block;
+
+    &:not(:last-child) {
+      margin-inline-end: var(--#{c.$prefix}-sys-space-2);
+    }
+  }
+
+  .img-fluid {
+    max-inline-size: 100%;
+    block-size: auto;
+  }
+
+  .img-thumbnail {
+    padding: var(--#{c.$prefix}-sys-space-1);
+    background-color: var(--#{c.$sys-prefix}-sys-color-surface);
+    border: var(--#{c.$prefix}-sys-stroke-hairline) solid var(--#{c.$sys-prefix}-sys-color-outline-variant);
+    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-small);
+    max-inline-size: 100%;
+    block-size: auto;
+  }
+
+  .figure {
+    display: inline-block;
+  }
+
+  .figure-img {
+    margin-block-end: var(--#{c.$prefix}-sys-space-2);
+    line-height: 1;
+  }
+
+  .figure-caption {
+    color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+    @include m.typescale("body-small");
+  }
+}

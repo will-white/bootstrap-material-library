@@ -1,0 +1,295 @@
+// ============================================================================
+// m3x menu, on the Popover API ([popover] + popovertarget; zero JS).
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-menu-container-color  surface-container   menu surface color
+//   --m3-menu-content-color    on-surface          item label + state tint
+//   --m3-menu-shape            corner-extra-small  surface radius
+//   --m3-menu-item-height      48px                item min height; density
+//   --m3-menu-min-width        112px               surface min-inline-size
+//   --m3-menu-max-width        280px               surface max-inline-size
+//   --m3-menu-header-color     on-surface-variant  section header color
+//   --m3-menu-shortcut-color   on-surface-variant  trailing shortcut text
+//
+// Markup:
+//   <button popovertarget="demo-menu" class="m3-btn m3-btn--text">Menu</button>
+//   <div class="m3-menu" id="demo-menu" popover>
+//     <span class="m3-menu__header">Account</span>
+//     <button class="m3-menu__item" type="button">Profile</button>
+//     <hr>
+//     <a class="m3-menu__item" href="#">Sign out</a>
+//   </div>
+//
+// A menu item can carry trailing supporting text -- a keyboard shortcut, a
+// count -- and can open a CASCADING submenu, which is an ordinary
+// .m3-menu[popover] the item is the popovertarget of. Pair the two with an
+// anchor name so the child opens beside its parent instead of centred:
+//
+//   <button class="m3-menu__item m3-menu__item--submenu"
+//           popovertarget="share" style="anchor-name: --share-anchor">
+//     Share <span class="m3-menu__shortcut">Ctrl S</span>
+//   </button>
+//   <div class="m3-menu m3-menu--submenu" id="share" popover
+//        style="--m3-menu-anchor: --share-anchor"> ... </div>
+//
+// CSS cannot pair an anchor with its positioned element on its own, so the
+// name is the consumer's on both ends. Without anchor positioning the child
+// opens centred, which is a placement rather than a break.
+//
+// A [popover] menu keeps the UA default margin: auto, so an un-anchored open
+// centers in the viewport; consumers position it with CSS anchor positioning
+// or their own inset rules. .m3-menu--static renders the menu in normal flow.
+// Surface/item/header are reused by the Bootstrap compat layer for
+// .dropdown-menu / .dropdown-item / .dropdown-header.
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "menu-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container),
+  "menu-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "menu-shape": var(--#{c.$sys-prefix}-sys-shape-corner-extra-small),
+  "menu-item-height": #{fn.rem(48)},
+  "menu-min-width": #{fn.rem(112)},
+  "menu-max-width": #{fn.rem(280)},
+  "menu-header-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "menu-shortcut-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// The menu surface (also Bootstrap's .dropdown-menu).
+@mixin surface {
+  @include m.own-box;
+  background-color: #{v("menu-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("menu-container-color")};
+  color: #{v("menu-content-color")};
+  border: none;
+  border-radius: #{v("menu-shape")};
+  // Stock Bootstrap's `.dropdown-menu { padding: .5rem 0 }`. The inline half
+  // matters: a <ul> menu would otherwise keep the list reboot's indent, which
+  // is a longhand and outranks the shared `padding: 0` ownership shorthand.
+  padding: var(--#{c.$prefix}-sys-space-2) var(--#{c.$prefix}-sys-space-none);
+  min-inline-size: #{v("menu-min-width")};
+  max-inline-size: #{v("menu-max-width")};
+  @include m.elevation(2);
+
+  // Dividers between items: spacing only; the divider component owns the
+  // border color treatment.
+  hr {
+    margin-block: var(--#{c.$prefix}-sys-space-2);
+  }
+}
+
+// Always-visible variant: renders the menu in normal flow (author display
+// beats the UA [popover] display: none, so this also force-shows a popover).
+@mixin static-variant {
+  display: block;
+  position: static;
+}
+
+// One menu item (<button> or <a>), full-width, state-layered.
+@mixin item {
+  @include m.own-box;
+  --_container: transparent;
+  --_content: #{v("menu-content-color")};
+
+  display: flex;
+  align-items: center;
+  gap: var(--#{c.$prefix}-sys-space-3);
+  inline-size: 100%;
+  @include m.control-min-height(v("menu-item-height"));
+  padding-inline: var(--#{c.$prefix}-sys-space-3);
+  border: none;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+  @include m.typescale("label-large");
+  @include m.state-layer;
+  @include m.focus-ring;
+  @include m.transition((background-color, color));
+
+  // Pull the focus ring inside the item so the surface does not clip it.
+  &:focus-visible {
+    outline-offset: calc(-1 * var(--#{c.$sys-prefix}-sys-state-focus-indicator-offset));
+  }
+
+  // A chosen item (a selected option, a checked radio inside a label item):
+  // secondary container, as M3's selected menu item.
+  &.active,
+  &[aria-checked="true"],
+  &[aria-selected="true"] {
+    --_container: var(--#{c.$sys-prefix}-sys-color-secondary-container);
+    --_content: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
+  }
+
+  &:has(> input:checked) {
+    --_container: var(--#{c.$sys-prefix}-sys-color-secondary-container);
+    --_content: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
+  }
+
+  // Keyboard focus on a hidden input inside a label item shows on the item.
+  &:has(> input:focus-visible) {
+    outline: var(--#{c.$sys-prefix}-sys-state-focus-indicator-thickness) solid
+      var(--#{c.$sys-prefix}-sys-color-secondary);
+    outline-offset: calc(-1 * var(--#{c.$sys-prefix}-sys-state-focus-indicator-offset));
+  }
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled-bare;
+  }
+}
+
+// Section header (also Bootstrap's .dropdown-header).
+@mixin header {
+  @include m.own-box;
+  display: block;
+  padding-inline: var(--#{c.$prefix}-sys-space-3);
+  padding-block: var(--#{c.$prefix}-sys-space-2) var(--#{c.$prefix}-sys-space-1);
+  color: #{v("menu-header-color")};
+  @include m.typescale("label-small");
+}
+
+// Entry motion for the open popover. Include only on a selector that stands
+// alone: :popover-open must never share a selector list (contract rule 10).
+@mixin popover-entry {
+  @media (prefers-reduced-motion: no-preference) {
+    opacity: var(--#{c.$prefix}-sys-opacity-full);
+    translate: 0 0;
+    transition-property: opacity, translate;
+    transition-duration: var(--#{c.$sys-prefix}-sys-motion-spring-fast-effects-duration),
+      var(--#{c.$sys-prefix}-sys-motion-spring-default-spatial-duration);
+    transition-timing-function: var(--#{c.$sys-prefix}-sys-motion-spring-fast-effects),
+      var(--#{c.$sys-prefix}-sys-motion-spring-default-spatial);
+    transition-behavior: allow-discrete;
+
+    @starting-style {
+      opacity: var(--#{c.$prefix}-sys-opacity-hidden);
+      translate: 0 calc(-1 * var(--#{c.$prefix}-sys-space-1));
+    }
+  }
+}
+
+// M3's trailing supporting text on a menu item: a keyboard shortcut, a
+// count, a unit. It is pushed to the trailing edge and never wraps.
+@mixin shortcut {
+  @include m.own-box;
+  display: block;
+  margin-inline-start: auto;
+  padding-inline-start: var(--#{c.$prefix}-sys-space-4);
+  color: #{v("menu-shortcut-color")};
+  white-space: nowrap;
+  @include m.typescale("label-large");
+}
+
+// M3's cascading menu: an item that opens another menu beside it. The nested
+// menu is an ordinary .m3-menu[popover] whose popovertarget is this item, so
+// the cascade is the Popover API's, not a script's -- what the modifier adds
+// is the trailing chevron that says there is more, and (where anchor
+// positioning exists) the placement of the child beside the parent rather
+// than centred in the viewport.
+@mixin item-submenu {
+  &::after {
+    content: "";
+    display: block;
+    margin-inline-start: auto;
+    // chevron-icon draws a down-pointing chevron; the cascade points along
+    // the inline axis, so the rotation is restated after the include and
+    // turns with direction.
+    @include m.chevron-icon;
+    rotate: -45deg;
+  }
+
+  &:dir(rtl)::after {
+    rotate: 135deg;
+  }
+}
+
+// Placement only. The UA's `margin: auto` still centres the popover -- inside
+// the area position-area gives it -- so an unset or unsupported anchor leaves
+// the child menu centred in the viewport like any other popover, rather than
+// pinned to a corner.
+@mixin submenu-anchored($anchor) {
+  position-anchor: #{$anchor};
+  position-area: inline-end span-block-end;
+  position-try-fallbacks: flip-inline, flip-block;
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-menu {
+    @include surface;
+  }
+
+  // The UA default margin: auto is intended: an un-anchored open centers in
+  // the viewport; consumers reposition with anchor positioning or insets.
+  .#{$p}-menu[popover]:not(.#{$p}-menu--static) {
+    // The UA's [popover] layout, restated because the box is owned.
+    display: none;
+    position: fixed;
+    inset: var(--#{c.$prefix}-sys-space-none);
+    inline-size: fit-content;
+    block-size: fit-content;
+    overflow: auto;
+    margin: auto;
+
+    &:popover-open {
+      display: block;
+    }
+  }
+
+  .#{$p}-menu--static {
+    @include static-variant;
+  }
+
+  .#{$p}-menu__item {
+    @include item;
+  }
+
+  .#{$p}-menu__header {
+    @include header;
+  }
+
+  .#{$p}-menu__shortcut {
+    @include shortcut;
+  }
+
+  .#{$p}-menu__item--submenu {
+    @include item-submenu;
+  }
+
+  // A nested menu placed beside its parent item. The anchor name is the
+  // consumer's (anchor-name on the item, position-anchor here), because CSS
+  // cannot pair the two on its own; without anchor positioning the child
+  // opens centred like any other popover, which is a placement rather than
+  // a break.
+  @supports (position-anchor: --a) {
+    .#{$p}-menu--submenu[popover] {
+      @include submenu-anchored("var(--#{$p}-menu-anchor)");
+    }
+  }
+
+  // Browsers without the Popover API treat [popover] as an ordinary element
+  // and would render the menu inline; hide it there instead of inlining it.
+  // --static opts out for deliberately in-flow menus.
+  @supports not selector(:popover-open) {
+    .#{$p}-menu[popover]:not(.#{$p}-menu--static) {
+      display: none;
+    }
+  }
+
+  .#{$p}-menu[popover]:popover-open {
+    @include popover-entry;
+  }
+}

@@ -1,0 +1,270 @@
+// ============================================================================
+// m3x utilities (layer: utilities)
+// Typescale classes, color/surface utilities, shape + elevation utilities,
+// the @scope token islands (section 7.3), and the opt-in theme-transition
+// helper (section 5's typed-token interpolation payoff).
+// ============================================================================
+
+@use "sass:list";
+@use "sass:map";
+@use "../config" as c;
+@use "../mixins" as m;
+@use "../tokens/typography";
+@use "../tokens/contrast";
+
+// bg role -> paired on-color
+$-bg-pairs: (
+  "primary": "on-primary",
+  "on-primary": "primary",
+  "primary-container": "on-primary-container",
+  "secondary": "on-secondary",
+  "secondary-container": "on-secondary-container",
+  "tertiary": "on-tertiary",
+  "tertiary-container": "on-tertiary-container",
+  "error": "on-error",
+  "error-container": "on-error-container",
+  "surface": "on-surface",
+  "surface-dim": "on-surface",
+  "surface-bright": "on-surface",
+  "surface-container-lowest": "on-surface",
+  "surface-container-low": "on-surface",
+  "surface-container": "on-surface",
+  "surface-container-high": "on-surface",
+  "surface-container-highest": "on-surface",
+  "inverse-surface": "inverse-on-surface",
+);
+
+$-text-roles: (
+  "primary",
+  "secondary",
+  "tertiary",
+  "error",
+  "on-surface",
+  "on-surface-variant",
+  "outline",
+  "inverse-primary"
+);
+
+// Accent names among the extended roles: those with an on-<name> partner.
+@function -extended-names() {
+  $out: ();
+  @each $role, $def in contrast.$extended-roles {
+    @if map.has-key(contrast.$extended-roles, "on-" + $role) {
+      $out: list.append($out, $role);
+    }
+  }
+  @return $out;
+}
+
+@mixin styles {
+  $p: c.$prefix;
+
+  // --- typescale: .m3-display-large ... .m3-label-small, plus the
+  //     emphasized scale (.m3-headline-large-emphasized ...) ----------------
+  @each $role in typography.roles() {
+    .#{$p}-#{$role} {
+      @include m.typescale($role);
+    }
+  }
+
+  // --- color/surface utilities ----------------------------------------------
+  @each $role, $on in $-bg-pairs {
+    .#{$p}-bg-#{$role} {
+      background-color: var(--#{c.$sys-prefix}-sys-color-#{$role});
+      color: var(--#{c.$sys-prefix}-sys-color-#{$on});
+    }
+  }
+
+  @each $role in $-text-roles {
+    .#{$p}-text-#{$role} {
+      color: var(--#{c.$sys-prefix}-sys-color-#{$role});
+    }
+  }
+
+  // Extended roles (success / warning / info) and every configured custom
+  // color: .m3-bg-<name>, .m3-bg-<name>-container, .m3-text-<name>.
+  @each $name in -extended-names() {
+    .#{$p}-bg-#{$name} {
+      background-color: var(--#{c.$sys-prefix}-extended-color-#{$name});
+      color: var(--#{c.$sys-prefix}-extended-color-on-#{$name});
+    }
+    .#{$p}-bg-#{$name}-container {
+      background-color: var(--#{c.$sys-prefix}-extended-color-#{$name}-container);
+      color: var(--#{c.$sys-prefix}-extended-color-on-#{$name}-container);
+    }
+    .#{$p}-text-#{$name} {
+      color: var(--#{c.$sys-prefix}-extended-color-#{$name});
+    }
+  }
+
+  // --- shape utilities --------------------------------------------------------
+  @each $name in ("none", "extra-small", "small", "medium", "large",
+    "extra-large", "full")
+  {
+    .#{$p}-shape-#{$name} {
+      border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-#{$name});
+    }
+  }
+
+  // --- elevation utilities ----------------------------------------------------
+  @for $level from 0 through 5 {
+    .#{$p}-elevation-#{$level} {
+      --#{c.$prefix}-sys-elevation-level: #{$level};
+      box-shadow: var(--#{c.$sys-prefix}-sys-elevation-#{$level});
+    }
+  }
+
+  // M3's tonal elevation, the surface-tint role's one job. Separate from the
+  // shadow utilities on purpose: M3 raises a surface with a shadow, a tint, or
+  // both, so `.m3-elevation-3 .m3-surface-tint-3` is the both case and either
+  // class alone is the one-channel case.
+  @for $level from 0 through 5 {
+    .#{$p}-surface-tint-#{$level} {
+      @include m.surface-tint($level);
+    }
+  }
+
+  // --- token islands (section 7.3) -------------------------------------------
+  // Context regions that re-point system tokens on the scope root; nested
+  // islands resolve by inheritance from the NEAREST island root. Implemented
+  // in @scope so the rules stay at :scope specificity (0,1,0); where @scope
+  // is unsupported the island simply does not tint (refinement, not
+  // load-bearing structure).
+  @scope (.#{$p}-island--inverse) {
+    :scope {
+      --#{c.$sys-prefix}-sys-color-surface: var(--#{c.$sys-prefix}-sys-color-inverse-surface);
+      --#{c.$sys-prefix}-sys-color-on-surface: var(--#{c.$sys-prefix}-sys-color-inverse-on-surface);
+      --#{c.$sys-prefix}-sys-color-on-surface-variant: var(--#{c.$sys-prefix}-sys-color-inverse-on-surface);
+      --#{c.$sys-prefix}-sys-color-primary: var(--#{c.$sys-prefix}-sys-color-inverse-primary);
+      // inverse-primary is the OTHER scheme's primary, so the page's
+      // on-primary (which pairs with the page's primary) is the wrong label
+      // colour on it: a filled button came out light-on-light. M3 has no
+      // on-inverse-primary role; inverse-surface is the tone that pairs with
+      // inverse-primary in both schemes, and it is what the island already
+      // sits on.
+      --#{c.$sys-prefix}-sys-color-on-primary: var(--#{c.$sys-prefix}-sys-color-inverse-surface);
+      --#{c.$sys-prefix}-sys-color-surface-container-lowest: var(--#{c.$sys-prefix}-sys-color-inverse-surface);
+      --#{c.$sys-prefix}-sys-color-surface-container-low: color-mix(
+        in srgb,
+        var(--#{c.$sys-prefix}-sys-color-inverse-on-surface) 4%,
+        var(--#{c.$sys-prefix}-sys-color-inverse-surface)
+      );
+      --#{c.$sys-prefix}-sys-color-surface-container: color-mix(
+        in srgb,
+        var(--#{c.$sys-prefix}-sys-color-inverse-on-surface) 6%,
+        var(--#{c.$sys-prefix}-sys-color-inverse-surface)
+      );
+      --#{c.$sys-prefix}-sys-color-surface-container-high: color-mix(
+        in srgb,
+        var(--#{c.$sys-prefix}-sys-color-inverse-on-surface) 8%,
+        var(--#{c.$sys-prefix}-sys-color-inverse-surface)
+      );
+      --#{c.$sys-prefix}-sys-color-surface-container-highest: color-mix(
+        in srgb,
+        var(--#{c.$sys-prefix}-sys-color-inverse-on-surface) 11%,
+        var(--#{c.$sys-prefix}-sys-color-inverse-surface)
+      );
+      --#{c.$sys-prefix}-sys-color-outline-variant: color-mix(
+        in srgb,
+        var(--#{c.$sys-prefix}-sys-color-inverse-on-surface) 30%,
+        var(--#{c.$sys-prefix}-sys-color-inverse-surface)
+      );
+      background-color: var(--#{c.$sys-prefix}-sys-color-surface);
+      color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+    }
+  }
+
+  @scope (.#{$p}-island--primary) {
+    :scope {
+      --#{c.$sys-prefix}-sys-color-surface: var(--#{c.$sys-prefix}-sys-color-primary-container);
+      --#{c.$sys-prefix}-sys-color-on-surface: var(--#{c.$sys-prefix}-sys-color-on-primary-container);
+      --#{c.$sys-prefix}-sys-color-on-surface-variant: var(--#{c.$sys-prefix}-sys-color-on-primary-container);
+      --#{c.$sys-prefix}-sys-color-surface-container-lowest: var(--#{c.$sys-prefix}-sys-color-primary-container);
+      --#{c.$sys-prefix}-sys-color-surface-container-low: color-mix(
+        in srgb,
+        var(--#{c.$sys-prefix}-sys-color-on-primary-container) 4%,
+        var(--#{c.$sys-prefix}-sys-color-primary-container)
+      );
+      --#{c.$sys-prefix}-sys-color-surface-container: color-mix(
+        in srgb,
+        var(--#{c.$sys-prefix}-sys-color-on-primary-container) 6%,
+        var(--#{c.$sys-prefix}-sys-color-primary-container)
+      );
+      --#{c.$sys-prefix}-sys-color-surface-container-high: color-mix(
+        in srgb,
+        var(--#{c.$sys-prefix}-sys-color-on-primary-container) 8%,
+        var(--#{c.$sys-prefix}-sys-color-primary-container)
+      );
+      --#{c.$sys-prefix}-sys-color-surface-container-highest: color-mix(
+        in srgb,
+        var(--#{c.$sys-prefix}-sys-color-on-primary-container) 11%,
+        var(--#{c.$sys-prefix}-sys-color-primary-container)
+      );
+      --#{c.$sys-prefix}-sys-color-outline-variant: color-mix(
+        in srgb,
+        var(--#{c.$sys-prefix}-sys-color-on-primary-container) 30%,
+        var(--#{c.$sys-prefix}-sys-color-primary-container)
+      );
+      background-color: var(--#{c.$sys-prefix}-sys-color-surface);
+      color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+    }
+  }
+
+  @scope (.#{$p}-island--tertiary) {
+    :scope {
+      --#{c.$sys-prefix}-sys-color-surface: var(--#{c.$sys-prefix}-sys-color-tertiary-container);
+      --#{c.$sys-prefix}-sys-color-on-surface: var(--#{c.$sys-prefix}-sys-color-on-tertiary-container);
+      --#{c.$sys-prefix}-sys-color-on-surface-variant: var(--#{c.$sys-prefix}-sys-color-on-tertiary-container);
+      --#{c.$sys-prefix}-sys-color-primary: var(--#{c.$sys-prefix}-sys-color-tertiary);
+      // An island that re-points an accent role re-points its on- partner in
+      // the same breath, or a filled control keeps a label mixed for the
+      // accent it no longer has -- including one inherited from an island
+      // this one is nested in.
+      --#{c.$sys-prefix}-sys-color-on-primary: var(--#{c.$sys-prefix}-sys-color-on-tertiary);
+      --#{c.$sys-prefix}-sys-color-surface-container-lowest: var(--#{c.$sys-prefix}-sys-color-tertiary-container);
+      --#{c.$sys-prefix}-sys-color-surface-container-low: color-mix(
+        in srgb,
+        var(--#{c.$sys-prefix}-sys-color-on-tertiary-container) 4%,
+        var(--#{c.$sys-prefix}-sys-color-tertiary-container)
+      );
+      --#{c.$sys-prefix}-sys-color-surface-container: color-mix(
+        in srgb,
+        var(--#{c.$sys-prefix}-sys-color-on-tertiary-container) 6%,
+        var(--#{c.$sys-prefix}-sys-color-tertiary-container)
+      );
+      --#{c.$sys-prefix}-sys-color-surface-container-high: color-mix(
+        in srgb,
+        var(--#{c.$sys-prefix}-sys-color-on-tertiary-container) 8%,
+        var(--#{c.$sys-prefix}-sys-color-tertiary-container)
+      );
+      --#{c.$sys-prefix}-sys-color-surface-container-highest: color-mix(
+        in srgb,
+        var(--#{c.$sys-prefix}-sys-color-on-tertiary-container) 11%,
+        var(--#{c.$sys-prefix}-sys-color-tertiary-container)
+      );
+      --#{c.$sys-prefix}-sys-color-outline-variant: color-mix(
+        in srgb,
+        var(--#{c.$sys-prefix}-sys-color-on-tertiary-container) 30%,
+        var(--#{c.$sys-prefix}-sys-color-tertiary-container)
+      );
+      background-color: var(--#{c.$sys-prefix}-sys-color-surface);
+      color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+    }
+  }
+
+  // --- theme transitions (opt-in) --------------------------------------------
+  // Because color tokens are registered as <color>, retheming via --md-seed
+  // or [data-theme] interpolates smoothly on elements that transition their
+  // color-consuming properties. Opt in by putting this class on <html>.
+  @media (prefers-reduced-motion: no-preference) {
+    .#{$p}-theme-transition,
+    .#{$p}-theme-transition *,
+    .#{$p}-theme-transition *::before,
+    .#{$p}-theme-transition *::after {
+      transition-property: background-color, color, border-color, box-shadow,
+        outline-color, fill, stroke;
+      transition-duration: var(--#{c.$sys-prefix}-sys-motion-duration-medium2);
+      transition-timing-function: var(--#{c.$sys-prefix}-sys-motion-easing-standard);
+    }
+  }
+}

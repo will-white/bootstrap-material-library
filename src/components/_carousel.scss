@@ -1,0 +1,237 @@
+// ============================================================================
+// m3x carousel -- CSS scroll-snap, zero JS.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-carousel-item-width             75%      grid-auto-columns of the track
+//   --m3-carousel-gap                    space-2  gap between items
+//   --m3-carousel-shape                  corner-extra-large  item radius
+//   --m3-carousel-scrollbar-color        outline-variant  the thin bar shown
+//                                        to pointer devices that cannot drag
+//   --m3-carousel-indicator-size         8px      indicator dot diameter
+//   --m3-carousel-indicator-color        on-surface-variant  resting dot tint
+//   --m3-carousel-indicator-active-color primary  active dot color
+//   --m3-carousel-small-width            clamp(40px, 12%, 56px)  M3's small
+//                                        item, between MinSmallItemSize and
+//                                        MaxSmallItemSize
+//   --m3-carousel-medium-width           35%      M3's medium item
+//   --m3-carousel-large-width            60%      M3's large item
+//   --m3-carousel-uncontained-width      40%      uniform item, uncontained
+//
+// Markup (the track is the scroll container; indicators sit outside it so
+// they never become a snap column; .active or aria-current="true" marks the
+// current dot):
+//   <div class="m3-carousel" tabindex="0" role="group" aria-label="Photos">
+//     <div class="m3-carousel__item"><img src="a.jpg" alt="..."></div>
+//     <div class="m3-carousel__item"><img src="b.jpg" alt="..."></div>
+//   </div>
+//   <div class="m3-carousel__indicators">
+//     <button class="m3-carousel__indicator active" aria-label="Slide 1"></button>
+//     <button class="m3-carousel__indicator" aria-label="Slide 2"></button>
+//   </div>
+//
+// tabindex="0" on the track is part of the contract, not decoration: a scroll
+// container is not in the tab order by default, so without it the arrow-key
+// scrolling the browser already implements is unreachable, and a keyboard
+// user cannot see past the first item. CSS cannot add an attribute.
+//
+// LAYOUTS. M3 has four; three of them are layout, and those three are here:
+//   (default)         one large item snapped to the centre
+//   --multi-browse    large, medium and small items visible at once
+//   --hero            one large centred item with a small one either side
+//   --uncontained     uniform items that simply run off the edge
+// The fourth, full-screen, is one item filling the viewport and scrolling
+// vertically, which is a page layout rather than a component variant.
+//
+// What is NOT here: M3's item sizes MORPH as you scroll -- a small item grows
+// into the large slot as it reaches the centre. That is a per-frame function
+// of scroll offset, and the layouts below are the resting arrangement each
+// one settles into. grid-auto-columns takes a track LIST that repeats, which
+// is what gives multi-browse its large / medium / small rhythm from one
+// declaration.
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "carousel-item-width": 75%,
+  "carousel-gap": var(--#{c.$prefix}-sys-space-2),
+  "carousel-shape": var(--#{c.$sys-prefix}-sys-shape-corner-extra-large),
+  "carousel-scrollbar-color": var(--#{c.$sys-prefix}-sys-color-outline-variant),
+  "carousel-indicator-size": #{fn.rem(8)},
+  "carousel-indicator-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "carousel-indicator-active-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  // M3's MinSmallItemSize and MaxSmallItemSize are 40 and 56dp, with the
+  // real width chosen between them; clamp() is that choice.
+  "carousel-small-width": clamp(#{fn.rem(40)}, 12%, #{fn.rem(56)}),
+  "carousel-medium-width": 35%,
+  "carousel-large-width": 60%,
+  "carousel-uncontained-width": 40%,
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// The scroll-snap track: a one-row column grid that scrolls inline.
+@mixin track {
+  @include m.own-box;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: #{v("carousel-item-width")};
+  gap: #{v("carousel-gap")};
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--#{c.$prefix}-sys-space-4);
+  overscroll-behavior-x: contain;
+
+  // A horizontal scroller with no scrollbar is inert to a mouse: a vertical
+  // wheel does not scroll it, and with the bar gone nothing says it scrolls
+  // at all. M3's carousel is a touch surface, where hiding the bar is right
+  // and dragging is native -- so hide it only where the pointer is coarse,
+  // and leave every other input a thin bar in the component's own colour.
+  scrollbar-width: thin;
+  scrollbar-color: #{v("carousel-scrollbar-color")} transparent;
+
+  @media (pointer: coarse) {
+    scrollbar-width: none;
+    scrollbar-color: auto;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    scroll-behavior: smooth;
+  }
+}
+
+// M3's multi-browse: large, medium and small items visible together, so more
+// of the collection is browsable at once. grid-auto-columns repeats its track
+// list, so those three widths cycle across however many items there are.
+@mixin multi-browse {
+  grid-auto-columns:
+    #{v("carousel-large-width")}
+    #{v("carousel-medium-width")}
+    #{v("carousel-small-width")};
+  scroll-padding-inline: var(--#{c.$prefix}-sys-space-none);
+}
+
+// M3's centred hero: one large item in the middle with a small one showing on
+// each side. The large item is the track less those two and their gaps, and
+// the scroll padding keeps the leading small item in view at either end.
+@mixin hero {
+  --_edge: calc(#{v("carousel-small-width")} + #{v("carousel-gap")});
+  grid-auto-columns: calc(100% - 2 * var(--_edge));
+  scroll-padding-inline: var(--_edge);
+}
+
+// M3's uncontained: uniform items that run off the edge of the container
+// rather than being masked into it, so the track reads as a plain list.
+@mixin uncontained {
+  grid-auto-columns: #{v("carousel-uncontained-width")};
+  scroll-padding-inline: var(--#{c.$prefix}-sys-space-none);
+}
+
+// Uncontained and multi-browse snap to the start of an item, not its centre:
+// their point is a row of items, not one focal item.
+@mixin item-snap-start {
+  scroll-snap-align: start;
+}
+
+// One slide; media fills the rounded frame.
+@mixin item {
+  @include m.own-box;
+  display: block;
+  scroll-snap-align: center;
+  border-radius: #{v("carousel-shape")};
+  overflow: clip;
+
+  > img {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+}
+
+// Dot row (a sibling of the track, never inside it).
+@mixin indicators {
+  @include m.own-box;
+  display: flex;
+  justify-content: center;
+  gap: var(--#{c.$prefix}-sys-space-2);
+  padding-block: var(--#{c.$prefix}-sys-space-3);
+}
+
+// One dot (a real <button>); resting tint is the indicator color at the M3
+// 38% mix, the active dot is solid.
+@mixin indicator {
+  @include m.own-box;
+  @include m.always-round;
+  display: inline-block;
+  text-align: center;
+  @include m.typescale("label-large");
+  color: #{v("carousel-indicator-color")};
+  inline-size: #{v("carousel-indicator-size")};
+  block-size: #{v("carousel-indicator-size")};
+  border-radius: var(--#{c.$prefix}-sys-shape-pill);
+  border: none;
+  padding: var(--#{c.$prefix}-sys-space-none);
+  background-color: color-mix(
+    in srgb,
+    #{v("carousel-indicator-color")}
+      var(--#{c.$sys-prefix}-sys-state-disabled-content-opacity),
+    transparent
+  );
+  cursor: pointer;
+  @include m.touch-target-before;
+  @include m.focus-ring;
+  @include m.transition((background-color));
+
+  &.active,
+  &[aria-current="true"] {
+    background-color: #{v("carousel-indicator-active-color")};
+  }
+}
+
+@mixin classes {
+  .#{c.$prefix}-carousel {
+    @include track;
+  }
+
+  .#{c.$prefix}-carousel__item {
+    @include item;
+  }
+
+  .#{c.$prefix}-carousel--multi-browse {
+    @include multi-browse;
+  }
+
+  .#{c.$prefix}-carousel--hero {
+    @include hero;
+  }
+
+  .#{c.$prefix}-carousel--uncontained {
+    @include uncontained;
+  }
+
+  .#{c.$prefix}-carousel--multi-browse > .#{c.$prefix}-carousel__item,
+  .#{c.$prefix}-carousel--uncontained > .#{c.$prefix}-carousel__item {
+    @include item-snap-start;
+  }
+
+  .#{c.$prefix}-carousel__indicators {
+    @include indicators;
+  }
+
+  .#{c.$prefix}-carousel__indicator {
+    @include indicator;
+  }
+}

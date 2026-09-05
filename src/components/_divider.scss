@@ -1,0 +1,82 @@
+// ============================================================================
+// m3x divider
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-divider-color       outline-variant       rule color
+//   --m3-divider-thickness   1px (hairline token)   rule thickness
+//
+// Markup:
+//   <hr class="m3-divider">
+//   <hr class="m3-divider m3-divider--inset">
+//   <hr class="m3-divider m3-divider--middle">
+//   <div class="m3-divider m3-divider--vertical" role="separator"
+//        aria-orientation="vertical"></div>
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "divider-color": var(--#{c.$sys-prefix}-sys-color-outline-variant),
+  "divider-thickness": var(--#{c.$prefix}-sys-stroke-hairline),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// Horizontal rule (the default on <hr>).
+@mixin rule {
+  @include m.own-box;
+  display: block;
+  border: none;
+  border-block-start: #{v("divider-thickness")} solid
+    #{v("divider-color")};
+  margin-block: var(--#{c.$prefix}-sys-space-2);
+}
+
+// Inset from the leading edge (list content alignment).
+@mixin inset {
+  margin-inline-start: var(--#{c.$prefix}-sys-space-4);
+}
+
+// Inset from both inline edges.
+@mixin middle {
+  margin-inline: var(--#{c.$prefix}-sys-space-4);
+}
+
+// Vertical separator: stretches to its flex row's height.
+@mixin vertical {
+  display: inline-block;
+  border-block-start: none;
+  border-inline-start: #{v("divider-thickness")} solid
+    #{v("divider-color")};
+  block-size: auto;
+  align-self: stretch;
+  margin-inline: var(--#{c.$prefix}-sys-space-2);
+  margin-block: var(--#{c.$prefix}-sys-space-none);
+}
+
+@mixin classes {
+  .#{c.$prefix}-divider {
+    @include rule;
+  }
+
+  .#{c.$prefix}-divider--inset {
+    @include inset;
+  }
+
+  .#{c.$prefix}-divider--middle {
+    @include middle;
+  }
+
+  .#{c.$prefix}-divider--vertical {
+    @include vertical;
+  }
+}

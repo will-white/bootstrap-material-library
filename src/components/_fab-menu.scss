@@ -1,0 +1,261 @@
+// ============================================================================
+// m3x fab menu (M3 Expressive), on the Popover API ([popover] +
+// popovertarget; zero JS). A .m3-fab toggles a stack of pill-shaped items
+// that opens above it, aligned to its inline-end edge.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-fab-menu-item-height           56px                 item height; density
+//   --m3-fab-menu-item-shape            corner-full          item radius
+//   --m3-fab-menu-item-container-color  primary-container    item surface
+//   --m3-fab-menu-item-content-color    on-primary-container item label + icon
+//   --m3-fab-menu-item-padding-inline   space-4 (16px)       item inline padding
+//   --m3-fab-menu-item-icon-gap         space-2 (8px)        icon-to-label gap
+//   --m3-fab-menu-item-icon-size        24px (--m3-sys-icon-size)
+//   --m3-fab-menu-gap                   space-1 (4px)        gap between items
+//   --m3-fab-menu-offset                space-2 (8px)        gap above the fab
+//   --m3-fab-menu-open-container-color  primary              fab surface, open
+//   --m3-fab-menu-open-content-color    on-primary           fab icon, open
+//
+// Markup:
+//   <div class="m3-fab-menu">
+//     <button class="m3-fab m3-fab-menu__fab" popovertarget="fm"
+//             aria-label="Actions" aria-haspopup="menu">
+//       <svg viewBox="0 0 24 24"><path d="M11 5h2v14h-2z M5 11h14v2H5z"/></svg>
+//     </button>
+//     <div class="m3-fab-menu__items" id="fm" popover role="menu">
+//       <button class="m3-fab-menu__item" type="button" role="menuitem">
+//         <svg viewBox="0 0 24 24">...</svg>
+//         <span class="m3-fab-menu__label">Compose</span>
+//       </button>
+//       <button class="m3-fab-menu__item" type="button" role="menuitem">
+//         <span class="m3-fab-menu__label">Upload</span>
+//       </button>
+//     </div>
+//   </div>
+//
+// Placement: the root carries anchor-name: --m3-fab-menu-anchor. In browsers
+// with CSS anchor positioning the open item stack sits block-start of the
+// fab, its inline-end edge flush with the fab's (position-area: block-start
+// span-inline-start); elsewhere it keeps the UA [popover] placement
+// (centered in the viewport), never a misplaced box. While the menu is open
+// the fab re-points to the open colors and its icon rotates 45deg (a plus
+// becomes a cross), an enhancement gated on :has().
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "fab-menu-item-height": #{fn.rem(56)},
+  "fab-menu-item-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
+  "fab-menu-item-container-color": var(--#{c.$sys-prefix}-sys-color-primary-container),
+  "fab-menu-item-content-color": var(--#{c.$sys-prefix}-sys-color-on-primary-container),
+  "fab-menu-item-padding-inline": var(--#{c.$prefix}-sys-space-4),
+  "fab-menu-item-icon-gap": var(--#{c.$prefix}-sys-space-2),
+  "fab-menu-item-icon-size": var(--#{c.$prefix}-sys-icon-size),
+  "fab-menu-gap": var(--#{c.$prefix}-sys-space-1),
+  "fab-menu-offset": var(--#{c.$prefix}-sys-space-2),
+  "fab-menu-open-container-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "fab-menu-open-content-color": var(--#{c.$sys-prefix}-sys-color-on-primary),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// Root: the anchor context. Its box is the fab's box (the popover leaves
+// flow when open), so the item stack anchors to it.
+@mixin root {
+  @include m.own-box;
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+  anchor-name: --#{c.$prefix}-fab-menu-anchor;
+}
+
+// The toggling fab is a .m3-fab, which owns its box; this part only
+// re-points the fab's privates while its popover sibling is open and
+// prepares the icon for the open rotation. Kept free of own-box so a
+// standalone (inline-ownership) build cannot reset the fab's chrome.
+@mixin fab {
+  > svg,
+  > img {
+    @include m.spring-transition(rotate, "fast-spatial");
+  }
+}
+
+// Open state of the fab: primary surface, icon rotated a quarter-turn less
+// half (plus -> cross). :popover-open stands alone in its selector.
+@mixin fab-open {
+  --_container: #{v("fab-menu-open-container-color")};
+  --_content: #{v("fab-menu-open-content-color")};
+
+  > svg,
+  > img {
+    rotate: 45deg;
+  }
+}
+
+// The item stack (the [popover]): a vertical column, end-aligned so items
+// of different widths share the fab's inline-end edge.
+@mixin items {
+  @include m.own-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: #{v("fab-menu-gap")};
+  color: #{v("fab-menu-item-content-color")};
+}
+
+// The UA [popover] layout, restated because the box is owned. margin: auto
+// keeps the UA centering for browsers without anchor positioning.
+@mixin items-popover {
+  display: none;
+  position: fixed;
+  inset: var(--#{c.$prefix}-sys-space-none);
+  inline-size: fit-content;
+  block-size: fit-content;
+  overflow: visible;
+  margin: auto;
+
+  &:popover-open {
+    display: flex;
+  }
+}
+
+// Anchor-positioning enhancement: above the fab, inline-end edges flush.
+// Insets and margins go back to auto/none so the position-area alone
+// places the stack; flip below the fab when there is no room above.
+@mixin items-anchored {
+  @supports (anchor-name: --#{c.$prefix}-t) {
+    position-anchor: --#{c.$prefix}-fab-menu-anchor;
+    position-area: block-start span-inline-start;
+    position-try-fallbacks: flip-block;
+    inset: auto;
+    margin: var(--#{c.$prefix}-sys-space-none);
+    margin-block: #{v("fab-menu-offset")};
+  }
+}
+
+// Entry motion for the open stack (same recipe as the menu). Include only
+// on a selector that stands alone: :popover-open never shares a list.
+@mixin popover-entry {
+  @media (prefers-reduced-motion: no-preference) {
+    opacity: var(--#{c.$prefix}-sys-opacity-full);
+    translate: 0 0;
+    transition-property: opacity, translate;
+    transition-duration: var(--#{c.$sys-prefix}-sys-motion-duration-short4);
+    transition-timing-function: var(--#{c.$sys-prefix}-sys-motion-easing-emphasized-decelerate);
+    transition-behavior: allow-discrete;
+
+    @starting-style {
+      opacity: var(--#{c.$prefix}-sys-opacity-hidden);
+      translate: 0 var(--#{c.$prefix}-sys-space-1);
+    }
+  }
+}
+
+// One item: an extended-fab-like pill (<button> or <a>), state-layered.
+@mixin item {
+  @include m.own-box;
+  --_container: #{v("fab-menu-item-container-color")};
+  --_content: #{v("fab-menu-item-content-color")};
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: #{v("fab-menu-item-icon-gap")};
+  @include m.control-height(v("fab-menu-item-height"));
+  padding-inline: #{v("fab-menu-item-padding-inline")};
+  border: none;
+  border-radius: #{v("fab-menu-item-shape")};
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  text-align: center;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  @include m.typescale("label-large");
+  @include m.elevation(1);
+  @include m.state-layer;
+  @include m.focus-ring;
+  @include m.transition((background-color, color, box-shadow));
+  @include m.forced-colors-border;
+
+  @include m.hover {
+    @include m.elevation(2);
+  }
+
+  > svg,
+  > img,
+  > .#{c.$prefix}-icon {
+    inline-size: #{v("fab-menu-item-icon-size")};
+    font-size: #{v("fab-menu-item-icon-size")};
+    block-size: #{v("fab-menu-item-icon-size")};
+  }
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled;
+  }
+}
+
+// Item label text.
+@mixin label {
+  @include m.own-box;
+  display: inline;
+  @include m.typescale("label-large");
+  color: inherit;
+  white-space: nowrap;
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-fab-menu {
+    @include root;
+  }
+
+  .#{$p}-fab-menu__fab {
+    @include fab;
+  }
+
+  .#{$p}-fab-menu__fab:has(+ .#{$p}-fab-menu__items:popover-open) {
+    @include fab-open;
+  }
+
+  .#{$p}-fab-menu__items {
+    @include items;
+  }
+
+  .#{$p}-fab-menu__items[popover] {
+    @include items-popover;
+    @include items-anchored;
+  }
+
+  // Browsers without the Popover API would render the stack inline; hide it.
+  @supports not selector(:popover-open) {
+    .#{$p}-fab-menu__items[popover] {
+      display: none;
+    }
+  }
+
+  .#{$p}-fab-menu__items[popover]:popover-open {
+    @include popover-entry;
+  }
+
+  .#{$p}-fab-menu__item {
+    @include item;
+  }
+
+  .#{$p}-fab-menu__label {
+    @include label;
+  }
+}

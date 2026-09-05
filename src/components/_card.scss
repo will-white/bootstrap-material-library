@@ -1,0 +1,166 @@
+// ============================================================================
+// m3x card (elevated | filled | outlined)
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-card-container-color           surface-container-low (elevated)
+//   --m3-card-filled-container-color    surface-container-highest
+//   --m3-card-outlined-container-color  surface
+//   --m3-card-content-color             on-surface
+//   --m3-card-shape                     corner-medium
+//   --m3-card-padding                   space-4
+//   --m3-card-outline-color             outline-variant
+//   --m3-card-outline-width             1px (hairline token)
+//
+// Slot protection: chrome typography lives in a donut scope
+// (@scope root -> .m3-card__slot) so it never reaches consumer content
+// placed in the slot. Structural rules stay outside @scope, so the card
+// still renders correctly where @scope is unsupported.
+// ============================================================================
+
+@use "../config" as c;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "card-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-low),
+  "card-filled-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-highest),
+  "card-outlined-container-color": var(--#{c.$sys-prefix}-sys-color-surface),
+  "card-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "card-shape": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "card-padding": var(--#{c.$prefix}-sys-space-4),
+  "card-outline-color": var(--#{c.$sys-prefix}-sys-color-outline-variant),
+  "card-outline-width": var(--#{c.$prefix}-sys-stroke-hairline),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// Structural container, default = elevated look.
+@mixin container {
+  @include m.own-box;
+  --_container: #{v("card-container-color")};
+  --_content: #{v("card-content-color")};
+
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: var(--_container);
+  --#{c.$prefix}-sys-container-color: var(--_container);
+  color: var(--_content);
+  border-radius: #{v("card-shape")};
+  overflow: clip;
+  @include m.elevation(1);
+}
+
+@mixin elevated {
+  --_container: #{v("card-container-color")};
+  @include m.elevation(1);
+}
+
+@mixin filled {
+  --_container: #{v("card-filled-container-color")};
+  box-shadow: none;
+}
+
+@mixin outlined {
+  --_container: #{v("card-outlined-container-color")};
+  box-shadow: none;
+  border: #{v("card-outline-width")} solid
+    #{v("card-outline-color")};
+}
+
+// Interactive cards (<a class="m3-card m3-card--interactive">): full state
+// system on top of the container.
+@mixin interactive {
+  cursor: pointer;
+  text-decoration: none;
+  @include m.state-layer;
+  @include m.focus-ring;
+  @include m.transition((background-color, box-shadow));
+
+  @include m.hover {
+    @include m.elevation(2);
+  }
+}
+
+// Furniture parts (structural; safe without @scope).
+@mixin parts($root: ".#{c.$prefix}-card") {
+  #{$root}__media {
+    @include m.own-region;
+    display: block;
+    inline-size: 100%;
+    overflow: clip;
+    object-fit: cover;
+  }
+
+  #{$root}__slot {
+    @include m.own-region;
+    display: block;
+    padding: #{v("card-padding")};
+    flex: 1 1 auto;
+  }
+
+  #{$root}__actions {
+    @include m.own-region;
+    display: flex;
+    gap: var(--#{c.$prefix}-sys-space-2);
+    justify-content: flex-end;
+    padding: #{v("card-padding")};
+    padding-block-start: var(--#{c.$prefix}-sys-space-none);
+  }
+}
+
+// Chrome typography donut: element-level rules between the card root and the
+// slot boundary, at (0,0,1) specificity so one consumer class overrides them.
+@mixin internals($root: ".#{c.$prefix}-card", $slot: ".#{c.$prefix}-card__slot") {
+  @scope (#{$root}) to (#{$slot}) {
+    h2,
+    h3,
+    h4 {
+      @include m.typescale("title-large");
+      color: var(--_content);
+      margin-block-end: var(--#{c.$prefix}-sys-space-1);
+    }
+
+    p {
+      @include m.typescale("body-medium");
+      color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+      margin-block: var(--#{c.$prefix}-sys-space-1);
+    }
+
+    img {
+      border-start-start-radius: inherit;
+      border-start-end-radius: inherit;
+    }
+  }
+}
+
+@mixin classes {
+  .#{c.$prefix}-card {
+    @include container;
+  }
+
+  .#{c.$prefix}-card--elevated {
+    @include elevated;
+  }
+
+  .#{c.$prefix}-card--filled {
+    @include filled;
+  }
+
+  .#{c.$prefix}-card--outlined {
+    @include outlined;
+  }
+
+  .#{c.$prefix}-card--interactive {
+    @include interactive;
+  }
+
+  @include parts;
+  @include internals;
+}

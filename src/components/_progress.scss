@@ -1,0 +1,490 @@
+// ============================================================================
+// m3x progress (linear | circular | spinner | pulse)
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-progress-track-color       surface-container-highest  track / ring rest
+//   --m3-progress-color             primary                    active indicator
+//   --m3-progress-thickness         4px                        linear track height
+//   --m3-progress-value             0                          unitless 0-100
+//   --m3-progress-circle-size       48px                       circle / spinner box
+//   --m3-progress-circle-thickness  4px                        ring / border width
+//   --m3-progress-wave-amplitude    3px    wavy variants: wave rise above /
+//                                          below the rail (and scallop radius)
+//   --m3-progress-wave-wavelength   24px   wavy linear: one crest + one trough
+//   --m3-progress-bootstrap-height  16px   .progress (Bootstrap's own box)
+//   --m3-progress-bootstrap-shape   corner-full
+//   --m3-progress-bootstrap-label-color  on-primary
+//   --m3-progress-stop-size         4px    M3 stop indicator at the track end
+//   --m3-progress-stop-color        --m3-progress-color
+//   --m3-progress-gap               4px    gap between active indicator and
+//                                          track (linear); closes at value 0
+//   --m3-progress-circle-gap        6deg   the same gap on the circle
+//
+// Markup:
+//   <div class="m3-progress" role="progressbar" aria-valuenow="60"
+//        aria-valuemin="0" aria-valuemax="100" style="--m3-progress-value: 60">
+//     <div class="m3-progress__bar"></div>
+//   </div>
+//   <div class="m3-progress m3-progress--indeterminate">
+//     <div class="m3-progress__bar"></div>
+//   </div>
+//   <div class="m3-progress-circle" role="progressbar"
+//        style="--m3-progress-value: 60"></div>
+//   <div class="m3-spinner" role="status"></div>
+//   <div class="m3-progress m3-progress--wavy" role="progressbar"
+//        aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+//        style="--m3-progress-value: 60">
+//     <div class="m3-progress__bar"></div>
+//   </div>
+//   <div class="m3-progress-circle m3-progress-circle--wavy" role="progressbar"
+//        style="--m3-progress-value: 60"></div>
+//
+// Wavy variants (M3 Expressive): --wavy on the linear track masks the bar to
+// a wave of circular arcs (amplitude and wavelength tokens; the stroke keeps
+// the thickness token) that scrolls under no-preference; --wavy on the circle
+// is a static gentle scallop (12 bumps of the amplitude radius on the ring's
+// outer edge, count fixed at build time) -- a CSS-only stand-in for the
+// spec's wavy arc. Combining --wavy with --indeterminate keeps the sweep
+// (the wave squashes with the sweep's scaleX).
+//
+// Setting the determinate value: either set the custom property
+// (style="--m3-progress-value: 60") or give the bar an inline width
+// (style="width: 60%") -- an inline width wins the cascade over the
+// calc()-derived inline-size, so Bootstrap-style width updates keep working.
+// Indeterminate motion, the spinner sweep, and the pulse all sit behind
+// prefers-reduced-motion: no-preference; without it the bar shows a full
+// track, the spinner shows a static arc, and the pulse shows a static disc.
+// ============================================================================
+
+@use "sass:list";
+@use "sass:math";
+@use "sass:map";
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "progress-track-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
+  "progress-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "progress-thickness": #{fn.rem(4)},
+  "progress-value": 0,
+  "progress-circle-size": #{fn.rem(48)},
+  "progress-circle-thickness": #{fn.rem(4)},
+  "progress-wave-amplitude": #{fn.rem(3)},
+  "progress-wave-wavelength": #{fn.rem(24)},
+  // The Bootstrap-shaped box: .progress is a 1rem bar that can carry a
+  // centred label, not M3's 4px indicator. Named like the button's
+  // --m3-btn-height-bootstrap-large: a Bootstrap metric, kept as one.
+  "progress-bootstrap-height": #{fn.rem(16)},
+  "progress-bootstrap-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
+  "progress-bootstrap-label-color": var(--#{c.$sys-prefix}-sys-color-on-primary),
+  "progress-stop-size": #{fn.rem(4)},
+  "progress-gap": #{fn.rem(4)},
+  "progress-circle-gap": 6deg,
+);
+
+// Defaults that build on another token in this map: resolved through
+// token() so the sibling's own default travels with them.
+$tokens: map.set($tokens, "progress-stop-color", #{m.token($tokens, "progress-color")});
+
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// Linear track: thin rounded rail that clips the bar, with M3's stop
+// indicator -- a dot of the active-indicator colour parked at the trailing
+// end of the track -- drawn on ::after. The bar is raised a layer above it so
+// a full-value bar occludes the dot, exactly as the spec shows it.
+@mixin linear-track {
+  @include m.own-box;
+  @include m.always-round;
+  position: relative;
+  display: block;
+  block-size: #{v("progress-thickness")};
+  border-radius: var(--#{c.$prefix}-sys-shape-pill);
+  background: transparent;
+  overflow: clip;
+
+  // The track itself, painted on ::before rather than on the element, so the
+  // gap M3 leaves between the active indicator and the track can be cut by
+  // moving its leading edge -- a mask on the element would mask the bar with
+  // it. The gap only exists once there IS an active indicator, so it scales
+  // with clamp(0, value, 1): none at value 0, full from 1 upward. Driving the
+  // bar with an inline width instead of the value token (the Bootstrap way)
+  // leaves the track full-width and the gap closed.
+  &::before {
+    @include m.own-pseudo;
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    inset-inline-start: calc(
+      #{v("progress-value")} * 1% +
+        #{v("progress-gap")} *
+        clamp(0, #{v("progress-value")}, 1)
+    );
+    border-radius: inherit;
+    // Painted from currentColor, like the stop indicator: the box is owned,
+    // so its colour is pinned rather than inherited from the page.
+    color: #{v("progress-track-color")};
+    background: currentColor;
+    @include m.typescale("label-small");
+  }
+
+  &::after {
+    @include m.own-pseudo;
+    content: "";
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: 0;
+    inline-size: #{v("progress-stop-size")};
+    block-size: #{v("progress-stop-size")};
+    translate: 0 -50%;
+    border-radius: var(--#{c.$prefix}-sys-shape-pill);
+    color: #{v("progress-stop-color")};
+    background: currentColor;
+    // The dot never renders text, but the box is owned: pinning a typescale
+    // stops a hostile host reaching it through inheritance (own-pseudo
+    // re-inherits typography by design, for generated content that IS text).
+    @include m.typescale("label-small");
+  }
+}
+
+// Indeterminate progress has no stop indicator: there is no value for it to
+// stop at.
+@mixin linear-no-stop {
+  &::before {
+    inset-inline-start: 0;
+  }
+  &::after {
+    content: none;
+  }
+}
+
+// Determinate bar: width driven by the unitless value token (or an inline
+// width, which wins the cascade -- see header).
+@mixin linear-bar {
+  @include m.own-box;
+  @include m.always-round;
+  color: #{v("progress-color")}; // the wavy mask stops resolve from currentColor
+  position: relative;
+  z-index: 1; // above the track's stop indicator
+  display: block;
+  block-size: 100%;
+  border-radius: inherit;
+  background: #{v("progress-color")};
+  inline-size: calc(#{v("progress-value")} * 1%);
+}
+
+// Indeterminate bar: full-width bar swept across the track by a
+// translate/scaleX loop. Without the motion media query the bar simply
+// fills the track (acceptable static rendering).
+@mixin linear-indeterminate {
+  inline-size: 100%;
+  transform-origin: left;
+
+  @keyframes #{c.$prefix}-progress-slide {
+    0% {
+      transform: translateX(-100%) scaleX(0.4);
+    }
+    40% {
+      transform: translateX(0%) scaleX(0.6);
+    }
+    100% {
+      transform: translateX(100%) scaleX(0.4);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: #{c.$prefix}-progress-slide
+      var(--#{c.$sys-prefix}-sys-motion-duration-extra-long2)
+      var(--#{c.$sys-prefix}-sys-motion-easing-standard) infinite;
+  }
+}
+
+// Determinate circle: conic fill masked to a ring. currentColor is only the
+// opaque mask stop (alpha matters, not hue) -- never a color literal.
+@mixin circular {
+  @include m.own-box;
+  @include m.always-round;
+  --_active: #{v("progress-color")};
+  --_track: #{v("progress-track-color")};
+  // Value and gap as angles, so no stop position mixes % with deg. The gap
+  // is the circular form of the linear one and closes the same way at value
+  // 0, leaving an unbroken ring.
+  --_sweep: calc(#{v("progress-value")} * 3.6deg);
+  --_gap: calc(
+    #{v("progress-circle-gap")} *
+      clamp(0, #{v("progress-value")}, 1)
+  );
+  color: var(--_active);
+
+  display: inline-block;
+  inline-size: #{v("progress-circle-size")};
+  block-size: #{v("progress-circle-size")};
+  border-radius: var(--#{c.$prefix}-sys-shape-pill);
+  background: conic-gradient(
+    var(--_active) 0deg var(--_sweep),
+    transparent var(--_sweep) calc(var(--_sweep) + var(--_gap)),
+    var(--_track) calc(var(--_sweep) + var(--_gap))
+      calc(360deg - var(--_gap)),
+    transparent calc(360deg - var(--_gap)) 360deg
+  );
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - #{v("progress-circle-thickness")}),
+    currentColor calc(100% - #{v("progress-circle-thickness")})
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - #{v("progress-circle-thickness")}),
+    currentColor calc(100% - #{v("progress-circle-thickness")})
+  );
+}
+
+// Indeterminate spinner: track-colored border with an active top arc,
+// rotated forever. The static arc is the reduced-motion rendering.
+@mixin spinner {
+  @include m.own-box;
+  @include m.always-round;
+  display: inline-block;
+  inline-size: #{v("progress-circle-size")};
+  block-size: #{v("progress-circle-size")};
+  border: #{v("progress-circle-thickness")} solid
+    #{v("progress-track-color")};
+  border-block-start-color: #{v("progress-color")};
+  border-radius: var(--#{c.$prefix}-sys-shape-pill);
+
+  @keyframes #{c.$prefix}-progress-rotate {
+    to {
+      rotate: 1turn;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: #{c.$prefix}-progress-rotate
+      var(--#{c.$sys-prefix}-sys-motion-duration-extra-long4)
+      var(--#{c.$sys-prefix}-sys-motion-easing-linear) infinite;
+  }
+}
+
+// Growing/fading disc (Bootstrap .spinner-grow reskin). The static full
+// disc is the reduced-motion rendering.
+@mixin pulse {
+  @include m.own-box;
+  @include m.always-round;
+  display: inline-block;
+  inline-size: #{v("progress-circle-size")};
+  block-size: #{v("progress-circle-size")};
+  border-radius: var(--#{c.$prefix}-sys-shape-pill);
+  color: #{v("progress-color")};
+  background: currentColor;
+
+  @keyframes #{c.$prefix}-progress-pulse {
+    0% {
+      scale: 0;
+      opacity: var(--#{c.$prefix}-sys-opacity-full);
+    }
+    100% {
+      scale: 1;
+      opacity: var(--#{c.$prefix}-sys-opacity-hidden);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: #{c.$prefix}-progress-pulse
+      var(--#{c.$sys-prefix}-sys-motion-duration-extra-long4)
+      var(--#{c.$sys-prefix}-sys-motion-easing-standard) infinite;
+  }
+}
+
+// --- wavy variants (M3 Expressive) --------------------------------------------
+
+// Wavy linear track: grows by twice the amplitude so the wave has room, and
+// paints its rail as a centered band of the track color instead of filling.
+// The band rides the same ::before as the flat track, so it keeps the gap.
+@mixin linear-wavy-track {
+  block-size: calc(
+    #{v("progress-thickness")} +
+      2 * #{v("progress-wave-amplitude")}
+  );
+
+  &::before {
+    background-color: transparent;
+    background-image: linear-gradient(
+      #{v("progress-track-color")},
+      #{v("progress-track-color")}
+    );
+    background-size: 100% #{v("progress-thickness")};
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  }
+}
+
+// Wavy bar: fills the taller track and is masked to a wave built from two
+// rows of circular arcs (crests tiled on the top half, troughs on the bottom
+// half; each arc spans half a wavelength with the amplitude as its sagitta),
+// so the stroke keeps the thickness token everywhere. The arc radius follows
+// from chord and sagitta through CSS trigonometry: with half-chord c and
+// sagitta a, tan(theta/2) = a/c and r = c / sin(theta). Under no-preference
+// the mask scrolls one wavelength per cycle; the static wave is the
+// reduced-motion rendering. currentColor is only the opaque mask stop.
+@mixin linear-wavy-bar {
+  $amp: #{v("progress-wave-amplitude")};
+  $wl: #{v("progress-wave-wavelength")};
+  $ring: (
+    transparent calc(var(--_wave-inner) - var(--#{c.$prefix}-sys-stroke-hairline)),
+    currentColor var(--_wave-inner),
+    currentColor var(--_wave-outer),
+    transparent calc(var(--_wave-outer) + var(--#{c.$prefix}-sys-stroke-hairline))
+  );
+  $crest: radial-gradient(
+    circle var(--_wave-radius) at 25% calc(100% + var(--_wave-center)),
+    $ring
+  );
+  $trough: radial-gradient(
+    circle var(--_wave-radius) at 75% calc(-1 * var(--_wave-center)),
+    $ring
+  );
+
+  --_wave-radius: calc(#{$wl} / 4 / sin(2 * atan2(#{$amp}, #{$wl} / 4)));
+  --_wave-center: calc(var(--_wave-radius) - #{$amp});
+  --_wave-half: calc(#{$amp} + #{v("progress-thickness")} / 2);
+  --_wave-inner: calc(
+    var(--_wave-radius) - #{v("progress-thickness")} / 2
+  );
+  --_wave-outer: calc(
+    var(--_wave-radius) + #{v("progress-thickness")} / 2
+  );
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
+  -webkit-mask-image: $crest, $trough;
+  mask-image: $crest, $trough;
+  -webkit-mask-size: #{$wl} var(--_wave-half);
+  mask-size: #{$wl} var(--_wave-half);
+  -webkit-mask-position: 0 0, 0 100%;
+  mask-position: 0 0, 0 100%;
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes #{c.$prefix}-progress-wave {
+      to {
+        -webkit-mask-position: #{$wl} 0, #{$wl} 100%;
+        mask-position: #{$wl} 0, #{$wl} 100%;
+      }
+    }
+
+    animation: #{c.$prefix}-progress-wave
+      var(--#{c.$sys-prefix}-sys-motion-duration-extra-long4)
+      var(--#{c.$sys-prefix}-sys-motion-easing-linear) infinite;
+  }
+}
+
+// Wavy + indeterminate: the sweep and the wave scroll run together (both
+// keyframe sets are declared by the mixins above).
+@mixin linear-wavy-indeterminate {
+  @media (prefers-reduced-motion: no-preference) {
+    animation:
+      #{c.$prefix}-progress-slide
+        var(--#{c.$sys-prefix}-sys-motion-duration-extra-long2)
+        var(--#{c.$sys-prefix}-sys-motion-easing-standard) infinite,
+      #{c.$prefix}-progress-wave
+        var(--#{c.$sys-prefix}-sys-motion-duration-extra-long4)
+        var(--#{c.$sys-prefix}-sys-motion-easing-linear) infinite;
+  }
+}
+
+// Wavy circle, approximated as a gentle scallop: the ring is inset by the
+// amplitude and $-scallops bumps of that radius ride its outer edge, one
+// mask layer each with build-time positions. Static (a mask cannot turn
+// independently of the conic fill); the value reads through it as usual.
+$-scallops: 12;
+
+@function -round4($n) {
+  @return math.div(math.round($n * 10000), 10000);
+}
+
+@mixin circular-wavy {
+  $amp: #{v("progress-wave-amplitude")};
+  $thick: #{v("progress-circle-thickness")};
+  $layers: (
+    radial-gradient(
+      farthest-side,
+      transparent calc(100% - #{$amp} - #{$thick} - var(--#{c.$prefix}-sys-stroke-hairline)),
+      currentColor calc(100% - #{$amp} - #{$thick}),
+      currentColor calc(100% - #{$amp}),
+      transparent calc(100% - #{$amp} + var(--#{c.$prefix}-sys-stroke-hairline))
+    ),
+  );
+  @for $i from 0 to $-scallops {
+    $angle: math.div(360 * $i, $-scallops) * 1deg;
+    $cx: -round4(math.cos($angle));
+    $cy: -round4(math.sin($angle));
+    $layers: list.append(
+      $layers,
+      radial-gradient(
+        circle #{$amp} at calc(50% + #{$cx} * (50% - #{$amp}))
+          calc(50% + #{$cy} * (50% - #{$amp})),
+        currentColor calc(100% - var(--#{c.$prefix}-sys-stroke-hairline)),
+        transparent 100%
+      ),
+      comma
+    );
+  }
+
+  -webkit-mask-image: $layers;
+  mask-image: $layers;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-progress {
+    @include linear-track;
+  }
+
+  .#{$p}-progress__bar {
+    @include linear-bar;
+  }
+
+  .#{$p}-progress--indeterminate {
+    @include linear-no-stop;
+  }
+
+  .#{$p}-progress--indeterminate .#{$p}-progress__bar {
+    @include linear-indeterminate;
+  }
+
+  .#{$p}-progress--wavy {
+    @include linear-wavy-track;
+  }
+
+  .#{$p}-progress--wavy .#{$p}-progress__bar {
+    @include linear-wavy-bar;
+  }
+
+  .#{$p}-progress--wavy.#{$p}-progress--indeterminate .#{$p}-progress__bar {
+    @include linear-wavy-indeterminate;
+  }
+
+  .#{$p}-progress-circle {
+    @include circular;
+  }
+
+  .#{$p}-progress-circle--wavy {
+    @include circular-wavy;
+  }
+
+  .#{$p}-spinner {
+    @include spinner;
+  }
+}

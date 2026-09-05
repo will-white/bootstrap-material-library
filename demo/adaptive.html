@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aurora Mail - adaptive layout (m3x demo)</title>
+  <link rel="stylesheet" href="../dist/m3x.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=account_circle,forward,inbox,reply,search,send,settings,star&amp;display=block">
+  <style>
+    /* Demo scaffolding only: the layout, nav and app bar are m3x classes. */
+    .mail { display: grid; gap: var(--m3-sys-space-2); }
+    .mail__row { display: flex; gap: var(--m3-sys-space-3); align-items: flex-start; padding-block: var(--m3-sys-space-2); border-block-end: var(--m3-sys-stroke-hairline) solid var(--md-sys-color-outline-variant); }
+    .mail__row:last-child { border-block-end: none; }
+    .mail__avatar { flex: none; inline-size: var(--m3-sys-space-6); block-size: var(--m3-sys-space-6); border-radius: var(--md-sys-shape-corner-full); background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); display: grid; place-items: center; }
+    .detail { display: grid; gap: var(--m3-sys-space-4); }
+    .detail p { margin: 0; }
+    .controls { display: flex; flex-wrap: wrap; gap: var(--m3-sys-space-3); align-items: center; margin-inline-start: auto; }
+  </style>
+</head>
+<body>
+
+<div class="m3-adaptive-layout">
+
+  <!-- Navigation bar (compact) / rail (medium, expanded) / drawer (large+), one element. -->
+  <nav class="m3-adaptive-nav" aria-label="Primary">
+    <a class="m3-adaptive-nav__item" href="#inbox" aria-current="page">
+      <span class="m3-adaptive-nav__icon"><span class="m3-icon" aria-hidden="true">inbox</span></span>
+      <span class="m3-adaptive-nav__label">Inbox</span>
+    </a>
+    <a class="m3-adaptive-nav__item" href="#starred">
+      <span class="m3-adaptive-nav__icon"><span class="m3-icon" aria-hidden="true">star</span></span>
+      <span class="m3-adaptive-nav__label">Starred</span>
+    </a>
+    <a class="m3-adaptive-nav__item" href="#sent">
+      <span class="m3-adaptive-nav__icon"><span class="m3-icon" aria-hidden="true">send</span></span>
+      <span class="m3-adaptive-nav__label">Sent</span>
+    </a>
+    <a class="m3-adaptive-nav__item" href="#settings">
+      <span class="m3-adaptive-nav__icon"><span class="m3-icon" aria-hidden="true">settings</span></span>
+      <span class="m3-adaptive-nav__label">Settings</span>
+    </a>
+  </nav>
+
+  <!-- Sticky large top app bar: tints and collapses as the page scrolls (scroll-driven animation; no script). -->
+  <header class="m3-top-app-bar m3-top-app-bar--sticky m3-top-app-bar--large">
+    <button class="m3-icon-btn" type="button" aria-label="Search"><span class="m3-icon" aria-hidden="true">search</span></button>
+    <div class="controls">
+      <label class="m3-label-large" for="contrast">Contrast
+        <select id="contrast" class="m3-select" style="--m3-field-height: 2.5rem; min-inline-size: 8rem;">
+          <option value="">Auto</option><option value="standard">Standard</option><option value="medium">Medium</option><option value="high">High</option>
+        </select>
+      </label>
+      <button class="m3-icon-btn" type="button" aria-label="Account"><span class="m3-icon" aria-hidden="true">account_circle</span></button>
+    </div>
+    <h1 class="m3-top-app-bar__title">Inbox</h1>
+  </header>
+
+  <!-- List-detail canonical layout: one pane at compact/medium, both from expanded. -->
+  <main class="m3-pane-layout m3-pane-layout--list-detail">
+    <section class="m3-pane" aria-label="Messages">
+      <div class="mail">
+        <div class="mail__row"><span class="mail__avatar">A</span><span><span class="m3-title-small">Ada Lovelace</span><br><span class="m3-body-medium">Re: the analytical engine schedule</span></span></div>
+        <div class="mail__row"><span class="mail__avatar">G</span><span><span class="m3-title-small">Grace Hopper</span><br><span class="m3-body-medium">Compiler notes for Tuesday</span></span></div>
+        <div class="mail__row"><span class="mail__avatar">K</span><span><span class="m3-title-small">Katherine Johnson</span><br><span class="m3-body-medium">Trajectory review, take two</span></span></div>
+        <div class="mail__row"><span class="mail__avatar">M</span><span><span class="m3-title-small">Margaret Hamilton</span><br><span class="m3-body-medium">Priority scheduling: a proposal</span></span></div>
+        <div class="mail__row"><span class="mail__avatar">R</span><span><span class="m3-title-small">Radia Perlman</span><br><span class="m3-body-medium">Spanning tree, illustrated</span></span></div>
+      </div>
+    </section>
+    <section class="m3-pane detail" aria-label="Message">
+      <h2 class="m3-headline-small" style="margin: 0;">Re: the analytical engine schedule</h2>
+      <p class="m3-body-large">Thanks for the update. I have moved the punched-card review to Thursday so the loom operators can attend, and attached the revised sequence.</p>
+      <details class="m3-disclosure" name="detail"><summary>Attachments (2)</summary><p class="m3-body-medium">sequence-v2.pdf, cards.csv</p></details>
+      <details class="m3-disclosure" name="detail"><summary>Earlier messages</summary><p class="m3-body-medium">Three earlier messages in this thread.</p></details>
+      <div class="m3-button-group" role="group" aria-label="Actions">
+        <button class="m3-btn m3-btn--filled" type="button"><span class="m3-icon" aria-hidden="true">reply</span>Reply</button>
+        <button class="m3-btn m3-btn--tonal" type="button"><span class="m3-icon" aria-hidden="true">forward</span>Forward</button>
+        <button class="m3-icon-btn m3-icon-btn--outlined" type="button" aria-label="Star" aria-pressed="false" data-toggle><span class="m3-icon" aria-hidden="true">star</span></button>
+      </div>
+      <p class="m3-body-medium" style="color: var(--md-sys-color-on-surface-variant);">Scroll this page to watch the large app bar collapse and tint; resize the window across 600, 840 and 1200px to move the navigation between bar, rail and drawer.</p>
+      <p class="m3-body-large">Lorem ipsum stands in for a long message: the analytical engine's mill and store, the barrel controllers, the card readers, and the printing apparatus each have their own review slot. We will start with the store.</p>
+      <p class="m3-body-large">The mill review follows on Friday, with the carriage mechanism last. Bring the revised drawings.</p>
+      <p class="m3-body-large">Ada.</p>
+    </section>
+  </main>
+
+</div>
+
+<script>
+  // Demo-only: the contrast picker and the star toggle (aria-pressed).
+  document.getElementById("contrast").addEventListener("change", function (e) {
+    if (e.target.value) document.documentElement.setAttribute("data-contrast", e.target.value);
+    else document.documentElement.removeAttribute("data-contrast");
+  });
+  document.querySelectorAll("[data-toggle]").forEach(function (b) {
+    b.addEventListener("click", function () { b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true"); });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,687 @@
+// ============================================================================
+// m3x text field (filled | outlined)
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-field-height              56px; participates in density
+//   --m3-field-container-color     surface-container-highest (filled)
+//   --m3-field-shape               corner-extra-small
+//   --m3-field-content-color       on-surface
+//   --m3-field-label-color         on-surface-variant
+//   --m3-field-focus-color         primary
+//   --m3-field-error-color         error
+//   --m3-field-valid-color         extended success (Bootstrap parity)
+//   --m3-field-supporting-color    on-surface-variant
+//   --m3-field-indicator-color     on-surface-variant (filled underline)
+//   --m3-field-indicator-width     1px (hairline token)
+//   --m3-field-indicator-width-focus  3px (heavy token; M3 focused indicator)
+//   --m3-field-outline-color       outline (outlined variant)
+//   --m3-field-outline-width       1px (hairline token)
+//   --m3-field-outline-width-focus 3px (heavy token; M3 focused outline)
+//   --m3-field-label-bg            surface (outlined label cutout; re-point
+//                                  when the field sits on another surface)
+//   --m3-field-padding-inline      space-4
+//   --m3-field-icon-color          on-surface-variant
+//   --m3-field-icon-slot           52px, where text starts beside an icon
+//                                  (M3's 12dp inset + 24dp icon + 16dp gap)
+//   --m3-field-affix-color         on-surface-variant (prefix / suffix)
+//   --m3-field-affix-size          space-5, the inline space an affix reserves
+//   --m3-field-counter-color       on-surface-variant
+//
+// Markup (input first, so every state is reachable with sibling selectors --
+// no :has() dependency; `placeholder=" "` drives the floating label):
+//   <label class="m3-field m3-field--filled">
+//     <input class="m3-field__input" placeholder=" ">
+//     <span class="m3-field__label">Label</span>
+//     <span class="m3-field__supporting">Supporting text</span>
+//   </label>
+//
+// ANATOMY SLOTS (M3's leading icon, trailing icon, prefix, suffix, counter):
+//   <label class="m3-field m3-field--outlined m3-field--leading-icon">
+//     <input class="m3-field__input" placeholder=" ">
+//     <span class="m3-field__label">Search</span>
+//     <span class="m3-field__leading"><span class="m3-icon">search</span></span>
+//     <span class="m3-field__trailing"><button class="m3-icon-btn" ...></button></span>
+//     <span class="m3-field__supporting">Supporting text</span>
+//     <span class="m3-field__counter">0/50</span>
+//   </label>
+//
+// The input DRAWS ITS OWN CONTAINER -- that is what lets Bootstrap's bare
+// `.form-control` inherit the whole look -- so the slots cannot sit in flow
+// beside it. They are positioned into the container instead, and the space
+// they occupy is reserved by growing the input's padding through four private
+// variables (--_icon-start / --_icon-end / --_affix-start / --_affix-end),
+// which add up so a field can carry a leading icon AND a prefix.
+//
+// Those variables are set two ways, and both set the same value:
+//   * the --leading-icon / --trailing-icon / --prefix / --suffix modifiers,
+//     which work at the library's `@layer` support floor, and
+//   * a :has() rule per slot, so a browser with :has() gets it right whether
+//     or not the modifier was written.
+// The modifier is therefore only required for Firefox < 121 / Chrome < 105.
+//
+// An affix's width is a token rather than its own content width: nothing in
+// CSS can hand an absolutely positioned element's width to a sibling's
+// padding. --m3-field-affix-size fits one glyph ($, @, #); re-point it for
+// a longer one.
+//
+// Error rendering is IDENTICAL for :user-invalid (native constraint
+// validation) and the .is-invalid / .was-validated interop classes.
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "field-height": #{fn.rem(56)},
+  "field-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-highest),
+  "field-shape": var(--#{c.$sys-prefix}-sys-shape-corner-extra-small),
+  "field-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "field-label-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "field-focus-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "field-error-color": var(--#{c.$sys-prefix}-sys-color-error),
+  "field-valid-color": var(--#{c.$sys-prefix}-extended-color-success),
+  "field-supporting-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "field-indicator-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "field-indicator-width": var(--#{c.$prefix}-sys-stroke-hairline),
+  "field-indicator-width-focus": var(--#{c.$prefix}-sys-stroke-heavy),
+  "field-outline-color": var(--#{c.$sys-prefix}-sys-color-outline),
+  "field-outline-width": var(--#{c.$prefix}-sys-stroke-hairline),
+  "field-outline-width-focus": var(--#{c.$prefix}-sys-stroke-heavy),
+  "field-label-bg": var(--#{c.$sys-prefix}-sys-color-surface),
+  "field-padding-inline": var(--#{c.$prefix}-sys-space-4),
+  "field-icon-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  // Where the text starts when the field carries an icon on that side: M3
+  // sets the icon 12dp in from the container edge and starts the text 16dp
+  // after it, so 12 + 24 + 16 = 52dp -- the same geometry as Android's 48dp
+  // icon view plus its 4dp margin.
+  "field-icon-slot": #{fn.rem(52)},
+  "field-affix-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "field-affix-size": var(--#{c.$prefix}-sys-space-5),
+  "field-counter-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// Positioning context for the floated label and the anatomy slots. The grid
+// is one row for the field (the input spans it) and one for the supporting
+// row, whose two columns put supporting text at the start and the character
+// counter at the end. Every other slot is positioned, so it takes no cell.
+@mixin wrapper {
+  @include m.own-box;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  position: relative;
+  inline-size: 100%;
+  cursor: text;
+}
+
+// Inline space an anatomy slot reserves inside the container. Each is read
+// with a 0px fallback, so an input outside a wrapper -- Bootstrap's bare
+// .form-control -- resolves to exactly the padding it had before.
+// M3 measures a leading icon's 12dp inset from the CONTAINER edge, not from
+// the text padding, so --m3-field-icon-slot is where the text starts (52dp)
+// rather than an amount added to the 16dp a plain field uses -- hence max()
+// and not a sum. An affix then sits inside whatever that leaves, so it does
+// add.
+@function -text-start() {
+  @return max(#{v("field-padding-inline")}, var(--_icon-start, 0px));
+}
+
+@function -text-end() {
+  @return max(#{v("field-padding-inline")}, var(--_icon-end, 0px));
+}
+
+@function -slot-start() {
+  @return calc(#{-text-start()} + var(--_affix-start, 0px));
+}
+
+@function -slot-end() {
+  @return calc(#{-text-end()} + var(--_affix-end, 0px));
+}
+
+// Block box of a slot positioned into the container: the first row's worth of
+// the field, so a textarea keeps its icons at the top rather than centred
+// down its whole height.
+@mixin -slot-block {
+  position: absolute;
+  inset-block-start: 0;
+  block-size: calc(
+    #{v("field-height")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
+  );
+}
+
+// Shared input rules for both variants.
+@mixin input-base {
+  @include m.own-box;
+  --_content: #{v("field-content-color")};
+
+  display: block;
+  inline-size: 100%;
+  @include m.control-min-height(v("field-height"));
+  padding-inline-start: #{-slot-start()};
+  padding-inline-end: #{-slot-end()};
+  color: var(--_content);
+  caret-color: #{v("field-focus-color")};
+  cursor: text;
+  appearance: none;
+
+  // The UA's text-control internals, restated because the box is owned.
+  &:where(input) {
+    display: block;
+    overflow: clip;
+  }
+
+  &:where(textarea) {
+    display: block;
+    overflow: auto;
+    resize: vertical;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+  }
+  @include m.typescale("body-large");
+  @include m.transition((background-color, border-color, box-shadow));
+
+  &::placeholder {
+    color: #{v("field-label-color")};
+    opacity: var(--#{c.$prefix}-sys-opacity-full);
+  }
+
+  &:disabled {
+    background-color: color-mix(
+      in srgb,
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-disabled-container-opacity),
+      transparent
+    );
+    color: color-mix(
+      in srgb,
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-disabled-content-opacity),
+      transparent
+    );
+    cursor: not-allowed;
+  }
+}
+
+// Validation states, single visual source for :user-invalid, .is-invalid and
+// .was-validated alike (acceptance: identical error rendering).
+// Validation states re-point the indicator colour only. The indicator's
+// WIDTH is owned by --_indicator-grow, which only :focus sets, so an invalid
+// focused field reads error at the focused 3px and an invalid resting one
+// reads error at the resting 1px -- both as M3 specifies, with no
+// combinatorial focus x validity rules.
+@mixin filled-invalid-state {
+  --_indicator: #{v("field-error-color")};
+  caret-color: #{v("field-error-color")};
+}
+
+@mixin filled-valid-state {
+  --_indicator: #{v("field-valid-color")};
+}
+
+@mixin outlined-invalid-state {
+  --_indicator: #{v("field-error-color")};
+  caret-color: #{v("field-error-color")};
+}
+
+@mixin outlined-valid-state {
+  --_indicator: #{v("field-valid-color")};
+}
+
+// Filled variant: container + active indicator drawn on the input itself so
+// every state works from the input's own pseudo-classes.
+@mixin input-filled {
+  // Resting indicator on the border, the focused growth on an inset shadow
+  // drawn inside it: 1px border + (3px - 1px) shadow = the 3px M3 asks for
+  // when focused, with the border box -- and so the text -- never moving.
+  --_indicator: #{v("field-indicator-color")};
+  --_indicator-grow: 0px;
+
+  background-color: #{v("field-container-color")};
+  border: none;
+  border-block-end: #{v("field-indicator-width")} solid
+    var(--_indicator);
+  box-shadow: inset 0 calc(-1 * var(--_indicator-grow)) 0 0 var(--_indicator);
+  border-start-start-radius: #{v("field-shape")};
+  border-start-end-radius: #{v("field-shape")};
+  border-end-start-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
+  border-end-end-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
+  padding-block-start: var(--#{c.$prefix}-sys-space-4);
+  padding-block-end: var(--#{c.$prefix}-sys-space-1);
+
+  @include m.hover {
+    background-color: color-mix(
+      in srgb,
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity),
+      #{v("field-container-color")}
+    );
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    --_indicator: #{v("field-focus-color")};
+    --_indicator-grow: calc(
+      #{v("field-indicator-width-focus")} -
+        #{v("field-indicator-width")}
+    );
+  }
+
+  // :user-invalid, .is-invalid and .was-validated are separate rules (never
+  // one selector list) so browsers without :user-invalid keep the others.
+  &:user-invalid {
+    @include filled-invalid-state;
+  }
+  &.is-invalid {
+    @include filled-invalid-state;
+  }
+  .was-validated &:invalid {
+    @include filled-invalid-state;
+  }
+  &.is-valid {
+    @include filled-valid-state;
+  }
+  .was-validated &:valid {
+    @include filled-valid-state;
+  }
+}
+
+// Outlined variant: full border, focus thickens visually via an inset shadow
+// (no layout shift), label floats through the border with a cutout.
+@mixin input-outlined {
+  // Same trick as the filled variant: the outline grows inward on an inset
+  // shadow so a focused outline measures the 3px M3 asks for without the
+  // border box (and the text inside it) moving.
+  --_indicator: #{v("field-outline-color")};
+  --_indicator-grow: 0px;
+
+  background-color: transparent;
+  border: #{v("field-outline-width")} solid var(--_indicator);
+  border-radius: #{v("field-shape")};
+  padding-block: var(--#{c.$prefix}-sys-space-3);
+  box-shadow: inset 0 0 0 var(--_indicator-grow) var(--_indicator);
+
+  @include m.hover {
+    --_indicator: var(--#{c.$sys-prefix}-sys-color-on-surface);
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    --_indicator: #{v("field-focus-color")};
+    --_indicator-grow: calc(
+      #{v("field-outline-width-focus")} -
+        #{v("field-outline-width")}
+    );
+  }
+
+  &:user-invalid {
+    @include outlined-invalid-state;
+  }
+  &.is-invalid {
+    @include outlined-invalid-state;
+  }
+  .was-validated &:invalid {
+    @include outlined-invalid-state;
+  }
+  &.is-valid {
+    @include outlined-valid-state;
+  }
+  .was-validated &:valid {
+    @include outlined-valid-state;
+  }
+}
+
+// --- floating label ---------------------------------------------------------
+
+@mixin label-resting {
+  @include m.own-box;
+  display: block;
+  position: absolute;
+  inset-inline-start: #{-slot-start()};
+  inset-block-start: calc(
+    (#{v("field-height")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)) / 2
+  );
+  translate: 0 -50%;
+  color: #{v("field-label-color")};
+  pointer-events: none;
+  transform-origin: left top;
+  @include m.typescale("body-large");
+  @include m.transition((all), var(--#{c.$sys-prefix}-sys-motion-duration-short3));
+}
+
+// Filled float target: small label pinned inside the top of the container.
+@mixin label-float-filled {
+  inset-block-start: var(--#{c.$prefix}-sys-space-2);
+  translate: 0 0;
+  @include m.typescale("body-small");
+}
+
+// Outlined float target: small label cut through the outline.
+@mixin label-float-outlined {
+  inset-block-start: var(--#{c.$prefix}-sys-space-none);
+  translate: 0 -50%;
+  padding-inline: var(--#{c.$prefix}-sys-space-1);
+  background-color: #{v("field-label-bg")};
+  @include m.typescale("body-small");
+}
+
+@mixin label-focused {
+  color: #{v("field-focus-color")};
+}
+
+@mixin label-invalid {
+  color: #{v("field-error-color")};
+}
+
+// --- anatomy slots ----------------------------------------------------------
+//
+// M3's leading and trailing icons. The slot is a 48dp touch target flush with
+// the container edge, which puts a centred 24dp icon exactly 12dp in -- M3's
+// inset -- and leaves the 16dp gap to the text that --m3-field-icon-slot
+// reserves. Drop a bare .m3-icon in for a decorative icon or an .m3-icon-btn
+// for an interactive one; the slot itself paints neither container nor state.
+// The icon's SIZE stays the global --m3-sys-icon-size (24px, which is M3's
+// text-field icon size): a per-field size token would have to shadow that
+// global while its own default read it, which is a custom-property cycle.
+@mixin icon-slot {
+  @include m.own-box;
+  @include -slot-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--#{c.$prefix}-sys-target-size);
+  color: #{v("field-icon-color")};
+}
+
+@mixin icon-leading {
+  inset-inline-start: 0;
+}
+
+@mixin icon-trailing {
+  inset-inline-end: 0;
+}
+
+// M3's error state carries through to the trailing icon, which is where the
+// error icon sits.
+@mixin icon-invalid {
+  color: #{v("field-error-color")};
+}
+
+// Prefix and suffix: the affix text sits on the input's own text line, so it
+// repeats the variant's block padding rather than centring in the container
+// (a filled field's text is pushed down by its floated label, an outlined
+// field's is centred).
+@mixin affix {
+  @include m.own-box;
+  @include -slot-block;
+  display: flex;
+  align-items: center;
+  color: #{v("field-affix-color")};
+  pointer-events: none;
+  white-space: nowrap;
+  @include m.typescale("body-large");
+}
+
+@mixin affix-filled {
+  padding-block-start: var(--#{c.$prefix}-sys-space-4);
+  padding-block-end: var(--#{c.$prefix}-sys-space-1);
+}
+
+@mixin affix-outlined {
+  padding-block: var(--#{c.$prefix}-sys-space-3);
+}
+
+// An affix sits inside whatever an icon already reserved, so it reads only
+// the icon variable and not its own.
+@mixin affix-prefix {
+  inset-inline-start: #{-text-start()};
+}
+
+@mixin affix-suffix {
+  inset-inline-end: #{-text-end()};
+}
+
+// --- character counter ------------------------------------------------------
+//
+// The end of the supporting row. M3 leaves 16dp between supporting text and
+// the counter, which is this element's start padding.
+@mixin counter {
+  @include m.own-box;
+  display: block;
+  padding-inline-start: var(--#{c.$prefix}-sys-space-4);
+  padding-inline-end: #{v("field-padding-inline")};
+  padding-block-start: var(--#{c.$prefix}-sys-space-1);
+  color: #{v("field-counter-color")};
+  text-align: end;
+  white-space: nowrap;
+  @include m.typescale("body-small");
+}
+
+@mixin counter-invalid {
+  color: #{v("field-error-color")};
+}
+
+// --- supporting text --------------------------------------------------------
+
+@mixin supporting {
+  @include m.own-box;
+  display: block;
+  padding-inline: #{v("field-padding-inline")};
+  padding-block-start: var(--#{c.$prefix}-sys-space-1);
+  color: #{v("field-supporting-color")};
+  @include m.typescale("body-small");
+}
+
+@mixin supporting-invalid {
+  color: #{v("field-error-color")};
+}
+
+@mixin supporting-valid {
+  color: #{v("field-valid-color")};
+}
+
+// --- class emission ---------------------------------------------------------
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-field {
+    @include wrapper;
+  }
+
+  .#{$p}-field__input {
+    @include input-base;
+    // The field row; the supporting row below it is the wrapper's second.
+    grid-column: 1 / -1;
+  }
+
+  // --- anatomy slot reservations --------------------------------------------
+  // Explicit modifiers first: they are what a browser without :has() needs,
+  // and they set exactly what the :has() rules below set.
+  .#{$p}-field--leading-icon {
+    --_icon-start: #{v("field-icon-slot")};
+  }
+  .#{$p}-field--trailing-icon {
+    --_icon-end: #{v("field-icon-slot")};
+  }
+  .#{$p}-field--prefix {
+    --_affix-start: #{v("field-affix-size")};
+  }
+  .#{$p}-field--suffix {
+    --_affix-end: #{v("field-affix-size")};
+  }
+
+  // Enhancement: each rule stands alone in its selector list, so a browser
+  // without :has() drops it and keeps the modifier path.
+  .#{$p}-field:has(> .#{$p}-field__leading) {
+    --_icon-start: #{v("field-icon-slot")};
+  }
+  .#{$p}-field:has(> .#{$p}-field__trailing) {
+    --_icon-end: #{v("field-icon-slot")};
+  }
+  .#{$p}-field:has(> .#{$p}-field__prefix) {
+    --_affix-start: #{v("field-affix-size")};
+  }
+  .#{$p}-field:has(> .#{$p}-field__suffix) {
+    --_affix-end: #{v("field-affix-size")};
+  }
+
+  .#{$p}-field--filled .#{$p}-field__input {
+    @include input-filled;
+  }
+
+  .#{$p}-field--outlined .#{$p}-field__input {
+    @include input-outlined;
+  }
+
+  textarea.#{$p}-field__input {
+    block-size: auto;
+    min-block-size: calc(
+      #{v("field-height")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
+    );
+    resize: vertical;
+
+    // Grows with its content where supported (rows="" is the fallback).
+    @supports (field-sizing: content) {
+      field-sizing: content;
+    }
+  }
+
+  .#{$p}-field__label {
+    @include label-resting;
+  }
+
+  // Float: focused, or holding a value (placeholder hidden).
+  .#{$p}-field--filled .#{$p}-field__input:focus + .#{$p}-field__label,
+  .#{$p}-field--filled
+    .#{$p}-field__input:not(:placeholder-shown)
+    + .#{$p}-field__label {
+    @include label-float-filled;
+  }
+
+  .#{$p}-field--outlined .#{$p}-field__input:focus + .#{$p}-field__label,
+  .#{$p}-field--outlined
+    .#{$p}-field__input:not(:placeholder-shown)
+    + .#{$p}-field__label {
+    @include label-float-outlined;
+  }
+
+  .#{$p}-field__input:focus + .#{$p}-field__label {
+    @include label-focused;
+  }
+
+  .#{$p}-field__input:user-invalid + .#{$p}-field__label {
+    @include label-invalid;
+  }
+
+  .#{$p}-field__input.is-invalid + .#{$p}-field__label {
+    @include label-invalid;
+  }
+
+  .was-validated .#{$p}-field__input:invalid + .#{$p}-field__label {
+    @include label-invalid;
+  }
+
+  // --- icon slots -----------------------------------------------------------
+  .#{$p}-field__leading {
+    @include icon-slot;
+    @include icon-leading;
+  }
+
+  .#{$p}-field__trailing {
+    @include icon-slot;
+    @include icon-trailing;
+  }
+
+  .#{$p}-field__input:user-invalid ~ .#{$p}-field__trailing {
+    @include icon-invalid;
+  }
+
+  .#{$p}-field__input.is-invalid ~ .#{$p}-field__trailing {
+    @include icon-invalid;
+  }
+
+  .was-validated .#{$p}-field__input:invalid ~ .#{$p}-field__trailing {
+    @include icon-invalid;
+  }
+
+  // --- prefix / suffix ------------------------------------------------------
+  .#{$p}-field__prefix {
+    @include affix;
+    @include affix-prefix;
+  }
+
+  .#{$p}-field__suffix {
+    @include affix;
+    @include affix-suffix;
+  }
+
+  .#{$p}-field--filled .#{$p}-field__prefix,
+  .#{$p}-field--filled .#{$p}-field__suffix {
+    @include affix-filled;
+  }
+
+  .#{$p}-field--outlined .#{$p}-field__prefix,
+  .#{$p}-field--outlined .#{$p}-field__suffix {
+    @include affix-outlined;
+  }
+
+  // --- character counter ----------------------------------------------------
+  .#{$p}-field__counter {
+    @include counter;
+    grid-column: 2;
+  }
+
+  .#{$p}-field__input:user-invalid ~ .#{$p}-field__counter {
+    @include counter-invalid;
+  }
+
+  .#{$p}-field__input.is-invalid ~ .#{$p}-field__counter {
+    @include counter-invalid;
+  }
+
+  .was-validated .#{$p}-field__input:invalid ~ .#{$p}-field__counter {
+    @include counter-invalid;
+  }
+
+  .#{$p}-field__supporting {
+    @include supporting;
+    grid-column: 1;
+  }
+
+  .#{$p}-field__input:user-invalid ~ .#{$p}-field__supporting {
+    @include supporting-invalid;
+  }
+
+  .#{$p}-field__input.is-invalid ~ .#{$p}-field__supporting {
+    @include supporting-invalid;
+  }
+
+  .was-validated .#{$p}-field__input:invalid ~ .#{$p}-field__supporting {
+    @include supporting-invalid;
+  }
+
+  .#{$p}-field__input.is-valid ~ .#{$p}-field__supporting {
+    @include supporting-valid;
+  }
+
+  .was-validated .#{$p}-field__input:valid ~ .#{$p}-field__supporting {
+    @include supporting-valid;
+  }
+
+  // Date/time inputs pick up field styling when classed as field inputs;
+  // the datetime component wraps this with picker-specific tweaks.
+  .#{$p}-field__input::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+  }
+}

@@ -1,0 +1,248 @@
+// ============================================================================
+// m3x configuration
+// Every setting is `!default` and reachable from the entry point:
+//   @use "m3x/src" with ($seed: #00695c, $prefix: "md");
+// ============================================================================
+
+// Class + custom-property prefix for the library's own tokens and component
+// classes. ".m3-btn" and "--m3-btn-height" become ".md-btn" / "--md-btn-height"
+// etc. It covers both library tiers:
+//   --<prefix>-sys-*           library-wide globals (space, density, stroke,
+//                              z, opacity, icon and target sizes)
+//   --<prefix>-<component>-*   per-component tokens
+$prefix: "m3" !default;
+
+// Emit the pre-1.0 names of the library globals (--m3-space-4 rather than
+// --m3-sys-space-4) alongside the current ones. The sys token READS the old
+// name, so a subtree that sets the old one still moves the new one and
+// nothing that overrode a global breaks. Turn off to drop them.
+$legacy-global-aliases: true !default;
+
+// Prefix of the M3 system tier: --md-ref-palette-*, --md-sys-*,
+// --md-extended-color-* and --md-seed. It defaults to "md", which is M3's own
+// namespace -- keep it and Material Theme Builder output, a Figma token
+// export and Material Web components all theme m3x with no adapter. Change it
+// only to sidestep a host application that already defines --md-sys-* with
+// different values:
+//   @use "m3x/src" with ($sys-prefix: "acme");  // --acme-sys-color-primary
+$sys-prefix: "md" !default;
+
+// Source color for the whole scheme. Any CSS color Sass can parse.
+$seed: #6750a4 !default;
+
+// Scheme variant: how the five palettes take chroma and hue from the seed,
+// after M3's dynamic-scheme variants (hue rotations approximated as
+// constants): "tonal-spot" (the default), "vibrant", "expressive", "neutral",
+// "monochrome", "fidelity", "content", "rainbow", "fruit-salad".
+$scheme: "tonal-spot" !default;
+
+// Contrast level of the emitted scheme: "standard", "medium" or "high".
+// Tones move only where a role fails its M3 contrast target for the level
+// (the material-color-utilities rule). Whatever the build level, the high
+// level is also served under prefers-contrast: more, and
+// [data-contrast="standard" | "medium" | "high"] on an ancestor forces one.
+$contrast: "standard" !default;
+
+// Custom color roles: name -> source color. Each name gets a tonal palette
+// (its own chroma, hue harmonized toward the seed by up to 15 degrees) and
+// the roles --md-extended-color-<name>, on-<name>, <name>-container and
+// on-<name>-container, plus .m3-bg-<name> / .m3-text-<name> utilities.
+//   @use "m3x/src" with ($custom-colors: ("brand": #ff6f00));
+$custom-colors: () !default;
+// expressive | standard: the spring physics set behind --md-sys-motion-spring-*
+$motion-scheme: "expressive" !default;
+
+// Corner family, M3's own second shape axis. The shape SCALE says how big a
+// corner is; the corner family says how it is drawn. Material's spec has two
+// -- rounded and cut (material-components-android exposes them as
+// `shapeCornerFamily`, with per-corner overrides) -- and CSS now has the
+// property for it, so --m3-sys-corner-shape carries the CSS `corner-shape`
+// keyword every piece of chrome draws its radii with:
+//   round   M3's rounded family (the default)
+//   bevel   M3's cut family
+//   notch | scoop | squircle   CSS offers these too; not M3 values
+// It is read behind @supports, so where the property is unsupported the same
+// radii draw rounded corners. Set it on :root or on any subtree.
+//
+// The shape scale itself is the other axis, and it needs no config: every
+// container is assigned a slot of --md-sys-shape-corner-* (see "Shape" in the
+// README for the full assignment), and re-pointing a slot re-shapes every
+// container on it, on :root or on any ancestor.
+
+// Emphasis channel: the color half of press and selection feedback. Both are
+// UNSET by default, so every read site falls back to the M3 value and the
+// default build is unchanged.
+//
+// They exist because corner geometry and interaction feedback share a budget.
+// M3 signals a press and a selection by MORPHING the corner, so the signal is
+// the difference between two radii -- flatten the scale (every slot to 0) and
+// it is gone: a square button cannot press squarer. Set these two and the
+// signal moves to color instead.
+//   --m3-sys-emphasis-pressed-state-layer-opacity    press (M3's own is 10%)
+//   --m3-sys-emphasis-selected-state-layer-opacity   selection: a persistent
+//                                                    tint composited UNDER the
+//                                                    interaction layer
+//   --m3-sys-emphasis-selected-container-color       the color that tint moves
+//                                                    toward; defaults to the
+//                                                    control's content color
+$emphasis-pressed-state-layer-opacity: 16% !default;
+$emphasis-selected-state-layer-opacity: 12% !default;
+
+// M3 window size classes (min widths): the adaptive layout media queries.
+$window-size-classes: (
+  "compact": 0,
+  "medium": 600px,
+  "expanded": 840px,
+  "large": 1200px,
+  "extra-large": 1600px,
+) !default;
+
+// M3 Expressive's shape library: 35 decorative shapes as clip-path polygons
+// (.m3-shape-heart, .m3-shape-cookie-9, ...). It is the largest single block
+// of CSS the library emits -- 35 fifty-six-point polygons -- and a project
+// that uses none of them can drop the lot with one flag.
+$enable-shape-library: true !default;
+
+// Bootstrap interop switches (see README section "Bootstrap interop").
+// With all of these on (the default) a Bootstrap 5.3 codebase needs nothing
+// from bootstrap.css: components, grid, utilities, helpers, and reboot-level
+// element defaults all ship from m3x.
+$enable-bootstrap-compat: true !default; // --bs-* variable remap (9a)
+$enable-bootstrap-reskin: true !default; // full component re-skin (9b)
+$enable-bootstrap-grid: true !default; // containers, row/col grid, gutters
+$enable-bootstrap-utilities: true !default; // the full utility API (9c)
+$enable-bootstrap-helpers: true !default; // helpers + content/type classes
+// Importance parity with stock Bootstrap: re-emits, with !important, the few
+// utility declarations stock marks !important whose values are literal (not
+// var(--bs-*) driven), into the `reset` layer -- the one layer ordered
+// before `bootstrap`, where an important declaration beats stock's. Turn on
+// when real bootstrap.css sits in the reserved layer; off, m3x ships no
+// !important beyond [hidden].
+$enable-bootstrap-important-parity: false !default;
+
+// Bootstrap's responsive breakpoints and container widths (the grid,
+// responsive utilities, and .navbar-expand-* read these). Media queries
+// cannot consume custom properties, so these are the one place viewport
+// widths live as Sass values; they are also exported as --bs-breakpoint-*.
+$grid-breakpoints: (
+  "xs": 0,
+  "sm": 576px,
+  "md": 768px,
+  "lg": 992px,
+  "xl": 1200px,
+  "xxl": 1400px
+) !default;
+
+$container-max-widths: (
+  "sm": 540px,
+  "md": 720px,
+  "lg": 960px,
+  "xl": 1140px,
+  "xxl": 1320px
+) !default;
+
+$grid-columns: 12 !default;
+
+// Dense (editor-style) toolbar collapse points, as container-query widths of
+// the bar itself: .m3-toolbar__group--priority-low hides below "low" (and the
+// __more overflow button appears), --priority-medium hides below "medium".
+// Container queries cannot consume custom properties, so these are Sass values.
+$toolbar-dense-collapse: (
+  "low": 68rem,
+  "medium": 56rem
+) !default;
+
+// Color palette swatches, in order. The n-th swatch of
+// .m3-color-palette__<group> is painted from the list, and a dense toolbar's
+// swatch indicator follows the checked one, so the markup carries no colors
+// (a swatch overrides its own with --m3-color-palette-swatch-color). "theme" holds M3
+// roles; "standard" is the familiar editor grid, ten columns by eight rows:
+// grays, pure hues, three lighter and three darker rows.
+$color-palette: (
+  "theme": (
+    var(--#{$sys-prefix}-sys-color-on-surface), var(--#{$sys-prefix}-sys-color-on-surface-variant),
+    var(--#{$sys-prefix}-sys-color-primary), var(--#{$sys-prefix}-sys-color-secondary),
+    var(--#{$sys-prefix}-sys-color-tertiary), var(--#{$sys-prefix}-sys-color-error),
+    var(--#{$sys-prefix}-sys-color-primary-container), var(--#{$sys-prefix}-sys-color-secondary-container),
+    var(--#{$sys-prefix}-sys-color-tertiary-container), var(--#{$sys-prefix}-sys-color-surface)
+  ),
+  "standard": (
+    #000000, #434343, #666666, #999999, #b7b7b7, #cccccc, #d9d9d9, #efefef, #f3f3f3, #ffffff,
+    #980000, #ff0000, #ff9900, #ffff00, #00ff00, #00ffff, #4a86e8, #0000ff, #9900ff, #ff00ff,
+    #e6b8af, #f4cccc, #fce5cd, #fff2cc, #d9ead3, #d0e0e3, #c9daf8, #cfe2f3, #d9d2e9, #ead1dc,
+    #dd7e6b, #ea9999, #f9cb9c, #ffe599, #b6d7a8, #a2c4c9, #a4c2f4, #9fc5e8, #b4a7d6, #d5a6bd,
+    #cc4125, #e06666, #f6b26b, #ffd966, #93c47d, #76a5af, #6d9eeb, #6fa8dc, #8e7cc3, #c27ba0,
+    #a61c00, #cc0000, #e69138, #f1c232, #6aa84f, #45818e, #3c78d8, #3d85c6, #674ea7, #a64d79,
+    #85200c, #990000, #b45f06, #bf9000, #38761d, #134f5c, #1155cc, #0b5394, #351c75, #741b47,
+    #5b0f00, #660000, #783f04, #7f6000, #274e13, #0c343d, #1c4587, #073763, #20124d, #4c1130
+  )
+) !default;
+
+// When set to a selector string (e.g. "[data-m3]") the Bootstrap component
+// re-skin is wrapped in @scope on that selector, so a legacy page can be
+// migrated region by region.
+$bootstrap-reskin-scope: null !default;
+
+// Advanced consumers who own their layer order can suppress the library's
+// leading `@layer reset, bootstrap, ...;` statement.
+$emit-layer-statement: true !default;
+
+// Font stacks (library never bundles or fetches a text webfont).
+$font-family-plain: (Roboto, system-ui, sans-serif) !default;
+$font-family-brand: (Roboto, system-ui, sans-serif) !default;
+
+// Icon contract. Without an icon font, .m3-icon falls back to an embedded
+// 332-byte blank face (every character a Material Symbols ligature name can
+// contain maps to an empty, zero-advance glyph), so a missing or still
+// loading font shows an empty box rather than the ligature words. Set
+// false to drop the face when the icon font is guaranteed.
+$icon-blank-fallback: true !default;
+
+// Root font size used by the rem() helper to convert M3's px spec values.
+$root-font-size: 16 !default;
+
+// The full catalog. Remove names to shrink the build:
+//   @use "m3x/src" with ($components: ("button", "card", "text-field"));
+$components: (
+  "button",
+  "icon-button",
+  "fab",
+  "segmented-button",
+  "badge",
+  "progress",
+  "snackbar",
+  "tooltip",
+  "card",
+  "carousel",
+  "dialog",
+  "divider",
+  "list",
+  "sheet",
+  "navigation-bar",
+  "navigation-drawer",
+  "navigation-rail",
+  "tabs",
+  "top-app-bar",
+  "bottom-app-bar",
+  "checkbox",
+  "radio",
+  "switch",
+  "chip",
+  "menu",
+  "slider",
+  "datetime",
+  "text-field",
+  "search",
+  "select",
+  "toolbar",
+  "button-group",
+  "split-button",
+  "fab-menu",
+  "loading-indicator",
+  "date-picker",
+  "time-picker",
+  "color-palette",
+  "layout",
+  "icon",
+  "disclosure"
+) !default;

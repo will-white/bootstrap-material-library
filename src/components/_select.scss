@@ -1,0 +1,233 @@
+// ============================================================================
+// m3x select -- a styled NATIVE <select> built on the text-field variants.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-select-chevron-size   6px      half-size of the CSS-drawn dropdown
+//                                       chevron (two gradient triangles)
+//   --m3-select-chevron-color  on-surface-variant   the chevron's ink
+//   --m3-select-padding-end    space-7  inline-end padding reserving room for
+//                                       the chevron
+//
+// The select also consumes the full text-field API (--m3-field-*): height,
+// container, outline, focus, error and valid colors all retheme here too.
+//
+// RTL caveat: the chevron is positioned with background-position, which is
+// physical (calc(100% - ...) measures from the right edge in every writing
+// mode), so in RTL pages the chevron stays on the right while the reserved
+// padding-inline-end flips to the left. Override the background-position
+// (or --m3-select-padding-end) in an RTL-specific rule if the mirrored
+// chevron placement is required.
+//
+// Markup:
+//   <select class="m3-select">
+//     <option>Alpha</option>
+//     <option>Beta</option>
+//   </select>
+//   <select class="m3-select m3-select--filled">...</select>
+//
+// Reused by the Bootstrap compat layer for .form-select.
+//
+// Customizable select: where appearance: base-select is supported the
+// picker itself is styled as an M3 menu (::picker(select), option) with the
+// menu entry animation; elsewhere the native picker is untouched, so the
+// control degrades to the styled-native select above.
+// ============================================================================
+
+@use "../config" as c;
+@use "../mixins" as m;
+@use "menu";
+@use "../functions" as fn;
+@use "text-field" as field;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "select-chevron-size": #{fn.rem(6)},
+  // M3 draws a text field's trailing affordance in on-surface-variant, not in
+  // the field's own text colour; currentColor put a full-strength on-surface
+  // triangle next to on-surface-variant supporting text.
+  "select-chevron-color":
+    var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "select-padding-end": var(--#{c.$prefix}-sys-space-7),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// Single-line select: outlined field look plus a CSS-drawn chevron made of
+// two right-triangle gradients in currentColor (no images, no fonts).
+@mixin control {
+  @include m.own-box;
+  // UA default for <select>: single line, whitespace preserved.
+  white-space: pre;
+  @include field.input-base;
+  @include field.input-outlined;
+  appearance: none;
+  cursor: pointer;
+  padding-inline-end: #{v("select-padding-end")};
+  background-image: linear-gradient(
+      45deg,
+      transparent 50%,
+      #{v("select-chevron-color")} 50%
+    ),
+    linear-gradient(135deg, #{v("select-chevron-color")} 50%, transparent 50%);
+  background-position: calc(100% - var(--#{c.$prefix}-sys-space-5)) 50%,
+    calc(
+        100% - var(--#{c.$prefix}-sys-space-5) + #{v("select-chevron-size")}
+      )
+      50%;
+  background-size: #{v("select-chevron-size")}
+    #{v("select-chevron-size")};
+  background-repeat: no-repeat;
+
+  // While the native picker is showing, the chevron points up (browsers
+  // without :open keep it pointing down).
+  &:open {
+    background-image: linear-gradient(
+        135deg,
+        transparent 50%,
+        #{v("select-chevron-color")} 50%
+      ),
+      linear-gradient(45deg, #{v("select-chevron-color")} 50%, transparent 50%);
+  }
+
+  @include base-select;
+
+  // List boxes: no chevron, natural height, breathing room around options.
+  &[multiple],
+  &[size]:not([size="1"]) {
+    block-size: auto;
+    padding-block: var(--#{c.$prefix}-sys-space-2);
+    background-image: none;
+    padding-inline-end: var(--#{c.$prefix}-sys-space-4);
+
+    option {
+      padding-block: var(--#{c.$prefix}-sys-space-1);
+    }
+  }
+}
+
+// Customizable select (appearance: base-select): the picker becomes an M3
+// menu surface and every option an M3 menu item. The ::picker(select) and
+// option rules restate their boxes directly: the pseudo-element must never
+// join the shared ownership selector list, where one unsupported selector
+// would drop the whole rule.
+@mixin base-select {
+  @supports (appearance: base-select) {
+    &,
+    &::picker(select) {
+      appearance: base-select;
+    }
+
+    &::picker(select) {
+      box-sizing: border-box;
+      margin: var(--#{c.$prefix}-sys-space-none);
+      margin-block-start: var(--#{c.$prefix}-sys-space-1);
+      padding: var(--#{c.$prefix}-sys-space-2) var(--#{c.$prefix}-sys-space-none);
+      border: none;
+      border-radius: #{menu.v("menu-shape")};
+      background-color: #{menu.v("menu-container-color")};
+      color: #{menu.v("menu-content-color")};
+      max-inline-size: #{menu.v("menu-max-width")};
+      @include m.elevation(2);
+
+      @media (prefers-reduced-motion: no-preference) {
+        opacity: var(--#{c.$prefix}-sys-opacity-full);
+        translate: 0 0;
+        transition-property: opacity, translate, display, overlay;
+        transition-duration: var(--#{c.$sys-prefix}-sys-motion-spring-fast-effects-duration),
+          var(--#{c.$sys-prefix}-sys-motion-spring-default-spatial-duration),
+          var(--#{c.$sys-prefix}-sys-motion-spring-default-spatial-duration),
+          var(--#{c.$sys-prefix}-sys-motion-spring-default-spatial-duration);
+        transition-timing-function: var(--#{c.$sys-prefix}-sys-motion-spring-fast-effects),
+          var(--#{c.$sys-prefix}-sys-motion-spring-default-spatial),
+          var(--#{c.$sys-prefix}-sys-motion-spring-default-spatial),
+          var(--#{c.$sys-prefix}-sys-motion-spring-default-spatial);
+        transition-behavior: allow-discrete;
+
+        @starting-style {
+          opacity: var(--#{c.$prefix}-sys-opacity-hidden);
+          translate: 0 calc(-1 * var(--#{c.$prefix}-sys-space-1));
+        }
+      }
+    }
+
+    // The CSS-drawn chevron on the control stays; the UA glyph goes.
+    &::picker-icon {
+      display: none;
+    }
+
+    option {
+      display: flex;
+      align-items: center;
+      gap: var(--#{c.$prefix}-sys-space-3);
+      @include m.control-min-height(menu.v("menu-item-height"));
+      padding-inline: var(--#{c.$prefix}-sys-space-3);
+      background-color: transparent;
+      color: #{menu.v("menu-content-color")};
+      cursor: pointer;
+      @include m.typescale("label-large");
+      @include m.transition((background-color, color));
+
+      @include m.hover {
+        background-color: color-mix(
+          in srgb,
+          #{menu.v("menu-content-color")}
+            var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity),
+          transparent
+        );
+      }
+
+      &:focus-visible {
+        outline: var(--#{c.$sys-prefix}-sys-state-focus-indicator-thickness) solid
+          var(--#{c.$sys-prefix}-sys-color-secondary);
+        outline-offset: calc(-1 * var(--#{c.$sys-prefix}-sys-state-focus-indicator-offset));
+      }
+
+      &:checked {
+        background-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
+        color: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
+      }
+
+      &::checkmark {
+        display: none;
+      }
+
+      &:disabled {
+        @include m.disabled-bare;
+      }
+    }
+
+    optgroup {
+      padding: var(--#{c.$prefix}-sys-space-none);
+
+      &::label {
+        display: block;
+        padding-inline: var(--#{c.$prefix}-sys-space-3);
+        padding-block: var(--#{c.$prefix}-sys-space-2);
+        @include m.typescale("title-small");
+        color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+      }
+    }
+  }
+}
+
+// Filled variant. input-filled only touches background-color (never the
+// background shorthand), so the chevron gradients from control survive.
+@mixin filled {
+  @include field.input-filled;
+}
+
+@mixin classes {
+  select.#{c.$prefix}-select {
+    @include control;
+  }
+
+  select.#{c.$prefix}-select--filled {
+    @include filled;
+  }
+}

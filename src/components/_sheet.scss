@@ -1,0 +1,249 @@
+// ============================================================================
+// m3x sheet (bottom sheet + side sheet)
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-sheet-container-color  surface-container-low   sheet surface
+//   --m3-sheet-content-color    on-surface              sheet content
+//   --m3-sheet-shape            corner-extra-large      bottom sheet top corners
+//   --m3-sheet-max-width        640px                   bottom sheet cap
+//   --m3-sheet-side-width       320px                   side sheet width
+//   --m3-sheet-handle-color     on-surface-variant      drag handle tint
+//   --m3-sheet-handle-width     32px                    drag handle length
+//   --m3-sheet-outline-color    outline-variant         standard side divider
+//
+// Markup (modal variants ride the native <dialog> top layer; the standard
+// side sheet is a plain in-flow <aside>):
+//   <dialog class="m3-sheet--bottom">
+//     <div class="m3-sheet__handle"></div>
+//     <div class="m3-sheet__slot">
+//       <h2>Title</h2>
+//       <p>Supporting content</p>
+//     </div>
+//   </dialog>
+//
+//   <dialog class="m3-sheet--side">
+//     <div class="m3-sheet__slot">...</div>
+//   </dialog>
+//
+//   <aside class="m3-sheet--side-standard">
+//     <div class="m3-sheet__slot">...</div>
+//   </aside>
+//
+// Behavior is the platform's: dialog.showModal()/close() from the consumer's
+// own code or a form[method="dialog"] -- the library ships no JS.
+// container/bottom/side are reused by the Bootstrap compat .offcanvas skin.
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "sheet-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-low),
+  "sheet-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "sheet-shape": var(--#{c.$sys-prefix}-sys-shape-corner-extra-large),
+  "sheet-max-width": #{fn.rem(640)},
+  "sheet-side-width": #{fn.rem(320)},
+  "sheet-handle-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "sheet-handle-width": #{fn.rem(32)},
+  "sheet-outline-color": var(--#{c.$sys-prefix}-sys-color-outline-variant),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// The M3 scrim behind modal sheets (same recipe as the dialog scrim).
+@mixin -scrim {
+  background-color: color-mix(
+    in srgb,
+    var(--#{c.$sys-prefix}-sys-color-scrim) var(--#{c.$prefix}-sys-opacity-scrim),
+    transparent
+  );
+}
+
+// Enter motion for the modal variants: discrete display/overlay transitions
+// keep the dialog in the top layer while it slides in from $start.
+@mixin -modal-motion($start) {
+  @media (prefers-reduced-motion: no-preference) {
+    transition-property: translate, opacity, display, overlay;
+    transition-duration: var(--#{c.$sys-prefix}-sys-motion-duration-medium4);
+    transition-timing-function: var(--#{c.$sys-prefix}-sys-motion-easing-emphasized-decelerate);
+    transition-behavior: allow-discrete;
+
+    &[open] {
+      translate: 0 0;
+
+      @starting-style {
+        translate: $start;
+      }
+    }
+  }
+}
+
+// Shared sheet surface (also included by the Bootstrap .offcanvas skin).
+@mixin container {
+  @include m.own-box;
+  background-color: #{v("sheet-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("sheet-container-color")};
+  color: #{v("sheet-content-color")};
+  border: none;
+  padding: var(--#{c.$prefix}-sys-space-4);
+}
+
+// Modal bottom sheet on <dialog>: pinned to the bottom edge, centered
+// inline, top corners rounded, slides up from below the viewport.
+@mixin bottom {
+  @include container;
+  margin-block-start: auto;
+  margin-block-end: var(--#{c.$prefix}-sys-space-none);
+  margin-inline: auto;
+  inline-size: 100%;
+  max-inline-size: #{v("sheet-max-width")};
+  border-start-start-radius: #{v("sheet-shape")};
+  border-start-end-radius: #{v("sheet-shape")};
+  max-block-size: 75%;
+  @include m.elevation(1);
+
+  // The UA's <dialog> layout, restated because the box is owned (see dialog).
+  display: block;
+  position: absolute;
+  inset-inline: var(--#{c.$prefix}-sys-space-none);
+  block-size: fit-content;
+  overflow: auto;
+
+  &:not([open]) {
+    display: none;
+  }
+
+  &:modal {
+    position: fixed;
+    inset: var(--#{c.$prefix}-sys-space-none);
+  }
+
+  &::backdrop {
+    @include -scrim;
+  }
+
+  @include -modal-motion((0 100%));
+}
+
+// Modal side sheet on <dialog>: pinned to the trailing edge, full height,
+// leading corners rounded, slides in from the inline end.
+@mixin side {
+  @include container;
+  margin-inline-start: auto;
+  margin-inline-end: var(--#{c.$prefix}-sys-space-none);
+  margin-block: var(--#{c.$prefix}-sys-space-none);
+  block-size: 100%;
+  max-block-size: 100%;
+  inline-size: #{v("sheet-side-width")};
+  max-inline-size: 100%;
+  border-start-start-radius: var(--#{c.$sys-prefix}-sys-shape-corner-large);
+  border-end-start-radius: var(--#{c.$sys-prefix}-sys-shape-corner-large);
+
+  // The UA's <dialog> layout, restated because the box is owned (see dialog).
+  display: block;
+  position: absolute;
+  inset-inline: var(--#{c.$prefix}-sys-space-none);
+  block-size: fit-content;
+  overflow: auto;
+
+  &:not([open]) {
+    display: none;
+  }
+
+  &:modal {
+    position: fixed;
+    inset: var(--#{c.$prefix}-sys-space-none);
+  }
+
+  &::backdrop {
+    @include -scrim;
+  }
+
+  @include -modal-motion((100% 0));
+}
+
+// Drag handle affordance at the top of a bottom sheet (visual only).
+@mixin handle {
+  @include m.own-box;
+  display: block;
+  inline-size: #{v("sheet-handle-width")};
+  block-size: var(--#{c.$prefix}-sys-stroke-heavy);
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  background-color: color-mix(
+    in srgb,
+    #{v("sheet-handle-color")} 40%,
+    transparent
+  );
+  margin-inline: auto;
+  margin-block-end: var(--#{c.$prefix}-sys-space-3);
+}
+
+// Standard (non-modal) side sheet on <aside>: in-flow, divided from the
+// layout by a hairline instead of a scrim.
+@mixin standard-side {
+  @include m.own-box;
+  display: block;
+  inline-size: #{v("sheet-side-width")};
+  background-color: #{v("sheet-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("sheet-container-color")};
+  color: #{v("sheet-content-color")};
+  border-inline-start: var(--#{c.$prefix}-sys-stroke-hairline) solid
+    #{v("sheet-outline-color")};
+  padding: var(--#{c.$prefix}-sys-space-4);
+  block-size: 100%;
+  overflow-y: auto;
+}
+
+// Chrome typography donut: bare-element defaults between each sheet root and
+// the content slot, at (0,0,1) so one consumer class overrides them.
+// Structural rules stay outside @scope (section 7 contract).
+@mixin internals($slot: ".#{c.$prefix}-sheet__slot") {
+  @scope (.#{c.$prefix}-sheet--bottom, .#{c.$prefix}-sheet--side, .#{c.$prefix}-sheet--side-standard)
+    to (#{$slot}) {
+    h2 {
+      @include m.typescale("title-large");
+      color: #{v("sheet-content-color")};
+    }
+
+    p {
+      @include m.typescale("body-medium");
+      color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+    }
+  }
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-sheet--bottom {
+    @include bottom;
+  }
+
+  .#{$p}-sheet--side {
+    @include side;
+  }
+
+  .#{$p}-sheet--side-standard {
+    @include standard-side;
+  }
+
+  .#{$p}-sheet__handle {
+    @include handle;
+  }
+
+  // Consumer content region: box owned, typography left to the content.
+  .#{$p}-sheet__slot {
+    @include m.own-region;
+    display: block;
+  }
+
+  @include internals;
+}

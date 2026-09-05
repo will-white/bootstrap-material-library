@@ -1,0 +1,459 @@
+// ============================================================================
+// m3x split button (M3 Expressive): two buttons. The leading button performs
+// the primary action; the trailing button performs a secondary action that is
+// contextually related to it -- it opens a menu. Drawn as one pill split by a
+// 2dp seam, both halves independently enabled or disabled. Zero JS: the
+// trailing button is the popovertarget invoker of a .m3-menu[popover] placed
+// right after it, and the open state is read from the popover with :has().
+//
+// Spec geometry (Material 3 Expressive split-button tokens), per size:
+//   size    height  inner corner  hovered/pressed  leading pad  trailing (pad+icon)
+//   xs      32      extra-small   small            12 / 10      13 + 22 + 13 = 48
+//   small*  40      extra-small   medium           16 / 12      13 + 22 + 13 = 48
+//   medium  56      extra-small   medium           24 / 24      15 + 26 + 15 = 56
+//   large   96      small         large-increased  48 / 48      29 + 38 + 29 = 96
+//   xl      136     medium        large-increased  64 / 64      43 + 50 + 43 = 136
+//   (* the default). Outer corners full; both halves at least 48dp wide.
+//   While the menu is open the trailing button morphs to a circle, carries a
+//   pressed-opacity state layer, and its chevron flips. Hovering or pressing a
+//   half rounds its inner corners to the hovered/pressed size.
+//
+// PUBLIC VARIABLE API (tier-3 tokens; -xs/-small/-medium/-large/-xl variants of the
+// per-size ones are re-pointed by the size modifiers)
+//   --m3-split-button-gap                     2px      seam between halves
+//   --m3-split-button-min-width               48px     either half
+//   --m3-split-button-height                  40px     participates in density
+//   --m3-split-button-inner-shape             corner-extra-small  seam corners
+//   --m3-split-button-inner-shape-active      corner-medium  hovered / pressed
+//   --m3-split-button-action-padding-start    16px     leading half
+//   --m3-split-button-action-padding-end      12px
+//   --m3-split-button-toggle-width            48px     trailing half
+//   --m3-split-button-toggle-padding-inline   13px
+//   --m3-split-button-chevron-size            --m3-sys-chevron-size (10px)
+//   --m3-split-button-chevron-stroke          --m3-sys-stroke-thick (2px)
+//   --m3-split-button-menu-offset             space-1 (4px) gap under the toggle
+//                                                      (anchor-positioned menu)
+//
+// Both halves are .m3-btn elements: every button variant token applies, and
+// the root's --tonal / --outlined / --elevated re-point the button tokens
+// both halves read, so a variant is written once. Sizes go on the root
+// (--xs / --small / --medium / --large / --xl), which re-point the size tokens
+// above and
+// the button height the halves read.
+//
+// Markup (related actions in the menu):
+//   <div class="m3-split-button m3-split-button--tonal">
+//     <button class="m3-btn m3-split-button__action" type="button">Save</button>
+//     <button class="m3-btn m3-split-button__toggle" type="button"
+//             popovertarget="save-menu" aria-label="More save options"></button>
+//     <div class="m3-menu" id="save-menu" popover>
+//       <button class="m3-menu__item" type="button">Save as draft</button>
+//       <button class="m3-menu__item" type="button">Save and close</button>
+//     </div>
+//   </div>
+//
+// Markup (the menu chooses what the leading button does): option items are
+// <label>s wrapping a hidden radio; the n-th option shows the n-th
+// .m3-split-button__label span in the leading button (first label when none
+// is checked). The chosen item takes the menu's selected look.
+//   <div class="m3-split-button">
+//     <button class="m3-btn m3-split-button__action" type="button">
+//       <span class="m3-split-button__label">Send</span>
+//       <span class="m3-split-button__label">Schedule send</span>
+//     </button>
+//     <button class="m3-btn m3-split-button__toggle" type="button"
+//             popovertarget="send-menu" aria-label="Choose send action"></button>
+//     <div class="m3-menu" id="send-menu" popover>
+//       <label class="m3-menu__item"><input class="m3-split-button__option"
+//              type="radio" name="send" checked>Send</label>
+//       <label class="m3-menu__item"><input class="m3-split-button__option"
+//              type="radio" name="send">Schedule send</label>
+//     </div>
+//   </div>
+//
+// A JS-driven menu can drive the open look with aria-expanded="true" on the
+// toggle instead of :popover-open (Bootstrap's .dropdown-toggle-split does).
+//
+// Menu placement: a popover's implicit anchor is its invoker, so where CSS
+// anchor positioning is supported the menu opens under the toggle,
+// end-aligned, flipping above when there is no room (a refinement that is
+// safe to lose). Elsewhere the menu keeps the menu partial's un-anchored
+// placement; position it with your own insets.
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+@use "button";
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "split-button-gap": #{fn.rem(2)},
+  "split-button-min-width": #{fn.rem(48)},
+  "split-button-menu-offset": var(--#{c.$prefix}-sys-space-1),
+  "split-button-height": #{fn.rem(40)},
+  "split-button-inner-shape": var(--#{c.$sys-prefix}-sys-shape-corner-extra-small),
+  "split-button-inner-shape-active": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "split-button-action-padding-start": #{fn.rem(16)},
+  "split-button-action-padding-end": #{fn.rem(12)},
+  "split-button-toggle-width": #{fn.rem(48)},
+  "split-button-toggle-padding-inline": #{fn.rem(13)},
+  "split-button-chevron-size": var(--#{c.$prefix}-sys-chevron-size),
+  "split-button-chevron-stroke": var(--#{c.$prefix}-sys-stroke-thick),
+  // M3's small rung. Its values are the defaults above -- M3's default split
+  // button IS the small one -- but the ramp needs a name for that rung, or
+  // --small on a split button is silence while it sizes its neighbours.
+  "split-button-height-small": #{fn.rem(40)},
+  "split-button-inner-shape-small": var(--#{c.$sys-prefix}-sys-shape-corner-extra-small),
+  "split-button-inner-shape-active-small": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "split-button-action-padding-start-small": #{fn.rem(16)},
+  "split-button-action-padding-end-small": #{fn.rem(12)},
+  "split-button-toggle-width-small": #{fn.rem(48)},
+  "split-button-toggle-padding-inline-small": #{fn.rem(13)},
+  "split-button-chevron-size-small": var(--#{c.$prefix}-sys-chevron-size),
+
+  "split-button-height-xs": #{fn.rem(32)},
+  "split-button-inner-shape-xs": var(--#{c.$sys-prefix}-sys-shape-corner-extra-small),
+  "split-button-inner-shape-active-xs": var(--#{c.$sys-prefix}-sys-shape-corner-small),
+  "split-button-action-padding-start-xs": #{fn.rem(12)},
+  "split-button-action-padding-end-xs": #{fn.rem(10)},
+  "split-button-toggle-width-xs": #{fn.rem(48)},
+  "split-button-toggle-padding-inline-xs": #{fn.rem(13)},
+  "split-button-chevron-size-xs": var(--#{c.$prefix}-sys-chevron-size),
+  "split-button-height-medium": #{fn.rem(56)},
+  "split-button-inner-shape-medium": var(--#{c.$sys-prefix}-sys-shape-corner-extra-small),
+  "split-button-inner-shape-active-medium": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "split-button-action-padding-start-medium": #{fn.rem(24)},
+  "split-button-action-padding-end-medium": #{fn.rem(24)},
+  "split-button-toggle-width-medium": #{fn.rem(56)},
+  "split-button-toggle-padding-inline-medium": #{fn.rem(15)},
+  "split-button-chevron-size-medium": #{fn.rem(12)},
+  "split-button-height-large": #{fn.rem(96)},
+  "split-button-inner-shape-large": var(--#{c.$sys-prefix}-sys-shape-corner-small),
+  "split-button-inner-shape-active-large": var(--#{c.$sys-prefix}-sys-shape-corner-large-increased),
+  "split-button-action-padding-start-large": #{fn.rem(48)},
+  "split-button-action-padding-end-large": #{fn.rem(48)},
+  "split-button-toggle-width-large": #{fn.rem(96)},
+  "split-button-toggle-padding-inline-large": #{fn.rem(29)},
+  "split-button-chevron-size-large": #{fn.rem(16)},
+  "split-button-height-xl": #{fn.rem(136)},
+  "split-button-inner-shape-xl": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "split-button-inner-shape-active-xl": var(--#{c.$sys-prefix}-sys-shape-corner-large-increased),
+  "split-button-action-padding-start-xl": #{fn.rem(64)},
+  "split-button-action-padding-end-xl": #{fn.rem(64)},
+  "split-button-toggle-width-xl": #{fn.rem(136)},
+  "split-button-toggle-padding-inline-xl": #{fn.rem(43)},
+  "split-button-chevron-size-xl": #{fn.rem(20)},
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// The wrapper: lays the two halves across the seam and hands them the
+// height. The popover menu after them is out of flow (top layer) whenever it
+// is open.
+@mixin base {
+  @include m.own-box;
+  --#{c.$prefix}-btn-height: #{v("split-button-height")};
+  display: inline-flex;
+  align-items: center;
+  gap: #{v("split-button-gap")};
+  vertical-align: middle;
+}
+
+// Leading half (on a .m3-btn): spec paddings, seam-facing corners flattened
+// to the inner size, rounding to the hovered/pressed size on interaction.
+// Emitted after the button partial, so these longhands beat the button's
+// shorthands at equal specificity.
+@mixin action {
+  @include m.own-box;
+  display: inline-flex;
+  min-inline-size: #{v("split-button-min-width")};
+  padding-inline: #{v("split-button-action-padding-start")}
+    #{v("split-button-action-padding-end")};
+  border-start-end-radius: #{v("split-button-inner-shape")};
+  border-end-end-radius: #{v("split-button-inner-shape")};
+  @include m.transition(
+    (background-color, color, box-shadow, border-color),
+    $spring-properties: (border-radius),
+    $spring: "fast-spatial"
+  );
+
+  @include m.hover {
+    border-start-end-radius: #{v("split-button-inner-shape-active")};
+    border-end-end-radius: #{v("split-button-inner-shape-active")};
+  }
+  &:active {
+    border-start-end-radius: #{v("split-button-inner-shape-active")};
+    border-end-end-radius: #{v("split-button-inner-shape-active")};
+  }
+}
+
+// Trailing half (on a .m3-btn with popovertarget): spec width, seam-facing
+// corners flattened, a CSS-drawn chevron. Open (the popover right after it
+// is showing, or aria-expanded="true"): every corner morphs to full, a
+// pressed-opacity state layer sits on the container, the chevron flips.
+@mixin toggle {
+  @include m.own-box;
+  display: inline-flex;
+  min-inline-size: #{v("split-button-toggle-width")};
+  padding-inline: #{v("split-button-toggle-padding-inline")};
+  border-start-start-radius: #{v("split-button-inner-shape")};
+  border-end-start-radius: #{v("split-button-inner-shape")};
+  @include m.transition(
+    (background-color, color, box-shadow, border-color),
+    $spring-properties: (border-radius),
+    $spring: "fast-spatial"
+  );
+
+  @include m.hover {
+    border-start-start-radius: #{v("split-button-inner-shape-active")};
+    border-end-start-radius: #{v("split-button-inner-shape-active")};
+  }
+  &:active {
+    border-start-start-radius: #{v("split-button-inner-shape-active")};
+    border-end-start-radius: #{v("split-button-inner-shape-active")};
+  }
+
+  &::after {
+    @include m.own-pseudo;
+    content: "";
+    display: block;
+    flex: none;
+    @include m.chevron-icon(
+      #{v("split-button-chevron-size")},
+      #{v("split-button-chevron-stroke")}
+    );
+    margin-inline-start: var(--#{c.$prefix}-sys-space-none);
+    // Optical centering: the rotated L's visual center sits below the box
+    // center.
+    translate: 0 -25%;
+    @include m.spring-transition((rotate, translate), "fast-spatial");
+  }
+
+  &[aria-expanded="true"] {
+    @include -toggle-open;
+  }
+
+  // Stands alone (contract rule: :popover-open never shares a selector list).
+  &:has(+ .#{c.$prefix}-menu:popover-open) {
+    @include -toggle-open;
+  }
+}
+
+@mixin -toggle-open {
+  @include m.pressed-opacity;
+  border-radius: m.pill(var(--#{c.$sys-prefix}-sys-shape-corner-full));
+
+  &::after {
+    rotate: 225deg;
+    translate: 0 25%;
+  }
+}
+
+// The menu chooses the leading action: hidden radios in <label> menu items,
+// and the n-th checked option reveals the n-th label span in the leading
+// button (the first label stands in while none is checked).
+@mixin option {
+  @include m.own-box;
+  display: block;
+  position: absolute;
+  opacity: var(--#{c.$prefix}-sys-opacity-hidden);
+  pointer-events: none;
+}
+
+@mixin label {
+  @include m.own-region;
+  display: none;
+}
+
+@mixin selection($max: 8) {
+  $p: c.$prefix;
+  @include m.chosen-labels(
+    ".#{$p}-split-button",
+    ".#{$p}-menu",
+    ".#{$p}-menu__item",
+    ".#{$p}-split-button__option",
+    ".#{$p}-split-button__action",
+    ".#{$p}-split-button__label",
+    $max
+  );
+}
+
+// Variants re-point the filled button tokens both halves read by default.
+@mixin tonal {
+  --#{c.$prefix}-btn-container-color: #{button.v("btn-tonal-container-color")};
+  --#{c.$prefix}-btn-label-color: #{button.v("btn-tonal-label-color")};
+}
+
+@mixin outlined {
+  --#{c.$prefix}-btn-container-color: transparent;
+  --#{c.$prefix}-btn-label-color: #{button.v("btn-outlined-label-color")};
+
+  > .#{c.$prefix}-split-button__action,
+  > .#{c.$prefix}-split-button__toggle {
+    border: #{button.v("btn-outline-width")} solid
+      #{button.v("btn-outlined-outline-color")};
+
+    &:disabled,
+    &.disabled {
+      @include m.disabled-bare;
+      border-color: color-mix(
+        in srgb,
+        var(--#{c.$sys-prefix}-sys-color-on-surface)
+          var(--#{c.$sys-prefix}-sys-state-disabled-container-opacity),
+        transparent
+      );
+    }
+  }
+}
+
+@mixin elevated {
+  --#{c.$prefix}-btn-container-color: #{button.v("btn-elevated-container-color")};
+  --#{c.$prefix}-btn-label-color: #{button.v("btn-elevated-label-color")};
+
+  > .#{c.$prefix}-split-button__action,
+  > .#{c.$prefix}-split-button__toggle {
+    @include m.elevation(1);
+
+    @include m.hover {
+      @include m.elevation(2);
+    }
+
+    &:disabled,
+    &.disabled {
+      @include m.disabled;
+    }
+  }
+}
+
+// Sizes: re-point the per-size tokens (and the button's icon size and
+// typescale, as the button sizes do) on the root; the halves read them.
+@mixin -size($suffix) {
+  @each $name in (
+    "height", "inner-shape", "inner-shape-active", "action-padding-start",
+    "action-padding-end", "toggle-width", "toggle-padding-inline",
+    "chevron-size"
+  ) {
+    --#{c.$prefix}-split-button-#{$name}: #{v("split-button-#{$name}-#{$suffix}")};
+  }
+}
+
+@mixin small {
+  @include -size("small");
+  --#{c.$prefix}-btn-icon-size: #{button.v("btn-icon-size-small")};
+}
+
+@mixin xs {
+  @include -size("xs");
+  --#{c.$prefix}-btn-icon-size: #{button.v("btn-icon-size-xs")};
+}
+
+@mixin medium {
+  @include -size("medium");
+  --#{c.$prefix}-btn-icon-size: #{button.v("btn-icon-size-medium")};
+
+  > .#{c.$prefix}-split-button__action {
+    @include m.typescale("title-medium");
+  }
+}
+
+@mixin large {
+  @include -size("large");
+  --#{c.$prefix}-btn-icon-size: #{button.v("btn-icon-size-large")};
+  --#{c.$prefix}-split-button-chevron-stroke: var(--#{c.$prefix}-sys-stroke-heavy);
+
+  > .#{c.$prefix}-split-button__action {
+    @include m.typescale("headline-small");
+  }
+}
+
+@mixin xl {
+  @include -size("xl");
+  --#{c.$prefix}-btn-icon-size: #{button.v("btn-icon-size-xl")};
+  --#{c.$prefix}-split-button-chevron-stroke: var(--#{c.$prefix}-sys-stroke-heavy);
+
+  > .#{c.$prefix}-split-button__action {
+    @include m.typescale("headline-large");
+  }
+}
+
+// Anchor-positioning refinement for the menu (see header). The invoker is
+// the popover's implicit anchor, so no anchor-name is needed. Dropped
+// wholesale where unsupported.
+@mixin menu-placement {
+  @supports (position-area: block-end) {
+    inset: auto;
+    margin: var(--#{c.$prefix}-sys-space-none);
+    margin-block-start: #{v("split-button-menu-offset")};
+    position-area: block-end span-inline-start;
+    position-try-fallbacks: flip-block;
+  }
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-split-button {
+    @include base;
+  }
+
+  .#{$p}-split-button__action {
+    @include action;
+  }
+
+  .#{$p}-split-button__toggle {
+    @include toggle;
+  }
+
+  .#{$p}-split-button__option {
+    @include option;
+  }
+
+  .#{$p}-split-button__label {
+    @include label;
+  }
+
+  @include selection;
+
+  .#{$p}-split-button--tonal {
+    @include tonal;
+  }
+
+  .#{$p}-split-button--outlined {
+    @include outlined;
+  }
+
+  .#{$p}-split-button--elevated {
+    @include elevated;
+  }
+
+  .#{$p}-split-button--small {
+    @include small;
+  }
+
+  .#{$p}-split-button--xs {
+    @include xs;
+  }
+
+  .#{$p}-split-button--medium {
+    @include medium;
+  }
+
+  .#{$p}-split-button--large {
+    @include large;
+  }
+
+  .#{$p}-split-button--xl {
+    @include xl;
+  }
+
+  .#{$p}-split-button > .#{$p}-split-button__toggle + .#{$p}-menu[popover] {
+    @include menu-placement;
+  }
+}

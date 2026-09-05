@@ -1,0 +1,222 @@
+// ============================================================================
+// m3x switch -- M3 switch drawn on a real checkbox, zero JS.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-switch-width                       52px   track width
+//   --m3-switch-height                      32px   track height (fixed
+//                                                  geometry: the handle math
+//                                                  reads this token directly)
+//   --m3-switch-track-color                 surface-container-highest
+//   --m3-switch-outline-color               outline (track border)
+//   --m3-switch-handle-color                outline (unselected handle)
+//   --m3-switch-handle-size                 16px   unselected handle
+//   --m3-switch-hover-handle-color          on-surface-variant
+//   --m3-switch-selected-track-color        primary
+//   --m3-switch-selected-handle-color       on-primary
+//   --m3-switch-selected-handle-size        24px   selected handle
+//   --m3-switch-selected-hover-handle-color primary-container
+//
+// Markup (role="switch" for assistive tech; state is pure :checked):
+//   <label class="m3-label">
+//     <input type="checkbox" role="switch" class="m3-switch" checked>
+//     Wi-Fi
+//   </label>
+//
+// Reused by the Bootstrap compat layer for .form-switch .form-check-input.
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "switch-width": #{fn.rem(52)},
+  "switch-height": #{fn.rem(32)},
+  "switch-track-color": var(--#{c.$sys-prefix}-sys-color-surface-container-highest),
+  "switch-outline-color": var(--#{c.$sys-prefix}-sys-color-outline),
+  "switch-handle-color": var(--#{c.$sys-prefix}-sys-color-outline),
+  "switch-handle-size": #{fn.rem(16)},
+  "switch-hover-handle-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "switch-selected-track-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "switch-selected-handle-color": var(--#{c.$sys-prefix}-sys-color-on-primary),
+  "switch-selected-handle-size": #{fn.rem(24)},
+  "switch-selected-hover-handle-color": var(--#{c.$sys-prefix}-sys-color-primary-container),
+  "switch-pressed-handle-size": #{fn.rem(28)},
+  "switch-state-layer-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "switch-selected-state-layer-color": var(--#{c.$sys-prefix}-sys-color-primary),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// The whole control: the checkbox itself is the track, ::before is the
+// handle, ::after is the touch target. Fixed geometry -- the handle offsets
+// are computed from the height token, so the track height deliberately does
+// NOT participate in density.
+// The switch's ::after: the 48dp touch target plus the 40dp state layer that
+// follows the handle. Emitted as its own mixin because Bootstrap's markup puts
+// a switch on `input[type="checkbox"]`, so the checkbox mapping matches it too
+// and its :checked rule -- one specificity step higher than
+// `.form-switch .form-check-input` -- would otherwise reshape this pseudo into
+// the checkbox's tick. The compat layer re-asserts it at that specificity.
+@mixin state-layer-pseudo {
+  @include m.own-pseudo;
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  block-size: max(100%, var(--#{c.$prefix}-sys-target-size));
+  inline-size: max(calc(100% + 2 * var(--_overhang)), var(--#{c.$prefix}-sys-target-size));
+  border: none;
+  rotate: none;
+  visibility: visible;
+  background: radial-gradient(
+    circle at var(--_handle-x) 50%,
+    color-mix(in srgb, var(--_layer-color) var(--_layer-opacity), transparent)
+      calc(var(--#{c.$prefix}-sys-selection-layer-size) / 2),
+    transparent calc(var(--#{c.$prefix}-sys-selection-layer-size) / 2 + var(--#{c.$prefix}-sys-stroke-hairline) / 2)
+  );
+}
+
+@mixin control {
+  @include m.own-box;
+  @include m.always-round;
+  display: inline-block;
+  appearance: none;
+  inline-size: #{v("switch-width")};
+  block-size: #{v("switch-height")};
+  flex: none;
+  position: relative;
+  margin: var(--#{c.$prefix}-sys-space-none);
+  border: var(--#{c.$prefix}-sys-stroke-thick) solid #{v("switch-outline-color")};
+  border-radius: var(--#{c.$prefix}-sys-shape-pill);
+  background-color: #{v("switch-track-color")};
+  @include m.typescale("body-medium");
+  color: #{v("switch-handle-color")};
+  cursor: pointer;
+  @include m.focus-ring;
+  @include m.transition((background-color, border-color));
+  @include m.touch-target;
+
+  // Handle geometry is driven by privates so the pressed size (28dp) and
+  // the selected size (24dp) reuse one offset formula: (track height -
+  // handle) / 2, pulled back by the border the track just consumed.
+  --_handle: #{v("switch-handle-size")};
+  // The state layer (r = 20dp) overhangs the 32dp track by 4dp on each side,
+  // so the touch pseudo is widened by that much and the handle centers are
+  // measured inside it.
+  --_overhang: var(--#{c.$prefix}-sys-space-1);
+  --_handle-x: calc(#{v("switch-height")} / 2 + var(--_overhang));
+  --_layer-color: #{v("switch-state-layer-color")};
+  --_layer-opacity: var(--#{c.$sys-prefix}-sys-state-none);
+
+  &::before {
+    @include m.own-pseudo;
+    content: "";
+    position: absolute;
+    inline-size: var(--_handle);
+    block-size: var(--_handle);
+    border-radius: var(--#{c.$prefix}-sys-shape-pill);
+    background-color: #{v("switch-handle-color")};
+    inset-block-start: 50%;
+    inset-inline-start: calc(
+      (#{v("switch-height")} - var(--_handle)) / 2 - var(--#{c.$prefix}-sys-stroke-thick)
+    );
+    translate: 0 -50%;
+    @include m.transition(
+      (background-color),
+      $spring-properties: (inset-inline-start, inline-size, block-size),
+      $spring: "fast-spatial"
+    );
+  }
+
+  // The touch target also paints the 40dp state layer centered on the handle
+  // (hover / focus / pressed), following the handle to either end.
+  &::after {
+    @include state-layer-pseudo;
+  }
+
+  @include m.hover {
+    --_layer-opacity: var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity);
+  }
+  &:focus-visible {
+    --_layer-opacity: var(--#{c.$sys-prefix}-sys-state-focus-state-layer-opacity);
+  }
+  &:active {
+    @include m.pressed-opacity("--_layer-opacity");
+    --_handle: #{v("switch-pressed-handle-size")};
+  }
+
+  @media (hover: hover) {
+    &:hover:not(:disabled)::before {
+      background-color: #{v("switch-hover-handle-color")};
+    }
+  }
+
+  &:checked {
+    --_handle: #{v("switch-selected-handle-size")};
+    --_handle-x: calc(100% - #{v("switch-height")} / 2 - var(--_overhang));
+    --_layer-color: #{v("switch-selected-state-layer-color")};
+    background-color: #{v("switch-selected-track-color")};
+    border-color: #{v("switch-selected-track-color")};
+
+    &:active {
+      --_handle: #{v("switch-pressed-handle-size")};
+    }
+
+    &::before {
+      background-color: #{v("switch-selected-handle-color")};
+      inset-inline-start: calc(
+        100% - var(--_handle) - (#{v("switch-height")} - var(--_handle)) / 2 +
+          var(--#{c.$prefix}-sys-stroke-thick)
+      );
+    }
+
+    @media (hover: hover) {
+      &:hover:not(:disabled)::before {
+        background-color: #{v("switch-selected-hover-handle-color")};
+      }
+    }
+  }
+
+  // Disabled: track/border at 12% on-surface, handle at 38% (the m3x
+  // disabled color-mix pattern). Last in source so it wins over :checked.
+  &:disabled {
+    cursor: not-allowed;
+    --_layer-opacity: var(--#{c.$sys-prefix}-sys-state-none);
+    background-color: color-mix(
+      in srgb,
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-disabled-container-opacity),
+      transparent
+    );
+    border-color: color-mix(
+      in srgb,
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-disabled-container-opacity),
+      transparent
+    );
+
+    &::before {
+      background-color: color-mix(
+        in srgb,
+        var(--#{c.$sys-prefix}-sys-color-on-surface)
+          var(--#{c.$sys-prefix}-sys-state-disabled-content-opacity),
+        transparent
+      );
+    }
+  }
+}
+
+@mixin classes {
+  input[type="checkbox"].#{c.$prefix}-switch {
+    @include control;
+  }
+}

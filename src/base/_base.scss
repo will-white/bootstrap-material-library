@@ -1,0 +1,257 @@
+// ============================================================================
+// m3x element defaults (layer: base)
+// Typography on body, headings on the M3 typescale, links, selection,
+// scrollbars, accent-color for unstyled native controls, forced-colors
+// pass-through.
+// ============================================================================
+
+@use "../config" as c;
+@use "../mixins" as m;
+
+@mixin styles {
+  :root {
+    accent-color: var(--#{c.$sys-prefix}-sys-color-primary);
+    scrollbar-color: var(--#{c.$sys-prefix}-sys-color-outline)
+      var(--#{c.$sys-prefix}-sys-color-surface-container);
+
+    // Lets block-size / inline-size transition to and from auto (disclosure,
+    // ::details-content); no-op where unsupported.
+    @supports (interpolate-size: allow-keywords) {
+      interpolate-size: allow-keywords;
+    }
+  }
+
+  body {
+    background-color: var(--#{c.$sys-prefix}-sys-color-surface);
+    color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+    @include m.typescale("body-medium");
+    -webkit-font-smoothing: antialiased;
+  }
+
+  // Element defaults target UNCLASSED elements (zero-specificity :where
+  // guard): the base layer is declared after bootstrap-compat, so bare
+  // element rules here would otherwise override compat class rules
+  // (a.btn, h5.card-title, ...) purely by layer order.
+  h1:where(:not([class])) {
+    @include m.typescale("headline-large");
+  }
+  h2:where(:not([class])) {
+    @include m.typescale("headline-medium");
+  }
+  h3:where(:not([class])) {
+    @include m.typescale("headline-small");
+  }
+  h4:where(:not([class])) {
+    @include m.typescale("title-large");
+  }
+  h5:where(:not([class])) {
+    @include m.typescale("title-medium");
+  }
+  h6:where(:not([class])) {
+    @include m.typescale("title-small");
+  }
+
+  h1:where(:not([class])),
+  h2:where(:not([class])),
+  h3:where(:not([class])),
+  h4:where(:not([class])),
+  h5:where(:not([class])),
+  h6:where(:not([class])) {
+    color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+    text-wrap: balance;
+  }
+
+  p:where(:not([class])) {
+    margin-block: var(--#{c.$prefix}-sys-space-2);
+  }
+
+  a:where(:not([class])) {
+    color: var(--#{c.$sys-prefix}-sys-color-primary);
+    text-decoration: underline;
+    text-underline-offset: var(--#{c.$prefix}-sys-stroke-thick);
+
+    @include m.hover {
+      color: color-mix(
+        in srgb,
+        var(--#{c.$sys-prefix}-sys-color-on-surface)
+          var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity),
+        var(--#{c.$sys-prefix}-sys-color-primary)
+      );
+    }
+
+    &:focus-visible {
+      outline: var(--#{c.$sys-prefix}-sys-state-focus-indicator-thickness) solid
+        var(--#{c.$sys-prefix}-sys-color-secondary);
+      outline-offset: var(--#{c.$sys-prefix}-sys-state-focus-indicator-offset);
+      border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
+    }
+  }
+
+  ::selection {
+    background-color: var(--#{c.$sys-prefix}-sys-color-primary);
+    color: var(--#{c.$sys-prefix}-sys-color-on-primary);
+  }
+
+  // Reboot-level element defaults (Bootstrap parity), unclassed-scoped like
+  // the rules above so component and utility classes always win.
+  ul:where(:not([class])),
+  ol:where(:not([class])) {
+    margin-block: var(--#{c.$prefix}-sys-space-none) var(--#{c.$prefix}-sys-space-4);
+    padding-inline-start: var(--#{c.$prefix}-sys-space-6);
+  }
+
+  ul:where(:not([class])) ul,
+  ul:where(:not([class])) ol,
+  ol:where(:not([class])) ul,
+  ol:where(:not([class])) ol {
+    margin-block-end: var(--#{c.$prefix}-sys-space-none);
+  }
+
+  dl:where(:not([class])) {
+    margin-block: var(--#{c.$prefix}-sys-space-none) var(--#{c.$prefix}-sys-space-4);
+  }
+
+  dt:where(:not([class])) {
+    font-weight: var(--#{c.$sys-prefix}-sys-typescale-label-large-weight);
+  }
+
+  dd:where(:not([class])) {
+    margin-block-end: var(--#{c.$prefix}-sys-space-2);
+    margin-inline-start: var(--#{c.$prefix}-sys-space-none);
+  }
+
+  blockquote:where(:not([class])) {
+    margin: var(--#{c.$prefix}-sys-space-none) var(--#{c.$prefix}-sys-space-none) var(--#{c.$prefix}-sys-space-4);
+  }
+
+  b,
+  strong {
+    font-weight: bolder;
+  }
+
+  small:where(:not([class])) {
+    font-size: var(--#{c.$sys-prefix}-sys-typescale-body-small-size);
+  }
+
+  mark:where(:not([class])) {
+    padding-inline: var(--#{c.$prefix}-sys-space-1);
+    background-color: var(--#{c.$sys-prefix}-extended-color-warning-container);
+    color: var(--#{c.$sys-prefix}-extended-color-on-warning-container);
+  }
+
+  sub,
+  sup {
+    position: relative;
+    font-size: var(--#{c.$sys-prefix}-sys-typescale-label-small-size);
+    line-height: 0;
+    vertical-align: baseline;
+  }
+
+  sub {
+    inset-block-end: calc(-1 * var(--#{c.$prefix}-sys-space-1));
+  }
+
+  sup {
+    inset-block-start: calc(-1 * var(--#{c.$prefix}-sys-space-2));
+  }
+
+  abbr[title] {
+    text-decoration: underline dotted;
+    cursor: help;
+    text-decoration-skip-ink: none;
+  }
+
+  address:where(:not([class])) {
+    margin-block-end: var(--#{c.$prefix}-sys-space-4);
+    font-style: normal;
+  }
+
+  kbd:where(:not([class])) {
+    padding: var(--#{c.$prefix}-sys-space-none) var(--#{c.$prefix}-sys-space-1);
+    background-color: var(--#{c.$sys-prefix}-sys-color-inverse-surface);
+    color: var(--#{c.$sys-prefix}-sys-color-inverse-on-surface);
+    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
+    font-family: ui-monospace, monospace;
+    font-size: var(--#{c.$sys-prefix}-sys-typescale-body-small-size);
+  }
+
+  pre:where(:not([class])) {
+    display: block;
+    margin-block: var(--#{c.$prefix}-sys-space-none) var(--#{c.$prefix}-sys-space-4);
+    overflow: auto;
+    font-size: var(--#{c.$sys-prefix}-sys-typescale-body-small-size);
+  }
+
+  figure:where(:not([class])) {
+    margin-block: var(--#{c.$prefix}-sys-space-none) var(--#{c.$prefix}-sys-space-4);
+  }
+
+  fieldset:where(:not([class])) {
+    min-inline-size: var(--#{c.$prefix}-sys-space-none);
+    padding: var(--#{c.$prefix}-sys-space-none);
+    margin: var(--#{c.$prefix}-sys-space-none);
+    border: none;
+  }
+
+  legend:where(:not([class])) {
+    inline-size: 100%;
+    padding: var(--#{c.$prefix}-sys-space-none);
+    margin-block-end: var(--#{c.$prefix}-sys-space-2);
+    @include m.typescale("title-medium");
+  }
+
+  label:where(:not([class])) {
+    display: inline-block;
+  }
+
+  summary {
+    display: list-item;
+    cursor: pointer;
+  }
+
+  iframe {
+    border: none;
+  }
+
+  // Bootstrap parity: [hidden] must beat component display rules that live
+  // in later layers. !important inverts layer precedence, which is exactly
+  // the tool for this one case.
+  [hidden] {
+    display: none !important;
+  }
+
+  hr:where(:not([class])) {
+    border: none;
+    border-block-start: var(--#{c.$prefix}-sys-stroke-hairline) solid
+      var(--#{c.$sys-prefix}-sys-color-outline-variant);
+  }
+
+  code,
+  pre {
+    font-family: ui-monospace, monospace;
+    color: var(--#{c.$sys-prefix}-sys-color-tertiary);
+  }
+
+  // Forced colors (Windows High Contrast): let system colors through on
+  // controls; forced-colors mode already replaces our colors, this only
+  // restores visible boundaries that background-color removal would hide.
+  @media (forced-colors: active) {
+    button,
+    input,
+    select,
+    textarea,
+    [role="button"] {
+      forced-color-adjust: auto;
+      border: var(--#{c.$prefix}-sys-stroke-hairline) solid ButtonBorder;
+    }
+
+    // Forced-colors strips box-shadow, which is the field focus indicator;
+    // restore a real outline so focus never disappears in WHCM.
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+      outline: var(--#{c.$sys-prefix}-sys-state-focus-indicator-thickness) solid Highlight;
+      outline-offset: var(--#{c.$sys-prefix}-sys-state-focus-indicator-offset);
+    }
+  }
+}

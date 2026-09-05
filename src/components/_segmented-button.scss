@@ -1,0 +1,204 @@
+// ============================================================================
+// m3x segmented button (single-select radios | multi-select checkboxes)
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-segmented-height                    40px; participates in density
+//   --m3-segmented-padding-inline            space-4 (16px)
+//   --m3-segmented-shape                     corner-full
+//   --m3-segmented-outline-color             outline
+//   --m3-segmented-outline-width             1px (hairline token)
+//   --m3-segmented-label-color               on-surface
+//   --m3-segmented-selected-container-color  secondary-container
+//   --m3-segmented-selected-label-color      on-secondary-container
+//
+// Markup (real inputs, zero JS; radios = single select, checkboxes = multi):
+//   <fieldset class="m3-segmented">
+//     <label class="m3-segmented__segment">
+//       <input class="m3-segmented__input" type="radio" name="view" checked>
+//       <span class="m3-segmented__label">Day</span>
+//     </label>
+//     <label class="m3-segmented__segment">
+//       <input class="m3-segmented__input" type="radio" name="view">
+//       <span class="m3-segmented__label">Week</span>
+//     </label>
+//   </fieldset>
+//
+// The hidden input covers its whole segment, so :hover/:focus/:active land on
+// the input and drive the visible label span through sibling selectors. The
+// container keeps overflow visible so focus rings are never clipped; the
+// outer segments round their own corners instead.
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "segmented-height": #{fn.rem(40)},
+  "segmented-padding-inline": var(--#{c.$prefix}-sys-space-4),
+  "segmented-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
+  "segmented-outline-color": var(--#{c.$sys-prefix}-sys-color-outline),
+  "segmented-outline-width": var(--#{c.$prefix}-sys-stroke-hairline),
+  "segmented-label-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "segmented-selected-container-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
+  "segmented-selected-label-color": var(--#{c.$sys-prefix}-sys-color-on-secondary-container),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// The fieldset: reset its native chrome, draw the group outline. Overflow
+// stays visible (never clip) so the focus ring can render outside the box.
+@mixin container {
+  @include m.own-box;
+  display: inline-flex;
+  vertical-align: middle;
+  margin: var(--#{c.$prefix}-sys-space-none);
+  padding: var(--#{c.$prefix}-sys-space-none);
+  border: #{v("segmented-outline-width")} solid
+    #{v("segmented-outline-color")};
+  border-radius: #{v("segmented-shape")};
+}
+
+// One segment: a <label> wrapping a real (visually hidden) input plus the
+// visible label span. Every state is driven FROM the input with sibling
+// selectors; the span paints the state layer via the private-variable
+// color-mix pattern and fills the whole segment (flex 1, stretched).
+@mixin segment(
+  $input: ".#{c.$prefix}-segmented__input",
+  $label: ".#{c.$prefix}-segmented__label"
+) {
+  @include m.own-box;
+  --_container: transparent;
+  --_content: #{v("segmented-label-color")};
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  @include m.control-height(v("segmented-height"));
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  @include m.typescale("label-large");
+  @include m.focus-ring-within($input);
+
+  // Hairline divider between adjacent segments.
+  & + & {
+    border-inline-start: #{v("segmented-outline-width")} solid
+      #{v("segmented-outline-color")};
+  }
+
+  // Outer corners follow the group shape on both the segment and its span
+  // (the container does not clip, so the ends must round themselves).
+  &:first-of-type {
+    border-start-start-radius: #{v("segmented-shape")};
+    border-end-start-radius: #{v("segmented-shape")};
+
+    #{$label} {
+      border-start-start-radius: #{v("segmented-shape")};
+      border-end-start-radius: #{v("segmented-shape")};
+    }
+  }
+
+  &:last-of-type {
+    border-start-end-radius: #{v("segmented-shape")};
+    border-end-end-radius: #{v("segmented-shape")};
+
+    #{$label} {
+      border-start-end-radius: #{v("segmented-shape")};
+      border-end-end-radius: #{v("segmented-shape")};
+    }
+  }
+
+  // The real control: invisible but full-size, so pointer and keyboard state
+  // land on the input itself.
+  #{$input} {
+    @include m.hidden-control;
+  }
+
+  // The visible span: fills the segment and carries the state-layer
+  // background; padding lives here so the painted area reaches the edges.
+  #{$label} {
+    @include m.own-box;
+    @include m.typescale("label-large");
+    text-align: center;
+    white-space: nowrap;
+    --_state-color: var(--_content);
+    --_state-opacity: var(--#{c.$sys-prefix}-sys-state-none);
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--#{c.$prefix}-sys-space-2);
+    flex: 1 1 auto;
+    align-self: stretch;
+    padding-inline: #{v("segmented-padding-inline")};
+    pointer-events: none;
+    color: var(--_content);
+    background-color: color-mix(
+      in srgb,
+      var(--_state-color) var(--_state-opacity),
+      var(--_container)
+    );
+    @include m.transition((background-color, color));
+
+    // M3: a selected segment shows a leading check icon (18dp).
+    &::before {
+      @include m.own-pseudo;
+      content: "";
+      display: none;
+      flex: none;
+      @include m.check-glyph(var(--#{c.$prefix}-sys-icon-size-small), var(--#{c.$prefix}-sys-stroke-thick));
+    }
+  }
+
+  #{$input}:checked + #{$label}::before {
+    display: inline-block;
+  }
+
+  #{$input}:checked + #{$label} {
+    --#{c.$prefix}-icon-fill: 1;
+  }
+
+  @include m.hover-selector("#{$input}:hover + #{$label}") {
+    --_state-opacity: var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity);
+  }
+
+  #{$input}:focus-visible + #{$label} {
+    --_state-opacity: var(--#{c.$sys-prefix}-sys-state-focus-state-layer-opacity);
+  }
+
+  #{$input}:active + #{$label} {
+    @include m.pressed-opacity;
+  }
+
+  #{$input}:checked + #{$label} {
+    --_container: #{v("segmented-selected-container-color")};
+    --_content: #{v("segmented-selected-label-color")};
+  }
+
+  // Last so it wins over hover/checked at equal specificity.
+  #{$input}:disabled + #{$label} {
+    @include m.disabled-bare;
+  }
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-segmented {
+    @include container;
+  }
+
+  .#{$p}-segmented__segment {
+    @include segment;
+  }
+}

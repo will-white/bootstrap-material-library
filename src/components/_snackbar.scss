@@ -1,0 +1,193 @@
+// ============================================================================
+// m3x snackbar
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-snackbar-container-color   inverse-surface       container fill
+//   --m3-snackbar-content-color     inverse-on-surface    message + close tint
+//   --m3-snackbar-action-color      inverse-primary       action label color
+//   --m3-snackbar-shape             corner-extra-small    container radius
+//   --m3-snackbar-min-height        48px                  participates in
+//                                                         density (min-height)
+//   --m3-snackbar-max-width         560px                 container width cap
+//   --m3-snackbar-action-height     36px                  action control height;
+//                                                         participates in density
+//   --m3-snackbar-close-size        32px                  close affordance size;
+//                                                         participates in density
+//
+// Markup:
+//   <div class="m3-snackbar m3-snackbar--fixed" role="status">
+//     <div class="m3-snackbar__text">Photo saved to album</div>
+//     <button class="m3-snackbar__action" type="button">Undo</button>
+//     <button class="m3-snackbar__close" type="button" aria-label="Dismiss"></button>
+//   </div>
+//
+// Arbitrary consumer content goes in <div class="m3-snackbar__slot">; the
+// anchor-color donut below never reaches inside it.
+// The container/text/action mixins are reused by the Bootstrap compat layer
+// for .toast.
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "snackbar-container-color": var(--#{c.$sys-prefix}-sys-color-inverse-surface),
+  "snackbar-content-color": var(--#{c.$sys-prefix}-sys-color-inverse-on-surface),
+  "snackbar-action-color": var(--#{c.$sys-prefix}-sys-color-inverse-primary),
+  "snackbar-shape": var(--#{c.$sys-prefix}-sys-shape-corner-extra-small),
+  "snackbar-min-height": #{fn.rem(48)},
+  "snackbar-max-width": #{fn.rem(560)},
+  "snackbar-action-height": #{fn.rem(36)},
+  "snackbar-close-size": #{fn.rem(32)},
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// Inverse-surface container. Reused by the Bootstrap .toast re-skin.
+@mixin container {
+  @include m.own-box;
+  display: flex;
+  align-items: center;
+  gap: var(--#{c.$prefix}-sys-space-2);
+  @include m.control-min-height(v("snackbar-min-height"));
+  max-inline-size: #{v("snackbar-max-width")};
+  padding-inline: var(--#{c.$prefix}-sys-space-4);
+  background-color: #{v("snackbar-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("snackbar-container-color")};
+  color: #{v("snackbar-content-color")};
+  border-radius: #{v("snackbar-shape")};
+  @include m.elevation(3);
+  @include m.typescale("body-medium");
+}
+
+// Message slot; padding-block keeps two-line messages breathing.
+@mixin text {
+  @include m.own-box;
+  display: block;
+  @include m.typescale("body-medium");
+  color: #{v("snackbar-content-color")};
+  flex: 1;
+  padding-block: var(--#{c.$prefix}-sys-space-3);
+}
+
+// Inline text button on the inverse surface (transparent container).
+@mixin action {
+  @include m.own-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  --_container: transparent;
+  --_content: #{v("snackbar-action-color")};
+
+  flex-shrink: 0;
+  border: none;
+  @include m.control-height(v("snackbar-action-height"));
+  padding-inline: var(--#{c.$prefix}-sys-space-2);
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  cursor: pointer;
+  white-space: nowrap;
+  @include m.typescale("label-large");
+  @include m.state-layer;
+  @include m.focus-ring;
+  @include m.touch-target;
+  @include m.transition((background-color, color));
+
+  &:disabled {
+    @include m.disabled-bare;
+  }
+}
+
+// Square dismiss affordance with a CSS-drawn cross.
+@mixin close {
+  @include m.own-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  @include m.typescale("label-large");
+  --_container: transparent;
+  --_content: #{v("snackbar-content-color")};
+
+  flex-shrink: 0;
+  border: none;
+  @include m.control-height(v("snackbar-close-size"));
+  aspect-ratio: 1;
+  padding: var(--#{c.$prefix}-sys-space-none);
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  cursor: pointer;
+  @include m.state-layer;
+  @include m.cross-icon(var(--#{c.$prefix}-sys-icon-size-small), var(--#{c.$prefix}-sys-stroke-thick));
+  @include m.focus-ring;
+  @include m.touch-target;
+  @include m.transition((background-color, color));
+
+  &:disabled {
+    @include m.disabled-bare;
+  }
+}
+
+// Viewport-pinned presentation, centered on the inline axis.
+@mixin fixed {
+  position: fixed;
+  inset-block-end: var(--#{c.$prefix}-sys-space-4);
+  inset-inline-start: 50%;
+  translate: -50% 0;
+  z-index: var(--#{c.$prefix}-sys-z-snackbar);
+  inline-size: max-content;
+  max-inline-size: min(
+    #{v("snackbar-max-width")},
+    calc(100% - var(--#{c.$prefix}-sys-space-6))
+  );
+}
+
+// Donut: links between the root and the consumer slot pick up the action
+// color; content inside __slot is left alone. Refinement only -- every
+// structural rule lives outside @scope.
+@mixin internals(
+  $root: ".#{c.$prefix}-snackbar",
+  $slot: ".#{c.$prefix}-snackbar__slot"
+) {
+  @scope (#{$root}) to (#{$slot}) {
+    a {
+      color: #{v("snackbar-action-color")};
+    }
+  }
+}
+
+@mixin classes {
+  .#{c.$prefix}-snackbar {
+    @include container;
+  }
+
+  .#{c.$prefix}-snackbar__text {
+    @include text;
+  }
+
+  .#{c.$prefix}-snackbar__action {
+    @include action;
+  }
+
+  .#{c.$prefix}-snackbar__close {
+    @include close;
+  }
+
+  .#{c.$prefix}-snackbar__slot {
+    @include m.own-region;
+    flex: 1 1 auto;
+  }
+
+  .#{c.$prefix}-snackbar--fixed {
+    @include fixed;
+  }
+
+  @include internals;
+}

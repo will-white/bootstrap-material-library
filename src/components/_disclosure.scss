@@ -1,0 +1,109 @@
+// ============================================================================
+// m3x disclosure: a native <details> with an M3 summary row and an animated
+// open/close where the platform allows it.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-disclosure-summary-height   48px   summary row; participates in density
+//   --m3-disclosure-color            on-surface
+//   --m3-disclosure-shape            corner-small  summary row corners
+//
+// Markup:
+//   <details class="m3-disclosure" name="faq">
+//     <summary>Shipping</summary>
+//     <p>...</p>
+//   </details>
+//
+// Animation tiers: ::details-content transitions its block-size from 0 to
+// auto (interpolate-size: allow-keywords is opted in on :root), with
+// content-visibility riding along discretely so the close animates too.
+// Browsers without ::details-content or interpolate-size open and close
+// instantly, exactly like an unstyled <details>. A `name` attribute makes
+// a set of disclosures exclusive with no script.
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "disclosure-summary-height": #{fn.rem(48)},
+  "disclosure-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "disclosure-shape": var(--#{c.$sys-prefix}-sys-shape-corner-small),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+@mixin base {
+  @include m.own-box;
+  display: block;
+  color: #{v("disclosure-color")};
+
+  > summary {
+    @include m.own-region;
+    --_container: transparent;
+    --_content: #{v("disclosure-color")};
+    display: flex;
+    align-items: center;
+    gap: var(--#{c.$prefix}-sys-space-3);
+    @include m.control-min-height(v("disclosure-summary-height"));
+    padding-inline: var(--#{c.$prefix}-sys-space-3);
+    border-radius: #{v("disclosure-shape")};
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+    @include m.typescale("title-small");
+    @include m.state-layer;
+    @include m.focus-ring;
+    @include m.transition((background-color, color));
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::after {
+      @include m.own-pseudo;
+      content: "";
+      display: block;
+      flex: none;
+      margin-inline-start: auto;
+      @include m.chevron-icon;
+      translate: 0 -25%;
+      @include m.spring-transition((rotate, translate), "fast-spatial");
+    }
+  }
+
+  &[open] > summary::after {
+    rotate: 225deg;
+    translate: 0 25%;
+  }
+
+  @supports selector(::details-content) {
+    &::details-content {
+      block-size: 0;
+      overflow: clip;
+      @include m.transition(
+        (content-visibility),
+        $spring-properties: (block-size),
+        $spring: "default-spatial"
+      );
+      transition-behavior: allow-discrete;
+    }
+
+    &[open]::details-content {
+      block-size: auto;
+    }
+  }
+}
+
+@mixin classes {
+  details.#{c.$prefix}-disclosure {
+    @include base;
+  }
+}

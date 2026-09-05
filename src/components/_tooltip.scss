@@ -1,0 +1,186 @@
+// ============================================================================
+// m3x tooltip (plain | rich) -- CSS-only reveal, zero JS.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-tooltip-container-color       inverse-surface     plain container
+//   --m3-tooltip-content-color         inverse-on-surface  plain text
+//   --m3-tooltip-rich-container-color  surface-container   rich container
+//   --m3-tooltip-rich-content-color    on-surface-variant  rich body text
+//   --m3-tooltip-rich-title-color      on-surface          rich subhead
+//   --m3-tooltip-shape                 corner-extra-small  plain radius
+//   --m3-tooltip-rich-shape            corner-medium       rich radius
+//   --m3-tooltip-max-width             200px               plain max width
+//   --m3-tooltip-rich-max-width        320px               rich max width
+//   --m3-tooltip-rich-padding          space-4 (16px)      rich container pad
+//
+// Markup (reveal works everywhere -- hover or keyboard focus on the anchor):
+//   <span class="m3-tooltip-anchor">
+//     <button class="m3-btn">Save</button>
+//     <span class="m3-tooltip" role="tooltip">Saves the draft</span>
+//   </span>
+//
+// Rich tooltip (stays open while hovered, since it remains inside the
+// anchor's hover area):
+//   <span class="m3-tooltip-anchor">
+//     <button class="m3-btn">Info</button>
+//     <div class="m3-tooltip m3-tooltip--rich" role="tooltip">
+//       <div class="m3-tooltip__title">Rich tooltip</div>
+//       Supporting text with more detail.
+//     </div>
+//   </span>
+//
+// Anchor-positioning enhancement: add --floating to a tooltip and put
+// anchor-name: --m3-tooltip-anchor on the trigger element. In browsers with
+// CSS anchor positioning the tooltip is fixed-positioned above the trigger
+// (position-area: block-start) and escapes clipping ancestors; in browsers
+// without support the --floating tooltip is display: none -- a graceful
+// no-tooltip fallback, never a misplaced box.
+//   <button class="m3-btn" style="anchor-name: --m3-tooltip-anchor">Go</button>
+//   <span class="m3-tooltip m3-tooltip--floating" role="tooltip">Hint</span>
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "tooltip-container-color": var(--#{c.$sys-prefix}-sys-color-inverse-surface),
+  "tooltip-content-color": var(--#{c.$sys-prefix}-sys-color-inverse-on-surface),
+  "tooltip-rich-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container),
+  "tooltip-rich-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "tooltip-rich-title-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "tooltip-shape": var(--#{c.$sys-prefix}-sys-shape-corner-extra-small),
+  "tooltip-rich-shape": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "tooltip-max-width": #{fn.rem(200)},
+  "tooltip-rich-max-width": #{fn.rem(320)},
+  "tooltip-rich-padding": var(--#{c.$prefix}-sys-space-4),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// Plain tooltip surface (reused by Bootstrap compat for .tooltip-inner).
+@mixin plain {
+  @include m.own-box;
+  display: inline-block;
+  width: max-content;
+  max-inline-size: #{v("tooltip-max-width")};
+  padding-block: var(--#{c.$prefix}-sys-space-1);
+  padding-inline: var(--#{c.$prefix}-sys-space-2);
+  background-color: #{v("tooltip-container-color")};
+  color: #{v("tooltip-content-color")};
+  border-radius: #{v("tooltip-shape")};
+  @include m.typescale("body-small");
+}
+
+// Rich tooltip surface (reused by Bootstrap compat for .popover).
+@mixin rich {
+  max-inline-size: #{v("tooltip-rich-max-width")};
+  padding: #{v("tooltip-rich-padding")};
+  background-color: #{v("tooltip-rich-container-color")};
+  color: #{v("tooltip-rich-content-color")};
+  border-radius: #{v("tooltip-rich-shape")};
+  @include m.elevation(2);
+  @include m.typescale("body-medium");
+}
+
+// Rich tooltip subhead (reused by Bootstrap compat for .popover-header).
+@mixin rich-title {
+  @include m.own-box;
+  display: block;
+  @include m.typescale("title-small");
+  color: #{v("tooltip-rich-title-color")};
+  margin-block-end: var(--#{c.$prefix}-sys-space-1);
+}
+
+// Positioning context wrapping the trigger and its tooltip.
+@mixin anchor {
+  position: relative;
+  display: inline-block;
+}
+
+// Resting state of a tooltip inside the anchor: parked above the trigger,
+// hidden and inert until the anchor is hovered or holds focus.
+@mixin anchored {
+  position: absolute;
+  inset-block-end: calc(100% + var(--#{c.$prefix}-sys-space-1));
+  inset-inline-start: 50%;
+  translate: -50%;
+  z-index: var(--#{c.$prefix}-sys-z-tooltip);
+  opacity: var(--#{c.$prefix}-sys-opacity-hidden);
+  visibility: hidden;
+  pointer-events: none;
+  @include m.transition(opacity);
+}
+
+@mixin revealed {
+  opacity: var(--#{c.$prefix}-sys-opacity-full);
+  visibility: visible;
+}
+
+// Anchor-positioning enhancement (see header). Hidden where unsupported.
+@mixin floating {
+  display: none;
+
+  @supports (anchor-name: --#{c.$prefix}-t) {
+    display: block;
+    position: fixed;
+    position-anchor: --#{c.$prefix}-tooltip-anchor;
+    position-area: block-start;
+    margin-block-end: var(--#{c.$prefix}-sys-space-1);
+  }
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-tooltip {
+    @include plain;
+  }
+
+  .#{$p}-tooltip--rich {
+    @include rich;
+  }
+
+  .#{$p}-tooltip__title {
+    @include rich-title;
+  }
+
+  .#{$p}-tooltip-anchor {
+    @include anchor;
+  }
+
+  .#{$p}-tooltip-anchor > .#{$p}-tooltip {
+    @include anchored;
+  }
+
+  // :hover and :focus-within are separate rules on purpose (selector
+  // hygiene: one unsupported selector would kill a shared list).
+  .#{$p}-tooltip-anchor:hover > .#{$p}-tooltip {
+    @include revealed;
+  }
+
+  .#{$p}-tooltip-anchor:focus-within > .#{$p}-tooltip {
+    @include revealed;
+  }
+
+  // Rich tooltips become hoverable while shown; the tooltip is a child of
+  // the anchor, so pointing at it keeps the anchor's :hover rule active.
+  .#{$p}-tooltip-anchor:hover > .#{$p}-tooltip--rich {
+    pointer-events: auto;
+  }
+
+  .#{$p}-tooltip-anchor:focus-within > .#{$p}-tooltip--rich {
+    pointer-events: auto;
+  }
+
+  .#{$p}-tooltip--floating {
+    @include floating;
+  }
+}

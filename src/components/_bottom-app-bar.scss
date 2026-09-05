@@ -1,0 +1,79 @@
+// ============================================================================
+// m3x bottom app bar
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-bottom-app-bar-height           80px  bar height; participates in
+//                                              density: calc(h + density*4px)
+//   --m3-bottom-app-bar-container-color  surface-container
+//   --m3-bottom-app-bar-content-color    on-surface
+//
+// Markup:
+//   <footer class="m3-bottom-app-bar m3-bottom-app-bar--fixed">
+//     <button class="m3-icon-btn" aria-label="Search"></button>
+//     <button class="m3-icon-btn" aria-label="Delete"></button>
+//     <div class="m3-bottom-app-bar__trailing">
+//       <button class="m3-fab" aria-label="Add"></button>
+//     </div>
+//   </footer>
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "bottom-app-bar-height": #{fn.rem(80)},
+  "bottom-app-bar-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container),
+  "bottom-app-bar-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// Structural bar container.
+@mixin bar {
+  @include m.own-box;
+  display: flex;
+  align-items: center;
+  gap: var(--#{c.$prefix}-sys-space-2);
+  padding-inline: var(--#{c.$prefix}-sys-space-4);
+  @include m.control-height(v("bottom-app-bar-height"));
+  background-color: #{v("bottom-app-bar-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("bottom-app-bar-container-color")};
+  color: #{v("bottom-app-bar-content-color")};
+}
+
+// Trailing slot, pushed to the far inline end (typically holds a .m3-fab).
+@mixin trailing {
+  @include m.own-box;
+  display: block;
+  margin-inline-start: auto;
+}
+
+// Pinned to the bottom of the viewport.
+@mixin fixed {
+  position: fixed;
+  inset-block-end: var(--#{c.$prefix}-sys-space-none);
+  inset-inline: var(--#{c.$prefix}-sys-space-none);
+  z-index: var(--#{c.$prefix}-sys-z-nav);
+}
+
+@mixin classes {
+  .#{c.$prefix}-bottom-app-bar {
+    @include bar;
+  }
+
+  .#{c.$prefix}-bottom-app-bar__trailing {
+    @include trailing;
+  }
+
+  .#{c.$prefix}-bottom-app-bar--fixed {
+    @include fixed;
+  }
+}

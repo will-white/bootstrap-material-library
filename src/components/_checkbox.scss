@@ -1,0 +1,162 @@
+// ============================================================================
+// m3x checkbox -- M3 checkbox on a real input, CSS-drawn mark, with
+// :indeterminate support. No wrapper element required.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-checkbox-size                      18px   square control size
+//   --m3-checkbox-shape                     2px    corner radius
+//   --m3-checkbox-outline-color             on-surface-variant (unselected)
+//   --m3-checkbox-selected-container-color  primary (checked/indeterminate)
+//   --m3-checkbox-mark-color                on-primary (check mark / dash)
+//   --m3-checkbox-icon-size                 18px   check glyph box (Material Symbols proportions)
+//   --m3-checkbox-dash-length               12px   indeterminate dash
+//   --m3-checkbox-state-layer-color         on-surface  40dp layer, unselected (pressed: selected color)
+//   --m3-checkbox-selected-state-layer-color primary    40dp layer, selected (pressed: on-surface)
+//
+// Markup:
+//   <label>
+//     <input type="checkbox" class="m3-checkbox">
+//     Remember me
+//   </label>
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "checkbox-size": #{fn.rem(18)},
+  "checkbox-shape": #{fn.rem(2)},
+  "checkbox-outline-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "checkbox-selected-container-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "checkbox-mark-color": var(--#{c.$sys-prefix}-sys-color-on-primary),
+  "checkbox-icon-size": #{fn.rem(18)},
+  "checkbox-dash-length": #{fn.rem(12)},
+  "checkbox-state-layer-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "checkbox-selected-state-layer-color": var(--#{c.$sys-prefix}-sys-color-primary),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// The whole control, applied to the real input (reused by the Bootstrap
+// compat layer for .form-check-input[type="checkbox"]).
+// Selection-control glyphs are fixed-size per the M3 spec and deliberately
+// do NOT participate in density; the >=48px touch target overlay keeps the
+// hit area constant regardless.
+@mixin control {
+  @include m.own-box;
+  appearance: none;
+  inline-size: #{v("checkbox-size")};
+  block-size: #{v("checkbox-size")};
+  border: var(--#{c.$prefix}-sys-stroke-thick) solid #{v("checkbox-outline-color")};
+  border-radius: #{v("checkbox-shape")};
+  background-color: transparent;
+  @include m.typescale("body-medium");
+  color: #{v("checkbox-outline-color")};
+  display: inline-grid;
+  place-content: center;
+  cursor: pointer;
+  flex: none;
+  @include m.transition((background-color, border-color));
+
+  // ::before is the 48px+ touch target; it also paints the 40dp state layer
+  // and the circular focus indicator (M3 draws the ring around the layer,
+  // not around the box). Pressed swaps the layer color (M3 spec).
+  --_layer-color: #{v("checkbox-state-layer-color")};
+  @include m.touch-target-before;
+  @include m.selection-layer;
+
+  &:active {
+    --_layer-color: #{v("checkbox-selected-state-layer-color")};
+  }
+
+  &:checked {
+    --_layer-color: #{v("checkbox-selected-state-layer-color")};
+  }
+
+  &:checked:active {
+    --_layer-color: #{v("checkbox-state-layer-color")};
+  }
+
+  // ::after draws the mark; hidden until checked/indeterminate.
+  &::after {
+    @include m.own-pseudo;
+    content: "";
+    grid-area: 1 / 1;
+    visibility: hidden;
+  }
+
+  &:checked {
+    background-color: #{v("checkbox-selected-container-color")};
+    border-color: #{v("checkbox-selected-container-color")};
+    color: #{v("checkbox-mark-color")};
+  }
+
+  &:checked::after {
+    visibility: visible;
+    @include m.check-glyph(#{v("checkbox-icon-size")}, var(--#{c.$prefix}-sys-stroke-thick));
+    color: #{v("checkbox-mark-color")};
+  }
+
+  // Indeterminate wins over checked (emitted after; same specificity).
+  &:indeterminate {
+    background-color: #{v("checkbox-selected-container-color")};
+    border-color: #{v("checkbox-selected-container-color")};
+    color: #{v("checkbox-mark-color")};
+  }
+
+  &:indeterminate::after {
+    visibility: visible;
+    inline-size: #{v("checkbox-dash-length")};
+    block-size: var(--#{c.$prefix}-sys-space-none);
+    border-block-end: var(--#{c.$prefix}-sys-stroke-thick) solid currentColor;
+    border-inline-end: none;
+    rotate: none;
+    translate: none;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    border-color: color-mix(
+      in srgb,
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-disabled-content-opacity),
+      transparent
+    );
+
+    &::before {
+      content: none;
+    }
+  }
+
+  &:checked:disabled {
+    background-color: color-mix(
+      in srgb,
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-disabled-content-opacity),
+      transparent
+    );
+  }
+
+  &:indeterminate:disabled {
+    background-color: color-mix(
+      in srgb,
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-disabled-content-opacity),
+      transparent
+    );
+  }
+}
+
+@mixin classes {
+  input[type="checkbox"].#{c.$prefix}-checkbox {
+    @include control;
+  }
+}

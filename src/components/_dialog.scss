@@ -1,0 +1,246 @@
+// ============================================================================
+// m3x dialog (basic + full-screen), on native <dialog>.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-dialog-container-color  surface-container-high
+//   --m3-dialog-content-color    on-surface
+//   --m3-dialog-shape            corner-extra-large
+//   --m3-dialog-padding          space-5 (24px)
+//   --m3-dialog-min-width        280px
+//   --m3-dialog-max-width        560px
+//   --m3-dialog-icon-color       secondary   hero icon slot
+//
+// Markup:
+//   <dialog class="m3-dialog">
+//     <span class="m3-dialog__icon"><span class="m3-icon">delete</span></span>
+//     <h2 class="m3-dialog__title">Title</h2>
+//     <div class="m3-dialog__content">...</div>
+//     <div class="m3-dialog__actions">
+//       <button class="m3-btn m3-btn--text">Cancel</button>
+//       <button class="m3-btn m3-btn--text">OK</button>
+//     </div>
+//   </dialog>
+//
+// The hero icon is optional. M3 centres it, and centres the headline with it
+// -- a dialog that leads with an icon is symmetric, one that leads with the
+// headline is not -- so the centring rule reads the icon's presence with
+// :has(). Without :has() the icon still centres and the headline stays at the
+// start, which is the pre-icon layout rather than a broken one.
+//
+// Behavior is the platform's: dialog.showModal()/close() from the consumer's
+// own code or a form[method="dialog"] -- the library ships no JS.
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "dialog-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-high),
+  "dialog-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "dialog-shape": var(--#{c.$sys-prefix}-sys-shape-corner-extra-large),
+  "dialog-padding": var(--#{c.$prefix}-sys-space-5),
+  "dialog-min-width": #{fn.rem(280)},
+  "dialog-max-width": #{fn.rem(560)},
+  "dialog-icon-color": var(--#{c.$sys-prefix}-sys-color-secondary),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// The dialog surface. Also aliased under Bootstrap's .modal-content.
+@mixin container {
+  @include m.own-box;
+  background-color: #{v("dialog-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("dialog-container-color")};
+  color: #{v("dialog-content-color")};
+  border: none;
+  border-radius: #{v("dialog-shape")};
+  padding: #{v("dialog-padding")};
+  @include m.elevation(3);
+}
+
+// Native <dialog> element behavior on top of the surface.
+@mixin native {
+  @include container;
+  min-inline-size: #{v("dialog-min-width")};
+  max-inline-size: min(
+    #{v("dialog-max-width")},
+    calc(100% - var(--#{c.$prefix}-sys-space-6))
+  );
+  max-block-size: calc(100% - var(--#{c.$prefix}-sys-space-6));
+  margin: auto;
+
+  // The UA's <dialog> layout, restated because the box is owned: closed
+  // dialogs stay hidden, show() renders in flow, showModal() pins to the
+  // viewport.
+  display: block;
+  position: absolute;
+  inset-inline: var(--#{c.$prefix}-sys-space-none);
+  inline-size: fit-content;
+  block-size: fit-content;
+  overflow: auto;
+
+  &:not([open]) {
+    display: none;
+  }
+
+  &:modal {
+    position: fixed;
+    inset: var(--#{c.$prefix}-sys-space-none);
+  }
+
+  &::backdrop {
+    @include backdrop-fill;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition-property: opacity, translate, display, overlay;
+    transition-duration: var(--#{c.$sys-prefix}-sys-motion-duration-medium2);
+    transition-timing-function: var(--#{c.$sys-prefix}-sys-motion-easing-emphasized-decelerate);
+    transition-behavior: allow-discrete;
+
+    &[open] {
+      opacity: var(--#{c.$prefix}-sys-opacity-full);
+      translate: 0 0;
+
+      @starting-style {
+        opacity: var(--#{c.$prefix}-sys-opacity-hidden);
+        translate: 0 var(--#{c.$prefix}-sys-space-3);
+      }
+    }
+  }
+}
+
+// The M3 scrim, reused by Bootstrap's .modal-backdrop and .offcanvas-backdrop.
+@mixin backdrop-fill {
+  background-color: color-mix(
+    in srgb,
+    var(--#{c.$sys-prefix}-sys-color-scrim) var(--#{c.$prefix}-sys-opacity-scrim),
+    transparent
+  );
+}
+
+@mixin title {
+  @include m.own-box;
+  display: block;
+  @include m.typescale("headline-small");
+  color: #{v("dialog-content-color")};
+  margin-block-end: var(--#{c.$prefix}-sys-space-4);
+}
+
+// M3's hero icon: a 24dp icon centred above the headline, in `secondary`.
+@mixin icon {
+  @include m.own-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 100%;
+  block-size: var(--#{c.$prefix}-sys-icon-size);
+  margin-block-end: var(--#{c.$prefix}-sys-space-4);
+  color: #{v("dialog-icon-color")};
+}
+
+// A dialog that leads with an icon centres its headline with it.
+@mixin title-centered {
+  text-align: center;
+}
+
+@mixin content {
+  @include m.own-box;
+  display: block;
+  @include m.typescale("body-medium");
+  color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+}
+
+@mixin actions {
+  @include m.own-box;
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--#{c.$prefix}-sys-space-2);
+  margin-block-start: var(--#{c.$prefix}-sys-space-5);
+}
+
+@mixin fullscreen {
+  inline-size: 100%;
+  block-size: 100%;
+  max-inline-size: 100%;
+  max-block-size: 100%;
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
+}
+
+// Chrome donut: bare-element defaults between root and the content slot,
+// at (0,0,1) so a single consumer class overrides them. Structural rules
+// stay outside @scope (section 7 contract).
+@mixin internals(
+  $root: ".#{c.$prefix}-dialog",
+  $slot: ".#{c.$prefix}-dialog__content"
+) {
+  @scope (#{$root}) to (#{$slot}) {
+    h2,
+    h3 {
+      @include m.typescale("headline-small");
+      color: #{v("dialog-content-color")};
+    }
+
+    p {
+      @include m.typescale("body-medium");
+      color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+    }
+  }
+}
+
+// In-flow variant: renders the dialog surface where it sits in the markup
+// (demos, docs, embedded confirmations). Still needs the open attribute.
+@mixin static-variant {
+  position: static;
+  inline-size: auto;
+  block-size: auto;
+  margin: var(--#{c.$prefix}-sys-space-none);
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-dialog {
+    @include native;
+  }
+
+  .#{$p}-dialog--static {
+    @include static-variant;
+  }
+
+  .#{$p}-dialog__icon {
+    @include icon;
+  }
+
+  .#{$p}-dialog__title {
+    @include title;
+  }
+
+  // Enhancement, standing alone in its selector list: without :has() the
+  // headline keeps its start alignment.
+  .#{$p}-dialog:has(> .#{$p}-dialog__icon) .#{$p}-dialog__title {
+    @include title-centered;
+  }
+
+  .#{$p}-dialog__content {
+    @include content;
+  }
+
+  .#{$p}-dialog__actions {
+    @include actions;
+  }
+
+  .#{$p}-dialog--fullscreen {
+    @include fullscreen;
+  }
+
+  @include internals;
+}

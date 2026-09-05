@@ -1,0 +1,438 @@
+// ============================================================================
+// m3x button -- the canonical component (its variable API table is reproduced
+// in the README; the same pattern holds for every component).
+//
+// PUBLIC VARIABLE API (tier-3 tokens, defined in the tokens layer)
+// ----------------------------------------------------------------------------
+//   The M3 Expressive size ramp, the same five rungs .m3-icon-btn and
+//   .m3-split-button carry. Height / inline padding / icon / label:
+//     .m3-btn--xs       32px  12px  20px  label-large
+//     .m3-btn (default) 40px  16px  20px  label-large
+//     .m3-btn--medium   56px  24px  24px  title-medium
+//     .m3-btn--large    96px  48px  32px  headline-small
+//     .m3-btn--xl      136px  64px  40px  headline-large
+//   --m3-btn-height                   40px   control height; participates in
+//                                            density: calc(h + density*4px)
+//   --m3-btn-height-xs                32px   .m3-btn--xs
+//   --m3-btn-height-medium            56px   .m3-btn--medium
+//   --m3-btn-height-large             96px   .m3-btn--large
+//   --m3-btn-height-xl               136px   .m3-btn--xl
+//   --m3-btn-padding-inline           space-4 (16px)
+//   --m3-btn-padding-inline-xs        space-3 (12px)  .m3-btn--xs
+//   --m3-btn-padding-inline-medium    space-5 (24px)  .m3-btn--medium
+//   --m3-btn-padding-inline-large     space-7 (48px)  .m3-btn--large
+//   --m3-btn-padding-inline-xl        64px            .m3-btn--xl
+//   --m3-btn-icon-gap                 space-2 (8px)
+//   --m3-btn-icon-size                20px
+//   --m3-btn-icon-size-xs             20px            .m3-btn--xs
+//   --m3-btn-icon-size-medium         24px (--m3-sys-icon-size) .m3-btn--medium
+//   --m3-btn-icon-size-large          32px            .m3-btn--large
+//   --m3-btn-icon-size-xl             40px            .m3-btn--xl
+//   --m3-btn-icon-optical-size(-medium/-large/-xl)  20 / 24 / 32 / 40
+//                                            opsz axis of a child .m3-icon
+//   Bootstrap's own ramp keeps Bootstrap's metrics (it is not an M3 ramp):
+//   --m3-btn-height-small             40px   .m3-btn--small (M3's small rung,
+//                                            which is also the default height)
+//   --m3-btn-height-bootstrap-small   32px   .btn-sm
+//   --m3-btn-height-bootstrap-large   48px   .btn-lg
+//   --m3-btn-padding-inline-small     space-4 (16px)
+//   --m3-btn-padding-inline-bootstrap-large  space-6 (32px)
+//   --m3-btn-padding-inline-bootstrap-small  space-4 (16px)
+//   --m3-btn-icon-size-bootstrap-small       icon-size-small (18px)
+//   --m3-btn-icon-size-small          18px            .m3-btn--small
+//   --m3-btn-shape                    corner-full
+//   --m3-btn-shape-square             corner-medium   .m3-btn--square (default,
+//                                                    --xs and --small sizes)
+//   --m3-btn-shape-square-medium      corner-large    .m3-btn--square + --medium
+//   --m3-btn-shape-square-large       corner-extra-large  .m3-btn--square +
+//                                                    --large / --xl
+//   --m3-btn-shape-pressed            corner-small    shape while :active
+//                                                    (xs / small / default)
+//   --m3-btn-shape-pressed-medium     corner-medium   --medium / .btn-lg
+//   --m3-btn-shape-pressed-large      corner-large    --large / --xl
+//   --m3-btn-shape-selected           corner-medium   round toggle selected
+//                                                    (aria-pressed / checked
+//                                                    .m3-btn-check)
+//   --m3-btn-shape-selected-medium    corner-large    --medium / .btn-lg
+//   --m3-btn-shape-selected-large     corner-extra-large  --large / --xl
+//   (a selected .m3-btn--square goes the other way: corner-full)
+//   --m3-btn-outline-width            1px (hairline token)
+//   --m3-btn-container-color          primary        (filled container)
+//   --m3-btn-label-color              on-primary     (filled label)
+//   --m3-btn-tonal-container-color    secondary-container
+//   --m3-btn-tonal-label-color        on-secondary-container
+//   --m3-btn-elevated-container-color surface-container-low
+//   --m3-btn-elevated-label-color     primary
+//   --m3-btn-outlined-label-color     primary
+//   --m3-btn-outlined-outline-color   outline
+//   --m3-btn-text-label-color         primary
+//
+// Retheme every button below any ancestor (including Bootstrap .btn-*):
+//   .brand-cta { --m3-btn-container-color: var(--md-sys-color-tertiary); }
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "btn-height": #{fn.rem(40)},
+  "btn-height-xs": #{fn.rem(32)},
+  "btn-height-medium": #{fn.rem(56)},
+  "btn-height-large": #{fn.rem(96)},
+  "btn-height-xl": #{fn.rem(136)},
+  "btn-height-small": #{fn.rem(40)},
+  "btn-height-bootstrap-small": #{fn.rem(32)},
+  "btn-height-bootstrap-large": #{fn.rem(48)},
+  "btn-padding-inline": var(--#{c.$prefix}-sys-space-4),
+  "btn-padding-inline-xs": var(--#{c.$prefix}-sys-space-3),
+  "btn-padding-inline-medium": var(--#{c.$prefix}-sys-space-5),
+  "btn-padding-inline-large": var(--#{c.$prefix}-sys-space-7),
+  "btn-padding-inline-xl": #{fn.rem(64)},
+  "btn-padding-inline-small": var(--#{c.$prefix}-sys-space-4),
+  "btn-padding-inline-bootstrap-small": var(--#{c.$prefix}-sys-space-4),
+  "btn-padding-inline-bootstrap-large": var(--#{c.$prefix}-sys-space-6),
+  "btn-icon-gap": var(--#{c.$prefix}-sys-space-2),
+  "btn-icon-size": #{fn.rem(20)},
+  "btn-icon-size-xs": #{fn.rem(20)},
+  "btn-icon-size-medium": var(--#{c.$prefix}-sys-icon-size),
+  "btn-icon-size-large": #{fn.rem(32)},
+  "btn-icon-size-xl": #{fn.rem(40)},
+  "btn-icon-size-small": #{fn.rem(20)},
+  "btn-icon-size-bootstrap-small": var(--#{c.$prefix}-sys-icon-size-small),
+  "btn-icon-optical-size": 20,
+  "btn-icon-optical-size-medium": 24,
+  "btn-icon-optical-size-large": 32,
+  "btn-icon-optical-size-xl": 40,
+  "btn-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
+  "btn-shape-square": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "btn-shape-square-medium": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+  "btn-shape-square-large": var(--#{c.$sys-prefix}-sys-shape-corner-extra-large),
+  "btn-shape-pressed": var(--#{c.$sys-prefix}-sys-shape-corner-small),
+  "btn-shape-pressed-medium": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "btn-shape-pressed-large": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+  "btn-shape-selected": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "btn-shape-selected-medium": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+  "btn-shape-selected-large": var(--#{c.$sys-prefix}-sys-shape-corner-extra-large),
+  "btn-outline-width": var(--#{c.$prefix}-sys-stroke-hairline),
+  "btn-container-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "btn-label-color": var(--#{c.$sys-prefix}-sys-color-on-primary),
+  "btn-tonal-container-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
+  "btn-tonal-label-color": var(--#{c.$sys-prefix}-sys-color-on-secondary-container),
+  "btn-elevated-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-low),
+  "btn-elevated-label-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "btn-outlined-label-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "btn-outlined-outline-color": var(--#{c.$sys-prefix}-sys-color-outline),
+  "btn-text-label-color": var(--#{c.$sys-prefix}-sys-color-primary),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// Structure + state machinery shared by every variant (and by Bootstrap's
+// .btn). Variants only re-point the tier-4 private variables.
+@mixin base($check: ".#{c.$prefix}-btn-check") {
+  @include m.own-box;
+  // Default look when no variant class is present: filled.
+  --_container: #{v("btn-container-color")};
+  --_content: #{v("btn-label-color")};
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: #{v("btn-icon-gap")};
+  @include m.control-height(v("btn-height"));
+  @include m.pill-radius(v("btn-height"));
+  padding-inline: #{v("btn-padding-inline")};
+  border: none;
+  border-radius: m.pill(#{v("btn-shape")});
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  text-align: center;
+  text-decoration: none;
+  vertical-align: middle;
+  -webkit-tap-highlight-color: transparent;
+  @include m.typescale("label-large");
+  @include m.state-layer;
+  @include m.focus-ring;
+  @include m.transition(
+    (background-color, color, box-shadow, border-color),
+    $spring-properties: (border-radius),
+    $spring: "fast-spatial"
+  );
+  @include m.forced-colors-border;
+
+  > svg,
+  > img,
+  > .#{c.$prefix}-icon {
+    inline-size: #{v("btn-icon-size")};
+    font-size: #{v("btn-icon-size")};
+    block-size: #{v("btn-icon-size")};
+    --#{c.$prefix}-icon-optical-size: #{v("btn-icon-optical-size")};
+  }
+
+  // M3 Expressive shape morphs: squarer while pressed, squarer still while
+  // selected (toggle buttons). Connected groups override both at (0,3,0).
+  // Every animated radius goes through m.pill() so "full" is a finite,
+  // interpolable half-height (see the mixins).
+  &:active {
+    border-radius: m.pill(#{v("btn-shape-pressed")});
+  }
+  &[aria-pressed="true"],
+  #{$check}:checked + & {
+    --#{c.$prefix}-icon-fill: 1;
+    border-radius: m.pill(#{v("btn-shape-selected")});
+    // The morph above is M3's selection signal. Under a shape family with
+    // nothing left to morph it says nothing, so the emphasis layer carries
+    // it instead -- unset, and a no-op, under M3's own family.
+    @include m.selected-emphasis;
+  }
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled;
+  }
+}
+
+@mixin filled {
+  --_container: #{v("btn-container-color")};
+  --_content: #{v("btn-label-color")};
+
+  // M3: filled buttons lift to level 1 on hover, back to 0 when pressed.
+  @include m.hover {
+    @include m.elevation(1);
+  }
+  &:active {
+    @include m.elevation(0);
+  }
+}
+
+@mixin tonal {
+  --_container: #{v("btn-tonal-container-color")};
+  --_content: #{v("btn-tonal-label-color")};
+
+  @include m.hover {
+    @include m.elevation(1);
+  }
+  &:active {
+    @include m.elevation(0);
+  }
+}
+
+@mixin elevated {
+  --_container: #{v("btn-elevated-container-color")};
+  --_content: #{v("btn-elevated-label-color")};
+  @include m.elevation(1);
+
+  @include m.hover {
+    @include m.elevation(2);
+  }
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled;
+  }
+}
+
+@mixin outlined {
+  --_container: transparent;
+  --_content: #{v("btn-outlined-label-color")};
+  border: #{v("btn-outline-width")} solid
+    #{v("btn-outlined-outline-color")};
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled-bare;
+    border-color: color-mix(
+      in srgb,
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-disabled-container-opacity),
+      transparent
+    );
+  }
+}
+
+@mixin text-variant {
+  --_container: transparent;
+  --_content: #{v("btn-text-label-color")};
+  padding-inline: var(--#{c.$prefix}-sys-space-3);
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled-bare;
+  }
+}
+
+// --- M3 Expressive size ramp ------------------------------------------------
+// Five sizes, the same ramp .m3-icon-btn and .m3-split-button carry:
+//   xs 32 / (default) 40 / medium 56 / large 96 / xl 136
+// Each re-points the tokens base already reads (height, padding, icon size)
+// plus the square-shape token --square reads, so a size and --square compose
+// on one element.
+@mixin xs {
+  --#{c.$prefix}-btn-height: #{v("btn-height-xs")};
+  --#{c.$prefix}-btn-padding-inline: #{v("btn-padding-inline-xs")};
+  --#{c.$prefix}-btn-icon-size: #{v("btn-icon-size-xs")};
+}
+
+@mixin medium {
+  --#{c.$prefix}-btn-height: #{v("btn-height-medium")};
+  --#{c.$prefix}-btn-padding-inline: #{v("btn-padding-inline-medium")};
+  --#{c.$prefix}-btn-icon-size: #{v("btn-icon-size-medium")};
+  --#{c.$prefix}-btn-icon-optical-size: #{v("btn-icon-optical-size-medium")};
+  --#{c.$prefix}-btn-shape-square: #{v("btn-shape-square-medium")};
+  --#{c.$prefix}-btn-shape-pressed: #{v("btn-shape-pressed-medium")};
+  --#{c.$prefix}-btn-shape-selected: #{v("btn-shape-selected-medium")};
+  @include m.typescale("title-medium");
+}
+
+@mixin large {
+  --#{c.$prefix}-btn-height: #{v("btn-height-large")};
+  --#{c.$prefix}-btn-padding-inline: #{v("btn-padding-inline-large")};
+  --#{c.$prefix}-btn-icon-size: #{v("btn-icon-size-large")};
+  --#{c.$prefix}-btn-icon-optical-size: #{v("btn-icon-optical-size-large")};
+  --#{c.$prefix}-btn-shape-square: #{v("btn-shape-square-large")};
+  --#{c.$prefix}-btn-shape-pressed: #{v("btn-shape-pressed-large")};
+  --#{c.$prefix}-btn-shape-selected: #{v("btn-shape-selected-large")};
+  @include m.typescale("headline-small");
+}
+
+@mixin xl {
+  --#{c.$prefix}-btn-height: #{v("btn-height-xl")};
+  --#{c.$prefix}-btn-padding-inline: #{v("btn-padding-inline-xl")};
+  --#{c.$prefix}-btn-icon-size: #{v("btn-icon-size-xl")};
+  --#{c.$prefix}-btn-icon-optical-size: #{v("btn-icon-optical-size-xl")};
+  --#{c.$prefix}-btn-shape-square: #{v("btn-shape-square-large")};
+  --#{c.$prefix}-btn-shape-pressed: #{v("btn-shape-pressed-large")};
+  --#{c.$prefix}-btn-shape-selected: #{v("btn-shape-selected-large")};
+  @include m.typescale("headline-large");
+}
+
+// M3's small rung, 40px. It is the same metrics the base already carries --
+// M3's default button IS the small one -- but the ramp needs a name for that
+// rung or --xs and --small collapse onto one size. Re-points the same tokens
+// the other rungs do, so it composes with --square and survives density.
+@mixin small {
+  --#{c.$prefix}-btn-height: #{v("btn-height-small")};
+  --#{c.$prefix}-btn-padding-inline: #{v("btn-padding-inline-small")};
+  --#{c.$prefix}-btn-icon-size: #{v("btn-icon-size-small")};
+}
+
+// --- Bootstrap parity sizes -------------------------------------------------
+// .btn-sm / .btn-lg are Bootstrap's ramp, not M3's, and keep Bootstrap's
+// metrics so a re-skinned Bootstrap page keeps its layout. .btn-sm sets its
+// height directly rather than re-pointing --m3-btn-height, which keeps the
+// pill radius on the 40px base and matches what stock Bootstrap renders.
+@mixin bootstrap-small {
+  --#{c.$prefix}-btn-icon-size: #{v("btn-icon-size-bootstrap-small")};
+  @include m.control-height(v("btn-height-bootstrap-small"));
+  padding-inline: #{v("btn-padding-inline-bootstrap-small")};
+  @include m.typescale("label-medium");
+}
+
+@mixin bootstrap-large {
+  --#{c.$prefix}-btn-shape-square: #{v("btn-shape-square-medium")};
+  --#{c.$prefix}-btn-shape-pressed: #{v("btn-shape-pressed-medium")};
+  --#{c.$prefix}-btn-shape-selected: #{v("btn-shape-selected-medium")};
+  @include m.control-height(v("btn-height-bootstrap-large"));
+  padding-inline: #{v("btn-padding-inline-bootstrap-large")};
+}
+
+// Square shape (M3 Expressive "square" buttons): the radius follows the
+// size via the --m3-btn-shape-square token the size modifiers re-point.
+@mixin square($check: ".#{c.$prefix}-btn-check") {
+  border-radius: m.pill(#{v("btn-shape-square")});
+
+  // Square toggles morph the other way: round when selected.
+  &[aria-pressed="true"],
+  #{$check}:checked + & {
+    border-radius: m.pill(var(--#{c.$sys-prefix}-sys-shape-corner-full));
+    @include m.selected-emphasis;
+  }
+}
+
+// Connected group (also emitted for Bootstrap's .btn-group): outer corners
+// keep the button shape, inner corners flatten to extra-small.
+@mixin group($item: ".#{c.$prefix}-btn") {
+  @include m.own-box;
+  display: inline-flex;
+  vertical-align: middle;
+
+  > #{$item} {
+    @include m.focus-ring;
+
+    &:not(:first-child) {
+      border-start-start-radius: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
+      border-end-start-radius: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
+      margin-inline-start: var(--#{c.$prefix}-sys-stroke-hairline);
+    }
+
+    &:not(:last-child) {
+      border-start-end-radius: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
+      border-end-end-radius: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
+    }
+  }
+}
+
+@mixin classes {
+  .#{c.$prefix}-btn {
+    @include base;
+  }
+
+  .#{c.$prefix}-btn--filled {
+    @include filled;
+  }
+
+  .#{c.$prefix}-btn--tonal,
+  .#{c.$prefix}-btn--filled-tonal {
+    @include tonal;
+  }
+
+  .#{c.$prefix}-btn--elevated {
+    @include elevated;
+  }
+
+  .#{c.$prefix}-btn--outlined {
+    @include outlined;
+  }
+
+  .#{c.$prefix}-btn--text {
+    @include text-variant;
+  }
+
+  .#{c.$prefix}-btn--small {
+    @include small;
+  }
+
+  .#{c.$prefix}-btn--large {
+    @include large;
+  }
+
+  .#{c.$prefix}-btn--xs {
+    @include xs;
+  }
+
+  .#{c.$prefix}-btn--medium {
+    @include medium;
+  }
+
+  .#{c.$prefix}-btn--xl {
+    @include xl;
+  }
+
+  .#{c.$prefix}-btn--square {
+    @include square;
+  }
+
+  .#{c.$prefix}-btn-group {
+    @include group;
+  }
+}

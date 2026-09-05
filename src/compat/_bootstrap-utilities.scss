@@ -1,0 +1,777 @@
+// ============================================================================
+// m3x Bootstrap utilities API (layer: utilities)
+// The full Bootstrap 5.3 utility set, generated from tokens: spacing, gap,
+// display (incl. print), flex, float, object-fit, order, text alignment
+// (all with responsive breakpoint variants), plus align, opacity, overflow,
+// shadow, focus-ring, position, border, sizing, font, text, color, link,
+// background, interaction, rounded, visibility, and z-index utilities.
+//
+// Differences from Bootstrap, by design of the layer contract:
+//   - no !important: utilities live in the `utilities` layer, so they beat
+//     every library layer but never your own unlayered CSS
+//   - color opacity contracts (--bs-text-opacity etc.) are honored via
+//     color-mix() instead of rgba(var(--bs-*-rgb)) -- same behavior, no rgba
+// ============================================================================
+
+@use "sass:list";
+@use "sass:map";
+@use "../config" as c;
+
+// bootstrap step -> spacing token (0/.25/.5/1/1.5/3rem)
+$-space: (
+  0: var(--#{c.$prefix}-sys-space-none),
+  1: var(--#{c.$prefix}-sys-space-1),
+  2: var(--#{c.$prefix}-sys-space-2),
+  3: var(--#{c.$prefix}-sys-space-4),
+  4: var(--#{c.$prefix}-sys-space-5),
+  5: var(--#{c.$prefix}-sys-space-7),
+);
+
+$-margin-dirs: (
+  "": (margin,),
+  "t": (margin-block-start,),
+  "b": (margin-block-end,),
+  "s": (margin-inline-start,),
+  "e": (margin-inline-end,),
+  "x": (margin-inline,),
+  "y": (margin-block,),
+);
+
+$-padding-dirs: (
+  "": (padding,),
+  "t": (padding-block-start,),
+  "b": (padding-block-end,),
+  "s": (padding-inline-start,),
+  "e": (padding-inline-end,),
+  "x": (padding-inline,),
+  "y": (padding-block,),
+);
+
+$-displays: (
+  "none": none,
+  "inline": inline,
+  "inline-block": inline-block,
+  "block": block,
+  "grid": grid,
+  "inline-grid": inline-grid,
+  "table": table,
+  "table-row": table-row,
+  "table-cell": table-cell,
+  "flex": flex,
+  "inline-flex": inline-flex,
+);
+
+$-theme-colors: ("primary", "secondary", "success", "danger", "warning", "info", "light", "dark");
+
+// Utility scales (definition sites, like token defaults).
+$-opacities: (0: 0, 25: 0.25, 50: 0.5, 75: 0.75, 100: 1);
+$-color-opacities: (10: 0.1, 25: 0.25, 50: 0.5, 75: 0.75, 100: 1);
+$-sizes: (25: 25%, 50: 50%, 75: 75%, 100: 100%, auto: auto);
+$-positions: (0: 0%, 50: 50%, 100: 100%);
+$-radii: (
+  0: var(--#{c.$sys-prefix}-sys-shape-corner-none),
+  1: var(--bs-border-radius-sm),
+  2: var(--bs-border-radius),
+  3: var(--bs-border-radius-lg),
+  4: var(--bs-border-radius-xl),
+  5: var(--bs-border-radius-xxl),
+  circle: 50%,
+  pill: var(--bs-border-radius-pill),
+);
+// Bootstrap's .fs-* contract (RFS: fluid below 1200px, fixed above), so a
+// page renders identically with or without stock bootstrap.css present.
+$-font-sizes: (
+  1: (calc(1.375rem + 1.5vw), 2.5rem),
+  2: (calc(1.325rem + 0.9vw), 2rem),
+  3: (calc(1.3rem + 0.6vw), 1.75rem),
+  4: (calc(1.275rem + 0.3vw), 1.5rem),
+  5: (1.25rem, 1.25rem),
+  6: (1rem, 1rem),
+);
+$-font-weights: (
+  lighter: lighter,
+  light: 300,
+  normal: 400,
+  medium: 500,
+  semibold: 600,
+  bold: 700,
+  bolder: bolder,
+);
+$-line-heights: (1: 1, sm: 1.25, base: 1.5, lg: 2);
+$-z-indices: (n1: -1, 0: 0, 1: 1, 2: 2, 3: 3);
+
+@mixin -media-up($bp) {
+  $w: map.get(c.$grid-breakpoints, $bp);
+  @if $w == 0 {
+    @content;
+  } @else {
+    @media (min-width: #{$w}) {
+      @content;
+    }
+  }
+}
+
+// ----------------------------------------------------------------------------
+// Responsive groups (emitted once per breakpoint tier with an infix).
+// ----------------------------------------------------------------------------
+@mixin -responsive($infix) {
+  @each $name, $value in $-displays {
+    .d#{$infix}-#{$name} {
+      display: #{$value};
+    }
+  }
+
+  .float#{$infix}-start {
+    float: left;
+  }
+  .float#{$infix}-end {
+    float: right;
+  }
+  .float#{$infix}-none {
+    float: none;
+  }
+
+  @each $v in (contain, cover, fill, scale, none) {
+    .object-fit#{$infix}-#{$v} {
+      @if $v == scale {
+        object-fit: scale-down;
+      } @else {
+        object-fit: $v;
+      }
+    }
+  }
+
+  .flex#{$infix}-fill {
+    flex: 1 1 auto;
+  }
+  .flex#{$infix}-row {
+    flex-direction: row;
+  }
+  .flex#{$infix}-column {
+    flex-direction: column;
+  }
+  .flex#{$infix}-row-reverse {
+    flex-direction: row-reverse;
+  }
+  .flex#{$infix}-column-reverse {
+    flex-direction: column-reverse;
+  }
+  .flex#{$infix}-grow-0 {
+    flex-grow: 0;
+  }
+  .flex#{$infix}-grow-1 {
+    flex-grow: 1;
+  }
+  .flex#{$infix}-shrink-0 {
+    flex-shrink: 0;
+  }
+  .flex#{$infix}-shrink-1 {
+    flex-shrink: 1;
+  }
+  .flex#{$infix}-wrap {
+    flex-wrap: wrap;
+  }
+  .flex#{$infix}-nowrap {
+    flex-wrap: nowrap;
+  }
+  .flex#{$infix}-wrap-reverse {
+    flex-wrap: wrap-reverse;
+  }
+
+  @each $name, $value in (start: flex-start, end: flex-end, center: center,
+    between: space-between, around: space-around, evenly: space-evenly)
+  {
+    .justify-content#{$infix}-#{$name} {
+      justify-content: $value;
+    }
+  }
+
+  @each $name, $value in (start: flex-start, end: flex-end, center: center,
+    baseline: baseline, stretch: stretch)
+  {
+    .align-items#{$infix}-#{$name} {
+      align-items: $value;
+    }
+  }
+
+  @each $name, $value in (start: flex-start, end: flex-end, center: center,
+    between: space-between, around: space-around, stretch: stretch)
+  {
+    .align-content#{$infix}-#{$name} {
+      align-content: $value;
+    }
+  }
+
+  @each $name, $value in (auto: auto, start: flex-start, end: flex-end,
+    center: center, baseline: baseline, stretch: stretch)
+  {
+    .align-self#{$infix}-#{$name} {
+      align-self: $value;
+    }
+  }
+
+  .order#{$infix}-first {
+    order: -1;
+  }
+  @for $n from 0 through 5 {
+    .order#{$infix}-#{$n} {
+      order: $n;
+    }
+  }
+  .order#{$infix}-last {
+    order: 6;
+  }
+
+  @each $suffix, $props in $-margin-dirs {
+    @each $step, $token in $-space {
+      .m#{$suffix}#{$infix}-#{$step} {
+        @each $prop in $props {
+          #{$prop}: #{$token};
+        }
+      }
+    }
+    .m#{$suffix}#{$infix}-auto {
+      @each $prop in $props {
+        #{$prop}: auto;
+      }
+    }
+  }
+
+  @each $suffix, $props in $-padding-dirs {
+    @each $step, $token in $-space {
+      .p#{$suffix}#{$infix}-#{$step} {
+        @each $prop in $props {
+          #{$prop}: #{$token};
+        }
+      }
+    }
+  }
+
+  @each $step, $token in $-space {
+    .gap#{$infix}-#{$step} {
+      gap: #{$token};
+    }
+    .row-gap#{$infix}-#{$step} {
+      row-gap: #{$token};
+    }
+    .column-gap#{$infix}-#{$step} {
+      column-gap: #{$token};
+    }
+  }
+
+  .text#{$infix}-start {
+    text-align: start;
+  }
+  .text#{$infix}-end {
+    text-align: end;
+  }
+  .text#{$infix}-center {
+    text-align: center;
+  }
+}
+
+// ----------------------------------------------------------------------------
+// Non-responsive groups.
+// ----------------------------------------------------------------------------
+@mixin -static {
+  // align
+  @each $v in (baseline, top, middle, bottom, text-bottom, text-top) {
+    .align-#{$v} {
+      vertical-align: $v;
+    }
+  }
+
+  // opacity
+  @each $k, $v in $-opacities {
+    .opacity-#{$k} {
+      opacity: $v;
+    }
+  }
+
+  // overflow
+  @each $v in (auto, hidden, visible, scroll) {
+    .overflow-#{$v} {
+      overflow: $v;
+    }
+    .overflow-x-#{$v} {
+      overflow-x: $v;
+    }
+    .overflow-y-#{$v} {
+      overflow-y: $v;
+    }
+  }
+
+  // shadow
+  .shadow {
+    box-shadow: var(--bs-box-shadow);
+  }
+  .shadow-sm {
+    box-shadow: var(--bs-box-shadow-sm);
+  }
+  .shadow-lg {
+    box-shadow: var(--bs-box-shadow-lg);
+  }
+  .shadow-none {
+    box-shadow: none;
+  }
+
+  // focus ring
+  .focus-ring:focus-visible {
+    outline: var(--bs-focus-ring-width) solid var(--bs-focus-ring-color);
+    outline-offset: var(--#{c.$sys-prefix}-sys-state-focus-indicator-offset);
+  }
+  @each $name in $-theme-colors {
+    .focus-ring-#{$name} {
+      --bs-focus-ring-color: color-mix(in srgb, var(--bs-#{$name}) 25%, transparent);
+    }
+  }
+
+  // position
+  @each $v in (static, relative, absolute, fixed, sticky) {
+    .position-#{$v} {
+      position: $v;
+    }
+  }
+  @each $k, $v in $-positions {
+    .top-#{$k} {
+      inset-block-start: $v;
+    }
+    .bottom-#{$k} {
+      inset-block-end: $v;
+    }
+    .start-#{$k} {
+      inset-inline-start: $v;
+    }
+    .end-#{$k} {
+      inset-inline-end: $v;
+    }
+  }
+  .translate-middle {
+    translate: -50% -50%;
+  }
+  .translate-middle-x {
+    translate: -50% 0;
+  }
+  .translate-middle-y {
+    translate: 0 -50%;
+  }
+
+  // border
+  .border {
+    border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+  }
+  .border-0 {
+    border: none;
+  }
+  @each $side, $prop in (top: border-block-start, end: border-inline-end,
+    bottom: border-block-end, start: border-inline-start)
+  {
+    .border-#{$side} {
+      #{$prop}: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+    }
+    .border-#{$side}-0 {
+      #{$prop}: none;
+    }
+  }
+  @each $name in $-theme-colors {
+    .border-#{$name} {
+      --bs-border-opacity: 1;
+      border-color: color-mix(
+        in srgb,
+        var(--bs-#{$name}) calc(var(--bs-border-opacity) * 100%),
+        transparent
+      );
+    }
+    .border-#{$name}-subtle {
+      border-color: var(--bs-#{$name}-border-subtle);
+    }
+  }
+  .border-black {
+    --bs-border-opacity: 1;
+    border-color: color-mix(
+      in srgb,
+      var(--bs-black) calc(var(--bs-border-opacity) * 100%),
+      transparent
+    );
+  }
+  .border-white {
+    --bs-border-opacity: 1;
+    border-color: color-mix(
+      in srgb,
+      var(--bs-white) calc(var(--bs-border-opacity) * 100%),
+      transparent
+    );
+  }
+  @for $n from 1 through 5 {
+    .border-#{$n} {
+      border-width: calc(var(--bs-border-width) * #{$n});
+    }
+  }
+  @each $k, $v in $-color-opacities {
+    .border-opacity-#{$k} {
+      --bs-border-opacity: #{$v};
+    }
+  }
+
+  // sizing
+  @each $k, $v in $-sizes {
+    .w-#{$k} {
+      width: $v;
+    }
+    .h-#{$k} {
+      height: $v;
+    }
+  }
+  .mw-100 {
+    max-width: 100%;
+  }
+  .mh-100 {
+    max-height: 100%;
+  }
+  .vw-100 {
+    width: 100vw;
+  }
+  .vh-100 {
+    height: 100vh;
+  }
+  .min-vw-100 {
+    min-width: 100vw;
+  }
+  .min-vh-100 {
+    min-height: 100vh;
+  }
+
+  // font + text
+  .font-monospace {
+    font-family: var(--bs-font-monospace);
+  }
+  @each $k, $v in $-font-sizes {
+    .fs-#{$k} {
+      font-size: list.nth($v, 1);
+    }
+  }
+  @media (min-width: 1200px) {
+    @each $k, $v in $-font-sizes {
+      .fs-#{$k} {
+        font-size: list.nth($v, 2);
+      }
+    }
+  }
+  .fst-italic {
+    font-style: italic;
+  }
+  .fst-normal {
+    font-style: normal;
+  }
+  @each $k, $v in $-font-weights {
+    .fw-#{$k} {
+      font-weight: $v;
+    }
+  }
+  @each $k, $v in $-line-heights {
+    .lh-#{$k} {
+      line-height: $v;
+    }
+  }
+  .text-decoration-none {
+    text-decoration: none;
+  }
+  .text-decoration-underline {
+    text-decoration: underline;
+  }
+  .text-decoration-line-through {
+    text-decoration: line-through;
+  }
+  .text-lowercase {
+    text-transform: lowercase;
+  }
+  .text-uppercase {
+    text-transform: uppercase;
+  }
+  .text-capitalize {
+    text-transform: capitalize;
+  }
+  .text-wrap {
+    white-space: normal;
+  }
+  .text-nowrap {
+    white-space: nowrap;
+  }
+  .text-break {
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+  .text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // text colors (opacity contract via color-mix)
+  @each $name in $-theme-colors {
+    .text-#{$name} {
+      --bs-text-opacity: 1;
+      color: color-mix(
+        in srgb,
+        var(--bs-#{$name}) calc(var(--bs-text-opacity) * 100%),
+        transparent
+      );
+    }
+    .text-#{$name}-emphasis {
+      color: var(--bs-#{$name}-text-emphasis);
+    }
+  }
+  .text-black {
+    --bs-text-opacity: 1;
+    color: color-mix(
+      in srgb,
+      var(--bs-black) calc(var(--bs-text-opacity) * 100%),
+      transparent
+    );
+  }
+  .text-white {
+    --bs-text-opacity: 1;
+    color: color-mix(
+      in srgb,
+      var(--bs-white) calc(var(--bs-text-opacity) * 100%),
+      transparent
+    );
+  }
+  .text-body {
+    --bs-text-opacity: 1;
+    color: color-mix(
+      in srgb,
+      var(--bs-body-color) calc(var(--bs-text-opacity) * 100%),
+      transparent
+    );
+  }
+  .text-muted,
+  .text-body-secondary {
+    color: var(--bs-secondary-color);
+  }
+  .text-body-tertiary {
+    color: var(--bs-tertiary-color);
+  }
+  .text-body-emphasis {
+    color: var(--bs-emphasis-color);
+  }
+  .text-reset {
+    color: inherit;
+  }
+  @each $k, $v in $-color-opacities {
+    .text-opacity-#{$k} {
+      --bs-text-opacity: #{$v};
+    }
+  }
+
+  // link utilities (5.3)
+  @each $name in $-theme-colors {
+    .link-#{$name} {
+      --bs-link-opacity: 1;
+      color: color-mix(
+        in srgb,
+        var(--bs-#{$name}) calc(var(--bs-link-opacity) * 100%),
+        transparent
+      );
+      text-decoration-color: color-mix(
+        in srgb,
+        var(--bs-#{$name}) calc(var(--bs-link-underline-opacity) * 100%),
+        transparent
+      );
+
+      &:hover,
+      &:focus {
+        color: color-mix(
+          in srgb,
+          var(--#{c.$sys-prefix}-sys-color-on-surface)
+            var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity),
+          var(--bs-#{$name})
+        );
+      }
+    }
+    .link-underline-#{$name} {
+      --bs-link-underline-opacity: 1;
+      text-decoration-color: color-mix(
+        in srgb,
+        var(--bs-#{$name}) calc(var(--bs-link-underline-opacity) * 100%),
+        transparent
+      );
+    }
+  }
+  .link-body-emphasis {
+    --bs-link-opacity: 1;
+    color: color-mix(
+      in srgb,
+      var(--bs-emphasis-color) calc(var(--bs-link-opacity) * 100%),
+      transparent
+    );
+  }
+  @each $k, $v in $-color-opacities {
+    .link-opacity-#{$k} {
+      --bs-link-opacity: #{$v};
+    }
+    .link-opacity-#{$k}-hover:hover {
+      --bs-link-opacity: #{$v};
+    }
+    .link-underline-opacity-#{$k} {
+      --bs-link-underline-opacity: #{$v};
+    }
+    .link-underline-opacity-#{$k}-hover:hover {
+      --bs-link-underline-opacity: #{$v};
+    }
+  }
+  .link-underline {
+    --bs-link-underline-opacity: 1;
+    text-decoration-color: color-mix(
+      in srgb,
+      var(--bs-link-color) calc(var(--bs-link-underline-opacity) * 100%),
+      transparent
+    );
+  }
+  .link-offset-1 {
+    text-underline-offset: var(--#{c.$prefix}-sys-stroke-thick);
+  }
+  .link-offset-2 {
+    text-underline-offset: var(--#{c.$prefix}-sys-space-1);
+  }
+  .link-offset-3 {
+    text-underline-offset: calc(var(--#{c.$prefix}-sys-space-1) + var(--#{c.$prefix}-sys-stroke-thick));
+  }
+
+  // backgrounds (opacity contract via color-mix)
+  @each $name in $-theme-colors {
+    .bg-#{$name} {
+      --bs-bg-opacity: 1;
+      background-color: color-mix(
+        in srgb,
+        var(--bs-#{$name}) calc(var(--bs-bg-opacity) * 100%),
+        transparent
+      );
+    }
+    .bg-#{$name}-subtle {
+      background-color: var(--bs-#{$name}-bg-subtle);
+    }
+  }
+  .bg-black {
+    --bs-bg-opacity: 1;
+    background-color: color-mix(
+      in srgb,
+      var(--bs-black) calc(var(--bs-bg-opacity) * 100%),
+      transparent
+    );
+  }
+  .bg-white {
+    --bs-bg-opacity: 1;
+    background-color: color-mix(
+      in srgb,
+      var(--bs-white) calc(var(--bs-bg-opacity) * 100%),
+      transparent
+    );
+  }
+  .bg-body {
+    --bs-bg-opacity: 1;
+    background-color: color-mix(
+      in srgb,
+      var(--bs-body-bg) calc(var(--bs-bg-opacity) * 100%),
+      transparent
+    );
+  }
+  .bg-body-secondary {
+    background-color: var(--bs-secondary-bg);
+  }
+  .bg-body-tertiary {
+    background-color: var(--bs-tertiary-bg);
+  }
+  .bg-transparent {
+    background-color: transparent;
+  }
+  @each $k, $v in $-color-opacities {
+    .bg-opacity-#{$k} {
+      --bs-bg-opacity: #{$v};
+    }
+  }
+  .bg-gradient {
+    background-image: var(--bs-gradient);
+  }
+
+  // interaction
+  .user-select-all {
+    user-select: all;
+  }
+  .user-select-auto {
+    user-select: auto;
+  }
+  .user-select-none {
+    user-select: none;
+  }
+  .pe-none {
+    pointer-events: none;
+  }
+  .pe-auto {
+    pointer-events: auto;
+  }
+
+  // rounded
+  .rounded {
+    border-radius: var(--bs-border-radius);
+  }
+  @each $k, $v in $-radii {
+    .rounded-#{$k} {
+      border-radius: $v;
+    }
+  }
+  @each $side, $corners in (
+    top: (border-start-start-radius, border-start-end-radius),
+    end: (border-start-end-radius, border-end-end-radius),
+    bottom: (border-end-start-radius, border-end-end-radius),
+    start: (border-start-start-radius, border-end-start-radius)
+  ) {
+    .rounded-#{$side} {
+      @each $corner in $corners {
+        #{$corner}: var(--bs-border-radius);
+      }
+    }
+    @each $k, $v in $-radii {
+      .rounded-#{$side}-#{$k} {
+        @each $corner in $corners {
+          #{$corner}: $v;
+        }
+      }
+    }
+  }
+
+  // visibility + z-index
+  .visible {
+    visibility: visible;
+  }
+  .invisible {
+    visibility: hidden;
+  }
+  @each $k, $v in $-z-indices {
+    .z-#{$k} {
+      z-index: $v;
+    }
+  }
+}
+
+@mixin emit {
+  @each $bp, $w in c.$grid-breakpoints {
+    $infix: "";
+    @if $w != 0 {
+      $infix: "-#{$bp}";
+    }
+    @include -media-up($bp) {
+      @include -responsive($infix);
+    }
+  }
+
+  @include -static;
+
+  @media print {
+    @each $name, $value in $-displays {
+      .d-print-#{$name} {
+        display: #{$value};
+      }
+    }
+  }
+}

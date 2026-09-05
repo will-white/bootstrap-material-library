@@ -1,0 +1,275 @@
+// ============================================================================
+// m3x Bootstrap variable remap (section 9a, layer: bootstrap-compat)
+// Legacy code reading var(--bs-*) silently resolves to M3 system tokens.
+// Sits after the reserved `bootstrap` layer, so these definitions win over a
+// real bootstrap.min.css imported there.
+// ============================================================================
+
+@use "sass:list";
+@use "sass:map";
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../tokens/color-scheme";
+
+// Bootstrap theme-color name -> m3x color role custom property.
+$-theme-map: (
+  "primary": ("--#{c.$sys-prefix}-sys-color-primary", "primary"),
+  "secondary": ("--#{c.$sys-prefix}-sys-color-secondary", "secondary"),
+  "success": ("--#{c.$sys-prefix}-extended-color-success", "success"),
+  "danger": ("--#{c.$sys-prefix}-sys-color-error", "error"),
+  "warning": ("--#{c.$sys-prefix}-extended-color-warning", "warning"),
+  "info": ("--#{c.$sys-prefix}-extended-color-info", "info"),
+  "light": ("--#{c.$sys-prefix}-sys-color-surface-container-low", "surface-container-low"),
+  "dark": ("--#{c.$sys-prefix}-sys-color-inverse-surface", "inverse-surface"),
+);
+
+// Subtle background / border / text-emphasis roles per theme color.
+$-subtle-map: (
+  "primary": (
+    "--#{c.$sys-prefix}-sys-color-primary-container",
+    "--#{c.$sys-prefix}-sys-color-on-primary-container",
+  ),
+  "secondary": (
+    "--#{c.$sys-prefix}-sys-color-secondary-container",
+    "--#{c.$sys-prefix}-sys-color-on-secondary-container",
+  ),
+  "success": (
+    "--#{c.$sys-prefix}-extended-color-success-container",
+    "--#{c.$sys-prefix}-extended-color-on-success-container",
+  ),
+  "danger": (
+    "--#{c.$sys-prefix}-sys-color-error-container",
+    "--#{c.$sys-prefix}-sys-color-on-error-container",
+  ),
+  "warning": (
+    "--#{c.$sys-prefix}-extended-color-warning-container",
+    "--#{c.$sys-prefix}-extended-color-on-warning-container",
+  ),
+  "info": (
+    "--#{c.$sys-prefix}-extended-color-info-container",
+    "--#{c.$sys-prefix}-extended-color-on-info-container",
+  ),
+  "light": (
+    "--#{c.$sys-prefix}-sys-color-surface-container-lowest",
+    "--#{c.$sys-prefix}-sys-color-on-surface-variant",
+  ),
+  "dark": (
+    "--#{c.$sys-prefix}-sys-color-surface-container-highest",
+    "--#{c.$sys-prefix}-sys-color-on-surface",
+  ),
+);
+
+// Extra RGB triplets beyond the 8 theme colors: bs-name -> role.
+$-extra-triplets: (
+  "body-color": "on-surface",
+  "body-bg": "surface",
+  "emphasis-color": "on-surface",
+  "secondary-bg": "surface-container",
+  "tertiary-bg": "surface-container-high",
+);
+
+// --bs-*-rgb triplets cannot be expressed with light-dark(): it returns a
+// <color>, never a raw channel list. This is the ONE place scheme values are
+// duplicated -- build-time R,G,B for both schemes, dark under [data-theme]/
+// [data-bs-theme] and the prefers-color-scheme media block.
+@mixin -triplets($scheme) {
+  @each $name, $def in $-theme-map {
+    --bs-#{$name}-rgb: #{fn.rgb-triplet(
+        color-scheme.role-color(list.nth($def, 2), $scheme)
+      )};
+  }
+  @each $name, $role in $-extra-triplets {
+    --bs-#{$name}-rgb: #{fn.rgb-triplet(color-scheme.role-color($role, $scheme))};
+  }
+}
+
+// Compat dimension tokens (a sanctioned token-definition site, like the
+// component `tokens` mixins): Bootstrap's own var names, so existing
+// per-instance overrides keep working.
+@mixin tokens {
+  // Absolute black/white (the neutral palette's end tones).
+  --bs-black: var(--#{c.$sys-prefix}-ref-palette-neutral0);
+  --bs-white: var(--#{c.$sys-prefix}-ref-palette-neutral100);
+  --bs-black-rgb: 0, 0, 0;
+  --bs-white-rgb: 255, 255, 255;
+  --bs-gradient: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bs-white) 15%, transparent),
+    transparent
+  );
+
+  // Breakpoints + container widths (from $grid-breakpoints /
+  // $container-max-widths; media queries read the Sass values directly).
+  @each $bp, $w in c.$grid-breakpoints {
+    --bs-breakpoint-#{$bp}: #{$w};
+  }
+  @each $bp, $w in c.$container-max-widths {
+    --bs-container-#{$bp}: #{$w};
+  }
+
+  // Grid gutters (the .row/.container/.g-* contract re-points these).
+  --bs-gutter-x: var(--#{c.$prefix}-sys-space-5);
+  --bs-gutter-y: var(--#{c.$prefix}-sys-space-none);
+
+  --bs-modal-width: #{fn.rem(500)};
+  --bs-modal-width-sm: #{fn.rem(300)};
+  --bs-modal-width-lg: #{fn.rem(800)};
+  --bs-modal-width-xl: #{fn.rem(1140)};
+  --bs-offcanvas-height: #{fn.rem(320)};
+  --bs-toast-width: #{fn.rem(350)};
+  --bs-pagination-size: #{fn.rem(40)};
+  --bs-breadcrumb-divider: "/";
+
+  // Progress keeps Bootstrap's own height contract. M3's linear progress is a
+  // 4px indicator, which .m3-progress is; a Bootstrap .progress is a 1rem bar
+  // that can carry a centred label, so re-skinning one must not collapse it to
+  // a hairline. Colour and shape come from M3, the box from Bootstrap.
+  --bs-progress-height: #{fn.rem(16)};
+  --bs-progress-font-size: var(--#{c.$sys-prefix}-sys-typescale-label-small-size);
+  --bs-progress-border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+}
+
+// The colour half of the remap. Every declaration here resolves an M3 role,
+// so it has to be re-emitted wherever a subtree re-points those roles -- a
+// single :root declaration substitutes the role AT :root and freezes there,
+// which left Bootstrap's colour utilities on the page palette inside an
+// island or a forced-contrast subtree while the M3 vocabulary followed.
+// The --bs-*-rgb triplets cannot follow: they are raw channel lists computed
+// at build time, so rgba(var(--bs-primary-rgb), a) stays the page's primary.
+@mixin color-aliases {
+  // Theme colors.
+  @each $name, $def in $-theme-map {
+    --bs-#{$name}: var(#{list.nth($def, 1)});
+  }
+
+  // Subtle backgrounds, borders, and text emphasis (alerts, list groups,
+  // tables lean on these).
+  @each $name, $def in $-subtle-map {
+    --bs-#{$name}-bg-subtle: var(#{list.nth($def, 1)});
+    --bs-#{$name}-text-emphasis: var(#{list.nth($def, 2)});
+    --bs-#{$name}-border-subtle: color-mix(
+      in srgb,
+      var(#{list.nth($def, 2)}) 25%,
+      var(#{list.nth($def, 1)})
+    );
+  }
+
+  // Body + emphasis.
+  --bs-body-bg: var(--#{c.$sys-prefix}-sys-color-surface);
+  --bs-body-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+  --bs-emphasis-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+  --bs-secondary-color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+  --bs-tertiary-color: var(--#{c.$sys-prefix}-sys-color-outline);
+  --bs-secondary-bg: var(--#{c.$sys-prefix}-sys-color-surface-container);
+  --bs-tertiary-bg: var(--#{c.$sys-prefix}-sys-color-surface-container-high);
+
+  // Border and focus-ring colors (their widths are static, below).
+  --bs-border-color: var(--#{c.$sys-prefix}-sys-color-outline-variant);
+  --bs-border-color-translucent: var(--#{c.$sys-prefix}-sys-color-outline-variant);
+  --bs-focus-ring-color: color-mix(
+    in srgb,
+    var(--#{c.$sys-prefix}-sys-color-primary) 25%,
+    transparent
+  );
+
+  // Links, headings, code.
+  --bs-link-color: var(--#{c.$sys-prefix}-sys-color-primary);
+  --bs-link-hover-color: color-mix(
+    in srgb,
+    var(--#{c.$sys-prefix}-sys-color-on-surface)
+      var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity),
+    var(--#{c.$sys-prefix}-sys-color-primary)
+  );
+  --bs-link-color-rgb: var(--bs-primary-rgb);
+  --bs-link-hover-color-rgb: var(--bs-primary-rgb);
+  --bs-heading-color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+  --bs-code-color: var(--#{c.$sys-prefix}-sys-color-tertiary);
+
+  // Progress paint (its box is a dimension token, in -static-aliases).
+  --bs-progress-bg: var(--#{c.$sys-prefix}-sys-color-secondary-container);
+  --bs-progress-bar-color: var(--#{c.$sys-prefix}-sys-color-on-primary);
+  --bs-progress-bar-bg: var(--#{c.$sys-prefix}-sys-color-primary);
+}
+
+// The rest of the remap: type, shape, elevation and stroke widths. Nothing
+// here resolves a color role, so :root is the whole story.
+@mixin -static-aliases {
+  --bs-border-width: var(--#{c.$prefix}-sys-stroke-hairline);
+  --bs-border-style: solid;
+  --bs-focus-ring-width: var(--#{c.$sys-prefix}-sys-state-focus-indicator-thickness);
+
+  --bs-font-monospace: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  --bs-body-font-family: var(--#{c.$sys-prefix}-ref-typeface-plain);
+  --bs-font-sans-serif: var(--#{c.$sys-prefix}-ref-typeface-plain);
+  --bs-body-font-size: var(--#{c.$sys-prefix}-sys-typescale-body-medium-size);
+  --bs-body-font-weight: var(--#{c.$sys-prefix}-sys-typescale-body-medium-weight);
+  --bs-body-line-height: 1.5;
+
+  // Shadows -> elevation tokens.
+  --bs-box-shadow-sm: var(--#{c.$sys-prefix}-sys-elevation-1);
+  --bs-box-shadow: var(--#{c.$sys-prefix}-sys-elevation-2);
+  --bs-box-shadow-lg: var(--#{c.$sys-prefix}-sys-elevation-4);
+  --bs-box-shadow-inset: var(--#{c.$sys-prefix}-sys-elevation-0);
+}
+
+// The radius scale, split out of the static aliases for the same reason the
+// color aliases are split out: a var() is substituted where its DECLARATION
+// applies, so an alias declared only at :root freezes there. Re-pointing a
+// shape slot on a SUBTREE therefore moves the M3 components inside it while
+// .card and .btn keep the root's corners. Re-include this mixin wherever you
+// do that and Bootstrap's scale follows:
+//   .compact-zone { --md-sys-shape-corner-medium: 4px; @include m3.bootstrap-shape-aliases; }
+@mixin shape-aliases {
+  --bs-border-radius-sm: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
+  --bs-border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-small);
+  --bs-border-radius-lg: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
+  --bs-border-radius-xl: var(--#{c.$sys-prefix}-sys-shape-corner-large);
+  --bs-border-radius-xxl: var(--#{c.$sys-prefix}-sys-shape-corner-extra-large);
+  --bs-border-radius-pill: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+}
+
+@mixin remap {
+  :root {
+    @include color-aliases;
+    @include shape-aliases;
+    @include -static-aliases;
+    @include tokens;
+  }
+
+  // Light-scheme triplets.
+  :root {
+    @include -triplets(light);
+  }
+
+  // Dark-scheme triplets (see the header comment for why these duplicate).
+  [data-theme="dark"],
+  [data-bs-theme="dark"] {
+    @include -triplets(dark);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]):not([data-bs-theme="light"]) {
+      @include -triplets(dark);
+    }
+  }
+
+  // Contexts that re-point the M3 roles on a subtree: forced contrast levels
+  // and the token islands. Same declarations, re-resolved where they apply.
+  [data-contrast],
+  .#{c.$prefix}-island--inverse,
+  .#{c.$prefix}-island--primary,
+  .#{c.$prefix}-island--tertiary {
+    @include color-aliases;
+  }
+
+
+  // Bootstrap 5.3's own theme switch keeps working: it simply drives
+  // color-scheme, exactly like [data-theme].
+  [data-bs-theme="light"] {
+    color-scheme: light;
+  }
+  [data-bs-theme="dark"] {
+    color-scheme: dark;
+  }
+}

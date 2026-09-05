@@ -1,0 +1,187 @@
+// ============================================================================
+// m3x Bootstrap grid (layer: bootstrap-compat)
+// Bootstrap 5.3's layout contract -- containers, .row/.col-* flex grid with
+// gutter custom properties, row-cols, offsets, orders, and the CSS-grid
+// opt-in -- driven by the spacing scale and the config breakpoints. With this
+// a Bootstrap codebase needs nothing from bootstrap.css for layout.
+// ============================================================================
+
+@use "sass:list";
+@use "sass:map";
+@use "sass:math";
+@use "../config" as c;
+
+// Gutter steps 0-5 -> spacing tokens (Bootstrap: 0/.25/.5/1/1.5/3rem).
+$-gutters: (
+  0: var(--#{c.$prefix}-sys-space-none),
+  1: var(--#{c.$prefix}-sys-space-1),
+  2: var(--#{c.$prefix}-sys-space-2),
+  3: var(--#{c.$prefix}-sys-space-4),
+  4: var(--#{c.$prefix}-sys-space-5),
+  5: var(--#{c.$prefix}-sys-space-7),
+);
+
+// "" for xs, "-sm" .. "-xxl" for the rest.
+@function -infix($bp) {
+  @if map.get(c.$grid-breakpoints, $bp) == 0 {
+    @return "";
+  }
+  @return "-#{$bp}";
+}
+
+@mixin -media-up($bp) {
+  $w: map.get(c.$grid-breakpoints, $bp);
+  @if $w == 0 {
+    @content;
+  } @else {
+    @media (min-width: #{$w}) {
+      @content;
+    }
+  }
+}
+
+// Column classes for one breakpoint tier.
+@mixin -columns($infix) {
+  .col#{$infix} {
+    flex: 1 0 0%;
+  }
+
+  .row-cols#{$infix}-auto > * {
+    flex: 0 0 auto;
+    width: auto;
+  }
+
+  @for $n from 1 through 6 {
+    .row-cols#{$infix}-#{$n} > * {
+      flex: 0 0 auto;
+      width: math.percentage(math.div(1, $n));
+    }
+  }
+
+  .col#{$infix}-auto {
+    flex: 0 0 auto;
+    width: auto;
+  }
+
+  @for $n from 1 through c.$grid-columns {
+    .col#{$infix}-#{$n} {
+      flex: 0 0 auto;
+      width: math.percentage(math.div($n, c.$grid-columns));
+    }
+  }
+
+  @for $n from 0 through c.$grid-columns - 1 {
+    @if $n != 0 or $infix != "" {
+      .offset#{$infix}-#{$n} {
+        margin-inline-start: math.percentage(math.div($n, c.$grid-columns));
+      }
+    }
+  }
+
+  .order#{$infix}-first {
+    order: -1;
+  }
+
+  @for $n from 0 through 5 {
+    .order#{$infix}-#{$n} {
+      order: $n;
+    }
+  }
+
+  .order#{$infix}-last {
+    order: 6;
+  }
+
+  @each $step, $token in $-gutters {
+    .g#{$infix}-#{$step},
+    .gx#{$infix}-#{$step} {
+      --bs-gutter-x: #{$token};
+    }
+
+    .g#{$infix}-#{$step},
+    .gy#{$infix}-#{$step} {
+      --bs-gutter-y: #{$token};
+    }
+  }
+
+  // CSS-grid opt-in (.grid) column spans/starts.
+  @for $n from 1 through c.$grid-columns {
+    .g-col#{$infix}-#{$n} {
+      grid-column: auto / span #{$n};
+    }
+  }
+
+  @for $n from 1 through c.$grid-columns - 1 {
+    .g-start#{$infix}-#{$n} {
+      grid-column-start: $n;
+    }
+  }
+}
+
+@mixin emit {
+  // --- containers ------------------------------------------------------------
+  $container-selectors: ".container, .container-fluid";
+  @each $bp, $w in c.$container-max-widths {
+    $container-selectors: "#{$container-selectors}, .container-#{$bp}";
+  }
+
+  #{$container-selectors} {
+    --bs-gutter-x: var(--#{c.$prefix}-sys-space-5);
+    --bs-gutter-y: var(--#{c.$prefix}-sys-space-none);
+    inline-size: 100%;
+    padding-inline: calc(var(--bs-gutter-x) * 0.5);
+    margin-inline: auto;
+  }
+
+  // At each breakpoint, .container and every .container-<smaller-or-equal>
+  // adopt that breakpoint's max width (Bootstrap's exact cascade).
+  $seen: ();
+  @each $bp, $max in c.$container-max-widths {
+    $seen: list.append($seen, $bp);
+    $sel: ".container";
+    @each $s in $seen {
+      $sel: "#{$sel}, .container-#{$s}";
+    }
+    @include -media-up($bp) {
+      #{$sel} {
+        max-inline-size: var(--bs-container-#{$bp});
+      }
+    }
+  }
+
+  // --- flex grid ---------------------------------------------------------------
+  .row {
+    --bs-gutter-x: var(--#{c.$prefix}-sys-space-5);
+    --bs-gutter-y: var(--#{c.$prefix}-sys-space-none);
+    display: flex;
+    flex-wrap: wrap;
+    margin-block-start: calc(-1 * var(--bs-gutter-y));
+    margin-inline: calc(-0.5 * var(--bs-gutter-x));
+
+    > * {
+      flex-shrink: 0;
+      width: 100%;
+      max-width: 100%;
+      padding-inline: calc(var(--bs-gutter-x) * 0.5);
+      margin-block-start: var(--bs-gutter-y);
+    }
+  }
+
+  // --- CSS-grid opt-in -----------------------------------------------------------
+  .grid {
+    --bs-rows: 1;
+    --bs-columns: #{c.$grid-columns};
+    --bs-gap: var(--#{c.$prefix}-sys-space-5);
+    display: grid;
+    grid-template-rows: repeat(var(--bs-rows), 1fr);
+    grid-template-columns: repeat(var(--bs-columns), 1fr);
+    gap: var(--bs-gap);
+  }
+
+  // --- column tiers ------------------------------------------------------------
+  @each $bp, $w in c.$grid-breakpoints {
+    @include -media-up($bp) {
+      @include -columns(-infix($bp));
+    }
+  }
+}

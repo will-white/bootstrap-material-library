@@ -1,0 +1,319 @@
+// ============================================================================
+// m3x adaptive layout: window size classes, canonical pane layouts and an
+// adaptive navigation element that renders as a navigation bar, rail or
+// drawer by window width.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-layout-padding             space-4 (16px); space-6 from medium up
+//   --m3-layout-pane-gap            space-6 (24px)  gap between panes
+//   --m3-layout-list-width          360px  list pane of --list-detail
+//   --m3-layout-supporting-width    360px  supporting pane of --supporting-pane
+//   --m3-layout-feed-min            280px  minimum card width of --feed
+//   --m3-pane-container-color       surface-container-low
+//   --m3-pane-content-color         on-surface
+//   --m3-pane-shape                 corner-large
+//   --m3-pane-padding               space-4
+//
+// Window size classes ($window-size-classes, M3 defaults): compact < 600,
+// medium 600-839, expanded 840-1199, large 1200-1599, extra-large >= 1600.
+// They are viewport media queries, as the spec defines them; the dense
+// toolbar shows the container-query pattern for width-aware components.
+//
+// Markup:
+//   <div class="m3-adaptive-layout">
+//     <nav class="m3-adaptive-nav" aria-label="Primary">
+//       <a class="m3-adaptive-nav__item" href="#inbox" aria-current="page">
+//         <span class="m3-adaptive-nav__icon"><svg ...></svg></span>
+//         <span class="m3-adaptive-nav__label">Inbox</span>
+//       </a>
+//     </nav>
+//     <main class="m3-pane-layout m3-pane-layout--list-detail">
+//       <section class="m3-pane">list</section>
+//       <section class="m3-pane">detail</section>
+//     </main>
+//   </div>
+//
+// .m3-adaptive-nav is a bottom navigation bar on compact windows, a rail on
+// medium and expanded, and a standard drawer on large and extra-large; the
+// .m3-adaptive-layout wrapper reserves the space the fixed nav occupies.
+// .m3-only-<class> / .m3-hide-<class> toggle display by size class.
+// ============================================================================
+
+@use "sass:list";
+@use "sass:map";
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+@use "navigation-bar" as nav-bar;
+@use "navigation-rail" as rail;
+@use "navigation-drawer" as drawer;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "layout-padding": var(--#{c.$prefix}-sys-space-4),
+  "layout-pane-gap": var(--#{c.$prefix}-sys-space-6),
+  "layout-list-width": #{fn.rem(360)},
+  "layout-supporting-width": #{fn.rem(360)},
+  "layout-feed-min": #{fn.rem(280)},
+  "pane-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-low),
+  "pane-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "pane-shape": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+  "pane-padding": var(--#{c.$prefix}-sys-space-4),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// --- window size classes ----------------------------------------------------
+
+@function -min($class) {
+  $min: map.get(c.$window-size-classes, $class);
+  @if $min == null {
+    @error "Unknown window size class #{$class}";
+  }
+  @return $min;
+}
+
+// Styles from a size class upward (min-width; universal syntax on purpose).
+@mixin at($class) {
+  $min: -min($class);
+  @if $min == 0 {
+    @content;
+  } @else {
+    @media (min-width: #{$min}) {
+      @content;
+    }
+  }
+}
+
+// Styles within one size class only.
+@mixin only($class) {
+  $keys: map.keys(c.$window-size-classes);
+  $i: list.index($keys, $class);
+  $min: -min($class);
+  $max: null;
+  @if $i < list.length($keys) {
+    $max: -min(list.nth($keys, $i + 1)) - 0.02px;
+  }
+  @if $min == 0 and $max == null {
+    @content;
+  } @else if $min == 0 {
+    @media (max-width: #{$max}) {
+      @content;
+    }
+  } @else if $max == null {
+    @media (min-width: #{$min}) {
+      @content;
+    }
+  } @else {
+    @media (min-width: #{$min}) and (max-width: #{$max}) {
+      @content;
+    }
+  }
+}
+
+// --- pane layouts -----------------------------------------------------------
+
+@mixin pane-layout {
+  @include m.own-box;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: #{v("layout-pane-gap")};
+  // Panes are the layout's surfaces, not cards floating in it: a list beside
+  // a detail (or a row of feed panes) is one band of equal-height containers,
+  // each scrolling its own content. `start` left the shorter one ragged.
+  align-items: stretch;
+  padding: #{v("layout-padding")};
+
+  @include at("medium") {
+    --#{c.$prefix}-layout-padding: var(--#{c.$prefix}-sys-space-6);
+  }
+}
+
+// List-detail: one pane at a time on compact/medium, both from expanded.
+@mixin list-detail {
+  @include at("expanded") {
+    grid-template-columns: #{v("layout-list-width")} minmax(0, 1fr);
+  }
+}
+
+// Supporting pane: main content with a trailing supporting pane from expanded.
+@mixin supporting-pane {
+  @include at("expanded") {
+    grid-template-columns: minmax(0, 1fr) #{v("layout-supporting-width")};
+  }
+}
+
+// Feed: as many equal columns as fit the feed minimum.
+@mixin feed {
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(100%, #{v("layout-feed-min")}), 1fr)
+  );
+}
+
+@mixin pane {
+  @include m.own-box;
+  display: block;
+  min-inline-size: 0;
+  padding: #{v("pane-padding")};
+  border-radius: #{v("pane-shape")};
+  background-color: #{v("pane-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("pane-container-color")};
+  color: #{v("pane-content-color")};
+}
+
+// --- adaptive navigation ----------------------------------------------------
+
+// Page wrapper: leaves room for the fixed navigation of each size class.
+@mixin adaptive-layout {
+  @include m.own-box;
+  display: block;
+  min-block-size: 100vh;
+  min-block-size: 100dvh;
+  padding-block-end: calc(
+    #{nav-bar.v("nav-bar-height")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
+  );
+
+  @include at("medium") {
+    padding-block-end: var(--#{c.$prefix}-sys-space-none);
+    padding-inline-start: #{rail.v("rail-width")};
+  }
+
+  @include at("large") {
+    padding-inline-start: #{drawer.v("drawer-width")};
+  }
+}
+
+@mixin adaptive-nav(
+  $item: ".#{c.$prefix}-adaptive-nav__item",
+  $icon: ".#{c.$prefix}-adaptive-nav__icon",
+  $label: ".#{c.$prefix}-adaptive-nav__label"
+) {
+  // compact: navigation bar pinned to the bottom
+  @include nav-bar.bar;
+  @include nav-bar.fixed;
+
+  #{$item} {
+    @include nav-bar.item($icon);
+  }
+
+  #{$icon} {
+    @include nav-bar.icon;
+  }
+
+  #{$label} {
+    @include m.own-region;
+    display: block;
+  }
+
+  // medium / expanded: navigation rail on the inline-start edge
+  @include at("medium") {
+    @include rail.rail;
+    @include rail.fixed;
+    justify-content: flex-start;
+    inset-block-end: auto;
+    padding-inline: var(--#{c.$prefix}-sys-space-none);
+
+    #{$item} {
+      @include rail.item($icon);
+      flex: 0 0 auto;
+      max-inline-size: none;
+    }
+
+    #{$icon} {
+      @include rail.icon;
+    }
+  }
+
+  // large / extra-large: standard drawer
+  @include at("large") {
+    @include drawer.container;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--#{c.$prefix}-sys-space-none);
+    max-inline-size: none;
+    padding: var(--#{c.$prefix}-sys-space-3);
+
+    #{$item} {
+      @include drawer.item;
+      flex-direction: row;
+      justify-content: flex-start;
+      inline-size: auto;
+      max-inline-size: none;
+      text-align: start;
+
+      @include m.hover {
+        --_state-opacity: var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity);
+      }
+    }
+
+    #{$icon} {
+      --_container: transparent;
+      --_state-opacity: var(--#{c.$sys-prefix}-sys-state-none);
+      inline-size: var(--#{c.$prefix}-sys-icon-size);
+      block-size: var(--#{c.$prefix}-sys-icon-size);
+      border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
+      background-color: transparent;
+      color: inherit;
+    }
+  }
+}
+
+// --- visibility by size class -----------------------------------------------
+
+@mixin visibility {
+  @each $class, $min in c.$window-size-classes {
+    .#{c.$prefix}-hide-#{$class} {
+      @include only($class) {
+        display: none;
+      }
+    }
+    .#{c.$prefix}-only-#{$class} {
+      display: none;
+      @include only($class) {
+        display: revert-layer;
+      }
+    }
+  }
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-pane-layout {
+    @include pane-layout;
+  }
+
+  .#{$p}-pane-layout--list-detail {
+    @include list-detail;
+  }
+
+  .#{$p}-pane-layout--supporting-pane {
+    @include supporting-pane;
+  }
+
+  .#{$p}-pane-layout--feed {
+    @include feed;
+  }
+
+  .#{$p}-pane {
+    @include pane;
+  }
+
+  .#{$p}-adaptive-layout {
+    @include adaptive-layout;
+  }
+
+  .#{$p}-adaptive-nav {
+    @include adaptive-nav;
+  }
+
+  @include visibility;
+}

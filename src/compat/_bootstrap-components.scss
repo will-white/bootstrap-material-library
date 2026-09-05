@@ -1,0 +1,2185 @@
+// ============================================================================
+// m3x Bootstrap component re-skin (section 9b, layer: bootstrap-compat)
+// Every Bootstrap 5.3 component's markup renders in M3 visuals, emitted from
+// the SAME mixins as the .m3-* classes -- aliasing, never duplication. This
+// file consists of mixin includes, token re-points, and the structural CSS
+// Bootstrap's state-class contract requires (.show/.fade/.collapsing/...).
+// Where a Bootstrap component has no M3 equivalent (breadcrumb, pagination,
+// placeholders, accordion, tables), it is styled natively from system tokens.
+//
+// Honors $bootstrap-reskin-scope: when set, everything here is wrapped in
+// @scope (<selector>) so legacy pages migrate region by region.
+// ============================================================================
+
+@use "sass:list";
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+@use "../components/button";
+@use "../components/button-group";
+@use "../components/icon-button";
+@use "../components/badge";
+@use "../components/progress";
+@use "../components/snackbar";
+@use "../components/tooltip";
+@use "../components/card";
+@use "../components/carousel";
+@use "../components/dialog";
+@use "../components/list" as list-component;
+@use "../components/sheet";
+@use "../components/tabs";
+@use "../components/top-app-bar";
+@use "../components/toolbar";
+@use "../components/split-button";
+@use "../components/checkbox";
+@use "../components/radio";
+@use "../components/switch";
+@use "../components/menu";
+@use "../components/slider";
+@use "../components/text-field" as field;
+@use "../components/select";
+
+// Theme-color loops: name -> (color, on-color, container, on-container).
+$-themes: (
+  "primary": (
+    --#{c.$sys-prefix}-sys-color-primary,
+    --#{c.$sys-prefix}-sys-color-on-primary,
+    --#{c.$sys-prefix}-sys-color-primary-container,
+    --#{c.$sys-prefix}-sys-color-on-primary-container,
+  ),
+  "secondary": (
+    --#{c.$sys-prefix}-sys-color-secondary,
+    --#{c.$sys-prefix}-sys-color-on-secondary,
+    --#{c.$sys-prefix}-sys-color-secondary-container,
+    --#{c.$sys-prefix}-sys-color-on-secondary-container,
+  ),
+  "success": (
+    --#{c.$sys-prefix}-extended-color-success,
+    --#{c.$sys-prefix}-extended-color-on-success,
+    --#{c.$sys-prefix}-extended-color-success-container,
+    --#{c.$sys-prefix}-extended-color-on-success-container,
+  ),
+  "danger": (
+    --#{c.$sys-prefix}-sys-color-error,
+    --#{c.$sys-prefix}-sys-color-on-error,
+    --#{c.$sys-prefix}-sys-color-error-container,
+    --#{c.$sys-prefix}-sys-color-on-error-container,
+  ),
+  "warning": (
+    --#{c.$sys-prefix}-extended-color-warning,
+    --#{c.$sys-prefix}-extended-color-on-warning,
+    --#{c.$sys-prefix}-extended-color-warning-container,
+    --#{c.$sys-prefix}-extended-color-on-warning-container,
+  ),
+  "info": (
+    --#{c.$sys-prefix}-extended-color-info,
+    --#{c.$sys-prefix}-extended-color-on-info,
+    --#{c.$sys-prefix}-extended-color-info-container,
+    --#{c.$sys-prefix}-extended-color-on-info-container,
+  ),
+  "light": (
+    --#{c.$sys-prefix}-sys-color-surface-container-low,
+    --#{c.$sys-prefix}-sys-color-on-surface,
+    --#{c.$sys-prefix}-sys-color-surface-container-low,
+    --#{c.$sys-prefix}-sys-color-on-surface,
+  ),
+  "dark": (
+    --#{c.$sys-prefix}-sys-color-inverse-surface,
+    --#{c.$sys-prefix}-sys-color-inverse-on-surface,
+    --#{c.$sys-prefix}-sys-color-inverse-surface,
+    --#{c.$sys-prefix}-sys-color-inverse-on-surface,
+  ),
+);
+
+
+@mixin reskin {
+  @if c.$bootstrap-reskin-scope {
+    @scope (#{c.$bootstrap-reskin-scope}) {
+      @include -rules;
+    }
+  } @else {
+    @include -rules;
+  }
+}
+
+// ----------------------------------------------------------------------------
+
+@mixin -navbar-expand {
+  flex-wrap: nowrap;
+
+  .navbar-nav {
+    @include m.own-box;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .navbar-collapse {
+    @include m.own-box;
+    display: flex;
+    flex-basis: auto;
+  }
+
+  .navbar-toggler {
+    display: none;
+  }
+
+  // An offcanvas inside an expanded navbar renders as a plain in-flow
+  // container (the values stock Bootstrap forces with !important).
+  .offcanvas {
+    position: static;
+    z-index: auto;
+    flex-grow: 1;
+    inline-size: auto;
+    block-size: auto;
+    visibility: visible;
+    background-color: transparent;
+    border: none;
+    transform: none;
+    box-shadow: none;
+    transition: none;
+
+    .offcanvas-header {
+      display: none;
+    }
+
+    .offcanvas-body {
+      display: flex;
+      flex-grow: 0;
+      padding: var(--#{c.$prefix}-sys-space-none);
+      overflow-y: visible;
+    }
+  }
+}
+
+@mixin -rules {
+  // ==========================================================================
+  // Reboot parity for CLASSED elements. The base layer styles unclassed
+  // elements only (so it can never beat a compat component); Bootstrap's
+  // reboot applies to every element. These carry zero specificity and come
+  // first, so every component rule below overrides them -- exactly what
+  // happens with stock bootstrap.css present. Values are Bootstrap's.
+  // ==========================================================================
+  :where(p[class], ul[class], ol[class], dl[class], blockquote[class],
+      figure[class], pre[class], address[class]) {
+    margin-block: var(--#{c.$prefix}-sys-space-none) var(--#{c.$prefix}-sys-space-4);
+  }
+
+  // Bootstrap's reboot is `padding-left: 2rem`. Components that are lists
+  // (.dropdown-menu, .list-group, .nav, .pagination) restate their own inline
+  // padding below, exactly as stock bootstrap.css does -- a longhand here
+  // would otherwise beat the shared `padding: 0` ownership rule, which is a
+  // shorthand in an earlier sub-layer.
+  :where(ul[class], ol[class]) {
+    padding-inline-start: var(--#{c.$prefix}-sys-space-6);
+  }
+
+  :where(h1[class], h2[class], h3[class], h4[class], h5[class], h6[class]) {
+    margin-block: var(--#{c.$prefix}-sys-space-none) var(--#{c.$prefix}-sys-space-2);
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  :where(h1[class]) { font-size: calc(1.375rem + 1.5vw); }
+  :where(h2[class]) { font-size: calc(1.325rem + 0.9vw); }
+  :where(h3[class]) { font-size: calc(1.3rem + 0.6vw); }
+  :where(h4[class]) { font-size: calc(1.275rem + 0.3vw); }
+  :where(h5[class]) { font-size: 1.25rem; }
+  :where(h6[class]) { font-size: 1rem; }
+
+  @media (min-width: 1200px) {
+    :where(h1[class]) { font-size: 2.5rem; }
+    :where(h2[class]) { font-size: 2rem; }
+    :where(h3[class]) { font-size: 1.75rem; }
+    :where(h4[class]) { font-size: 1.5rem; }
+  }
+
+  :where(a[class]) {
+    color: var(--bs-link-color);
+    text-decoration: underline;
+
+    &:hover {
+      color: var(--bs-link-hover-color);
+    }
+  }
+
+  :where(img[class], svg[class]) {
+    vertical-align: middle;
+  }
+
+  :where(mark[class]) {
+    padding: 0.1875em;
+    background-color: var(--bs-highlight-bg);
+  }
+
+  :where(hr[class]) {
+    margin-block: var(--#{c.$prefix}-sys-space-4);
+    color: inherit;
+    border: none;
+    border-block-start: var(--bs-border-width) solid;
+    opacity: 0.25;
+  }
+
+  :where(small[class]) {
+    font-size: 0.875em;
+  }
+
+  :where(label[class]) {
+    display: inline-block;
+  }
+
+  :where(textarea[class]) {
+    resize: vertical;
+  }
+
+  :where(th[class]) {
+    text-align: inherit;
+  }
+
+  // ==========================================================================
+  // Transition contract: .fade / .collapse / .collapsing (Bootstrap JS drives
+  // the class changes; timing re-mapped onto motion tokens).
+  // ==========================================================================
+  .fade {
+    @include m.own-box;
+    @include m.transition((opacity), var(--#{c.$sys-prefix}-sys-motion-duration-short3));
+
+    &:not(.show) {
+      opacity: var(--#{c.$prefix}-sys-opacity-hidden);
+    }
+  }
+
+  .collapse:not(.show) {
+    display: none;
+  }
+
+  .accordion-collapse {
+    @include m.own-box;
+    display: block;
+  }
+
+  .collapsing {
+    @include m.own-box;
+    block-size: var(--#{c.$prefix}-sys-space-none);
+    overflow: hidden;
+    @include m.transition((height), var(--#{c.$sys-prefix}-sys-motion-duration-medium2));
+
+    &.collapse-horizontal {
+      inline-size: var(--#{c.$prefix}-sys-space-none);
+      block-size: auto;
+      @include m.transition((width), var(--#{c.$sys-prefix}-sys-motion-duration-medium2));
+    }
+  }
+
+  // ==========================================================================
+  // Buttons (.btn renders through the same mixins as .m3-btn)
+  // ==========================================================================
+  .btn {
+    @include button.base($check: ".btn-check");
+  }
+
+  .btn-primary {
+    @include button.filled;
+  }
+
+  .btn-secondary {
+    @include button.tonal;
+  }
+
+  @each $name, $def in $-themes {
+    @if $name != "primary" and $name != "secondary" {
+      .btn-#{$name} {
+        @include button.filled;
+        --#{c.$prefix}-btn-container-color: var(#{list.nth($def, 1)});
+        --#{c.$prefix}-btn-label-color: var(#{list.nth($def, 2)});
+      }
+    }
+
+    .btn-outline-#{$name} {
+      @include button.outlined;
+      --#{c.$prefix}-btn-outlined-label-color: var(#{list.nth($def, 1)});
+      --#{c.$prefix}-btn-outlined-outline-color: var(#{list.nth($def, 1)});
+    }
+  }
+
+  .btn-link {
+    @include button.text-variant;
+  }
+
+  .btn-sm {
+    @include button.bootstrap-small;
+  }
+
+  .btn-lg {
+    @include button.bootstrap-large;
+  }
+
+  .btn.active,
+  .btn.show {
+    --_container: #{button.v("btn-tonal-container-color")};
+    --_content: #{button.v("btn-tonal-label-color")};
+  }
+
+  // Horizontal groups render as M3 Expressive connected button groups (2px
+  // seam, small inner corners, selected member primary); vertical groups
+  // keep the stacked layout.
+  .btn-group {
+    @include button-group.base(".btn", ".btn-check");
+    @include button-group.connected(".btn", ".btn-check");
+    position: relative;
+  }
+
+  .btn-group-vertical {
+    @include button.group(".btn");
+    position: relative;
+  }
+
+  .btn-group-vertical {
+    flex-direction: column;
+    align-items: stretch;
+
+    > .btn:not(:first-child) {
+      margin-inline-start: var(--#{c.$prefix}-sys-space-none);
+      margin-block-start: var(--#{c.$prefix}-sys-stroke-hairline);
+    }
+  }
+
+  .btn-group-sm > .btn {
+    @include button.small;
+  }
+
+  .btn-group-lg > .btn {
+    @include button.bootstrap-large;
+  }
+
+  .btn-toolbar {
+    @include m.own-box;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--#{c.$prefix}-sys-space-2);
+  }
+
+  // Bootstrap's split dropdown (.btn + .dropdown-toggle-split inside a
+  // .btn-group) is the M3 split button: the leading half's spec paddings and
+  // seam corners, the trailing half's width, chevron, and open morph
+  // (Bootstrap's JS sets aria-expanded on the toggle).
+  .btn-group > .btn:has(+ .dropdown-toggle-split) {
+    @include split-button.action;
+  }
+
+  .btn-group > .btn.dropdown-toggle-split {
+    @include split-button.toggle;
+    border-start-end-radius: #{button.v("btn-shape")};
+    border-end-end-radius: #{button.v("btn-shape")};
+  }
+
+  // Bootstrap controls inside a dense m3x toolbar: .btn / .btn-group /
+  // .btn-check / .dropdown-toggle compact through the tokens the bar
+  // re-points; .form-select takes the bar's compact select look.
+  .#{c.$prefix}-toolbar--dense select.form-select {
+    @include toolbar.dense-select;
+  }
+
+  // Hidden-input button contract (.btn-check + label.btn): the group's
+  // check mixin (invisible, focus ring and disabled state on the label).
+  .btn-check {
+    @include button-group.check(".btn");
+  }
+
+  // A standalone toggle (outside a group) reads as tonal when checked; inside
+  // a .btn-group the group's selected rule (primary) wins on specificity.
+  .btn-check:checked + .btn,
+  .btn-check:active + .btn {
+    --_container: #{button.v("btn-tonal-container-color")};
+    --_content: #{button.v("btn-tonal-label-color")};
+  }
+
+  // ==========================================================================
+  // Close button
+  // ==========================================================================
+  .btn-close {
+    @include icon-button.base;
+    @include icon-button.standard;
+    @include m.cross-icon(var(--#{c.$prefix}-sys-icon-size-small), var(--#{c.$prefix}-sys-stroke-thick));
+
+    &:disabled {
+      @include m.disabled-bare;
+    }
+  }
+
+  .btn-close-white {
+    --_content: var(--#{c.$sys-prefix}-sys-color-inverse-on-surface);
+  }
+
+  // ==========================================================================
+  // Badges (+ the .text-bg-* pairing utilities badges rely on)
+  // ==========================================================================
+  .badge {
+    @include badge.numbered;
+  }
+
+  @each $name, $def in $-themes {
+    .text-bg-#{$name} {
+      --#{c.$prefix}-badge-container-color: var(#{list.nth($def, 1)});
+      --#{c.$prefix}-badge-label-color: var(#{list.nth($def, 2)});
+      background-color: var(#{list.nth($def, 1)});
+      color: var(#{list.nth($def, 2)});
+    }
+  }
+
+  // ==========================================================================
+  // Alerts (no M3 ancestor: styled natively from container roles)
+  // ==========================================================================
+  .alert {
+    @include m.own-box;
+    display: block;
+    position: relative;
+    padding: var(--#{c.$prefix}-sys-space-4);
+    margin-block-end: var(--#{c.$prefix}-sys-space-4);
+    border: var(--#{c.$prefix}-sys-stroke-hairline) solid transparent;
+    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
+    @include m.typescale("body-medium");
+  }
+
+  @each $name, $def in $-themes {
+    .alert-#{$name} {
+      background-color: var(#{list.nth($def, 3)});
+      color: var(#{list.nth($def, 4)});
+      border-color: color-mix(
+        in srgb,
+        var(#{list.nth($def, 4)}) 25%,
+        var(#{list.nth($def, 3)})
+      );
+    }
+  }
+
+  .alert-heading {
+    @include m.own-box;
+    color: inherit;
+    @include m.typescale("title-medium");
+  }
+
+  .alert-link {
+    @include m.own-box;
+    display: inline;
+    @include m.inherit-text;
+    font-weight: var(--#{c.$sys-prefix}-sys-typescale-label-large-weight);
+    cursor: pointer;
+  }
+
+  .alert-dismissible {
+    @include m.own-box;
+    padding-inline-end: var(--#{c.$prefix}-sys-space-8);
+
+    .btn-close {
+      position: absolute;
+      inset-block-start: var(--#{c.$prefix}-sys-space-2);
+      inset-inline-end: var(--#{c.$prefix}-sys-space-2);
+    }
+  }
+
+  // ==========================================================================
+  // Breadcrumb (no M3 ancestor)
+  // ==========================================================================
+  .breadcrumb {
+    @include m.own-box;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--#{c.$prefix}-sys-space-2);
+    list-style: none;
+    padding: var(--#{c.$prefix}-sys-space-none);
+    margin-block: var(--#{c.$prefix}-sys-space-2);
+    @include m.typescale("label-large");
+    color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+  }
+
+  .breadcrumb-item {
+    @include m.own-box;
+    @include m.inherit-text;
+    display: flex;
+    gap: var(--#{c.$prefix}-sys-space-2);
+
+    // Single-level var() fallback (not a nested pyramid): Bootstrap's public
+    // contract lets consumers change the divider via --bs-breadcrumb-divider.
+    + .breadcrumb-item::before {
+      @include m.own-pseudo;
+      content: var(--bs-breadcrumb-divider, "/");
+      color: var(--#{c.$sys-prefix}-sys-color-outline);
+    }
+
+    &.active {
+      color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+    }
+  }
+
+  // ==========================================================================
+  // Cards
+  // ==========================================================================
+  .card {
+    @include card.container;
+    @include card.outlined;
+  }
+
+  .card-body {
+    @include m.own-box;
+    display: block;
+    padding: #{card.v("card-padding")};
+    flex: 1 1 auto;
+  }
+
+  .card-title {
+    @include m.own-box;
+    display: block;
+    @include m.typescale("title-large");
+    margin-block-end: var(--#{c.$prefix}-sys-space-1);
+  }
+
+  .card-subtitle {
+    @include m.own-box;
+    display: block;
+    @include m.typescale("title-small");
+    color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+    margin-block-end: var(--#{c.$prefix}-sys-space-2);
+  }
+
+  .card-text {
+    @include m.own-box;
+    display: block;
+    @include m.typescale("body-medium");
+    color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+
+    &:last-child {
+      margin-block-end: var(--#{c.$prefix}-sys-space-none);
+    }
+  }
+
+  .card-header {
+    @include m.own-box;
+    display: block;
+    padding: var(--#{c.$prefix}-sys-space-3) #{card.v("card-padding")};
+    background-color: var(--#{c.$sys-prefix}-sys-color-surface-container-low);
+    border-block-end: #{card.v("card-outline-width")} solid
+      #{card.v("card-outline-color")};
+    @include m.typescale("title-medium");
+  }
+
+  .card-footer {
+    @include m.own-box;
+    display: block;
+    padding: var(--#{c.$prefix}-sys-space-3) #{card.v("card-padding")};
+    background-color: var(--#{c.$sys-prefix}-sys-color-surface-container-low);
+    border-block-start: #{card.v("card-outline-width")} solid
+      #{card.v("card-outline-color")};
+  }
+
+  .card-img-top,
+  .card-img {
+    @include m.own-box;
+    display: block;
+    inline-size: 100%;
+    border-start-start-radius: inherit;
+    border-start-end-radius: inherit;
+  }
+
+  .card-img-bottom {
+    @include m.own-box;
+    inline-size: 100%;
+    border-end-start-radius: inherit;
+    border-end-end-radius: inherit;
+  }
+
+  .card-link + .card-link {
+    margin-inline-start: var(--#{c.$prefix}-sys-space-3);
+  }
+
+  @include card.internals(".card", ".card-body");
+
+  // ==========================================================================
+  // Accordion (Bootstrap JS toggles .collapse/.collapsing; visuals here)
+  // ==========================================================================
+  .accordion {
+    @include m.own-box;
+    display: block;
+    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
+  }
+
+  .accordion-item {
+    @include m.own-box;
+    display: block;
+    background-color: var(--#{c.$sys-prefix}-sys-color-surface);
+    border: var(--#{c.$prefix}-sys-stroke-hairline) solid var(--#{c.$sys-prefix}-sys-color-outline-variant);
+
+    &:not(:first-of-type) {
+      border-block-start: none;
+    }
+
+    &:first-of-type {
+      border-start-start-radius: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
+      border-start-end-radius: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
+      overflow: clip;
+    }
+
+    &:last-of-type {
+      border-end-start-radius: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
+      border-end-end-radius: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
+      overflow: clip;
+    }
+  }
+
+  .accordion-header {
+    @include m.own-box;
+    display: block;
+    margin: var(--#{c.$prefix}-sys-space-none);
+  }
+
+  .accordion-button {
+    @include m.own-box;
+    --_container: transparent;
+    --_content: var(--#{c.$sys-prefix}-sys-color-on-surface);
+
+    display: flex;
+    align-items: center;
+    gap: var(--#{c.$prefix}-sys-space-3);
+    inline-size: 100%;
+    padding: var(--#{c.$prefix}-sys-space-4);
+    border: none;
+    text-align: start;
+    cursor: pointer;
+    @include m.typescale("title-medium");
+    @include m.state-layer;
+    @include m.focus-ring;
+    @include m.transition((background-color, color));
+
+    &::after {
+      @include m.own-pseudo;
+      content: "";
+      flex: none;
+      margin-inline-start: auto;
+      @include m.chevron-icon;
+      @include m.spring-transition(rotate, "fast-spatial");
+    }
+
+    &:not(.collapsed) {
+      --_content: var(--#{c.$sys-prefix}-sys-color-primary);
+
+      &::after {
+        rotate: 225deg;
+      }
+    }
+  }
+
+  .accordion-body {
+    @include m.own-box;
+    display: block;
+    padding: var(--#{c.$prefix}-sys-space-4);
+    padding-block-start: var(--#{c.$prefix}-sys-space-none);
+    @include m.typescale("body-medium");
+    color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+  }
+
+  .accordion-flush {
+    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
+
+    .accordion-item {
+      border-inline: none;
+      border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
+    }
+  }
+
+  // ==========================================================================
+  // List group (renders through the list component mixins)
+  // ==========================================================================
+  .list-group {
+    @include m.own-box;
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    margin-block: var(--#{c.$prefix}-sys-space-none);
+    padding-inline: var(--#{c.$prefix}-sys-space-none);
+    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
+  }
+
+  .list-group-item {
+    @include list-component.item;
+    --_container: #{list-component.v("list-container-color")};
+    border: var(--#{c.$prefix}-sys-stroke-hairline) solid var(--#{c.$sys-prefix}-sys-color-outline-variant);
+
+    + .list-group-item {
+      border-block-start: none;
+    }
+
+    &:first-child {
+      border-start-start-radius: inherit;
+      border-start-end-radius: inherit;
+    }
+
+    &:last-child {
+      border-end-start-radius: inherit;
+      border-end-end-radius: inherit;
+    }
+
+    &.disabled,
+    &:disabled {
+      @include m.disabled-bare;
+      --_container: #{list-component.v("list-container-color")};
+    }
+  }
+
+  .list-group-item-action {
+    @include list-component.item-interactive;
+    --_container: #{list-component.v("list-container-color")};
+  }
+
+  .list-group-item.active {
+    @include list-component.item-selected;
+    border-color: var(--#{c.$sys-prefix}-sys-color-outline-variant);
+  }
+
+  .list-group-flush {
+    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
+
+    .list-group-item {
+      border-inline: none;
+      border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
+    }
+  }
+
+  @each $name, $def in $-themes {
+    .list-group-item-#{$name} {
+      --_container: var(#{list.nth($def, 3)});
+      --_content: var(#{list.nth($def, 4)});
+      color: var(#{list.nth($def, 4)});
+    }
+  }
+
+  @include list-component.internals(".list-group-item", ".list-group-item__slot");
+
+  // ==========================================================================
+  // Dropdowns (Bootstrap JS positions the menu; visuals from menu mixins)
+  // ==========================================================================
+  .dropdown,
+  .dropdown-center,
+  .dropup,
+  .dropup-center,
+  .dropend,
+  .dropstart {
+    @include m.own-box;
+    position: relative;
+  }
+
+  .dropdown-menu {
+    @include menu.surface;
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline-start: var(--#{c.$prefix}-sys-space-none);
+    z-index: var(--#{c.$prefix}-sys-z-overlay);
+    display: none;
+    // Stock is `margin: 0` plus the popper spacer; the <ul> reboot above
+    // would otherwise leave a bottom margin on an absolutely positioned menu.
+    margin-block: var(--#{c.$prefix}-sys-space-1) var(--#{c.$prefix}-sys-space-none);
+    list-style: none;
+
+    &.show {
+      display: block;
+    }
+  }
+
+  .dropdown-menu-start {
+    --bs-position: start;
+    inset-inline-start: var(--#{c.$prefix}-sys-space-none);
+    inset-inline-end: auto;
+  }
+
+  .dropdown-menu-end {
+    --bs-position: end;
+    inset-inline-start: auto;
+    inset-inline-end: var(--#{c.$prefix}-sys-space-none);
+  }
+
+  .dropup .dropdown-menu {
+    inset-block-start: auto;
+    inset-block-end: 100%;
+    margin-block-start: var(--#{c.$prefix}-sys-space-none);
+    margin-block-end: var(--#{c.$prefix}-sys-space-1);
+  }
+
+  .dropend .dropdown-menu {
+    inset-block-start: var(--#{c.$prefix}-sys-space-none);
+    inset-inline-start: 100%;
+    margin-block-start: var(--#{c.$prefix}-sys-space-none);
+    margin-inline-start: var(--#{c.$prefix}-sys-space-1);
+  }
+
+  .dropstart .dropdown-menu {
+    inset-block-start: var(--#{c.$prefix}-sys-space-none);
+    inset-inline-start: auto;
+    inset-inline-end: 100%;
+    margin-block-start: var(--#{c.$prefix}-sys-space-none);
+    margin-inline-end: var(--#{c.$prefix}-sys-space-1);
+  }
+
+  .dropdown-item {
+    @include menu.item;
+
+    &.active {
+      --_container: var(--#{c.$sys-prefix}-sys-color-secondary-container);
+      --_content: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
+    }
+  }
+
+  .dropdown-header {
+    @include menu.header;
+  }
+
+  .dropdown-item-text {
+    @include m.own-box;
+    display: block;
+    padding-inline: var(--#{c.$prefix}-sys-space-3);
+    padding-block: var(--#{c.$prefix}-sys-space-2);
+    color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+    @include m.typescale("body-medium");
+  }
+
+  .dropdown-divider {
+    @include m.own-box;
+    display: block;
+    border: none;
+    border-block-start: var(--#{c.$prefix}-sys-stroke-hairline) solid
+      var(--#{c.$sys-prefix}-sys-color-outline-variant);
+    margin-block: var(--#{c.$prefix}-sys-space-2);
+    overflow: hidden;
+  }
+
+  .dropdown-toggle::after {
+    @include m.own-pseudo;
+    content: "";
+    display: inline-block;
+    flex: none;
+    @include m.chevron-icon(calc(var(--#{c.$prefix}-sys-chevron-size) / 2 + var(--#{c.$prefix}-sys-stroke-thick)));
+    margin-inline-start: var(--#{c.$prefix}-sys-space-2);
+    translate: 0 -25%;
+  }
+
+  // ==========================================================================
+  // Navs / tabs / pills (render through the tabs mixins)
+  // ==========================================================================
+  .nav {
+    @include m.own-box;
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    margin-block: var(--#{c.$prefix}-sys-space-none);
+    padding-inline: var(--#{c.$prefix}-sys-space-none);
+  }
+
+  .nav-link {
+    @include m.own-box;
+    display: block;
+    padding: var(--#{c.$prefix}-sys-space-2) var(--#{c.$prefix}-sys-space-4);
+    color: #{tabs.v("tabs-label-color")};
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    @include m.typescale("label-large");
+    @include m.focus-ring;
+    @include m.transition((color, background-color));
+
+    @include m.hover {
+      color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+    }
+
+    &.disabled,
+    &:disabled {
+      @include m.disabled-bare;
+    }
+  }
+
+  .nav-tabs {
+    @include tabs.bar;
+
+    .nav-link {
+      @include tabs.tab;
+    }
+
+    .nav-link.active,
+    .nav-item.show .nav-link {
+      @include tabs.tab-active;
+    }
+  }
+
+  .nav-item {
+    @include m.own-box;
+    display: block;
+  }
+
+  .nav-pills {
+    gap: var(--#{c.$prefix}-sys-space-1);
+
+    .nav-link {
+      @include tabs.pill;
+    }
+
+    .nav-link.active,
+    .show > .nav-link {
+      @include tabs.pill-active;
+    }
+  }
+
+  .nav-fill > .nav-link,
+  .nav-fill .nav-item {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+
+  .nav-justified > .nav-link,
+  .nav-justified .nav-item {
+    flex: 1 1 0;
+    text-align: center;
+  }
+
+  .tab-content > .tab-pane {
+    @include m.own-box;
+    display: none;
+  }
+
+  .tab-content > .active {
+    display: block;
+  }
+
+  // ==========================================================================
+  // Navbar (renders through the top app bar mixins)
+  // ==========================================================================
+  .navbar {
+    @include top-app-bar.bar;
+    block-size: auto;
+    @include m.control-min-height(top-app-bar.v("top-app-bar-height"));
+    flex-wrap: wrap;
+    padding-inline: var(--#{c.$prefix}-sys-space-4);
+  }
+
+  // Bootstrap lays the bar out through its container child.
+  .navbar > .container,
+  .navbar > .container-fluid,
+  .navbar > [class*="container-"] {
+    @include m.own-box;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .navbar-brand {
+    @include top-app-bar.title;
+    flex: none;
+    text-decoration: none;
+    cursor: pointer;
+    color: #{top-app-bar.v("top-app-bar-content-color")};
+  }
+
+  .navbar-nav {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    margin-block: var(--#{c.$prefix}-sys-space-none);
+    padding-inline: var(--#{c.$prefix}-sys-space-none);
+    gap: var(--#{c.$prefix}-sys-space-1);
+
+    .nav-link.active,
+    .nav-link.show {
+      color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+      font-weight: var(--#{c.$sys-prefix}-sys-typescale-label-large-weight);
+    }
+  }
+
+  .navbar-text {
+    @include m.own-box;
+    display: inline-block;
+    padding-block: var(--#{c.$prefix}-sys-space-2);
+    color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+  }
+
+  .navbar-collapse {
+    flex-basis: 100%;
+    flex-grow: 1;
+    align-items: center;
+  }
+
+  .navbar-toggler {
+    @include icon-button.base;
+    @include icon-button.standard;
+  }
+
+  .navbar-toggler-icon {
+    @include m.own-box;
+    color: inherit;
+    display: block;
+    inline-size: var(--#{c.$prefix}-sys-icon-size);
+    block-size: var(--#{c.$prefix}-sys-icon-size);
+    background-image: repeating-linear-gradient(
+      to bottom,
+      currentColor,
+      currentColor var(--#{c.$prefix}-sys-stroke-thick),
+      transparent var(--#{c.$prefix}-sys-stroke-thick),
+      transparent calc(var(--#{c.$prefix}-sys-icon-size) / 3)
+    );
+    background-position: center;
+    background-size: calc(var(--#{c.$prefix}-sys-icon-size) - var(--#{c.$prefix}-sys-space-1))
+      calc(var(--#{c.$prefix}-sys-icon-size) - var(--#{c.$prefix}-sys-space-1) - var(--#{c.$prefix}-sys-stroke-thick));
+    background-repeat: no-repeat;
+  }
+
+  .navbar-expand {
+    @include -navbar-expand;
+  }
+
+  @each $bp, $width in c.$grid-breakpoints {
+    @if $width != 0 {
+      @media (min-width: #{$width}) {
+        .navbar-expand-#{$bp} {
+          @include -navbar-expand;
+        }
+      }
+    }
+  }
+
+  // ==========================================================================
+  // Modal (Bootstrap JS drives .show; surface from the dialog mixins)
+  // ==========================================================================
+  .modal {
+    @include m.own-box;
+    position: fixed;
+    inset: var(--#{c.$prefix}-sys-space-none);
+    z-index: var(--#{c.$prefix}-sys-z-overlay);
+    display: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+    outline: none;
+
+    &.show {
+      display: block;
+    }
+  }
+
+  .modal-dialog {
+    @include m.own-box;
+    position: relative;
+    margin: var(--#{c.$prefix}-sys-space-4) auto;
+    max-inline-size: var(--bs-modal-width);
+    inline-size: calc(100% - var(--#{c.$prefix}-sys-space-4) * 2);
+    pointer-events: none;
+  }
+
+  .modal.fade .modal-dialog {
+    translate: 0 calc(-1 * var(--#{c.$prefix}-sys-space-4));
+    @include m.transition((translate), var(--#{c.$sys-prefix}-sys-motion-duration-medium2),
+      var(--#{c.$sys-prefix}-sys-motion-easing-emphasized-decelerate));
+  }
+
+  .modal.show .modal-dialog {
+    translate: 0 0;
+  }
+
+  .modal-dialog-centered {
+    display: flex;
+    align-items: center;
+    min-block-size: calc(100% - var(--#{c.$prefix}-sys-space-4) * 2);
+  }
+
+  .modal-dialog-scrollable {
+    block-size: calc(100% - var(--#{c.$prefix}-sys-space-4) * 2);
+
+    .modal-content {
+      max-block-size: 100%;
+      overflow: hidden;
+    }
+
+    .modal-body {
+      overflow-y: auto;
+    }
+  }
+
+  .modal-content {
+    @include dialog.container;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    inline-size: 100%;
+    padding: var(--#{c.$prefix}-sys-space-none);
+    pointer-events: auto;
+    outline: none;
+  }
+
+  .modal-header {
+    @include m.own-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--#{c.$prefix}-sys-space-2);
+    padding: #{dialog.v("dialog-padding")};
+    padding-block-end: var(--#{c.$prefix}-sys-space-2);
+  }
+
+  .modal-title {
+    @include dialog.title;
+    margin-block-end: var(--#{c.$prefix}-sys-space-none);
+  }
+
+  .modal-body {
+    @include m.own-box;
+    display: block;
+    @include dialog.content;
+    flex: 1 1 auto;
+    padding: var(--#{c.$prefix}-sys-space-2) #{dialog.v("dialog-padding")};
+  }
+
+  .modal-footer {
+    @include m.own-box;
+    @include dialog.actions;
+    margin-block-start: var(--#{c.$prefix}-sys-space-none);
+    padding: #{dialog.v("dialog-padding")};
+    padding-block-start: var(--#{c.$prefix}-sys-space-2);
+    flex-wrap: wrap;
+  }
+
+  .modal-backdrop {
+    @include m.own-box;
+    position: fixed;
+    inset: var(--#{c.$prefix}-sys-space-none);
+    z-index: calc(var(--#{c.$prefix}-sys-z-overlay) - 1);
+    @include dialog.backdrop-fill;
+
+    &.fade {
+      opacity: var(--#{c.$prefix}-sys-opacity-hidden);
+    }
+
+    &.show {
+      opacity: var(--#{c.$prefix}-sys-opacity-full);
+    }
+  }
+
+  .modal-sm {
+    max-inline-size: var(--bs-modal-width-sm);
+  }
+
+  .modal-lg {
+    max-inline-size: var(--bs-modal-width-lg);
+  }
+
+  .modal-xl {
+    max-inline-size: var(--bs-modal-width-xl);
+  }
+
+  .modal-fullscreen {
+    inline-size: 100%;
+    max-inline-size: none;
+    block-size: 100%;
+    margin: var(--#{c.$prefix}-sys-space-none);
+
+    .modal-content {
+      block-size: 100%;
+      border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
+    }
+  }
+
+  // ==========================================================================
+  // Offcanvas (renders through the sheet mixins; Bootstrap JS drives classes)
+  // ==========================================================================
+  .offcanvas {
+    @include sheet.container;
+    position: fixed;
+    z-index: var(--#{c.$prefix}-sys-z-overlay);
+    display: flex;
+    flex-direction: column;
+    max-inline-size: 100%;
+    visibility: hidden;
+    @include m.transition((translate, visibility),
+      var(--#{c.$sys-prefix}-sys-motion-duration-medium2),
+      var(--#{c.$sys-prefix}-sys-motion-easing-emphasized-decelerate));
+
+    &.showing,
+    &.show:not(.hiding) {
+      translate: 0 0;
+      visibility: visible;
+    }
+
+    &.showing,
+    &.hiding,
+    &.show {
+      visibility: visible;
+    }
+  }
+
+  .offcanvas-start {
+    inset-block: var(--#{c.$prefix}-sys-space-none);
+    inset-inline-start: var(--#{c.$prefix}-sys-space-none);
+    inline-size: #{sheet.v("sheet-side-width")};
+    translate: -100% 0;
+    border-start-end-radius: var(--#{c.$sys-prefix}-sys-shape-corner-large);
+    border-end-end-radius: var(--#{c.$sys-prefix}-sys-shape-corner-large);
+  }
+
+  .offcanvas-end {
+    inset-block: var(--#{c.$prefix}-sys-space-none);
+    inset-inline-end: var(--#{c.$prefix}-sys-space-none);
+    inline-size: #{sheet.v("sheet-side-width")};
+    translate: 100% 0;
+    border-start-start-radius: var(--#{c.$sys-prefix}-sys-shape-corner-large);
+    border-end-start-radius: var(--#{c.$sys-prefix}-sys-shape-corner-large);
+  }
+
+  .offcanvas-top {
+    inset-inline: var(--#{c.$prefix}-sys-space-none);
+    inset-block-start: var(--#{c.$prefix}-sys-space-none);
+    block-size: var(--bs-offcanvas-height);
+    translate: 0 -100%;
+    border-end-start-radius: #{sheet.v("sheet-shape")};
+    border-end-end-radius: #{sheet.v("sheet-shape")};
+  }
+
+  .offcanvas-bottom {
+    inset-inline: var(--#{c.$prefix}-sys-space-none);
+    inset-block-end: var(--#{c.$prefix}-sys-space-none);
+    block-size: var(--bs-offcanvas-height);
+    translate: 0 100%;
+    border-start-start-radius: #{sheet.v("sheet-shape")};
+    border-start-end-radius: #{sheet.v("sheet-shape")};
+  }
+
+  .offcanvas-header {
+    @include m.own-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--#{c.$prefix}-sys-space-2);
+    padding: var(--#{c.$prefix}-sys-space-4);
+    padding-block-end: var(--#{c.$prefix}-sys-space-2);
+  }
+
+  .offcanvas-title {
+    @include m.own-box;
+    display: block;
+    @include m.typescale("title-large");
+    margin-block: var(--#{c.$prefix}-sys-space-none);
+  }
+
+  .offcanvas-body {
+    @include m.own-box;
+    display: block;
+    flex: 1 1 auto;
+    padding: var(--#{c.$prefix}-sys-space-4);
+    padding-block-start: var(--#{c.$prefix}-sys-space-2);
+    overflow-y: auto;
+  }
+
+  .offcanvas-backdrop {
+    @include m.own-box;
+    position: fixed;
+    inset: var(--#{c.$prefix}-sys-space-none);
+    z-index: calc(var(--#{c.$prefix}-sys-z-overlay) - 1);
+    @include dialog.backdrop-fill;
+
+    &.fade {
+      opacity: var(--#{c.$prefix}-sys-opacity-hidden);
+    }
+
+    &.show {
+      opacity: var(--#{c.$prefix}-sys-opacity-full);
+    }
+  }
+
+  // ==========================================================================
+  // Pagination (no M3 ancestor: state-layered circular page links)
+  // ==========================================================================
+  .pagination {
+    @include m.own-box;
+    display: flex;
+    list-style: none;
+    gap: var(--#{c.$prefix}-sys-space-1);
+    padding-inline: var(--#{c.$prefix}-sys-space-none);
+    margin-block: var(--#{c.$prefix}-sys-space-2);
+  }
+
+  .page-link {
+    @include m.own-box;
+    text-align: center;
+    --_container: transparent;
+    --_content: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: var(--bs-pagination-size);
+    block-size: var(--bs-pagination-size);
+    padding-inline: var(--#{c.$prefix}-sys-space-2);
+    border: none;
+    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+    text-decoration: none;
+    cursor: pointer;
+    @include m.typescale("label-large");
+    @include m.state-layer;
+    @include m.focus-ring;
+    @include m.transition((background-color, color));
+  }
+
+  .page-item {
+    @include m.own-box;
+    display: block;
+  }
+
+  .page-item.active .page-link {
+    --_container: var(--#{c.$sys-prefix}-sys-color-primary);
+    --_content: var(--#{c.$sys-prefix}-sys-color-on-primary);
+  }
+
+  .page-item.disabled .page-link {
+    @include m.disabled-bare;
+  }
+
+  // ==========================================================================
+  // Placeholders (skeletons; no M3 ancestor)
+  // ==========================================================================
+  .placeholder {
+    @include m.own-box;
+    display: inline-block;
+    min-block-size: var(--#{c.$sys-prefix}-sys-typescale-body-medium-size);
+    vertical-align: middle;
+    color: inherit;
+    background-color: currentColor;
+    opacity: var(--#{c.$sys-prefix}-sys-state-disabled-content-opacity);
+    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
+    cursor: wait;
+  }
+
+  .placeholder-glow,
+  .placeholder-wave {
+    @include m.own-box;
+    display: inline;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .placeholder-glow .placeholder {
+      animation: #{c.$prefix}-bs-placeholder-glow
+        calc(var(--#{c.$sys-prefix}-sys-motion-duration-extra-long4) * 2)
+        var(--#{c.$sys-prefix}-sys-motion-easing-standard) infinite;
+    }
+
+    .placeholder-wave {
+      mask-image: linear-gradient(
+        130deg,
+        currentColor 55%,
+        color-mix(in srgb, currentColor 80%, transparent) 75%,
+        currentColor 95%
+      );
+      mask-size: 200% 100%;
+      animation: #{c.$prefix}-bs-placeholder-wave
+        calc(var(--#{c.$sys-prefix}-sys-motion-duration-extra-long4) * 2)
+        var(--#{c.$sys-prefix}-sys-motion-easing-linear) infinite;
+    }
+  }
+
+  @keyframes #{c.$prefix}-bs-placeholder-glow {
+    50% {
+      opacity: var(--#{c.$sys-prefix}-sys-state-pressed-state-layer-opacity);
+    }
+  }
+
+  @keyframes #{c.$prefix}-bs-placeholder-wave {
+    to {
+      mask-position: -200% 0%;
+    }
+  }
+
+  // ==========================================================================
+  // Tooltips + popovers (styling the elements Bootstrap JS injects)
+  // ==========================================================================
+  .tooltip {
+    @include m.own-box;
+    z-index: var(--#{c.$prefix}-sys-z-tooltip);
+    opacity: var(--#{c.$prefix}-sys-opacity-hidden);
+    @include m.typescale("body-small");
+
+    &.show {
+      opacity: var(--#{c.$prefix}-sys-opacity-full);
+    }
+
+    .tooltip-arrow {
+      @include m.own-box;
+      display: none;
+    }
+  }
+
+  .tooltip-inner {
+    @include tooltip.plain;
+    display: block;
+  }
+
+  .popover {
+    @include m.own-box;
+    @include tooltip.rich;
+    z-index: var(--#{c.$prefix}-sys-z-tooltip);
+
+    .popover-arrow {
+      @include m.own-box;
+      display: none;
+    }
+  }
+
+  .popover-header {
+    @include tooltip.rich-title;
+  }
+
+  .popover-body {
+    @include m.own-box;
+    display: block;
+    @include m.typescale("body-medium");
+  }
+
+  // ==========================================================================
+  // Progress + spinners (render through the progress mixins)
+  // ==========================================================================
+  // Bootstrap's progress is its own component, not M3's linear indicator: it
+  // is --bs-progress-height tall (1rem) and its bar carries a label. It takes
+  // M3's colours and full rounding, and none of the 4px indicator's anatomy --
+  // no stop indicator, no active-to-track gap, both of which belong to a
+  // hairline track (.m3-progress has them).
+  .progress {
+    @include m.own-box;
+    display: flex;
+    block-size: #{progress.v("progress-bootstrap-height")};
+    overflow: clip;
+    border-radius: #{progress.v("progress-bootstrap-shape")};
+    background-color: #{progress.v("progress-track-color")};
+    @include m.typescale("label-small");
+  }
+
+  .progress-stacked {
+    @include m.own-box;
+    display: flex;
+    block-size: #{progress.v("progress-bootstrap-height")};
+    border-radius: #{progress.v("progress-bootstrap-shape")};
+    overflow: clip;
+
+    // Segments do not round themselves: the stacked container clips the ends.
+    .progress {
+      overflow: visible;
+      border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
+      background-color: transparent;
+    }
+  }
+
+  .progress-bar {
+    @include m.own-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    block-size: 100%;
+    inline-size: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    background-color: #{progress.v("progress-color")};
+    color: #{progress.v("progress-bootstrap-label-color")};
+    @include m.typescale("label-small");
+    @include m.transition((inline-size));
+  }
+
+  .progress-bar-striped {
+    background-image: linear-gradient(
+      45deg,
+      color-mix(in srgb, var(--#{c.$sys-prefix}-sys-color-on-primary) 15%, transparent) 25%,
+      transparent 25%,
+      transparent 50%,
+      color-mix(in srgb, var(--#{c.$sys-prefix}-sys-color-on-primary) 15%, transparent) 50%,
+      color-mix(in srgb, var(--#{c.$sys-prefix}-sys-color-on-primary) 15%, transparent) 75%,
+      transparent 75%
+    );
+    background-size: var(--#{c.$prefix}-sys-space-4) var(--#{c.$prefix}-sys-space-4);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .progress-bar-animated {
+      animation: #{c.$prefix}-bs-progress-stripes
+        var(--#{c.$sys-prefix}-sys-motion-duration-extra-long4)
+        var(--#{c.$sys-prefix}-sys-motion-easing-linear) infinite;
+    }
+  }
+
+  @keyframes #{c.$prefix}-bs-progress-stripes {
+    from {
+      background-position-x: var(--#{c.$prefix}-sys-space-4);
+    }
+  }
+
+  .spinner-border {
+    @include progress.spinner;
+    display: inline-block;
+  }
+
+  .spinner-border-sm {
+    --#{c.$prefix}-progress-circle-size: var(--#{c.$prefix}-sys-space-4);
+    --#{c.$prefix}-progress-circle-thickness: var(--#{c.$prefix}-sys-stroke-thick);
+  }
+
+  .spinner-grow {
+    @include progress.pulse;
+    display: inline-block;
+  }
+
+  .spinner-grow-sm {
+    --#{c.$prefix}-progress-circle-size: var(--#{c.$prefix}-sys-space-4);
+  }
+
+  // ==========================================================================
+  // Toasts (render through the snackbar mixins)
+  // ==========================================================================
+  .toast {
+    @include snackbar.container;
+    display: block;
+    inline-size: var(--bs-toast-width);
+    max-inline-size: 100%;
+    padding-inline: var(--#{c.$prefix}-sys-space-none);
+    pointer-events: auto;
+
+    &:not(.show) {
+      display: none;
+    }
+  }
+
+  .toast-container {
+    @include m.own-box;
+    display: flex;
+    flex-direction: column;
+    gap: var(--#{c.$prefix}-sys-space-3);
+    max-inline-size: 100%;
+    pointer-events: none;
+    position: absolute;
+    z-index: var(--#{c.$prefix}-sys-z-snackbar);
+  }
+
+  .toast-header {
+    @include m.own-box;
+    display: flex;
+    align-items: center;
+    gap: var(--#{c.$prefix}-sys-space-2);
+    padding: var(--#{c.$prefix}-sys-space-2) var(--#{c.$prefix}-sys-space-4);
+    border-block-end: var(--#{c.$prefix}-sys-stroke-hairline) solid
+      color-mix(
+        in srgb,
+        #{snackbar.v("snackbar-content-color")} 20%,
+        transparent
+      );
+    @include m.typescale("title-small");
+    color: #{snackbar.v("snackbar-content-color")};
+
+    .btn-close {
+      margin-inline-start: auto;
+      --_content: #{snackbar.v("snackbar-content-color")};
+    }
+  }
+
+  .toast-body {
+    @include snackbar.text;
+    padding-inline: var(--#{c.$prefix}-sys-space-4);
+  }
+
+  // ==========================================================================
+  // Tables (no M3 ancestor: styled natively from system tokens; striped and
+  // hover rows use the state-layer opacities)
+  // ==========================================================================
+  .table {
+    @include m.own-box;
+    display: table;
+    inline-size: 100%;
+    margin-block-end: var(--#{c.$prefix}-sys-space-4);
+    border-collapse: collapse;
+    color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+    border-color: var(--#{c.$sys-prefix}-sys-color-outline-variant);
+    caption-side: bottom;
+    @include m.typescale("body-medium");
+
+    > :not(caption) > * > * {
+      @include m.own-box;
+      // M3 data-table rows center their cells (the UA inherits this from
+      // <tr>; owning the box means saying so).
+      vertical-align: middle;
+      padding: var(--#{c.$prefix}-sys-space-3) var(--#{c.$prefix}-sys-space-3);
+      border-block-end: var(--#{c.$prefix}-sys-stroke-hairline) solid
+        var(--#{c.$sys-prefix}-sys-color-outline-variant);
+    }
+
+    > thead th {
+      @include m.own-box;
+      @include m.typescale("label-large");
+      color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+      text-align: start;
+    }
+
+    caption {
+      padding-block: var(--#{c.$prefix}-sys-space-2);
+      color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+      text-align: start;
+    }
+  }
+
+  .table-sm > :not(caption) > * > * {
+    padding: var(--#{c.$prefix}-sys-space-1) var(--#{c.$prefix}-sys-space-2);
+  }
+
+  .table-bordered > :not(caption) > * > * {
+    border: var(--#{c.$prefix}-sys-stroke-hairline) solid var(--#{c.$sys-prefix}-sys-color-outline-variant);
+  }
+
+  .table-borderless > :not(caption) > * > * {
+    border-block-end: none;
+  }
+
+  .table-group-divider {
+    border-block-start: var(--#{c.$prefix}-sys-stroke-thick) solid
+      var(--#{c.$sys-prefix}-sys-color-outline-variant);
+  }
+
+  .table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: color-mix(
+      in srgb,
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity),
+      transparent
+    );
+  }
+
+  .table-hover > tbody > tr:hover > * {
+    background-color: color-mix(
+      in srgb,
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-pressed-state-layer-opacity),
+      transparent
+    );
+  }
+
+  @each $name, $def in $-themes {
+    .table-#{$name} {
+      color: var(#{list.nth($def, 4)});
+
+      > :not(caption) > * > * {
+        background-color: var(#{list.nth($def, 3)});
+      }
+    }
+  }
+
+  .table-responsive {
+    @include m.own-box;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  // ==========================================================================
+  // Forms suite (renders through the field/checkbox/radio/switch/slider/
+  // select mixins; validation maps onto the exact :user-invalid treatment)
+  // ==========================================================================
+  .form-label {
+    @include m.own-box;
+    display: block;
+    cursor: default;
+    margin-block-end: var(--#{c.$prefix}-sys-space-1);
+    color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+    @include m.typescale("label-large");
+  }
+
+  .form-text {
+    @include m.own-box;
+    @include field.supporting;
+    padding-inline: var(--#{c.$prefix}-sys-space-none);
+  }
+
+  .form-control {
+    @include field.input-base;
+    @include field.input-filled;
+  }
+
+  textarea.form-control {
+    block-size: auto;
+    min-block-size: calc(
+      #{field.v("field-height")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
+    );
+    resize: vertical;
+
+    @supports (field-sizing: content) {
+      field-sizing: content;
+    }
+  }
+
+  .form-control-plaintext {
+    @include m.own-box;
+    @include field.input-base;
+    background-color: transparent;
+    border: none;
+    padding-inline: var(--#{c.$prefix}-sys-space-none);
+  }
+
+  .form-control-sm {
+    min-block-size: calc(
+      #{field.v("field-height")} + var(--#{c.$prefix}-sys-density) *
+        var(--#{c.$prefix}-sys-density-step) - var(--#{c.$prefix}-sys-space-2)
+    );
+  }
+
+  .form-control-lg {
+    min-block-size: calc(
+      #{field.v("field-height")} + var(--#{c.$prefix}-sys-density) *
+        var(--#{c.$prefix}-sys-density-step) + var(--#{c.$prefix}-sys-space-2)
+    );
+  }
+
+  .form-control[type="file"] {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: pre;
+    cursor: pointer;
+
+    &::file-selector-button {
+      margin-inline-end: var(--#{c.$prefix}-sys-space-3);
+      padding-block: var(--#{c.$prefix}-sys-space-1);
+      padding-inline: var(--#{c.$prefix}-sys-space-3);
+      border: none;
+      border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+      background-color: var(--#{c.$sys-prefix}-sys-color-secondary-container);
+      color: var(--#{c.$sys-prefix}-sys-color-on-secondary-container);
+      @include m.typescale("label-large");
+      cursor: pointer;
+    }
+  }
+
+  .form-control-color {
+    inline-size: var(--#{c.$prefix}-sys-space-7);
+    padding: var(--#{c.$prefix}-sys-space-1);
+    cursor: pointer;
+
+    &::-webkit-color-swatch {
+      border: none;
+      border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
+    }
+
+    &::-moz-color-swatch {
+      border: none;
+      border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-extra-small);
+    }
+  }
+
+  .form-select {
+    @include select.control;
+  }
+
+  .form-select-sm {
+    min-block-size: calc(
+      #{field.v("field-height")} + var(--#{c.$prefix}-sys-density) *
+        var(--#{c.$prefix}-sys-density-step) - var(--#{c.$prefix}-sys-space-2)
+    );
+  }
+
+  .form-select-lg {
+    min-block-size: calc(
+      #{field.v("field-height")} + var(--#{c.$prefix}-sys-density) *
+        var(--#{c.$prefix}-sys-density-step) + var(--#{c.$prefix}-sys-space-2)
+    );
+  }
+
+  .form-check {
+    @include m.own-box;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--#{c.$prefix}-sys-space-2);
+    margin-block: var(--#{c.$prefix}-sys-space-1);
+    min-block-size: var(--#{c.$prefix}-sys-space-5);
+  }
+
+  .form-check-label {
+    @include m.own-box;
+    color: var(--#{c.$sys-prefix}-sys-color-on-surface);
+    @include m.typescale("body-medium");
+    cursor: pointer;
+  }
+
+  .form-check-input[type="checkbox"] {
+    @include checkbox.control;
+  }
+
+  .form-check-input[type="radio"] {
+    @include radio.control;
+  }
+
+  .form-check-inline {
+    display: inline-flex;
+    margin-inline-end: var(--#{c.$prefix}-sys-space-4);
+  }
+
+  .form-check-reverse {
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    text-align: end;
+  }
+
+  // A Bootstrap switch is an input[type="checkbox"], so the checkbox mapping
+  // above matches it too. Source order settles the unchecked rules, but the
+  // checkbox's `:checked::after` tick is one specificity step higher than this
+  // block and would reshape the switch's state layer into a 5x12 rotated
+  // sliver, so the pseudo is re-asserted at that specificity.
+  .form-switch .form-check-input {
+    @include switch.control;
+  }
+
+  .form-switch .form-check-input:checked::after {
+    @include switch.state-layer-pseudo;
+  }
+
+  .form-range {
+    @include slider.control;
+  }
+
+  .input-group {
+    @include m.own-box;
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    inline-size: 100%;
+
+    > .form-control,
+    > .form-select {
+      flex: 1 1 auto;
+      min-inline-size: var(--#{c.$prefix}-sys-space-none);
+    }
+
+    > :not(:first-child) {
+      border-start-start-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
+      border-end-start-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
+    }
+
+    > :not(:last-child) {
+      border-start-end-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
+      border-end-end-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
+    }
+  }
+
+  .input-group-text {
+    @include m.own-box;
+    display: flex;
+    align-items: center;
+    padding-inline: var(--#{c.$prefix}-sys-space-4);
+    background-color: #{field.v("field-container-color")};
+    border-block-end: #{field.v("field-indicator-width")} solid
+      #{field.v("field-indicator-color")};
+    color: var(--#{c.$sys-prefix}-sys-color-on-surface-variant);
+    @include m.typescale("body-large");
+    white-space: nowrap;
+  }
+
+  // Floating labels: Bootstrap's markup (input then label) matches the m3x
+  // field anatomy exactly, so the same label mixins drive it.
+  .form-floating {
+    @include m.own-box;
+    display: block;
+    position: relative;
+
+    > .form-control,
+    > .form-select {
+      padding-block-start: var(--#{c.$prefix}-sys-space-5);
+    }
+
+    > label {
+      @include field.label-resting;
+      z-index: var(--#{c.$prefix}-sys-z-raised);
+    }
+
+    > .form-control:focus + label {
+      @include field.label-float-filled;
+      @include field.label-focused;
+    }
+
+    > .form-control:not(:placeholder-shown) + label {
+      @include field.label-float-filled;
+    }
+
+    > .form-select + label {
+      @include field.label-float-filled;
+    }
+  }
+
+  // Validation: .is-invalid / .is-valid / .was-validated are wired INSIDE the
+  // field mixins (identical rendering to :user-invalid). Here: feedback text
+  // and check/radio/select coloring only. Selector lists never mix
+  // :user-invalid with class selectors (older-browser safety).
+  .invalid-feedback {
+    @include m.own-box;
+    display: none;
+    @include field.supporting;
+    @include field.supporting-invalid;
+    padding-inline: var(--#{c.$prefix}-sys-space-none);
+  }
+
+  .valid-feedback {
+    @include m.own-box;
+    display: none;
+    @include field.supporting;
+    @include field.supporting-valid;
+    padding-inline: var(--#{c.$prefix}-sys-space-none);
+  }
+
+  .is-invalid ~ .invalid-feedback {
+    display: block;
+  }
+
+  :user-invalid ~ .invalid-feedback {
+    display: block;
+  }
+
+  .was-validated :invalid ~ .invalid-feedback {
+    display: block;
+  }
+
+  .is-valid ~ .valid-feedback {
+    display: block;
+  }
+
+  .was-validated :valid ~ .valid-feedback {
+    display: block;
+  }
+
+  .form-check-input.is-invalid {
+    border-color: #{field.v("field-error-color")};
+  }
+
+  .form-check-input:user-invalid {
+    border-color: #{field.v("field-error-color")};
+  }
+
+  .form-check-input:user-invalid ~ .form-check-label {
+    color: #{field.v("field-error-color")};
+  }
+
+  .was-validated .form-check-input:invalid {
+    border-color: #{field.v("field-error-color")};
+  }
+
+  .form-check-input.is-invalid ~ .form-check-label {
+    color: #{field.v("field-error-color")};
+  }
+
+  // ==========================================================================
+  // Carousel (Bootstrap JS drives the sliding; item shape + indicators come
+  // from the carousel component tokens/mixins)
+  // ==========================================================================
+  .carousel {
+    @include m.own-box;
+    display: block;
+    position: relative;
+  }
+
+  .carousel.pointer-event {
+    touch-action: pan-y;
+  }
+
+  .carousel-inner {
+    @include m.own-box;
+    display: block;
+    position: relative;
+    inline-size: 100%;
+    overflow: hidden;
+    border-radius: #{carousel.v("carousel-shape")};
+  }
+
+  .carousel-item {
+    @include m.own-box;
+    position: relative;
+    display: none;
+    float: inline-start;
+    inline-size: 100%;
+    margin-inline-end: -100%;
+    backface-visibility: hidden;
+    @include m.transition((transform), var(--#{c.$sys-prefix}-sys-motion-duration-long2),
+      var(--#{c.$sys-prefix}-sys-motion-easing-emphasized));
+
+    > img {
+      inline-size: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .carousel-item.active,
+  .carousel-item-next,
+  .carousel-item-prev {
+    display: block;
+  }
+
+  .carousel-item-next:not(.carousel-item-start),
+  .active.carousel-item-end {
+    transform: translateX(100%);
+  }
+
+  .carousel-item-prev:not(.carousel-item-end),
+  .active.carousel-item-start {
+    transform: translateX(-100%);
+  }
+
+  .carousel-fade {
+    .carousel-item {
+      opacity: var(--#{c.$prefix}-sys-opacity-hidden);
+      transform: none;
+      @include m.transition((opacity), var(--#{c.$sys-prefix}-sys-motion-duration-long2));
+    }
+
+    .carousel-item.active,
+    .carousel-item-next.carousel-item-start,
+    .carousel-item-prev.carousel-item-end {
+      opacity: var(--#{c.$prefix}-sys-opacity-full);
+    }
+  }
+
+  .carousel-control-prev,
+  .carousel-control-next {
+    @include m.own-box;
+    position: absolute;
+    inset-block: var(--#{c.$prefix}-sys-space-none);
+    z-index: var(--#{c.$prefix}-sys-z-raised);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 15%;
+    border: none;
+    background-color: transparent;
+    color: var(--#{c.$sys-prefix}-sys-color-inverse-on-surface);
+    cursor: pointer;
+    @include m.focus-ring;
+  }
+
+  .carousel-control-prev {
+    inset-inline-start: var(--#{c.$prefix}-sys-space-none);
+  }
+
+  .carousel-control-next {
+    inset-inline-end: var(--#{c.$prefix}-sys-space-none);
+  }
+
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    @include m.own-box;
+    color: inherit;
+    display: inline-block;
+    @include m.chevron-icon(var(--#{c.$prefix}-sys-chevron-size), var(--#{c.$prefix}-sys-stroke-heavy));
+  }
+
+  .carousel-control-prev-icon {
+    rotate: 135deg;
+  }
+
+  .carousel-control-next-icon {
+    rotate: -45deg;
+  }
+
+  .carousel-indicators {
+    @include m.own-box;
+    position: absolute;
+    inset-inline: var(--#{c.$prefix}-sys-space-none);
+    inset-block-end: var(--#{c.$prefix}-sys-space-none);
+    z-index: var(--#{c.$prefix}-sys-z-raised);
+    display: flex;
+    justify-content: center;
+    gap: var(--#{c.$prefix}-sys-space-2);
+    margin-block-end: var(--#{c.$prefix}-sys-space-3);
+    list-style: none;
+    padding: var(--#{c.$prefix}-sys-space-none);
+
+    [data-bs-target] {
+      @include carousel.indicator;
+      display: inline-block;
+
+      &.active {
+        background-color: #{carousel.v("carousel-indicator-active-color")};
+      }
+    }
+  }
+
+  .carousel-caption {
+    @include m.own-box;
+    display: block;
+    position: absolute;
+    inset-inline: 15%;
+    inset-block-end: var(--#{c.$prefix}-sys-space-6);
+    padding: var(--#{c.$prefix}-sys-space-3) var(--#{c.$prefix}-sys-space-4);
+    background-color: var(--#{c.$sys-prefix}-sys-color-inverse-surface);
+    color: var(--#{c.$sys-prefix}-sys-color-inverse-on-surface);
+    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-medium);
+    text-align: center;
+  }
+}
+
+// Literal-valued stock !important declarations, re-emitted with !important
+// for $enable-bootstrap-important-parity (see compat/bootstrap-important).
+// Only what stock forces with a literal: everything else is var(--bs-*)
+// driven and already computes to M3 values through the remap.
+@mixin important-parity {
+  @each $name, $def in $-themes {
+    // .text-bg-*: stock forces #fff / #000 text; M3 uses the role's on-color.
+    // Its background is triplet-driven, so it needs re-emitting too (below).
+    .text-bg-#{$name} {
+      background-color: var(#{list.nth($def, 1)}) !important;
+      color: var(#{list.nth($def, 2)}) !important;
+    }
+
+    // Stock's colour utilities read RGBA(var(--bs-*-rgb)). A raw channel list
+    // cannot be a var() reference, so the triplets are build-time literals
+    // that stay on the page palette inside a token island or a forced
+    // [data-contrast] subtree -- where --bs-#{$name} itself re-resolves and
+    // m3x's own utilities follow. Re-emit the same declarations m3x's
+    // utilities layer makes, with !important, so both agree everywhere.
+    .text-#{$name} {
+      color: color-mix(
+        in srgb,
+        var(--bs-#{$name}) calc(var(--bs-text-opacity, 1) * 100%),
+        transparent
+      ) !important;
+    }
+    .bg-#{$name} {
+      background-color: color-mix(
+        in srgb,
+        var(--bs-#{$name}) calc(var(--bs-bg-opacity, 1) * 100%),
+        transparent
+      ) !important;
+    }
+    .border-#{$name} {
+      border-color: color-mix(
+        in srgb,
+        var(--bs-#{$name}) calc(var(--bs-border-opacity, 1) * 100%),
+        transparent
+      ) !important;
+    }
+    .link-#{$name} {
+      color: color-mix(
+        in srgb,
+        var(--bs-#{$name}) calc(var(--bs-link-opacity, 1) * 100%),
+        transparent
+      ) !important;
+      text-decoration-color: color-mix(
+        in srgb,
+        var(--bs-#{$name}) calc(var(--bs-link-underline-opacity, 1) * 100%),
+        transparent
+      ) !important;
+
+      // Stock hardcodes a shaded hex here, so this one is literal-valued in
+      // every context, island or not.
+      &:hover,
+      &:focus {
+        color: color-mix(
+          in srgb,
+          var(--#{c.$sys-prefix}-sys-color-on-surface)
+            var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity),
+          var(--bs-#{$name})
+        ) !important;
+        text-decoration-color: color-mix(
+          in srgb,
+          var(--#{c.$sys-prefix}-sys-color-on-surface)
+            var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity),
+          var(--bs-#{$name})
+        ) !important;
+      }
+    }
+  }
+}

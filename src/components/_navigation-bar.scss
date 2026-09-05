@@ -1,0 +1,172 @@
+// ============================================================================
+// m3x navigation bar (bottom navigation)
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-nav-bar-height                       80px   bar height; participates
+//                                                    in density
+//   --m3-nav-bar-item-max-width               104px  max inline size of one
+//                                                    destination
+//   --m3-nav-bar-pill-width                   64px   active-indicator pill
+//   --m3-nav-bar-pill-height                  32px   active-indicator pill
+//   --m3-nav-bar-container-color              surface-container
+//   --m3-nav-bar-label-color                  on-surface-variant
+//   --m3-nav-bar-active-label-color           on-surface
+//   --m3-nav-bar-active-icon-container-color  secondary-container
+//   --m3-nav-bar-active-icon-color            on-secondary-container
+//
+// Markup:
+//   <nav class="m3-nav-bar m3-nav-bar--fixed" aria-label="Primary">
+//     <a class="m3-nav-bar__item" href="/" aria-current="page">
+//       <span class="m3-nav-bar__icon"><svg viewBox="0 0 24 24">...</svg></span>
+//       Home
+//     </a>
+//     <a class="m3-nav-bar__item" href="/browse">
+//       <span class="m3-nav-bar__icon"><svg viewBox="0 0 24 24">...</svg></span>
+//       Browse
+//     </a>
+//   </nav>
+//
+// The active destination is marked with aria-current="page" (preferred) or
+// the .active interop class; both render identically.
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "nav-bar-height": #{fn.rem(80)},
+  "nav-bar-item-max-width": #{fn.rem(104)},
+  "nav-bar-pill-width": #{fn.rem(64)},
+  "nav-bar-pill-height": #{fn.rem(32)},
+  "nav-bar-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container),
+  "nav-bar-label-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "nav-bar-active-label-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "nav-bar-active-icon-container-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
+  "nav-bar-active-icon-color": var(--#{c.$sys-prefix}-sys-color-on-secondary-container),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// The bar container.
+@mixin bar {
+  @include m.own-box;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  @include m.control-height(v("nav-bar-height"));
+  padding-inline: var(--#{c.$prefix}-sys-space-2);
+  background-color: #{v("nav-bar-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("nav-bar-container-color")};
+}
+
+// Pinned to the bottom of the viewport.
+@mixin fixed {
+  position: fixed;
+  inset-block-end: var(--#{c.$prefix}-sys-space-none);
+  inset-inline: var(--#{c.$prefix}-sys-space-none);
+  z-index: var(--#{c.$prefix}-sys-z-nav);
+}
+
+// One destination (an <a>). The state layer lives on the child pill and is
+// driven from here, so hovering anywhere on the destination tints the pill.
+@mixin item($icon: ".#{c.$prefix}-nav-bar__icon") {
+  @include m.own-box;
+  text-align: center;
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--#{c.$prefix}-sys-space-1);
+  max-inline-size: #{v("nav-bar-item-max-width")};
+  color: #{v("nav-bar-label-color")};
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  @include m.typescale("label-medium");
+  @include m.focus-ring;
+  @include m.transition((color));
+
+  @media (hover: hover) {
+    &:hover #{$icon} {
+      --_state-opacity: var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity);
+    }
+  }
+
+  &:active #{$icon} {
+    @include m.pressed-opacity;
+  }
+
+  // Active destination: aria-current="page" (preferred) or .active interop.
+  &.active,
+  &[aria-current="page"] {
+    color: #{v("nav-bar-active-label-color")};
+
+    #{$icon} {
+      --#{c.$prefix}-icon-fill: 1;
+      --_container: #{v("nav-bar-active-icon-container-color")};
+      color: #{v("nav-bar-active-icon-color")};
+    }
+  }
+}
+
+// The active-indicator pill around the icon. Carries the state-layer
+// compositing pattern (same color-mix machinery as m.state-layer), but its
+// --_state-opacity is re-pointed by the parent item's states above.
+@mixin icon {
+  @include m.own-box;
+  --_container: transparent;
+  --_content: #{v("nav-bar-label-color")};
+  --_state-color: var(--_content);
+  --_state-opacity: var(--#{c.$sys-prefix}-sys-state-none);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: #{v("nav-bar-pill-width")};
+  block-size: #{v("nav-bar-pill-height")};
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  color: var(--_content);
+  background-color: color-mix(
+    in srgb,
+    var(--_state-color) var(--_state-opacity),
+    var(--_container)
+  );
+  @include m.transition((background-color, color));
+
+  > svg,
+  > img,
+  > .#{c.$prefix}-icon {
+    inline-size: var(--#{c.$prefix}-sys-icon-size);
+    font-size: var(--#{c.$prefix}-sys-icon-size);
+    block-size: var(--#{c.$prefix}-sys-icon-size);
+  }
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-nav-bar {
+    @include bar;
+  }
+
+  .#{$p}-nav-bar--fixed {
+    @include fixed;
+  }
+
+  .#{$p}-nav-bar__item {
+    @include item;
+  }
+
+  .#{$p}-nav-bar__icon {
+    @include icon;
+  }
+}

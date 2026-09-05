@@ -1,0 +1,37 @@
+// ============================================================================
+// m3x state tokens (--md-sys-state-*)
+// M3 state-layer opacities, disabled treatments, and the tokenized focus
+// indicator. Registered as <percentage> so state transitions interpolate
+// with type safety (see README "Theme transitions").
+// ============================================================================
+
+$opacities: (
+  "none": 0%,
+  "hover-state-layer-opacity": 8%,
+  "focus-state-layer-opacity": 10%,
+  "pressed-state-layer-opacity": 10%,
+  "dragged-state-layer-opacity": 16%,
+  "disabled-content-opacity": 38%,
+  "disabled-container-opacity": 12%,
+);
+
+@use "../config";
+
+@mixin properties {
+  @each $name, $value in $opacities {
+    @property --#{config.$sys-prefix}-sys-state-#{$name} {
+      syntax: "<percentage>";
+      inherits: true;
+      initial-value: #{$value};
+    }
+  }
+}
+
+@mixin tokens {
+  @each $name, $value in $opacities {
+    --#{config.$sys-prefix}-sys-state-#{$name}: #{$value};
+  }
+
+  --#{config.$sys-prefix}-sys-state-focus-indicator-thickness: 3px;
+  --#{config.$sys-prefix}-sys-state-focus-indicator-offset: 2px;
+}

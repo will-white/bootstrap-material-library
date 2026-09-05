@@ -1,0 +1,1251 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aurora Mail Settings - m3x demo</title>
+  <link rel="stylesheet" href="../dist/m3x.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=bookmark,favorite,home,notifications,push_pin,send&amp;display=block">
+  <style>
+    /* Demo shell scaffolding only -- everything visual comes from m3x.css. */
+    .demo-shell { display: grid; grid-template-columns: auto 1fr; min-height: 100dvh; }
+    .demo-main { padding: var(--m3-sys-space-5); max-width: 72rem; margin-inline: auto; width: 100%; display: grid; gap: var(--m3-sys-space-6); }
+    .demo-grid { display: grid; gap: var(--m3-sys-space-4); grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); align-items: start; }
+    .demo-row { display: flex; flex-wrap: wrap; gap: var(--m3-sys-space-3); align-items: center; }
+    .demo-pair { display: grid; gap: var(--m3-sys-space-2); }
+    .demo-pair > small { color: var(--md-sys-color-on-surface-variant); }
+    /* Popover menu anchored below its trigger (CSS anchor positioning; elsewhere it opens at its static position). */
+    .demo-popover { position-anchor: --demo-menu; position-area: block-end span-inline-end; inset: auto; margin: var(--m3-sys-space-1) 0 0; }
+    section > h2 { margin-block-end: var(--m3-sys-space-3); }
+    /* Shape-slot demo: rows tagged with the slot their containers sit on. */
+    .demo-slot__row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--m3-sys-space-3); }
+    .demo-slot__tag { flex: 0 0 8rem; color: var(--md-sys-color-on-surface-variant); font-family: ui-monospace, monospace; }
+    .demo-slot__card { inline-size: 8rem; }
+    #slot-css, #family-css { font-family: ui-monospace, monospace; color: var(--md-sys-color-on-surface-variant); }
+    .demo-bar-label { display: inline-flex; align-items: center; gap: var(--m3-sys-space-2); }
+    .demo-bar-select { --m3-field-height: 2.5rem; min-inline-size: 7rem; }
+    @media (max-width: 48rem) { .demo-shell { grid-template-columns: 1fr; } .demo-shell > .m3-rail { display: none; } }
+    /* Demo shell only: the app bar is one nowrap row by design, and this demo
+       puts three theme controls in it. Below the compact size class they wrap
+       onto their own line instead of pushing the page wider than the window. */
+    @media (max-width: 36rem) {
+      .m3-top-app-bar--sticky { flex-wrap: wrap; block-size: auto; padding-block: var(--m3-sys-space-2); row-gap: var(--m3-sys-space-2); }
+      .m3-top-app-bar__title { flex-basis: 100%; }
+      .demo-bar-select { min-inline-size: 0; flex: 1 1 4rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="m3-top-app-bar m3-top-app-bar--sticky">
+  <h1 class="m3-top-app-bar__title m3-title-large">Aurora Mail &mdash; Settings</h1>
+  <a class="m3-btn m3-btn--text" href="catalog.html">Component catalog</a>
+  <label class="m3-body-medium demo-bar-label" for="seed">
+    Seed
+    <input type="color" id="seed" value="#6750a4" style="inline-size: var(--m3-sys-space-6); block-size: var(--m3-sys-space-6); border: none; padding: 0; background: none; cursor: pointer;">
+  </label>
+  <label class="m3-body-medium demo-bar-label" for="theme">
+    Theme
+    <select id="theme" class="m3-select demo-bar-select">
+      <option value="auto" selected>Auto</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+  </label>
+  <label class="m3-body-medium demo-bar-label" for="contrast">
+    Contrast
+    <select id="contrast" class="m3-select demo-bar-select">
+      <option value="" selected>Auto</option>
+      <option value="standard">Standard</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+    </select>
+  </label>
+</header>
+
+<div class="demo-shell">
+
+  <aside class="m3-rail" aria-label="Primary">
+    <a class="m3-rail__item active" href="#account" aria-current="page">
+      <span class="m3-rail__icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6z"/></svg>
+      </span>
+      Account
+    </a>
+    <a class="m3-rail__item" href="#notifications">
+      <span class="m3-rail__icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 22a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2zm6-6V11c0-3-2-5.5-5-6.2V4a1 1 0 1 0-2 0v.8C8 5.5 6 8 6 11v5l-2 2v1h16v-1z"/></svg>
+      </span>
+      Alerts
+    </a>
+    <a class="m3-rail__item" href="#shape">
+      <span class="m3-rail__icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="4"/><rect x="3" y="13" width="8" height="8" rx="2"/><circle cx="17" cy="17" r="4"/></svg>
+      </span>
+      Shape
+    </a>
+    <a class="m3-rail__item" href="#interop">
+      <span class="m3-rail__icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4h7v7H4zm9 0h7v7h-7zm-9 9h7v7H4zm9 0h7v7h-7z"/></svg>
+      </span>
+      Interop
+    </a>
+  </aside>
+
+  <main class="demo-main">
+
+    <!-- ================================================================ -->
+    <section id="account" aria-labelledby="account-h">
+      <h2 id="account-h" class="m3-headline-small">Account</h2>
+      <div class="demo-grid">
+
+        <div class="m3-card m3-card--elevated">
+          <img class="m3-card__media" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 140'%3E%3Crect width='400' height='140' fill='%236750a4'/%3E%3Ccircle cx='330' cy='30' r='60' fill='%23d0bcff' opacity='.6'/%3E%3Ccircle cx='60' cy='120' r='45' fill='%23efb8c8' opacity='.5'/%3E%3C/svg%3E" style="block-size: 8rem; object-fit: cover;">
+          <div class="m3-card__slot">
+            <h3>Riley Chen</h3>
+            <p>riley@auroramail.app &middot; Free plan &middot; 4.2 GB of 15 GB used</p>
+            <div class="m3-progress" role="progressbar" aria-label="Storage used" aria-valuenow="28" aria-valuemin="0" aria-valuemax="100" style="--m3-progress-value: 28;">
+              <div class="m3-progress__bar"></div>
+            </div>
+          </div>
+          <div class="m3-card__actions">
+            <button class="m3-btn m3-btn--text">Manage storage</button>
+            <button class="m3-btn m3-btn--tonal">Upgrade</button>
+          </div>
+        </div>
+
+        <form class="m3-card m3-card--outlined" novalidate>
+          <div class="m3-card__slot" style="display: grid; gap: var(--m3-sys-space-4);">
+            <h3>Profile</h3>
+            <label class="m3-field m3-field--filled">
+              <input class="m3-field__input" type="text" placeholder=" " value="Riley Chen">
+              <span class="m3-field__label">Display name</span>
+              <span class="m3-field__supporting">Shown on outgoing mail</span>
+            </label>
+            <label class="m3-field m3-field--outlined">
+              <input class="m3-field__input" type="email" placeholder=" " required>
+              <span class="m3-field__label">Recovery email</span>
+              <span class="m3-field__supporting">Required. Type then clear it to see :user-invalid.</span>
+            </label>
+            <label class="m3-field m3-field--outlined m3-field--leading-icon m3-field--trailing-icon">
+              <input class="m3-field__input" type="url" placeholder=" " value="riley.dev">
+              <span class="m3-field__label">Website</span>
+              <span class="m3-field__leading"><span class="m3-icon">link</span></span>
+              <span class="m3-field__trailing"><button class="m3-icon-btn" type="reset" aria-label="Clear website"><span class="m3-icon">close</span></button></span>
+              <span class="m3-field__supporting">Leading and trailing icon slots</span>
+            </label>
+            <label class="m3-field m3-field--outlined">
+              <textarea class="m3-field__input" placeholder=" " rows="2" maxlength="120"></textarea>
+              <span class="m3-field__label">Signature</span>
+              <span class="m3-field__supporting">Appended to every message</span>
+              <span class="m3-field__counter">0/120</span>
+            </label>
+            <label class="m3-field">
+              <select class="m3-select" aria-label="Reply behavior">
+                <option selected>Reply</option>
+                <option>Reply all</option>
+                <option>Forward</option>
+              </select>
+              <span class="m3-field__supporting">Default reply behavior</span>
+            </label>
+            <input class="m3-datetime" type="date" aria-label="Vacation responder start" value="2026-09-01">
+          </div>
+          <div class="m3-card__actions">
+            <button class="m3-btn m3-btn--text" type="reset">Discard</button>
+            <button class="m3-btn m3-btn--filled" type="submit">Save</button>
+          </div>
+        </form>
+
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <section id="notifications" aria-labelledby="notif-h">
+      <h2 id="notif-h" class="m3-headline-small">Notifications &amp; density</h2>
+      <div class="demo-grid">
+
+        <div class="m3-card m3-card--filled">
+          <ul class="m3-list m3-list--dividers m3-list--inset" style="background: none;">
+            <li class="m3-list__subheader">Alerts</li>
+            <li class="m3-list-item">
+              <span class="m3-list-item__leading m3-list-item__leading--avatar" aria-hidden="true">N</span>
+              <span class="m3-list-item__body">
+                <span class="m3-list-item__headline">New mail</span>
+                <span class="m3-list-item__supporting">Banner and sound</span>
+              </span>
+              <span class="m3-list-item__trailing">
+                <input type="checkbox" role="switch" class="m3-switch" checked aria-label="New mail notifications">
+              </span>
+            </li>
+            <li class="m3-list-item m3-list-item--two-line">
+              <span class="m3-list-item__leading m3-list-item__leading--avatar" aria-hidden="true">C</span>
+              <span class="m3-list-item__body">
+                <span class="m3-list-item__overline">Shared calendars</span>
+                <span class="m3-list-item__headline">Calendar invites</span>
+                <span class="m3-list-item__supporting">Badge only</span>
+              </span>
+              <span class="m3-list-item__trailing">
+                <input type="checkbox" role="switch" class="m3-switch" aria-label="Calendar invite notifications">
+              </span>
+            </li>
+            <li class="m3-list-item">
+              <span class="m3-list-item__body">
+                <span class="m3-list-item__headline">Digest frequency</span>
+              </span>
+            </li>
+          </ul>
+          <div class="m3-card__slot">
+            <fieldset class="m3-segmented" aria-label="Digest frequency">
+              <label class="m3-segmented__segment">
+                <input class="m3-segmented__input" type="radio" name="digest">
+                <span class="m3-segmented__label">Daily</span>
+              </label>
+              <label class="m3-segmented__segment">
+                <input class="m3-segmented__input" type="radio" name="digest" checked>
+                <span class="m3-segmented__label">Weekly</span>
+              </label>
+              <label class="m3-segmented__segment">
+                <input class="m3-segmented__input" type="radio" name="digest">
+                <span class="m3-segmented__label">Never</span>
+              </label>
+            </fieldset>
+            <div class="demo-row" style="margin-block-start: var(--m3-sys-space-4);">
+              <label class="demo-row" style="gap: var(--m3-sys-space-2);">
+                <input type="checkbox" class="m3-checkbox" checked> Mute threads I leave
+              </label>
+              <label class="demo-row" style="gap: var(--m3-sys-space-2);">
+                <input type="checkbox" class="m3-checkbox"> Include spam
+              </label>
+              <label class="demo-row" style="gap: var(--m3-sys-space-2);">
+                <input type="checkbox" class="m3-checkbox" data-indeterminate aria-label="Labels, some selected"> Labels (2 of 5)
+              </label>
+              <label class="demo-row" style="gap: var(--m3-sys-space-2);">
+                <input type="checkbox" class="m3-checkbox" checked disabled> Archive on read
+              </label>
+            </div>
+            <div class="demo-row" role="radiogroup" aria-label="Sound" style="margin-block-start: var(--m3-sys-space-3);">
+              <label class="demo-row" style="gap: var(--m3-sys-space-2);"><input type="radio" name="snd" class="m3-radio" checked> Chime</label>
+              <label class="demo-row" style="gap: var(--m3-sys-space-2);"><input type="radio" name="snd" class="m3-radio"> Pop</label>
+              <label class="demo-row" style="gap: var(--m3-sys-space-2);"><input type="radio" name="snd" class="m3-radio"> Silent</label>
+            </div>
+            <label style="display: block; margin-block-start: var(--m3-sys-space-4);">
+              <span class="m3-label-large">Preview length</span>
+              <input type="range" class="m3-slider m3-slider--ticks" min="0" max="100" step="10" value="60" aria-label="Preview length">
+            </label>
+            <div style="margin-block-start: var(--m3-sys-space-4);">
+              <span class="m3-label-large">Notification volume</span>
+              <div class="m3-slider-field" id="vol-field" style="--m3-slider-value: 70">
+                <input type="range" class="m3-slider" id="vol" min="0" max="100" value="70" aria-label="Notification volume">
+                <output class="m3-slider__label" id="vol-out" for="vol">70</output>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-pair">
+          <div class="m3-card m3-card--outlined" style="--m3-sys-density: -2;">
+            <div class="m3-card__slot">
+              <h3>Compact density island</h3>
+              <p>This card sets <code>--m3-sys-density: -2</code>. Every control inside shrinks through the density formula.</p>
+              <div class="demo-row">
+                <button class="m3-btn m3-btn--filled">Dense button</button>
+                <button class="m3-btn m3-btn--outlined">Dense outlined</button>
+                <label class="m3-chip m3-chip--filter">
+                  <input class="m3-chip__input" type="checkbox" checked>
+                  <span class="m3-chip__label">Dense chip</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="demo-row">
+            <button class="m3-icon-btn" aria-label="Search">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15.5 14h-.8l-.3-.3a6.5 6.5 0 1 0-.7.7l.3.3v.8l5 5 1.5-1.5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/></svg>
+            </button>
+            <button class="m3-icon-btn m3-icon-btn--tonal" aria-pressed="true" aria-label="Favorite">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7-4.5-9.5-9C.8 8 3 4 6.5 4 8.7 4 10.5 5.3 12 7c1.5-1.7 3.3-3 5.5-3C21 4 23.2 8 21.5 12 19 16.5 12 21 12 21z"/></svg>
+            </button>
+            <span class="m3-badge-anchor">
+              <button class="m3-icon-btn m3-icon-btn--outlined" aria-label="Inbox, 12 unread">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4h16v12h-5l-3 3-3-3H4z"/></svg>
+              </button>
+              <span class="m3-badge">12</span>
+            </span>
+            <button class="m3-fab m3-fab--small" aria-label="Compose">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 17.2V21h3.8L17.9 9.9l-3.8-3.8zM20.7 7.1a1 1 0 0 0 0-1.4l-2.4-2.4a1 1 0 0 0-1.4 0l-1.8 1.8 3.8 3.8z"/></svg>
+            </button>
+            <button class="m3-fab m3-fab--extended">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 17.2V21h3.8L17.9 9.9l-3.8-3.8zM20.7 7.1a1 1 0 0 0 0-1.4l-2.4-2.4a1 1 0 0 0-1.4 0l-1.8 1.8 3.8 3.8z"/></svg>
+              <span class="m3-fab__label">Compose</span>
+            </button>
+          </div>
+
+          <div class="demo-row">
+            <span class="m3-spinner" role="status" aria-label="Syncing"></span>
+            <div class="m3-progress-circle" role="progressbar" aria-label="Import progress" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" style="--m3-progress-value: 65;"></div>
+            <span class="m3-tooltip-anchor">
+              <button class="m3-btn m3-btn--outlined" aria-describedby="sync-tip">Sync now</button>
+              <span class="m3-tooltip" role="tooltip" id="sync-tip">Last synced 2 minutes ago</span>
+            </span>
+          </div>
+
+          <div class="m3-snackbar">
+            <span class="m3-snackbar__text">Signature saved</span>
+            <button class="m3-snackbar__action">Undo</button>
+            <button class="m3-snackbar__close" aria-label="Dismiss"></button>
+          </div>
+
+          <nav class="m3-tabs" aria-label="Mail folders">
+            <button class="m3-tabs__tab active" aria-current="page">Inbox</button>
+            <button class="m3-tabs__tab">Starred</button>
+            <button class="m3-tabs__tab">Archive</button>
+          </nav>
+
+          <div class="demo-row">
+            <button class="m3-chip m3-chip--assist">Add to calendar</button>
+            <label class="m3-chip m3-chip--filter">
+              <input class="m3-chip__input" type="checkbox" checked>
+              <span class="m3-chip__label">Unread</span>
+            </label>
+            <label class="m3-chip m3-chip--filter">
+              <input class="m3-chip__input" type="checkbox">
+              <span class="m3-chip__label">Has attachment</span>
+            </label>
+          </div>
+
+          <div class="demo-row">
+            <button class="m3-btn m3-btn--tonal" type="button" popovertarget="demo-menu" style="anchor-name: --demo-menu;">Move to</button>
+            <div class="m3-menu demo-popover" id="demo-menu" popover>
+              <span class="m3-menu__header">Move to</span>
+              <button class="m3-menu__item" type="button" popovertarget="demo-menu" popovertargetaction="hide">Archive</button>
+              <button class="m3-menu__item" type="button" popovertarget="demo-menu" popovertargetaction="hide">Spam</button>
+              <hr>
+              <button class="m3-menu__item" type="button" popovertarget="demo-menu" popovertargetaction="hide">Trash</button>
+            </div>
+            <button class="m3-btn m3-btn--filled" type="button" commandfor="demo-modal" command="show-modal">Open modal dialog</button>
+          </div>
+
+          <dialog class="m3-dialog" id="demo-modal" aria-labelledby="modal-h">
+            <h3 class="m3-dialog__title" id="modal-h">Empty trash?</h3>
+            <div class="m3-dialog__content">
+              <p>142 conversations will be deleted forever. Opened with <code>showModal()</code> through the <code>command</code> attribute and closed by a <code>method="dialog"</code> form: no script.</p>
+            </div>
+            <form method="dialog" class="m3-dialog__actions">
+              <button class="m3-btn m3-btn--text" value="cancel">Cancel</button>
+              <button class="m3-btn m3-btn--text" value="empty">Empty trash</button>
+            </form>
+          </dialog>
+
+          <dialog class="m3-dialog m3-dialog--static" open aria-labelledby="dlg-h">
+            <h3 class="m3-dialog__title" id="dlg-h">Empty trash?</h3>
+            <div class="m3-dialog__content">
+              <p>142 conversations will be deleted forever. The same native <code>&lt;dialog&gt;</code> surface, rendered in flow with <code>.m3-dialog--static</code>.</p>
+            </div>
+            <div class="m3-dialog__actions">
+              <button class="m3-btn m3-btn--text">Cancel</button>
+              <button class="m3-btn m3-btn--text">Empty trash</button>
+            </div>
+          </dialog>
+        </div>
+
+      </div>
+
+      <div class="m3-carousel" role="group" aria-label="Theme previews" style="margin-block-start: var(--m3-sys-space-4);">
+        <div class="m3-carousel__item m3-bg-primary-container" style="min-block-size: 8rem; display: grid; place-content: center;">
+          <span class="m3-title-large">Primary container</span>
+        </div>
+        <div class="m3-carousel__item m3-bg-secondary-container" style="min-block-size: 8rem; display: grid; place-content: center;">
+          <span class="m3-title-large">Secondary container</span>
+        </div>
+        <div class="m3-carousel__item m3-bg-tertiary-container" style="min-block-size: 8rem; display: grid; place-content: center;">
+          <span class="m3-title-large">Tertiary container</span>
+        </div>
+        <div class="m3-carousel__item m3-bg-error-container" style="min-block-size: 8rem; display: grid; place-content: center;">
+          <span class="m3-title-large">Error container</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <section id="islands" aria-labelledby="islands-h">
+      <h2 id="islands-h" class="m3-headline-small">Nested token islands</h2>
+      <div class="m3-island--inverse" style="padding: var(--m3-sys-space-5); border-radius: var(--md-sys-shape-corner-extra-large); display: grid; gap: var(--m3-sys-space-4);">
+        <p class="m3-body-large" style="margin: 0;">An inverse hero region. Tokens are re-pointed on the nearest scope root, so everything inside adapts.</p>
+        <div class="demo-row">
+          <button class="m3-btn m3-btn--filled">Inverse-aware button</button>
+          <button class="btn btn-outline-primary">Bootstrap button inside</button>
+        </div>
+        <div class="m3-card m3-card--filled" style="max-inline-size: 32rem;">
+          <div class="m3-card__slot">
+            <h3>A normal card</h3>
+            <p>It reads the island's surface-container tokens by inheritance.</p>
+            <div class="m3-island--tertiary" style="padding: var(--m3-sys-space-4); border-radius: var(--md-sys-shape-corner-large);">
+              <p class="m3-body-medium" style="margin: 0;">And a tertiary island nested inside the card inside the inverse hero. Proximity wins.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ================================================================ -->
+    <section id="shape" aria-labelledby="shape-h">
+      <h2 id="shape-h" class="m3-headline-small">Shape: slots, and what sits on them</h2>
+      <p class="m3-body-medium">M3 does not give a component a radius. It gives the system named
+        <strong>slots</strong> &mdash; <code>extra-small</code> through <code>full</code> &mdash; and assigns
+        every container to one: a card is <code>medium</code>, a FAB <code>large</code>, a dialog
+        <code>extra-large</code>, a button <code>full</code>. So theming shape means re-pointing a
+        <strong>slot</strong>, and every container on it follows.</p>
+      <p class="m3-body-medium">Pick a slot and drag. One custom property changes on the panel below &mdash;
+        nothing else &mdash; and the containers tagged with that slot move together while the rest hold still.
+        Radios, switches and spinners are round <em>by identity</em> rather than by corner treatment, so the
+        scale never reaches them: a square radio would be indistinguishable from a checkbox.</p>
+      <div class="demo-grid">
+        <div class="demo-pair">
+          <div class="demo-row">
+            <label class="m3-body-medium demo-bar-label" for="slot-name">Slot
+              <select id="slot-name" class="m3-select" style="--m3-field-height: 2.5rem; min-inline-size: 10rem;">
+                <option value="medium" selected>medium</option>
+                <option value="large">large</option>
+                <option value="extra-large">extra-large</option>
+                <option value="full">full</option>
+              </select>
+            </label>
+            <label class="m3-body-medium" style="flex: 1 1 12rem;">
+              <span class="m3-label-large">Radius <output id="slot-out">12px</output></span>
+              <input type="range" class="m3-slider" id="slot-size" min="0" max="48" step="1" value="12" aria-label="Slot radius">
+            </label>
+          </div>
+          <div class="m3-card m3-card--filled">
+            <div class="m3-card__slot" id="slot-stage" style="display: grid; gap: var(--m3-sys-space-4);">
+            <div class="demo-slot__row">
+              <span class="m3-label-medium demo-slot__tag">medium</span>
+              <div class="m3-card m3-card--outlined demo-slot__card"><div class="m3-card__slot"><p style="margin: 0;">Card</p></div></div>
+              <button class="m3-fab m3-fab--small" type="button" aria-label="Small FAB"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg></button>
+              <span class="m3-tooltip m3-tooltip--rich" role="tooltip">Rich tooltip</span>
+            </div>
+            <div class="demo-slot__row">
+              <span class="m3-label-medium demo-slot__tag">large</span>
+              <button class="m3-fab" type="button" aria-label="FAB"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg></button>
+              <section class="m3-pane" style="flex: 0 1 12rem;"><span class="m3-body-medium">Pane</span></section>
+            </div>
+            <div class="demo-slot__row">
+              <span class="m3-label-medium demo-slot__tag">extra-large</span>
+              <dialog class="m3-dialog m3-dialog--static" open aria-label="Dialog" style="max-inline-size: 9rem;">
+                <div class="m3-dialog__content"><p style="margin: 0;">Dialog</p></div>
+              </dialog>
+              <div class="m3-carousel__item m3-bg-secondary-container" style="inline-size: 6rem; min-block-size: 4rem; display: grid; place-content: center;"><span class="m3-label-medium">Carousel</span></div>
+            </div>
+            <div class="demo-slot__row">
+              <span class="m3-label-medium demo-slot__tag">full</span>
+              <button class="m3-btn m3-btn--filled" type="button">Button</button>
+              <span class="m3-badge">9</span>
+              <div class="m3-search" style="flex: 0 1 12rem;"><input class="m3-search__input" aria-label="Search" placeholder="Search"></div>
+            </div>
+            <div class="demo-slot__row">
+              <span class="m3-label-medium demo-slot__tag">round by identity</span>
+              <input type="radio" name="slot-demo" class="m3-radio" checked aria-label="Radio">
+              <input type="checkbox" role="switch" class="m3-switch" checked aria-label="Switch">
+              <span class="m3-spinner" role="status" aria-label="Spinner"></span>
+            </div>
+            </div>
+          </div>
+          <small class="m3-label-medium" id="slot-css">--md-sys-shape-corner-medium: 12px</small>
+        </div>
+
+        <div class="demo-pair">
+          <small class="m3-label-medium">Corner family &mdash; M3&rsquo;s other shape axis (<code>rounded</code> /
+            <code>cut</code>, Android&rsquo;s <code>shapeCornerFamily</code>). The slot says how big a corner is;
+            the family says how it is drawn. Same radii, so a browser without CSS <code>corner-shape</code> draws
+            the rounded family and nothing is lost.</small>
+          <div class="demo-row">
+            <label class="demo-row" style="gap: var(--m3-sys-space-2);"><input type="radio" name="corner-family" class="m3-radio" value="round" checked> rounded</label>
+            <label class="demo-row" style="gap: var(--m3-sys-space-2);"><input type="radio" name="corner-family" class="m3-radio" value="bevel"> cut</label>
+          </div>
+          <div class="m3-card m3-card--filled" id="family-stage">
+            <div class="m3-card__slot" style="display: grid; gap: var(--m3-sys-space-3);">
+              <div class="demo-row">
+                <button class="m3-btn m3-btn--filled" type="button">Filled</button>
+                <button class="m3-btn m3-btn--outlined" type="button">Outlined</button>
+                <span class="m3-chip m3-chip--assist">Chip</span>
+              </div>
+              <div class="demo-row">
+                <div class="m3-card m3-card--outlined" style="inline-size: 8rem;"><div class="m3-card__slot"><p style="margin: 0;">Card</p></div></div>
+                <input type="radio" name="fam-demo" class="m3-radio" checked aria-label="Radio, pinned round">
+                <input type="checkbox" role="switch" class="m3-switch" checked aria-label="Switch, pinned round">
+              </div>
+            </div>
+          </div>
+          <small class="m3-label-medium" id="family-css">--m3-sys-corner-shape: round</small>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <section id="interop" aria-labelledby="interop-h">
+      <h2 id="interop-h" class="m3-headline-small">Two vocabularies, one implementation</h2>
+      <p class="m3-body-medium">Each pair renders from the same mixins: Bootstrap markup on the left, m3x markup on the right.</p>
+
+      <div class="demo-grid">
+        <div class="demo-pair">
+          <small class="m3-label-medium">.btn .btn-primary / .m3-btn--filled</small>
+          <div class="demo-row">
+            <button class="btn btn-primary">Send</button>
+            <button class="m3-btn m3-btn--filled">Send</button>
+          </div>
+          <div class="demo-row">
+            <button class="btn btn-secondary">Snooze</button>
+            <button class="m3-btn m3-btn--tonal">Snooze</button>
+          </div>
+          <div class="demo-row">
+            <button class="btn btn-outline-primary">Preview</button>
+            <button class="m3-btn m3-btn--outlined">Preview</button>
+          </div>
+          <div class="demo-row">
+            <button class="btn btn-link">Learn more</button>
+            <button class="m3-btn m3-btn--text">Learn more</button>
+          </div>
+          <div class="demo-row">
+            <span class="badge">4</span>
+            <span class="m3-badge">4</span>
+            <span class="spinner-border" role="status" aria-label="Loading"></span>
+            <span class="m3-spinner" role="status" aria-label="Loading"></span>
+          </div>
+        </div>
+
+        <div class="demo-pair">
+          <small class="m3-label-medium">.card / .m3-card--outlined</small>
+          <div class="card">
+            <div class="card-body">
+              <h3 class="card-title">Storage almost full</h3>
+              <p class="card-text">Free up space or upgrade to keep receiving mail.</p>
+              <button class="btn btn-primary">Upgrade</button>
+            </div>
+          </div>
+          <div class="m3-card m3-card--outlined">
+            <div class="m3-card__slot">
+              <h3 class="m3-title-large">Storage almost full</h3>
+              <p>Free up space or upgrade to keep receiving mail.</p>
+              <button class="m3-btn m3-btn--filled">Upgrade</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-pair">
+          <small class="m3-label-medium">Bootstrap .form-label + .form-control (label above, as Bootstrap lays it out) / m3 field (label inside) / .form-floating (Bootstrap markup, label inside)</small>
+          <div>
+            <label class="form-label" for="bs-mail">Forwarding address</label>
+            <input id="bs-mail" type="email" class="form-control is-invalid" value="not-an-email">
+            <div class="invalid-feedback">Enter a valid address.</div>
+          </div>
+          <label class="m3-field m3-field--filled">
+            <input class="m3-field__input is-invalid" type="email" placeholder=" " value="not-an-email">
+            <span class="m3-field__label">Forwarding address</span>
+            <span class="m3-field__supporting">Enter a valid address.</span>
+          </label>
+          <div class="form-floating">
+            <input type="text" class="form-control" id="float-demo" placeholder=" " value="Aurora">
+            <label for="float-demo">Workspace name</label>
+          </div>
+          <div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="bs-cb1" checked>
+              <label class="form-check-label" for="bs-cb1">Mute threads I leave</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="bs-cb2">
+              <label class="form-check-label" for="bs-cb2">Include spam</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="bs-cb3" data-indeterminate>
+              <label class="form-check-label" for="bs-cb3">Labels (2 of 5)</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="bs-cb4" checked disabled>
+              <label class="form-check-label" for="bs-cb4">Archive on read</label>
+            </div>
+          </div>
+          <div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="bs-snd" id="bs-r1" checked>
+              <label class="form-check-label" for="bs-r1">Chime</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="bs-snd" id="bs-r2">
+              <label class="form-check-label" for="bs-r2">Pop</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="bs-snd" id="bs-r3" disabled>
+              <label class="form-check-label" for="bs-r3">Silent</label>
+            </div>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="bs-switch" checked>
+            <label class="form-check-label" for="bs-switch">Bootstrap switch markup</label>
+          </div>
+          <input type="range" class="form-range" min="0" max="100" value="40" aria-label="Bootstrap range">
+        </div>
+
+        <div class="demo-pair">
+          <small class="m3-label-medium">More Bootstrap markup, M3 visuals</small>
+          <div class="alert alert-warning" role="alert">
+            <strong>Heads up.</strong> Vacation responder is on until Sep 12.
+          </div>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="#interop">Mail</a></li>
+              <li class="breadcrumb-item"><a href="#interop">Settings</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Filters</li>
+            </ol>
+          </nav>
+          <ul class="nav nav-tabs">
+            <li class="nav-item"><button class="nav-link active" aria-current="page">General</button></li>
+            <li class="nav-item"><button class="nav-link">Labels</button></li>
+            <li class="nav-item"><button class="nav-link disabled" disabled>Add-ons</button></li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="nav-item"><button class="nav-link active">All</button></li>
+            <li class="nav-item"><button class="nav-link">Unread</button></li>
+          </ul>
+          <ul class="list-group">
+            <li class="list-group-item">Filters</li>
+            <li class="list-group-item active" aria-current="true">Blocked senders</li>
+            <li class="list-group-item">Forwarding</li>
+          </ul>
+          <nav aria-label="Message pages">
+            <ul class="pagination">
+              <li class="page-item disabled"><a class="page-link" aria-disabled="true" aria-label="Previous page">&lt;</a></li>
+              <li class="page-item active"><a class="page-link" href="#interop">1</a></li>
+              <li class="page-item"><a class="page-link" href="#interop">2</a></li>
+              <li class="page-item"><a class="page-link" href="#interop" aria-label="Next page">&gt;</a></li>
+            </ul>
+          </nav>
+          <div class="progress" role="progressbar" aria-label="Import progress" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar" style="width: 70%;">70%</div>
+          </div>
+        </div>
+
+        <div class="demo-pair">
+          <small class="m3-label-medium">Accordion, dropdown, toast (static .show states)</small>
+          <div class="accordion">
+            <div class="accordion-item">
+              <h3 class="accordion-header">
+                <button class="accordion-button" type="button">Signatures</button>
+              </h3>
+              <div class="accordion-collapse collapse show">
+                <div class="accordion-body">One signature per address is supported.</div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <h3 class="accordion-header">
+                <button class="accordion-button collapsed" type="button">Templates</button>
+              </h3>
+              <div class="accordion-collapse collapse">
+                <div class="accordion-body">Hidden until Bootstrap JS toggles it.</div>
+              </div>
+            </div>
+          </div>
+          <div style="position: relative; min-block-size: 12rem;">
+            <ul class="dropdown-menu show" style="position: static; display: block;">
+              <li><div class="dropdown-header">Move to</div></li>
+              <li><button class="dropdown-item">Archive</button></li>
+              <li><button class="dropdown-item active">Inbox</button></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><button class="dropdown-item">Trash</button></li>
+            </ul>
+          </div>
+          <div class="toast show" role="status">
+            <div class="toast-header">
+              Draft saved
+              <button class="btn-close" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">Your draft was saved at 14:32.</div>
+          </div>
+          <table class="table table-striped table-hover">
+            <thead>
+              <tr><th>Filter</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>from:billing@*</td><td>Label &quot;Receipts&quot;</td></tr>
+              <tr><td>list:dev-null</td><td>Skip inbox</td></tr>
+              <tr><td>has:attachment</td><td>Star</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <section id="expressive" aria-labelledby="expressive-h">
+      <h2 id="expressive-h" class="m3-headline-small">Toolbars, button groups, split buttons</h2>
+      <p class="m3-body-medium">The M3 Expressive additions. Groups mark their selected member with <code>aria-pressed</code> or a hidden <code>.m3-btn-check</code>; the split button's toggle opens a native popover menu. Bootstrap <code>.btn-group</code> markup renders as a connected group. The dense bar below is the editor-toolbar shape (a slide or document editor's formatting row): one 40px row, 28px controls two pixels apart, hairlines between groups, compact native selects and popover menus, a stepper, and color swatches. Narrow the window and the low-priority groups fold away from the right while the overflow button appears.</p>
+
+      <div class="demo-pair" style="margin-block-end: var(--m3-sys-space-4);">
+        <small class="m3-label-medium">.m3-toolbar--dense with __group, a native __select for zoom (chevron flips while its picker is open where :open exists), a &lt;details&gt; __choice for the font (works in every browser, menu picks the label), __stepper, __color swatches opening a .m3-color-palette (the bar follows the choice), __dropdown popover menus, compact .m3-split-button list controls, __spacer, __more; groups marked --priority-low / --priority-medium collapse first</small>
+        <div class="m3-toolbar m3-toolbar--dense" role="toolbar" aria-label="Slide formatting">
+          <div class="m3-toolbar__group">
+            <span class="m3-tooltip-anchor"><button class="m3-icon-btn" type="button" aria-label="Undo"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg></button><span class="m3-tooltip" role="tooltip">Undo (Ctrl+Z)</span></span>
+            <button class="m3-icon-btn" type="button" aria-label="Redo" disabled><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg></button>
+            <button class="m3-icon-btn" type="button" aria-label="Print"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
+            <button class="m3-icon-btn" type="button" aria-label="Paint format" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M18 4V3c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1h12c.55 0 1-.45 1-1V6h1v4H9v11c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-9h8V4h-3z"/></svg></button>
+          </div>
+          <div class="m3-toolbar__group">
+            <select class="m3-toolbar__select" aria-label="Zoom">
+              <option>50%</option><option>75%</option><option selected>100%</option><option>125%</option><option>150%</option><option>Fit</option>
+            </select>
+          </div>
+          <div class="m3-toolbar__group m3-toolbar__group--priority-medium">
+            <button class="m3-icon-btn" type="button" aria-label="Select" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M12 2 4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg></button>
+            <button class="m3-icon-btn" type="button" aria-label="Text box"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M2.5 4v3h5v12h3V7h5V4h-13zm19 5h-9v3h3v7h3v-7h3V9z"/></svg></button>
+            <button class="m3-icon-btn" type="button" aria-label="Insert image"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></button>
+            <button class="m3-toolbar__dropdown" type="button" popovertarget="tb-shapes" aria-label="Shapes"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M11 13.5v8H3v-8h8zm-2 2H5v4h4v-4zM12 2l5.5 9h-11L12 2zm0 3.86L10.08 9h3.84L12 5.86zM17.5 13c2.49 0 4.5 2.01 4.5 4.5S19.99 22 17.5 22 13 19.99 13 17.5s2.01-4.5 4.5-4.5zm0 2a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"/></svg></button>
+            <div class="m3-menu" id="tb-shapes" popover>
+              <button class="m3-menu__item" type="button" popovertarget="tb-shapes" popovertargetaction="hide">Rectangle</button><button class="m3-menu__item" type="button" popovertarget="tb-shapes" popovertargetaction="hide">Rounded rectangle</button><button class="m3-menu__item" type="button" popovertarget="tb-shapes" popovertargetaction="hide">Ellipse</button><button class="m3-menu__item" type="button" popovertarget="tb-shapes" popovertargetaction="hide">Arrow</button><button class="m3-menu__item" type="button" popovertarget="tb-shapes" popovertargetaction="hide">Callout</button>
+            </div>
+          </div>
+          <div class="m3-toolbar__group m3-toolbar__group--priority-medium">
+            <details class="m3-toolbar__choice" name="tb-choice">
+              <summary class="m3-toolbar__dropdown" aria-label="Font"><span class="m3-toolbar__label">Arial</span><span class="m3-toolbar__label">Georgia</span><span class="m3-toolbar__label">Inter</span><span class="m3-toolbar__label">Roboto</span><span class="m3-toolbar__label">Source Serif</span></summary>
+              <div class="m3-menu"><label class="m3-menu__item"><input class="m3-toolbar__option" type="radio" name="font">Arial</label><label class="m3-menu__item"><input class="m3-toolbar__option" type="radio" name="font">Georgia</label><label class="m3-menu__item"><input class="m3-toolbar__option" type="radio" name="font">Inter</label><label class="m3-menu__item"><input class="m3-toolbar__option" type="radio" name="font" checked>Roboto</label><label class="m3-menu__item"><input class="m3-toolbar__option" type="radio" name="font">Source Serif</label></div>
+            </details>
+            <div class="m3-toolbar__stepper" role="group" aria-label="Font size">
+              <button class="m3-icon-btn" type="button" aria-label="Decrease font size"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M19 13H5v-2h14v2z"/></svg></button>
+              <input class="m3-toolbar__stepper-input" type="number" value="18" min="1" max="400" aria-label="Font size">
+              <button class="m3-icon-btn" type="button" aria-label="Increase font size"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg></button>
+            </div>
+          </div>
+          <div class="m3-toolbar__group">
+            <input class="m3-btn-check" type="checkbox" id="tb-bold" checked>
+            <label class="m3-icon-btn" for="tb-bold"><svg viewBox="0 0 24 24" width="24" height="24" role="img"><title>Bold</title><path fill="currentColor" d="M15.6 10.8c1-.7 1.6-1.8 1.6-2.8 0-2.2-1.8-4-4-4H7v14h7c2.2 0 4-1.8 4-4 0-1.5-.9-2.7-2.4-3.2zM10 7h3a1.5 1.5 0 0 1 0 3h-3V7zm3.5 8H10v-3h3.5a1.5 1.5 0 0 1 0 3z"/></svg></label>
+            <button class="m3-icon-btn" type="button" aria-label="Italic" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M10 4v3h2.2l-3.4 8H6v3h8v-3h-2.2l3.4-8H18V4z"/></svg></button>
+            <button class="m3-icon-btn" type="button" aria-label="Underline" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M12 17a6 6 0 0 0 6-6V3h-2.5v8a3.5 3.5 0 0 1-7 0V3H6v8a6 6 0 0 0 6 6zM5 19v2h14v-2z"/></svg></button>
+            <span class="m3-toolbar__color">
+            <button class="m3-icon-btn m3-toolbar__swatch" type="button" popovertarget="tb-text-color" aria-label="Text color"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M5.49 17h2.42l1.27-3.58h5.65L16.09 17h2.42L13.25 3h-2.5L5.49 17zm4.42-5.61 2.03-5.79h.12l2.03 5.79H9.91z"/></svg></button>
+            <div class="m3-color-palette" id="tb-text-color" popover>
+              <div class="m3-color-palette__label">Theme</div>
+              <div class="m3-color-palette__theme"><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="On surface"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="On surface variant"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Primary"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Secondary"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Tertiary"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Error" checked></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Primary container"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Secondary container"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Tertiary container"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Surface"></label></div>
+              <div class="m3-color-palette__label">Standard</div>
+              <div class="m3-color-palette__standard"><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Black"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark gray 4"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark gray 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark gray 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark gray 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Gray"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light gray 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light gray 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light gray 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="White"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Red berry"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Red"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Orange"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Yellow"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Green"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Cyan"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Cornflower blue"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Blue"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Purple"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Magenta"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light red berry 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light red 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light orange 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light yellow 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light green 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light cyan 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light cornflower blue 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light blue 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light purple 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light magenta 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light red berry 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light red 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light orange 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light yellow 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light green 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light cyan 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light cornflower blue 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light blue 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light purple 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light magenta 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light red berry 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light red 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light orange 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light yellow 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light green 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light cyan 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light cornflower blue 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light blue 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light purple 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Light magenta 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark red berry 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark red 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark orange 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark yellow 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark green 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark cyan 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark cornflower blue 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark blue 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark purple 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark magenta 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark red berry 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark red 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark orange 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark yellow 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark green 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark cyan 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark cornflower blue 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark blue 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark purple 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark magenta 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark red berry 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark red 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark orange 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark yellow 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark green 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark cyan 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark cornflower blue 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark blue 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark purple 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="text-color" aria-label="Dark magenta 3"></label></div>
+              <div class="m3-color-palette__label">Custom</div>
+              <div class="m3-color-palette__grid"><label class="m3-color-palette__custom"><input type="color" value="#6750a4" aria-label="Custom color"></label></div>
+            </div>
+            </span>
+            <span class="m3-toolbar__color">
+            <button class="m3-icon-btn m3-toolbar__swatch" type="button" popovertarget="tb-highlight" aria-label="Highlight color"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M17.75 7 14 3.25l-10 10V17h3.75l10-10zm2.96-2.96a.996.996 0 0 0 0-1.41L18.37.29a.996.996 0 0 0-1.41 0L15 2.25 18.75 6l1.96-1.96z"/></svg></button>
+            <div class="m3-color-palette" id="tb-highlight" popover>
+              <div class="m3-color-palette__grid"><label class="m3-color-palette__swatch m3-color-palette__swatch--none"><input type="radio" name="highlight" aria-label="None" checked></label></div>
+              <div class="m3-color-palette__label">Theme</div>
+              <div class="m3-color-palette__theme"><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="On surface"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="On surface variant"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Primary"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Secondary"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Tertiary"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Error"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Primary container"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Secondary container"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Tertiary container"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Surface"></label></div>
+              <div class="m3-color-palette__label">Standard</div>
+              <div class="m3-color-palette__standard"><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Black"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark gray 4"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark gray 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark gray 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark gray 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Gray"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light gray 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light gray 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light gray 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="White"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Red berry"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Red"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Orange"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Yellow"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Green"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Cyan"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Cornflower blue"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Blue"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Purple"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Magenta"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light red berry 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light red 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light orange 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light yellow 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light green 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light cyan 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light cornflower blue 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light blue 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light purple 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light magenta 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light red berry 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light red 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light orange 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light yellow 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light green 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light cyan 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light cornflower blue 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light blue 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light purple 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light magenta 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light red berry 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light red 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light orange 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light yellow 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light green 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light cyan 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light cornflower blue 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light blue 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light purple 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Light magenta 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark red berry 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark red 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark orange 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark yellow 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark green 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark cyan 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark cornflower blue 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark blue 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark purple 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark magenta 1"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark red berry 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark red 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark orange 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark yellow 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark green 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark cyan 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark cornflower blue 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark blue 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark purple 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark magenta 2"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark red berry 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark red 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark orange 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark yellow 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark green 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark cyan 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark cornflower blue 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark blue 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark purple 3"></label><label class="m3-color-palette__swatch"><input type="radio" name="highlight" aria-label="Dark magenta 3"></label></div>
+              <div class="m3-color-palette__label">Custom</div>
+              <div class="m3-color-palette__grid"><label class="m3-color-palette__custom"><input type="color" value="#ffde9b" aria-label="Custom color"></label></div>
+            </div>
+            </span>
+          </div>
+          <div class="m3-toolbar__group m3-toolbar__group--priority-low">
+            <button class="m3-toolbar__dropdown" type="button" popovertarget="tb-align" aria-label="Align"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"/></svg></button>
+            <div class="m3-menu" id="tb-align" popover>
+              <button class="m3-menu__item" type="button" popovertarget="tb-align" popovertargetaction="hide">Left</button><button class="m3-menu__item" type="button" popovertarget="tb-align" popovertargetaction="hide">Center</button><button class="m3-menu__item" type="button" popovertarget="tb-align" popovertargetaction="hide">Right</button><button class="m3-menu__item" type="button" popovertarget="tb-align" popovertargetaction="hide">Justify</button>
+            </div>
+            <button class="m3-toolbar__dropdown" type="button" popovertarget="tb-spacing" aria-label="Line and paragraph spacing"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M6 7h2.5L5 3.5 1.5 7H4v10H1.5L5 20.5 8.5 17H6V7zm4-2v2h12V5H10zm0 14h12v-2H10v2zm0-6h12v-2H10v2z"/></svg></button>
+            <div class="m3-menu" id="tb-spacing" popover>
+              <button class="m3-menu__item" type="button" popovertarget="tb-spacing" popovertargetaction="hide">Single</button><button class="m3-menu__item" type="button" popovertarget="tb-spacing" popovertargetaction="hide">1.15</button><button class="m3-menu__item" type="button" popovertarget="tb-spacing" popovertargetaction="hide">1.5</button><button class="m3-menu__item" type="button" popovertarget="tb-spacing" popovertargetaction="hide">Double</button>
+            </div>
+            <div class="m3-split-button">
+              <button class="m3-icon-btn m3-split-button__action" type="button" aria-label="Bulleted list" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M4 10.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zm0-6c-.83 0-1.5.67-1.5 1.5S3.17 7.5 4 7.5 5.5 6.83 5.5 6 4.83 4.5 4 4.5zm0 12c-.83 0-1.5.68-1.5 1.5s.68 1.5 1.5 1.5 1.5-.68 1.5-1.5-.67-1.5-1.5-1.5zM7 19h14v-2H7v2zm0-6h14v-2H7v2zm0-8v2h14V5H7z"/></svg></button>
+              <button class="m3-btn m3-split-button__toggle" type="button" popovertarget="tb-bullets" aria-label="Bulleted list styles"></button>
+              <div class="m3-menu" id="tb-bullets" popover>
+                <button class="m3-menu__item" type="button" popovertarget="tb-bullets" popovertargetaction="hide">Disc</button><button class="m3-menu__item" type="button" popovertarget="tb-bullets" popovertargetaction="hide">Circle</button><button class="m3-menu__item" type="button" popovertarget="tb-bullets" popovertargetaction="hide">Square</button><button class="m3-menu__item" type="button" popovertarget="tb-bullets" popovertargetaction="hide">Checklist</button>
+              </div>
+            </div>
+            <div class="m3-split-button">
+              <button class="m3-icon-btn m3-split-button__action" type="button" aria-label="Numbered list" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M2 17h2v.5H3v1h1v.5H2v1h3v-4H2v1zm1-9h1V4H2v1h1v3zm-1 3h1.8L2 13.1v.9h3v-1H3.2L5 10.9V10H2v1zm5-6v2h14V5H7zm0 14h14v-2H7v2zm0-6h14v-2H7v2z"/></svg></button>
+              <button class="m3-btn m3-split-button__toggle" type="button" popovertarget="tb-numbered" aria-label="Numbered list styles"></button>
+              <div class="m3-menu" id="tb-numbered" popover>
+                <button class="m3-menu__item" type="button" popovertarget="tb-numbered" popovertargetaction="hide">1. 2. 3.</button><button class="m3-menu__item" type="button" popovertarget="tb-numbered" popovertargetaction="hide">a. b. c.</button><button class="m3-menu__item" type="button" popovertarget="tb-numbered" popovertargetaction="hide">i. ii. iii.</button><button class="m3-menu__item" type="button" popovertarget="tb-numbered" popovertargetaction="hide">A. B. C.</button>
+              </div>
+            </div>
+            <button class="m3-icon-btn" type="button" aria-label="Clear formatting"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M3.27 5 2 6.27l6.97 6.97L6.5 19h3l1.57-3.66L16.73 21 18 19.73 3.55 5.27 3.27 5zM6 5v.18L8.82 8h2.4l-.72 1.68 2.1 2.1L14.21 8H20V5H6z"/></svg></button>
+          </div>
+          <div class="m3-toolbar__spacer"></div>
+          <div class="m3-toolbar__group">
+            <button class="m3-toolbar__dropdown" type="button" popovertarget="tb-mode"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Editing</button>
+            <div class="m3-menu" id="tb-mode" popover>
+              <button class="m3-menu__item" type="button" popovertarget="tb-mode" popovertargetaction="hide">Editing</button><button class="m3-menu__item" type="button" popovertarget="tb-mode" popovertargetaction="hide">Suggesting</button><button class="m3-menu__item" type="button" popovertarget="tb-mode" popovertargetaction="hide">Viewing</button>
+            </div>
+            <button class="m3-icon-btn m3-toolbar__more" type="button" popovertarget="tb-more" aria-label="More options"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button>
+            <div class="m3-menu" id="tb-more" popover>
+              <button class="m3-menu__item" type="button" popovertarget="tb-more" popovertargetaction="hide">Align</button><button class="m3-menu__item" type="button" popovertarget="tb-more" popovertargetaction="hide">Line spacing</button><button class="m3-menu__item" type="button" popovertarget="tb-more" popovertargetaction="hide">Bulleted list</button><button class="m3-menu__item" type="button" popovertarget="tb-more" popovertargetaction="hide">Numbered list</button><button class="m3-menu__item" type="button" popovertarget="tb-more" popovertargetaction="hide">Increase indent</button><button class="m3-menu__item" type="button" popovertarget="tb-more" popovertargetaction="hide">Clear formatting</button>
+            </div>
+          </div>
+        </div>
+        <small class="m3-label-medium">The same bar hosting Bootstrap markup: .btn-group + .btn-check, .form-select, .btn, .dropdown-toggle all compact through the tokens the bar re-points</small>
+        <div class="m3-toolbar m3-toolbar--dense" role="toolbar" aria-label="Bootstrap controls in a dense bar">
+          <div class="m3-toolbar__group">
+            <div class="btn-group" role="group" aria-label="Text style">
+              <input type="checkbox" class="btn-check" id="tbbs-b" checked>
+              <label class="btn btn-outline-primary" for="tbbs-b">Bold</label>
+              <input type="checkbox" class="btn-check" id="tbbs-i">
+              <label class="btn btn-outline-primary" for="tbbs-i">Italic</label>
+              <input type="checkbox" class="btn-check" id="tbbs-u">
+              <label class="btn btn-outline-primary" for="tbbs-u">Underline</label>
+            </div>
+          </div>
+          <div class="m3-toolbar__group">
+            <select class="form-select" aria-label="Zoom">
+              <option>75%</option><option selected>100%</option><option>150%</option>
+            </select>
+          </div>
+          <div class="m3-toolbar__group">
+            <button class="btn btn-secondary dropdown-toggle" type="button">Insert</button>
+            <button class="m3-icon-btn" type="button" aria-label="Add comment"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M22 4c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4zm-5 7h-4v4h-2v-4H7V9h4V5h2v4h4v2z"/></svg></button>
+          </div>
+          <div class="m3-toolbar__spacer"></div>
+          <div class="m3-toolbar__group">
+            <button class="btn btn-primary" type="button">Share</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-grid">
+        <div class="demo-pair">
+          <small class="m3-label-medium">.m3-toolbar (floating, standard) / --vibrant --docked</small>
+          <div class="m3-toolbar" role="toolbar" aria-label="Format">
+            <button class="m3-icon-btn" type="button" aria-label="Bold" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M15.6 10.8c1-.7 1.6-1.8 1.6-2.8 0-2.2-1.8-4-4-4H7v14h7c2.2 0 4-1.8 4-4 0-1.5-.9-2.7-2.4-3.2zM10 7h3a1.5 1.5 0 0 1 0 3h-3V7zm3.5 8H10v-3h3.5a1.5 1.5 0 0 1 0 3z"/></svg></button>
+            <button class="m3-icon-btn" type="button" aria-label="Italic"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M10 4v3h2.2l-3.4 8H6v3h8v-3h-2.2l3.4-8H18V4z"/></svg></button>
+            <button class="m3-icon-btn" type="button" aria-label="Underline"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M12 17a6 6 0 0 0 6-6V3h-2.5v8a3.5 3.5 0 0 1-7 0V3H6v8a6 6 0 0 0 6 6zM5 19v2h14v-2z"/></svg></button>
+            <button class="m3-btn m3-btn--text" type="button">Share</button>
+            <button class="m3-fab m3-fab--small" type="button" aria-label="Add"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg></button>
+          </div>
+          <div class="m3-toolbar m3-toolbar--docked m3-toolbar--vibrant" role="toolbar" aria-label="Actions">
+            <button class="m3-icon-btn" type="button" aria-label="Bold"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M15.6 10.8c1-.7 1.6-1.8 1.6-2.8 0-2.2-1.8-4-4-4H7v14h7c2.2 0 4-1.8 4-4 0-1.5-.9-2.7-2.4-3.2zM10 7h3a1.5 1.5 0 0 1 0 3h-3V7zm3.5 8H10v-3h3.5a1.5 1.5 0 0 1 0 3z"/></svg></button>
+            <button class="m3-icon-btn" type="button" aria-label="Italic"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M10 4v3h2.2l-3.4 8H6v3h8v-3h-2.2l3.4-8H18V4z"/></svg></button>
+            <button class="m3-btn m3-btn--text" type="button">Done</button>
+          </div>
+        </div>
+
+        <div class="demo-pair">
+          <small class="m3-label-medium">.m3-button-group--connected (aria-pressed) / hidden .m3-btn-check radios / standard group</small>
+          <div class="m3-button-group m3-button-group--connected" role="group" aria-label="Text style">
+            <button class="m3-btn m3-btn--tonal" type="button" aria-pressed="true">Bold</button>
+            <button class="m3-btn m3-btn--tonal" type="button" aria-pressed="false">Italic</button>
+            <button class="m3-icon-btn m3-icon-btn--tonal" type="button" aria-label="Underline" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M12 17a6 6 0 0 0 6-6V3h-2.5v8a3.5 3.5 0 0 1-7 0V3H6v8a6 6 0 0 0 6 6zM5 19v2h14v-2z"/></svg></button>
+          </div>
+          <fieldset class="m3-button-group m3-button-group--connected m3-button-group--small" aria-label="Alignment">
+            <input class="m3-btn-check" type="radio" name="align" id="al-l" checked>
+            <label class="m3-btn m3-btn--outlined" for="al-l">Left</label>
+            <input class="m3-btn-check" type="radio" name="align" id="al-c">
+            <label class="m3-btn m3-btn--outlined" for="al-c">Center</label>
+            <input class="m3-btn-check" type="radio" name="align" id="al-r">
+            <label class="m3-btn m3-btn--outlined" for="al-r">Right</label>
+          </fieldset>
+          <div class="m3-button-group" role="group" aria-label="M3 Expressive button sizes">
+            <button class="m3-btn m3-btn--filled m3-btn--xs" type="button">XS</button>
+            <button class="m3-btn m3-btn--filled" type="button">Small</button>
+            <button class="m3-btn m3-btn--filled m3-btn--medium m3-btn--square" type="button">Medium square</button>
+          </div>
+          <div class="m3-button-group" role="group" aria-label="Large M3 Expressive button sizes">
+            <button class="m3-btn m3-btn--filled m3-btn--large" type="button">Large</button>
+            <button class="m3-btn m3-btn--tonal m3-btn--xl" type="button">Extra large</button>
+          </div>
+        </div>
+
+        <div class="demo-pair">
+          <small class="m3-label-medium">.btn-group + .btn-check (Bootstrap markup) / Bootstrap's split dropdown markup renders as the M3 split button</small>
+          <div class="btn-group" role="group" aria-label="Text style">
+            <input type="checkbox" class="btn-check" id="bs-bold" checked>
+            <label class="btn btn-outline-primary" for="bs-bold">Bold</label>
+            <input type="checkbox" class="btn-check" id="bs-italic">
+            <label class="btn btn-outline-primary" for="bs-italic">Italic</label>
+            <input type="checkbox" class="btn-check" id="bs-under">
+            <label class="btn btn-outline-primary" for="bs-under">Underline</label>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-primary" type="button">Send</button>
+            <button class="btn btn-primary dropdown-toggle dropdown-toggle-split" type="button" aria-label="Send options"></button>
+          </div>
+        </div>
+
+        <div class="demo-pair">
+          <small class="m3-label-medium">.m3-split-button: two buttons on one pill. Tonal with related actions in the menu / filled where the menu chooses the leading action (radio options, no JS) / outlined with the leading half disabled on its own</small>
+          <div class="demo-row">
+            <div class="m3-split-button m3-split-button--tonal">
+              <button class="m3-btn m3-split-button__action" type="button">Save</button>
+              <button class="m3-btn m3-split-button__toggle" type="button" popovertarget="save-menu" aria-label="More save options"></button>
+              <div class="m3-menu" id="save-menu" popover>
+                <button class="m3-menu__item" type="button" popovertarget="save-menu" popovertargetaction="hide">Save as draft</button><button class="m3-menu__item" type="button" popovertarget="save-menu" popovertargetaction="hide">Save and close</button>
+              </div>
+            </div>
+            <div class="m3-split-button">
+              <button class="m3-btn m3-split-button__action" type="button">
+                <span class="m3-split-button__label">Send</span>
+                <span class="m3-split-button__label">Schedule send</span>
+                <span class="m3-split-button__label">Send and archive</span>
+              </button>
+              <button class="m3-btn m3-split-button__toggle" type="button" popovertarget="send-menu" aria-label="Choose send action"></button>
+              <div class="m3-menu" id="send-menu" popover>
+                <label class="m3-menu__item"><input class="m3-split-button__option" type="radio" name="send-action" checked>Send</label>
+                <label class="m3-menu__item"><input class="m3-split-button__option" type="radio" name="send-action">Schedule send</label>
+                <label class="m3-menu__item"><input class="m3-split-button__option" type="radio" name="send-action">Send and archive</label>
+              </div>
+            </div>
+            <div class="m3-split-button m3-split-button--outlined">
+              <button class="m3-btn m3-split-button__action" type="button" disabled>Publish</button>
+              <button class="m3-btn m3-split-button__toggle" type="button" popovertarget="publish-menu" aria-label="More publish options"></button>
+              <div class="m3-menu" id="publish-menu" popover>
+                <button class="m3-menu__item" type="button" popovertarget="publish-menu" popovertargetaction="hide">Preview</button><button class="m3-menu__item" type="button" popovertarget="publish-menu" popovertargetaction="hide">Schedule</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-pair">
+          <small class="m3-label-medium">.m3-fab-menu (open it) / FAB colors and the medium size</small>
+          <div class="demo-row">
+            <div class="m3-fab-menu">
+              <button class="m3-fab m3-fab-menu__fab" type="button" popovertarget="fab-menu" aria-label="Actions" aria-haspopup="menu"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg></button>
+              <div class="m3-fab-menu__items" id="fab-menu" popover role="menu">
+                <button class="m3-fab-menu__item" type="button" role="menuitem" popovertarget="fab-menu" popovertargetaction="hide"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg><span class="m3-fab-menu__label">Compose</span></button>
+                <button class="m3-fab-menu__item" type="button" role="menuitem" popovertarget="fab-menu" popovertargetaction="hide"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg><span class="m3-fab-menu__label">Upload</span></button>
+              </div>
+            </div>
+            <button class="m3-fab m3-fab--secondary m3-fab--small" type="button" aria-label="Secondary"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
+            <button class="m3-fab m3-fab--tertiary m3-fab--medium" type="button" aria-label="Tertiary, medium"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
+            <button class="m3-fab m3-fab--surface" type="button" aria-label="Surface"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
+          </div>
+        </div>
+
+        <div class="demo-pair">
+          <small class="m3-label-medium">.m3-loading-indicator (morphing shape; still under reduced motion) / --contained / .m3-progress--wavy</small>
+          <div class="demo-row">
+            <div class="m3-loading-indicator" role="progressbar" aria-label="Loading"></div>
+            <div class="m3-loading-indicator m3-loading-indicator--contained" role="progressbar" aria-label="Loading"></div>
+            <div class="m3-loading-indicator m3-loading-indicator--small" role="progressbar" aria-label="Loading"></div>
+            <div class="m3-progress-circle m3-progress-circle--wavy" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="--m3-progress-value: 60"></div>
+          </div>
+          <div class="m3-progress m3-progress--wavy" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="--m3-progress-value: 60"><div class="m3-progress__bar"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pickers" aria-labelledby="pickers-h">
+      <h2 id="pickers-h" class="m3-headline-small">Date and time pickers</h2>
+      <p class="m3-body-medium">The calendar and the time fields are real buttons and inputs styled by m3x; navigating months and applying a selection is your form's or your script's job.</p>
+
+      <div class="demo-grid">
+        <div class="demo-pair">
+          <small class="m3-label-medium">.m3-date-picker (docked): today, a selected day, disabled and outside days</small>
+          <div class="m3-date-picker" role="group" aria-label="Choose date">
+            <div class="m3-date-picker__nav">
+              <button class="m3-date-picker__menu" type="button" aria-haspopup="menu" aria-expanded="false">August 2026</button>
+              <span class="m3-date-picker__arrows">
+                <button class="m3-icon-btn" type="button" aria-label="Previous month"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+                <button class="m3-icon-btn" type="button" aria-label="Next month"><svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24"><path fill="currentColor" d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+              </span>
+            </div>
+            <div class="m3-date-picker__grid" role="grid" aria-label="August 2026">
+            <span class="m3-date-picker__weekday" aria-hidden="true">S</span>
+            <span class="m3-date-picker__weekday" aria-hidden="true">M</span>
+            <span class="m3-date-picker__weekday" aria-hidden="true">T</span>
+            <span class="m3-date-picker__weekday" aria-hidden="true">W</span>
+            <span class="m3-date-picker__weekday" aria-hidden="true">T</span>
+            <span class="m3-date-picker__weekday" aria-hidden="true">F</span>
+            <span class="m3-date-picker__weekday" aria-hidden="true">S</span>
+            <button class="m3-date-picker__day m3-date-picker__day--outside" type="button" tabindex="-1">26</button>
+            <button class="m3-date-picker__day m3-date-picker__day--outside" type="button" tabindex="-1">27</button>
+            <button class="m3-date-picker__day m3-date-picker__day--outside" type="button" tabindex="-1">28</button>
+            <button class="m3-date-picker__day m3-date-picker__day--outside" type="button" tabindex="-1">29</button>
+            <button class="m3-date-picker__day m3-date-picker__day--outside" type="button" tabindex="-1">30</button>
+            <button class="m3-date-picker__day m3-date-picker__day--outside" type="button" tabindex="-1">31</button>
+            <button class="m3-date-picker__day" type="button">1</button>
+            <button class="m3-date-picker__day" type="button">2</button>
+            <button class="m3-date-picker__day" type="button">3</button>
+            <button class="m3-date-picker__day" type="button">4</button>
+            <button class="m3-date-picker__day" type="button">5</button>
+            <button class="m3-date-picker__day" type="button">6</button>
+            <button class="m3-date-picker__day" type="button">7</button>
+            <button class="m3-date-picker__day" type="button" disabled>8</button>
+            <button class="m3-date-picker__day" type="button" disabled>9</button>
+            <button class="m3-date-picker__day" type="button">10</button>
+            <button class="m3-date-picker__day" type="button">11</button>
+            <button class="m3-date-picker__day" type="button">12</button>
+            <button class="m3-date-picker__day" type="button">13</button>
+            <button class="m3-date-picker__day" type="button">14</button>
+            <button class="m3-date-picker__day" type="button">15</button>
+            <button class="m3-date-picker__day" type="button">16</button>
+            <button class="m3-date-picker__day m3-date-picker__day--today" type="button" aria-current="date">17</button>
+            <button class="m3-date-picker__day" type="button">18</button>
+            <button class="m3-date-picker__day" type="button">19</button>
+            <button class="m3-date-picker__day" type="button" aria-selected="true">20</button>
+            <button class="m3-date-picker__day" type="button">21</button>
+            <button class="m3-date-picker__day" type="button">22</button>
+            <button class="m3-date-picker__day" type="button">23</button>
+            <button class="m3-date-picker__day" type="button">24</button>
+            <button class="m3-date-picker__day" type="button">25</button>
+            <button class="m3-date-picker__day" type="button">26</button>
+            <button class="m3-date-picker__day" type="button">27</button>
+            <button class="m3-date-picker__day" type="button">28</button>
+            <button class="m3-date-picker__day" type="button">29</button>
+            <button class="m3-date-picker__day" type="button">30</button>
+            <button class="m3-date-picker__day" type="button">31</button>
+            <button class="m3-date-picker__day m3-date-picker__day--outside" type="button" tabindex="-1">1</button>
+            <button class="m3-date-picker__day m3-date-picker__day--outside" type="button" tabindex="-1">2</button>
+            <button class="m3-date-picker__day m3-date-picker__day--outside" type="button" tabindex="-1">3</button>
+            <button class="m3-date-picker__day m3-date-picker__day--outside" type="button" tabindex="-1">4</button>
+            <button class="m3-date-picker__day m3-date-picker__day--outside" type="button" tabindex="-1">5</button>
+            </div>
+            <div class="m3-date-picker__actions">
+              <button class="m3-btn m3-btn--text" type="button">Cancel</button>
+              <button class="m3-btn m3-btn--text" type="button">OK</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-pair">
+          <small class="m3-label-medium">.m3-time-picker (input mode) at 07:30 AM</small>
+          <div class="m3-time-picker" role="group" aria-label="Select time">
+            <span class="m3-time-picker__label">Select time</span>
+            <div class="m3-time-picker__fields">
+              <label class="m3-time-picker__field m3-time-picker__field--selected">
+                <input class="m3-time-picker__input" inputmode="numeric" maxlength="2" value="07" aria-label="Hour">
+                <span class="m3-time-picker__hint">Hour</span>
+              </label>
+              <span class="m3-time-picker__separator" aria-hidden="true">:</span>
+              <label class="m3-time-picker__field">
+                <input class="m3-time-picker__input" inputmode="numeric" maxlength="2" value="30" aria-label="Minute">
+                <span class="m3-time-picker__hint">Minute</span>
+              </label>
+              <fieldset class="m3-time-picker__period" aria-label="Period">
+                <label class="m3-time-picker__period-option">
+                  <input class="m3-time-picker__period-input" type="radio" name="period" value="am" checked>
+                  <span class="m3-time-picker__period-label">AM</span>
+                </label>
+                <label class="m3-time-picker__period-option">
+                  <input class="m3-time-picker__period-input" type="radio" name="period" value="pm">
+                  <span class="m3-time-picker__period-label">PM</span>
+                </label>
+              </fieldset>
+            </div>
+            <div class="m3-time-picker__actions">
+              <button class="m3-btn m3-btn--text" type="button">Cancel</button>
+              <button class="m3-btn m3-btn--text" type="button">OK</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="modern" aria-labelledby="modern-h">
+      <h2 id="modern-h" class="m3-headline-small">Icons, springs, contrast, adaptive layout</h2>
+      <p class="m3-body-medium">Material Symbols through <code>.m3-icon</code> (the font comes from Google Fonts; the library ships no font). Selected controls set <code>--m3-icon-fill: 1</code>, so outlined symbols fill on select while the button morphs its shape on a spring. Pick a contrast level in the header, or see the <a href="adaptive.html">adaptive layout page</a> for the navigation bar / rail / drawer, the collapsing large app bar and a list-detail layout.</p>
+      <div class="demo-grid">
+        <div class="demo-pair">
+          <small class="m3-label-medium">.m3-icon in buttons; aria-pressed toggles (click to select)</small>
+          <div class="demo-row">
+            <button class="m3-btn m3-btn--filled" type="button"><span class="m3-icon" aria-hidden="true">send</span>Send</button>
+            <button class="m3-btn m3-btn--tonal" type="button" aria-pressed="false" data-toggle><span class="m3-icon" aria-hidden="true">bookmark</span>Save</button>
+            <button class="m3-btn m3-btn--outlined m3-btn--square" type="button" aria-pressed="false" data-toggle><span class="m3-icon" aria-hidden="true">push_pin</span>Pin</button>
+            <button class="m3-icon-btn m3-icon-btn--tonal" type="button" aria-label="Favorite" aria-pressed="true" data-toggle><span class="m3-icon" aria-hidden="true">favorite</span></button>
+            <button class="m3-icon-btn m3-icon-btn--outlined m3-icon-btn--medium" type="button" aria-label="Notifications" aria-pressed="false" data-toggle><span class="m3-icon" aria-hidden="true">notifications</span></button>
+            <span class="m3-icon" aria-hidden="true" style="--m3-icon-weight: 200;">home</span>
+            <span class="m3-icon m3-icon--filled" aria-hidden="true" style="color: var(--md-sys-color-tertiary);">home</span>
+            <span class="m3-icon" aria-hidden="true" style="--m3-icon-weight: 700; --m3-icon-grade: 200;">home</span>
+          </div>
+        </div>
+        <div class="demo-pair">
+          <small class="m3-label-medium">details.m3-disclosure (exclusive group via name; animated ::details-content)</small>
+          <div>
+            <details class="m3-disclosure" name="faq" open><summary>Where is my data stored?</summary><p class="m3-body-medium" style="margin: 0 var(--m3-sys-space-3) var(--m3-sys-space-3);">In the region you picked when the account was created.</p></details>
+            <details class="m3-disclosure" name="faq"><summary>Can I export everything?</summary><p class="m3-body-medium" style="margin: 0 var(--m3-sys-space-3) var(--m3-sys-space-3);">Yes: Settings, Export, then pick a format.</p></details>
+            <details class="m3-disclosure" name="faq"><summary>How do I delete my account?</summary><p class="m3-body-medium" style="margin: 0 var(--m3-sys-space-3) var(--m3-sys-space-3);">Settings, Delete forever. It takes thirty days.</p></details>
+          </div>
+        </div>
+        <div class="demo-pair">
+          <small class="m3-label-medium">select with the customizable picker (appearance: base-select) / auto-growing textarea (field-sizing)</small>
+          <div class="demo-row">
+            <select class="m3-select" aria-label="Signature">
+              <option>No signature</option>
+              <option selected>Aurora default</option>
+              <optgroup label="Custom"><option>Work</option><option>Personal</option></optgroup>
+            </select>
+            <label class="m3-field m3-field--outlined" style="flex: 1 1 14rem;">
+              <textarea class="m3-field__input" placeholder=" " rows="1"></textarea>
+              <span class="m3-field__label">Signature text (grows as you type)</span>
+            </label>
+          </div>
+        </div>
+        <div class="demo-pair">
+          <small class="m3-label-medium">data-contrast on a subtree (high) beside the page's level</small>
+          <div class="demo-row">
+            <button class="m3-btn m3-btn--filled" type="button">Page level</button>
+            <button class="m3-btn m3-btn--tonal" type="button">Tonal</button>
+            <span data-contrast="high" class="demo-row" style="padding: var(--m3-sys-space-2); border-radius: var(--md-sys-shape-corner-medium); background: var(--md-sys-color-surface-container);">
+              <button class="m3-btn m3-btn--filled" type="button">High contrast</button>
+              <button class="m3-btn m3-btn--tonal" type="button">Tonal</button>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="m3-pane-layout m3-pane-layout--list-detail" style="padding-inline: 0;">
+        <section class="m3-pane"><span class="m3-title-small">.m3-pane-layout--list-detail</span><br><span class="m3-body-medium">One column below the expanded size class (840px), a 360px list beside the detail above it.</span></section>
+        <section class="m3-pane"><span class="m3-title-small">.m3-pane</span><br><span class="m3-body-medium">Panes sit on surface-container-low with 16px corners; --supporting-pane and --feed are the other canonical layouts.</span></section>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <section id="layout" aria-labelledby="layout-h">
+      <h2 id="layout-h" class="m3-headline-small">Layout, utilities, helpers &mdash; no bootstrap.css</h2>
+      <p class="m3-body-medium">Everything below is Bootstrap 5.3 layout and utility markup rendered by m3x alone: the grid, gutters, spacing, display, flex, text and background utilities, and helpers.</p>
+      <div class="container-fluid px-0">
+        <div class="row g-3">
+          <div class="col-12 col-md-8">
+            <div class="p-3 rounded-3 bg-primary-subtle text-primary-emphasis">
+              <span class="fw-medium">.col-12 .col-md-8</span> &mdash; storage overview
+            </div>
+          </div>
+          <div class="col-6 col-md-4">
+            <div class="p-3 rounded-3 bg-secondary-subtle text-secondary-emphasis h-100 d-flex align-items-center justify-content-between">
+              <span class="fw-medium">.col-6 .col-md-4</span>
+              <span class="badge text-bg-success">Synced</span>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="p-3 rounded-3 border border-warning-subtle bg-warning-subtle text-warning-emphasis">Mail</div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="p-3 rounded-3 border bg-body-tertiary">Drive</div>
+          </div>
+          <div class="col-6 col-md-3 offset-md-3">
+            <div class="p-3 rounded-pill text-bg-dark text-center small">.offset-md-3</div>
+          </div>
+        </div>
+      </div>
+      <div class="hstack gap-3 mt-4 flex-wrap">
+        <span class="text-muted">hstack</span>
+        <div class="vr"></div>
+        <span class="text-body-emphasis fw-semibold">emphasis</span>
+        <div class="vr"></div>
+        <a class="link-primary link-offset-2 link-underline-opacity-25" href="#layout">link utility</a>
+        <div class="vr"></div>
+        <span class="text-uppercase fs-6 text-truncate d-inline-block" style="max-width: 10rem;">a truncated, uppercase span of text</span>
+        <span class="visually-hidden">Hidden from sight, present for screen readers.</span>
+        <span class="ms-auto d-none d-md-inline text-body-tertiary">.d-none .d-md-inline</span>
+      </div>
+      <figure class="figure mt-4 mb-0">
+        <blockquote class="blockquote mb-2">
+          <p class="mb-0">Filters run top to bottom; the first match wins.</p>
+        </blockquote>
+        <figcaption class="blockquote-footer mb-0">Aurora Mail help center</figcaption>
+      </figure>
+    </section>
+
+    <!-- ================================================================ -->
+    <section id="composability" aria-labelledby="comp-h">
+      <h2 id="comp-h" class="m3-headline-small">Composability corner</h2>
+      <p class="m3-body-medium">No selectors were fought below: only tier-3 tokens are set, and both vocabularies follow.</p>
+      <div class="demo-grid">
+        <div class="demo-pair" style="--m3-btn-container-color: var(--md-sys-color-tertiary); --m3-btn-label-color: var(--md-sys-color-on-tertiary); --m3-btn-shape: var(--md-sys-shape-corner-small);">
+          <small class="m3-label-medium">Ancestor class sets --m3-btn-container-color: tertiary + square-ish shape</small>
+          <div class="demo-row">
+            <button class="m3-btn m3-btn--filled">m3 button</button>
+            <button class="btn btn-primary">Bootstrap button</button>
+          </div>
+        </div>
+        <div class="demo-pair">
+          <small class="m3-label-medium">Inline style per instance</small>
+          <div class="demo-row">
+            <button class="m3-btn m3-btn--filled" style="--m3-btn-container-color: var(--md-extended-color-success); --m3-btn-label-color: var(--md-extended-color-on-success);">Approve</button>
+            <button class="btn btn-primary" style="--m3-btn-container-color: var(--md-sys-color-error); --m3-btn-label-color: var(--md-sys-color-on-error);">Delete forever</button>
+            <div class="m3-card m3-card--elevated" style="--m3-card-container-color: var(--md-sys-color-secondary-container); --m3-card-shape: var(--md-sys-shape-corner-extra-large);">
+              <div class="m3-card__slot"><p style="margin: 0;">Card restyled via two tokens.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="m3-body-small" style="color: var(--md-sys-color-on-surface-variant); padding-block: var(--m3-sys-space-5);">
+      m3x demo &mdash; zero runtime JavaScript in the library; the only script on this page is the theme, contrast and seed pickers and the aria-pressed toggles below (&le; 30 lines).
+    </footer>
+
+  </main>
+</div>
+
+<script>
+  var root = document.documentElement;
+  document.getElementById("theme").addEventListener("change", function (e) {
+    if (e.target.value === "auto") {
+      root.removeAttribute("data-theme");
+    } else {
+      root.setAttribute("data-theme", e.target.value);
+    }
+  });
+  document.getElementById("seed").addEventListener("input", function (e) {
+    root.style.setProperty("--md-seed", e.target.value);
+  });
+  document.getElementById("contrast").addEventListener("change", function (e) {
+    if (e.target.value) root.setAttribute("data-contrast", e.target.value);
+    else root.removeAttribute("data-contrast");
+  });
+  // Shape slots. The only thing this writes is ONE custom property on the
+  // panel -- the containers below re-shape by themselves, because each one
+  // reads the slot it is assigned to.
+  var slotStage = document.getElementById("slot-stage");
+  var slotName = document.getElementById("slot-name");
+  var slotSize = document.getElementById("slot-size");
+  var slotOut = document.getElementById("slot-out");
+  var slotCss = document.getElementById("slot-css");
+  var SLOT_DEFAULTS = { medium: 12, large: 16, "extra-large": 28, full: 48 };
+  function applySlot() {
+    var name = slotName.value;
+    var px = slotSize.value + "px";
+    slotStage.style.setProperty("--md-sys-shape-corner-" + name, px);
+    slotOut.textContent = px;
+    slotCss.textContent = "--md-sys-shape-corner-" + name + ": " + px;
+  }
+  slotName.addEventListener("change", function () {
+    // Show each slot from its own M3 value rather than carrying the last one over.
+    slotSize.value = SLOT_DEFAULTS[slotName.value];
+    applySlot();
+  });
+  slotSize.addEventListener("input", applySlot);
+
+  // Corner family: rounded or cut.
+  document.querySelectorAll('[name="corner-family"]').forEach(function (r) {
+    r.addEventListener("change", function () {
+      document.getElementById("family-stage").style.setProperty("--m3-sys-corner-shape", r.value);
+      document.getElementById("family-css").textContent = "--m3-sys-corner-shape: " + r.value;
+    });
+  });
+
+  // aria-pressed toggles are state, not styling: three lines of demo script.
+  document.querySelectorAll("[data-toggle]").forEach(function (b) {
+    b.addEventListener("click", function () { b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true"); });
+  });
+  // Indeterminate is a DOM property, not an attribute.
+  document.querySelectorAll("[data-indeterminate]").forEach(function (i) { i.indeterminate = true; });
+  // Browsers without Invoker Commands (command="show-modal"): open the modal from a click.
+  if (!("commandForElement" in HTMLButtonElement.prototype)) {
+    document.querySelectorAll("[commandfor]").forEach(function (b) {
+      b.addEventListener("click", function () { document.getElementById(b.getAttribute("commandfor")).showModal(); });
+    });
+  }
+</script>
+
+<script>
+  // The slider's value indicator: CSS places the pill, the page supplies the
+  // number and the percentage, exactly as the README describes.
+  (function () {
+    var input = document.getElementById("vol");
+    var field = document.getElementById("vol-field");
+    var out = document.getElementById("vol-out");
+    if (!input) return;
+    input.addEventListener("input", function () {
+      var pct = ((input.value - input.min) / (input.max - input.min)) * 100;
+      field.style.setProperty("--m3-slider-value", pct);
+      out.textContent = input.value;
+    });
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,316 @@
+// ============================================================================
+// m3x reference palettes (tier 1 tokens: --md-ref-palette-*)
+// Five tonal palettes derived from one seed by the configured scheme
+// variant, a fixed error palette, extended semantic palettes (success /
+// warning / info) for Bootstrap parity, and any custom color palettes.
+//
+// HCT is approximated with OKLCH: tone T's lightness is the OKLCH "l" of
+// lab(T 0 0); chroma follows the variant's per-palette rule, gamut-capped
+// per tone at build time. Emitted three times, in ascending capability
+// tiers (static hex -> OKLCH literals -> runtime relative-color from
+// --md-seed); see tokens/_color-scheme.scss for how the tiers are sequenced.
+// ============================================================================
+
+@use "sass:color";
+@use "sass:list";
+@use "sass:map";
+@use "sass:math";
+@use "sass:meta";
+@use "../config";
+@use "../functions" as fn;
+@use "contrast";
+
+// --- seed decomposition -----------------------------------------------------
+
+$-seed-ok: color.to-space(config.$seed, oklch);
+$-seed-h: color.channel($-seed-ok, "hue");
+$-seed-c: color.channel($-seed-ok, "chroma");
+
+@if meta.type-of($-seed-h) != "number" {
+  $-seed-h: 0deg;
+}
+
+// --- scheme variants --------------------------------------------------------
+// Per palette: (mode, chroma, hue shift). Modes:
+//   "cap"      chroma = min(seed chroma, value)     runtime: min(c, value)
+//   "fixed"    chroma = value                       runtime: value
+//   "relative" chroma = seed chroma * scale + offset, floored at 0
+//              (value is (scale, offset))           runtime: calc()
+//   "half-or-less" chroma = max(seed - value, seed / 2) (fidelity secondary)
+// OKLCH chroma stands in for HCT chroma at about 1/230 for accents and a
+// little less for neutrals, so the defaults keep the library's original
+// tonal-spot look while the other variants keep M3's relative intent.
+$-variants: (
+  "tonal-spot": (
+    "primary": ("cap", 0.17, 0deg),
+    "secondary": ("cap", 0.05, 0deg),
+    "tertiary": ("cap", 0.08, 60deg),
+    "neutral": ("cap", 0.012, 0deg),
+    "neutral-variant": ("cap", 0.025, 0deg),
+  ),
+  "vibrant": (
+    "primary": ("cap", 0.37, 0deg),
+    "secondary": ("fixed", 0.108, 15deg),
+    "tertiary": ("fixed", 0.144, 30deg),
+    "neutral": ("fixed", 0.02, 0deg),
+    "neutral-variant": ("fixed", 0.036, 0deg),
+  ),
+  "expressive": (
+    "primary": ("fixed", 0.18, 240deg),
+    "secondary": ("fixed", 0.108, 45deg),
+    "tertiary": ("fixed", 0.144, 120deg),
+    "neutral": ("fixed", 0.016, 15deg),
+    "neutral-variant": ("fixed", 0.036, 15deg),
+  ),
+  "neutral": (
+    "primary": ("fixed", 0.054, 0deg),
+    "secondary": ("fixed", 0.036, 0deg),
+    "tertiary": ("fixed", 0.072, 0deg),
+    "neutral": ("fixed", 0.004, 0deg),
+    "neutral-variant": ("fixed", 0.006, 0deg),
+  ),
+  "monochrome": (
+    "primary": ("fixed", 0, 0deg),
+    "secondary": ("fixed", 0, 0deg),
+    "tertiary": ("fixed", 0, 0deg),
+    "neutral": ("fixed", 0, 0deg),
+    "neutral-variant": ("fixed", 0, 0deg),
+  ),
+  "fidelity": (
+    "primary": ("relative", (1, 0), 0deg),
+    "secondary": ("half-or-less", 0.144, 0deg),
+    "tertiary": ("relative", (1, 0), 180deg),
+    "neutral": ("relative", (0.125, 0), 0deg),
+    "neutral-variant": ("relative", (0.125, 0.012), 0deg),
+  ),
+  "content": (
+    "primary": ("relative", (1, 0), 0deg),
+    "secondary": ("half-or-less", 0.144, 0deg),
+    "tertiary": ("relative", (1, 0), 60deg),
+    "neutral": ("relative", (0.125, 0), 0deg),
+    "neutral-variant": ("relative", (0.125, 0.012), 0deg),
+  ),
+  "rainbow": (
+    "primary": ("fixed", 0.216, 0deg),
+    "secondary": ("fixed", 0.072, 0deg),
+    "tertiary": ("fixed", 0.108, 60deg),
+    "neutral": ("fixed", 0, 0deg),
+    "neutral-variant": ("fixed", 0, 0deg),
+  ),
+  "fruit-salad": (
+    "primary": ("fixed", 0.216, -50deg),
+    "secondary": ("fixed", 0.162, -50deg),
+    "tertiary": ("fixed", 0.162, 0deg),
+    "neutral": ("fixed", 0.02, 0deg),
+    "neutral-variant": ("fixed", 0.048, 0deg),
+  ),
+);
+
+$-variant: map.get($-variants, config.$scheme);
+@if $-variant == null {
+  @error "Unknown $scheme #{config.$scheme}; one of #{map.keys($-variants)}";
+}
+
+// Build-time chroma for a rule.
+@function -rule-chroma($rule) {
+  $mode: list.nth($rule, 1);
+  $v: list.nth($rule, 2);
+  @if $mode == "cap" {
+    @return math.min($-seed-c, $v);
+  } @else if $mode == "fixed" {
+    @return $v;
+  } @else if $mode == "relative" {
+    @return math.max($-seed-c * list.nth($v, 1) + list.nth($v, 2), 0);
+  } @else if $mode == "half-or-less" {
+    @return math.max($-seed-c - $v, math.div($-seed-c, 2));
+  }
+  @error "Unknown chroma mode #{$mode}";
+}
+
+// Runtime (relative color syntax) chroma expression for a rule.
+@function -rule-chroma-expr($rule) {
+  $mode: list.nth($rule, 1);
+  $v: list.nth($rule, 2);
+  @if $mode == "cap" {
+    @return "min(c, #{$v})";
+  } @else if $mode == "fixed" {
+    @return "#{$v}";
+  } @else if $mode == "relative" {
+    @return "max(calc(c * #{list.nth($v, 1)} + #{list.nth($v, 2)}), 0)";
+  } @else if $mode == "half-or-less" {
+    @return "max(calc(c - #{$v}), calc(c / 2))";
+  }
+  @error "Unknown chroma mode #{$mode}";
+}
+
+@function -rule-hue-expr($rule) {
+  $shift: list.nth($rule, 3);
+  @if $shift == 0deg {
+    @return "h";
+  }
+  @return "calc(h + #{math.div($shift, 1deg)})";
+}
+
+// Fixed palettes (seed-independent, like M3's error palette).
+$-error-h: 29deg;
+$-error-chroma: 0.19;
+$-success-h: 145deg;
+$-success-chroma: 0.14;
+$-warning-h: 85deg;
+$-warning-chroma: 0.12;
+$-info-h: 230deg;
+$-info-chroma: 0.13;
+
+// Custom colors: their own chroma, hue harmonized toward the seed (M3's
+// blend: rotate by half the angular distance, at most 15 degrees).
+@function -harmonize($h) {
+  $diff: $h - $-seed-h;
+  @while $diff > 180deg {
+    $diff: $diff - 360deg;
+  }
+  @while $diff < -180deg {
+    $diff: $diff + 360deg;
+  }
+  $rotation: math.min(math.abs($diff) * 0.5, 15deg);
+  @if $diff > 0deg {
+    @return $h - $rotation;
+  }
+  @return $h + $rotation;
+}
+
+// --- palette definitions ----------------------------------------------------
+
+// name -> (hue, chroma, tone list, runtime chroma expression or null,
+// runtime hue expression or null). A null runtime expression means the
+// palette is fixed and keeps its static values at runtime.
+$-defs: ();
+@each $name, $rule in $-variant {
+  $tones: fn.$standard-tones;
+  @if $name == "neutral" {
+    $tones: fn.$all-tones;
+  }
+  $-defs: map.set(
+    $-defs,
+    $name,
+    (
+      $-seed-h + list.nth($rule, 3),
+      -rule-chroma($rule),
+      $tones,
+      -rule-chroma-expr($rule),
+      -rule-hue-expr($rule)
+    )
+  );
+}
+$-defs: map.merge(
+  $-defs,
+  (
+    "error": ($-error-h, $-error-chroma, fn.$standard-tones, null, null),
+    "success": ($-success-h, $-success-chroma, fn.$standard-tones, null, null),
+    "warning": ($-warning-h, $-warning-chroma, fn.$standard-tones, null, null),
+    "info": ($-info-h, $-info-chroma, fn.$standard-tones, null, null),
+  )
+);
+@each $name, $source in config.$custom-colors {
+  $ok: color.to-space($source, oklch);
+  $h: color.channel($ok, "hue");
+  @if meta.type-of($h) != "number" {
+    $h: $-seed-h;
+  }
+  $-defs: map.set(
+    $-defs,
+    $name,
+    (-harmonize($h), math.min(color.channel($ok, "chroma"), 0.37), fn.$standard-tones, null, null)
+  );
+}
+
+// Every palette also carries the steps the medium / high contrast levels
+// resolve to (tokens/_contrast.scss), so contrast switching stays a pure
+// var() re-pointing at runtime.
+$-needed: contrast.needed-tones();
+@each $name, $def in $-defs {
+  $extra: map.get($-needed, $name);
+  @if $extra != null {
+    $-defs: map.set(
+      $-defs,
+      $name,
+      list.set-nth($def, 3, contrast.sorted-union(list.nth($def, 3), $extra))
+    );
+  }
+}
+
+// Union of every palette's tones: the --md-tone-*-l lightness scale.
+$runtime-tones: ();
+@each $name, $def in $-defs {
+  $runtime-tones: contrast.sorted-union($runtime-tones, list.nth($def, 3));
+}
+
+// Resolved palettes: name -> (tone -> Sass OKLCH color).
+$palettes: ();
+@each $name, $def in $-defs {
+  $hue: list.nth($def, 1);
+  $chroma: list.nth($def, 2);
+  $tones: list.nth($def, 3);
+  $palettes: map.set($palettes, $name, fn.palette($hue, $chroma, $tones));
+}
+
+// get(): one palette step as a Sass color (build-time consumers: the scheme
+// map, @property initial values, Bootstrap RGB triplets).
+@function get($palette, $tone) {
+  $p: map.get($palettes, $palette);
+  @if $p == null {
+    @error "Unknown palette #{$palette}";
+  }
+  $c: map.get($p, $tone);
+  @if $c == null {
+    @error "Palette #{$palette} has no tone #{$tone}";
+  }
+  @return $c;
+}
+
+// --- emission ---------------------------------------------------------------
+
+// Tone lightness scale for runtime use: --md-tone-0-l ... --md-tone-100-l.
+@mixin tones {
+  @each $t in $runtime-tones {
+    --#{config.$sys-prefix}-tone-#{$t}-l: #{fn.tone-l-str($t)};
+  }
+}
+
+// Tier 1: static sRGB hex for every palette step, plus the seed itself.
+@mixin static-fallback {
+  --#{config.$sys-prefix}-seed: #{fn.hex(config.$seed)};
+  @each $name, $steps in $palettes {
+    @each $t, $c in $steps {
+      --#{config.$sys-prefix}-ref-palette-#{$name}#{$t}: #{fn.hex($c)};
+    }
+  }
+}
+
+// Tier 3: same steps as OKLCH literals (behind oklch + light-dark support).
+@mixin tier3-oklch {
+  --#{config.$sys-prefix}-seed: #{fn.oklch-str(config.$seed)};
+  @each $name, $steps in $palettes {
+    @each $t, $c in $steps {
+      --#{config.$sys-prefix}-ref-palette-#{$name}#{$t}: #{fn.oklch-str($c)};
+    }
+  }
+}
+
+// Tier 4: runtime seed derivation with relative color syntax. One line in a
+// consumer's CSS (`:root { --md-seed: oklch(0.55 0.15 250); }`) rethemes
+// the whole app with the configured variant's rules. Fixed palettes (error,
+// extended, custom) keep their static values.
+@mixin tier4-relative {
+  @each $name, $def in $-defs {
+    $chroma-expr: list.nth($def, 4);
+    $hue-expr: list.nth($def, 5);
+    @if $chroma-expr != null {
+      $tones: list.nth($def, 3);
+      @each $t in $tones {
+        --#{config.$sys-prefix}-ref-palette-#{$name}#{$t}: #{fn.raw(
+            "oklch(from var(--#{config.$sys-prefix}-seed) var(--#{config.$sys-prefix}-tone-#{$t}-l) #{$chroma-expr} #{$hue-expr})"
+          )};
+      }
+    }
+  }
+}

@@ -1,0 +1,217 @@
+// ============================================================================
+// m3x search (search bar + CSS-revealed suggestion panel)
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-search-height             56px   bar height; participates in density
+//   --m3-search-container-color    surface-container-high
+//   --m3-search-content-color      on-surface
+//   --m3-search-placeholder-color  on-surface-variant
+//   --m3-search-shape              corner-full
+//   --m3-search-panel-shape        corner-medium
+//   --m3-search-icon-color         on-surface-variant  leading/trailing slots
+//
+// Markup:
+//   <form class="m3-search" role="search">
+//     <span class="m3-search__leading"><span class="m3-icon">search</span></span>
+//     <input type="search" class="m3-search__input" placeholder="Search settings">
+//     <button class="m3-search__trailing" type="reset" aria-label="Clear">
+//       <span class="m3-icon">close</span>
+//     </button>
+//     <div class="m3-search__panel"> ...suggestion content (e.g. an m3-list)... </div>
+//   </form>
+//
+// The icon slots are optional and in flow, so the bar's flex row places them.
+// M3 builds the search bar ON the text field's decorator: each icon sits in
+// the same 48dp interactive box the text field uses, and the box is nudged
+// 4dp outward so the icon lands 16dp from the container edge rather than the
+// text field's 12dp (androidx names that offset SearchBarIconOffsetX). The
+// input therefore still starts at 52dp -- exactly where a text field with a
+// leading icon starts it -- not at 56dp.
+//
+// In flow that falls out of one negative margin: the bar's own 16dp padding
+// would put the 48dp box's edge at 16, and the icon 12dp inside that at 28,
+// so the box overhangs the padding by (48 - 24) / 2 = 12dp on its outer side.
+// The box then spans 4..52 and the input begins where it ends. A slot with no
+// icon in it is still 48dp, which is the touch target an interactive slot
+// needs -- a bare 24dp button here would be well under M3's minimum.
+//
+// Pure-CSS focus caveat: the suggestion panel is revealed by :focus-within on
+// the form, so it stays open only while focus is inside the form. Suggestion
+// links/buttons inside the panel remain reachable (they are part of the form,
+// so tabbing or clicking into them keeps :focus-within true), but the panel
+// closes the moment focus leaves the form -- there is no JS to pin it open,
+// dismiss on Escape, or restore it without refocusing the input.
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "search-height": #{fn.rem(56)},
+  "search-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-high),
+  "search-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "search-placeholder-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "search-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
+  "search-panel-shape": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "search-icon-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// The bar itself: positioning context for the panel, flex row for the input
+// (and any leading/trailing icon slots the consumer adds).
+@mixin bar {
+  @include m.own-box;
+  position: relative;
+  display: flex;
+  align-items: center;
+  // No gap: each slot's own box supplies the inset to the input (see above).
+  gap: var(--#{c.$prefix}-sys-space-none);
+  @include m.control-height(v("search-height"));
+  border-radius: #{v("search-shape")};
+  background-color: #{v("search-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("search-container-color")};
+  padding-inline: var(--#{c.$prefix}-sys-space-4);
+  @include m.focus-ring-within;
+  @include m.transition((background-color));
+
+  @include m.hover {
+    background-color: color-mix(
+      in srgb,
+      #{v("search-content-color")}
+        var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity),
+      #{v("search-container-color")}
+    );
+  }
+}
+
+// The real input[type="search"]; the bar carries the focus ring.
+@mixin input {
+  @include m.own-box;
+  display: block;
+  flex: 1 1 auto;
+  background-color: transparent;
+  border: none;
+  color: #{v("search-content-color")};
+  @include m.typescale("body-large");
+  min-inline-size: var(--#{c.$prefix}-sys-space-none);
+  cursor: text;
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+  }
+
+  &::placeholder {
+    color: #{v("search-placeholder-color")};
+    opacity: var(--#{c.$prefix}-sys-opacity-full);
+  }
+
+  &::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    @include m.cross-icon(var(--#{c.$prefix}-sys-icon-size-small), var(--#{c.$prefix}-sys-stroke-thick));
+    inline-size: var(--#{c.$prefix}-sys-icon-size-small);
+    block-size: var(--#{c.$prefix}-sys-icon-size-small);
+    cursor: pointer;
+  }
+}
+
+// Suggestion dropdown, hidden until the form holds focus (see caveat above).
+@mixin panel {
+  @include m.own-box;
+  @include m.typescale("body-medium");
+  color: #{v("search-content-color")};
+  position: absolute;
+  inset-block-start: 100%;
+  inset-inline: var(--#{c.$prefix}-sys-space-none);
+  margin-block-start: var(--#{c.$prefix}-sys-space-1);
+  background-color: #{v("search-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("search-container-color")};
+  border-radius: #{v("search-panel-shape")};
+  @include m.elevation(2);
+  padding-block: var(--#{c.$prefix}-sys-space-2);
+  display: none;
+  z-index: var(--#{c.$prefix}-sys-z-overlay);
+}
+
+// M3's leading and trailing icon slots. The bar's own 16dp padding puts the
+// slot 16dp from the container edge; the slot adds the 8dp that turns the
+// bar's 8dp flex gap into M3's 16dp between icon and text. A slot is a plain
+// box, so it takes a bare icon or a whole .m3-icon-btn.
+@mixin icon-slot {
+  @include m.own-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  inline-size: var(--#{c.$prefix}-sys-target-size);
+  block-size: var(--#{c.$prefix}-sys-target-size);
+  border: none;
+  padding: var(--#{c.$prefix}-sys-space-none);
+  background-color: transparent;
+  color: #{v("search-icon-color")};
+}
+
+// How far the 48dp box overhangs the bar's padding so the 24dp icon inside it
+// reads at M3's 16dp inset: half the difference between the box and the icon.
+@function -icon-overhang() {
+  @return calc(
+    -1 * (var(--#{c.$prefix}-sys-target-size) - var(--#{c.$prefix}-sys-icon-size)) / 2
+  );
+}
+
+@mixin icon-slot-leading {
+  margin-inline-start: #{-icon-overhang()};
+}
+
+@mixin icon-slot-trailing {
+  margin-inline-end: #{-icon-overhang()};
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-search {
+    @include bar;
+  }
+
+  .#{$p}-search__input {
+    @include input;
+  }
+
+  .#{$p}-search__leading,
+  .#{$p}-search__trailing {
+    @include icon-slot;
+  }
+
+  .#{$p}-search__leading {
+    @include icon-slot-leading;
+  }
+
+  .#{$p}-search__trailing {
+    @include icon-slot-trailing;
+  }
+
+  // A slot that is a real control gets the pointer and the focus ring.
+  button.#{$p}-search__leading,
+  button.#{$p}-search__trailing {
+    cursor: pointer;
+    @include m.focus-ring;
+  }
+
+  .#{$p}-search__panel {
+    @include panel;
+  }
+
+  .#{$p}-search:focus-within .#{$p}-search__panel {
+    display: block;
+  }
+}

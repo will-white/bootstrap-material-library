@@ -1,0 +1,410 @@
+// ============================================================================
+// m3x navigation rail (side navigation for medium+ viewports)
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-rail-width                       96px   rail inline size (M3
+//                                                Expressive; 80px pre-Expressive)
+//   --m3-rail-pill-width                  56px   active-indicator pill
+//   --m3-rail-pill-height                 32px   active-indicator pill
+//   --m3-rail-container-color             surface
+//   --m3-rail-label-color                 on-surface-variant
+//   --m3-rail-active-label-color          on-surface
+//   --m3-rail-active-icon-container-color secondary-container
+//   --m3-rail-active-icon-color           on-secondary-container
+//   --m3-rail-top-space                   44px   M3's TopSpace, above the
+//                                                first destination
+//   --m3-rail-item-gap                    4px    M3's ItemVerticalSpace
+//   --m3-rail-item-height                 64px   M3's ContainerHeight
+//   --m3-rail-expanded-width              220px  M3's minimum; its maximum is
+//                                                360px and this clamps to both
+//   --m3-rail-header-gap                  40px   M3's HeaderSpaceMinimum, the
+//                                                least room between the header
+//                                                and the first destination
+//   --m3-rail-modal-container-color       surface-container
+//   --m3-rail-modal-shape                 corner-large
+//
+// Markup:
+//   <aside class="m3-rail m3-rail--fixed" aria-label="Primary">
+//     <a class="m3-rail__item" href="/" aria-current="page">
+//       <span class="m3-rail__icon"><svg viewBox="0 0 24 24">...</svg></span>
+//       Home
+//     </a>
+//     <a class="m3-rail__item" href="/browse">
+//       <span class="m3-rail__icon"><svg viewBox="0 0 24 24">...</svg></span>
+//       Browse
+//     </a>
+//   </aside>
+//
+// The active destination is marked with aria-current="page" (preferred) or
+// the .active interop class; both render identically.
+//
+// HEADER (M3's optional leading slot: a menu button, a FAB, or both):
+//   <aside class="m3-rail" aria-label="Primary">
+//     <div class="m3-rail__header">
+//       <button class="m3-icon-btn" type="button" aria-label="Menu">...</button>
+//       <button class="m3-fab m3-fab--small" type="button">...</button>
+//     </div>
+//     ...destinations...
+//   </aside>
+//
+// EXPANDED (.m3-rail--expanded): M3's wide rail, 220-360dp, with each label
+// beside its icon on a 56dp indicator instead of under it on a 56x32 pill.
+// The markup is identical -- only the class on the container changes -- so a
+// rail can swap forms at a breakpoint with one class.
+//
+// MODAL (.m3-rail--modal on a <dialog>): the expanded rail as an overlay over
+// a scrim, opened with showModal() from the consumer's code, exactly like
+// .m3-drawer--modal.
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "rail-width": #{fn.rem(96)},
+  "rail-pill-width": #{fn.rem(56)},
+  "rail-pill-height": #{fn.rem(32)},
+  "rail-container-color": var(--#{c.$sys-prefix}-sys-color-surface),
+  "rail-label-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  // M3's NavigationRailColorTokens.ItemActiveLabelText, which Compose passes
+  // straight through as the selected item's text colour.
+  "rail-active-label-color": var(--#{c.$sys-prefix}-sys-color-secondary),
+  "rail-active-icon-container-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
+  "rail-active-icon-color": var(--#{c.$sys-prefix}-sys-color-on-secondary-container),
+  // The collapsed rail's own vertical rhythm, from the Expressive rail's
+  // layout: 44dp above the first destination and nothing below it, 4dp
+  // between destinations, and a 64dp minimum for a destination itself.
+  "rail-top-space": #{fn.rem(44)},
+  "rail-item-gap": #{fn.rem(4)},
+  "rail-item-height": #{fn.rem(64)},
+  // Expanded: M3 gives the wide rail a 220dp minimum and a 360dp maximum, and
+  // the token is clamped to both, so re-pointing it stays inside the spec.
+  "rail-expanded-width": #{fn.rem(220)},
+  // M3's NavigationRailHorizontalItem: a 56dp indicator, 16dp of leading and
+  // trailing space, 8dp between icon and label, and label-large rather than
+  // the vertical item's label-medium.
+  "rail-expanded-item-height": #{fn.rem(56)},
+  // M3's HeaderSpaceMinimum.
+  "rail-header-gap": #{fn.rem(40)},
+  "rail-modal-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container),
+  "rail-modal-shape": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// The rail container (an <aside>): a full-height column of destinations.
+@mixin rail {
+  @include m.own-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: #{v("rail-item-gap")};
+  inline-size: #{v("rail-width")};
+  block-size: 100%;
+  // M3 puts its whole vertical allowance above the first destination and
+  // none below it, so the rail reads as a column hanging from the top.
+  padding-block-start: #{v("rail-top-space")};
+  padding-block-end: var(--#{c.$prefix}-sys-space-none);
+  background-color: #{v("rail-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("rail-container-color")};
+}
+
+// Pinned to the inline-start edge of the viewport.
+@mixin fixed {
+  position: fixed;
+  inset-block: var(--#{c.$prefix}-sys-space-none);
+  inset-inline-start: var(--#{c.$prefix}-sys-space-none);
+  z-index: var(--#{c.$prefix}-sys-z-nav);
+}
+
+// One destination (an <a>). The state layer lives on the child pill and is
+// driven from here, so hovering anywhere on the destination tints the pill.
+@mixin item($icon: ".#{c.$prefix}-rail__icon") {
+  @include m.own-box;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--#{c.$prefix}-sys-space-1);
+  inline-size: 100%;
+  min-block-size: #{v("rail-item-height")};
+  color: #{v("rail-label-color")};
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  @include m.typescale("label-medium");
+  @include m.focus-ring;
+  @include m.transition((color));
+
+  // The state-layer opacity lives on the ITEM, and whichever box is the
+  // active indicator reads it by inheritance: the icon's pill when the rail
+  // is collapsed, the item's own row when it is expanded.
+  --_state-opacity: var(--#{c.$sys-prefix}-sys-state-none);
+
+  @media (hover: hover) {
+    &:hover {
+      --_state-opacity: var(--#{c.$sys-prefix}-sys-state-hover-state-layer-opacity);
+    }
+  }
+
+  &:active {
+    @include m.pressed-opacity;
+  }
+
+  // Active destination: aria-current="page" (preferred) or .active interop.
+  &.active,
+  &[aria-current="page"] {
+    color: #{v("rail-active-label-color")};
+
+    #{$icon} {
+      --#{c.$prefix}-icon-fill: 1;
+      --_container: #{v("rail-active-icon-container-color")};
+      color: #{v("rail-active-icon-color")};
+    }
+  }
+}
+
+// The active-indicator pill around the icon. Carries the state-layer
+// compositing pattern (same color-mix machinery as m.state-layer), but its
+// --_state-opacity is re-pointed by the parent item's states above.
+@mixin icon {
+  @include m.own-box;
+  --_container: transparent;
+  --_content: #{v("rail-label-color")};
+  --_state-color: var(--_content);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: #{v("rail-pill-width")};
+  block-size: #{v("rail-pill-height")};
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  color: var(--_content);
+  background-color: color-mix(
+    in srgb,
+    var(--_state-color) var(--_state-opacity, var(--#{c.$sys-prefix}-sys-state-none)),
+    var(--_container)
+  );
+  @include m.transition((background-color, color));
+
+  > svg,
+  > img,
+  > .#{c.$prefix}-icon {
+    inline-size: var(--#{c.$prefix}-sys-icon-size);
+    font-size: var(--#{c.$prefix}-sys-icon-size);
+    block-size: var(--#{c.$prefix}-sys-icon-size);
+  }
+}
+
+// --- header slot -------------------------------------------------------------
+//
+// M3's leading slot: a menu button, a FAB, or both, above the destinations
+// with at least HeaderSpaceMinimum (40dp) between them. In the expanded rail
+// it stretches and leads, matching the items it sits above.
+@mixin header {
+  @include m.own-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--#{c.$prefix}-sys-space-3);
+  inline-size: 100%;
+  // HeaderSpaceMinimum measures from the header to the first destination, and
+  // the container's own gap already contributes part of it.
+  margin-block-end: calc(#{v("rail-header-gap")} - #{v("rail-item-gap")});
+}
+
+@mixin header-expanded {
+  align-items: flex-start;
+  padding-inline: var(--#{c.$prefix}-sys-space-4);
+}
+
+// --- expanded ----------------------------------------------------------------
+//
+// M3's wide rail: same markup, one class. Each destination turns from an icon
+// over a label on a 56x32 pill into an icon beside a label on a 56dp-tall
+// indicator that spans the item.
+@mixin expanded {
+  align-items: stretch;
+  // The expanded rail's rows sit flush: each is its own 56dp indicator, so a
+  // gap between them would read as a break in a list rather than spacing.
+  gap: var(--#{c.$prefix}-sys-space-none);
+  // M3's minimum and maximum for the expanded rail; re-pointing the token
+  // moves the width inside them rather than past them.
+  inline-size: clamp(#{fn.rem(220)}, #{v("rail-expanded-width")}, #{fn.rem(360)});
+  padding-inline: var(--#{c.$prefix}-sys-space-3);
+}
+
+// In the expanded rail the ITEM is the active indicator -- M3's horizontal
+// item is one 56dp row carrying icon and label together -- so the pill moves
+// off the icon and onto the item, and the label sits beside the icon rather
+// than under it.
+@mixin expanded-item {
+  --_container: transparent;
+  min-block-size: #{v("rail-expanded-item-height")};
+  --_content: #{v("rail-label-color")};
+  --_state-color: var(--_content);
+
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--#{c.$prefix}-sys-space-2);
+  padding-inline: var(--#{c.$prefix}-sys-space-4);
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  text-align: start;
+  background-color: color-mix(
+    in srgb,
+    var(--_state-color) var(--_state-opacity),
+    var(--_container)
+  );
+  @include m.typescale("label-large");
+  @include m.transition((background-color, color));
+}
+
+// The icon goes back to being a glyph box: the indicator is the row now.
+@mixin expanded-icon {
+  --_container: transparent;
+  inline-size: var(--#{c.$prefix}-sys-icon-size);
+  block-size: var(--#{c.$prefix}-sys-icon-size);
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
+  background-color: transparent;
+}
+
+// Active: the row carries the container, not the icon.
+@mixin expanded-item-active {
+  --_container: #{v("rail-active-icon-container-color")};
+  --_content: #{v("rail-active-icon-color")};
+  color: #{v("rail-active-icon-color")};
+}
+
+// --- modal --------------------------------------------------------------------
+//
+// The expanded rail as an overlay on a native <dialog>, opened with
+// showModal() from the consumer's code -- the same contract .m3-drawer--modal
+// has. M3 gives it its own container role, level 2 and a large trailing
+// corner.
+@mixin modal {
+  @include rail;
+  @include expanded;
+  // The UA's <dialog> layout, restated because the box is owned.
+  position: absolute;
+  inset-inline: var(--#{c.$prefix}-sys-space-none);
+  overflow: auto;
+  margin: var(--#{c.$prefix}-sys-space-none);
+  margin-inline-end: auto;
+
+  &:not([open]) {
+    display: none;
+  }
+
+  &:modal {
+    position: fixed;
+    inset: var(--#{c.$prefix}-sys-space-none);
+  }
+  block-size: 100%;
+  max-block-size: 100%;
+  border: none;
+  background-color: #{v("rail-modal-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("rail-modal-container-color")};
+  border-start-end-radius: #{v("rail-modal-shape")};
+  border-end-end-radius: #{v("rail-modal-shape")};
+  @include m.elevation(2);
+
+  &::backdrop {
+    background-color: color-mix(
+      in srgb,
+      var(--#{c.$sys-prefix}-sys-color-scrim) var(--#{c.$prefix}-sys-opacity-scrim),
+      transparent
+    );
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    &[open] {
+      transition-property: translate, display, overlay;
+      transition-duration: var(--#{c.$sys-prefix}-sys-motion-duration-medium2);
+      transition-timing-function: var(--#{c.$sys-prefix}-sys-motion-easing-emphasized-decelerate);
+      transition-behavior: allow-discrete;
+      translate: 0 0;
+
+      @starting-style {
+        translate: -100% 0;
+      }
+    }
+  }
+}
+
+@mixin classes {
+  $p: c.$prefix;
+
+  .#{$p}-rail {
+    @include rail;
+  }
+
+  .#{$p}-rail--fixed {
+    @include fixed;
+  }
+
+  .#{$p}-rail__item {
+    @include item;
+  }
+
+  .#{$p}-rail__icon {
+    @include icon;
+  }
+
+  .#{$p}-rail__header {
+    @include header;
+  }
+
+  // --- expanded ---------------------------------------------------------------
+  .#{$p}-rail--expanded {
+    @include expanded;
+  }
+
+  .#{$p}-rail--expanded .#{$p}-rail__header {
+    @include header-expanded;
+  }
+
+  .#{$p}-rail--expanded .#{$p}-rail__item {
+    @include expanded-item;
+  }
+
+  .#{$p}-rail--expanded .#{$p}-rail__item.active,
+  .#{$p}-rail--expanded .#{$p}-rail__item[aria-current="page"] {
+    @include expanded-item-active;
+  }
+
+  .#{$p}-rail--expanded .#{$p}-rail__icon {
+    @include expanded-icon;
+  }
+
+  // --- modal ------------------------------------------------------------------
+  .#{$p}-rail--modal {
+    @include modal;
+  }
+
+  .#{$p}-rail--modal .#{$p}-rail__header {
+    @include header-expanded;
+  }
+
+  .#{$p}-rail--modal .#{$p}-rail__item {
+    @include expanded-item;
+  }
+
+  .#{$p}-rail--modal .#{$p}-rail__item.active,
+  .#{$p}-rail--modal .#{$p}-rail__item[aria-current="page"] {
+    @include expanded-item-active;
+  }
+
+  .#{$p}-rail--modal .#{$p}-rail__icon {
+    @include expanded-icon;
+  }
+}

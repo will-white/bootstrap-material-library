@@ -1,0 +1,610 @@
+// ============================================================================
+// m3x date picker -- the M3 calendar surface (docked | modal), zero JS.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-date-picker-container-color           surface-container-high
+//   --m3-date-picker-content-color             on-surface
+//   --m3-date-picker-shape                     corner-large (docked)
+//   --m3-date-picker-width                     360px  docked surface width
+//   --m3-date-picker-modal-width               328px  --modal re-points width
+//   --m3-date-picker-padding                   space-3 (12px) inline padding
+//                                              of nav/grid/actions; --modal
+//                                              re-points it to space-5 (24px)
+//   --m3-date-picker-header-height             120px  modal header min height
+//   --m3-date-picker-cell-size                 48px   grid track: row height
+//                                              and column minimum (docked);
+//                                              --modal re-points it to the
+//                                              day size (40px)
+//   --m3-date-picker-day-size                  40px   day button (circle)
+//   --m3-date-picker-day-shape                 corner-full
+//   --m3-date-picker-day-color                 on-surface
+//   --m3-date-picker-weekday-color             on-surface
+//   --m3-date-picker-outside-color             on-surface-variant (days of
+//                                              the adjacent months)
+//   --m3-date-picker-today-color               primary (ring + label)
+//   --m3-date-picker-selected-container-color  primary
+//   --m3-date-picker-selected-color            on-primary
+//   --m3-date-picker-range-container-color     secondary-container (band)
+//   --m3-date-picker-range-color               on-secondary-container
+//   --m3-date-picker-menu-color                on-surface-variant (month
+//                                              menu trigger label + chevron)
+//   --m3-date-picker-year-width                72px   year cell in the year
+//                                              selection grid
+//   --m3-date-picker-year-height               36px
+//   --m3-date-picker-years-height              280px  the grid's scroll box
+//   --m3-date-picker-supporting-color          on-surface-variant (header)
+//   --m3-date-picker-headline-color            on-surface (header)
+//   --m3-date-picker-divider-color             outline-variant (header rule)
+//
+// Docked layout: 360 = 12 + 7 x 48 + 12; modal layout: 328 = 24 + 7 x 40 + 24.
+// The grid columns are minmax(day, 1fr) so the surface never overflows a
+// narrow viewport; rows and the column minimum come from the cell token.
+//
+// Markup (docked; every button is a real <button>, selection logic is the
+// consumer's or a form's -- the library ships no JS):
+//   <div class="m3-date-picker" role="group" aria-label="Choose date">
+//     <div class="m3-date-picker__nav">
+//       <button class="m3-date-picker__menu" type="button"
+//               aria-haspopup="menu" aria-expanded="false">August 2026</button>
+//       <span class="m3-date-picker__arrows">
+//         <button class="m3-icon-btn" type="button" aria-label="Previous month">
+//           <svg viewBox="0 0 24 24">...</svg>
+//         </button>
+//         <button class="m3-icon-btn" type="button" aria-label="Next month">
+//           <svg viewBox="0 0 24 24">...</svg>
+//         </button>
+//       </span>
+//     </div>
+//     <div class="m3-date-picker__grid" role="grid">
+//       <span class="m3-date-picker__weekday" aria-hidden="true">S</span> ... (7)
+//       <button class="m3-date-picker__day m3-date-picker__day--outside"
+//               type="button" tabindex="-1">26</button>
+//       <button class="m3-date-picker__day" type="button">1</button>
+//       <button class="m3-date-picker__day m3-date-picker__day--today"
+//               type="button" aria-current="date">17</button>
+//       <button class="m3-date-picker__day" type="button"
+//               aria-selected="true">20</button>
+//       <button class="m3-date-picker__day" type="button" disabled>29</button>
+//       ... (up to 42 days)
+//     </div>
+//     <div class="m3-date-picker__actions">
+//       <button class="m3-btn m3-btn--text" type="button">Cancel</button>
+//       <button class="m3-btn m3-btn--text" type="button">OK</button>
+//     </div>
+//   </div>
+//
+// Day states: .m3-date-picker__day--today (ring + label in primary),
+// [aria-selected="true"] or .m3-date-picker__day--selected (filled primary /
+// on-primary), .m3-date-picker__day--outside (adjacent-month day, dimmed),
+// :disabled (38% content, no pointer), .m3-date-picker__day--range (in-range
+// band in secondary-container), .m3-date-picker__day--range-start /
+// --range-end (filled ends; the band runs from the circle to the cell edge).
+//
+// Range mode: add .m3-date-picker--range to the root, mark every day in the
+// range aria-selected="true" (the ARIA grid pattern for a multi-day
+// selection) and the two ends with --range-start / --range-end; under the
+// root modifier aria-selected paints the band instead of the single-day
+// circle. The per-day classes work without the root modifier too.
+//
+// Modal: the picker IS the dialog's whole content, so the host dialog hands
+// its padding to the picker (24px inline padding of the modal layout):
+//   <dialog class="m3-dialog"
+//           style="--m3-dialog-padding: var(--m3-sys-space-none)">
+//     <div class="m3-date-picker m3-date-picker--modal" role="group"
+//          aria-label="Choose date">
+//       <div class="m3-date-picker__header">
+//         <span class="m3-date-picker__supporting">Select date</span>
+//         <span class="m3-date-picker__headline">Mon, Aug 17</span>
+//       </div>
+//       ... nav, grid, actions as above ...
+//     </div>
+//   </dialog>
+//
+// Optional manual-entry row (a text field in a padded slot; the field keeps
+// its own typography and chrome):
+//   <div class="m3-date-picker__input">
+//     <label class="m3-field m3-field--outlined">
+//       <input class="m3-field__input" placeholder=" " inputmode="numeric">
+//       <span class="m3-field__label">Date</span>
+//       <span class="m3-field__supporting">MM/DD/YYYY</span>
+//     </label>
+//   </div>
+//
+// Month/year menu, previous/next arrows and the action row reuse the button
+// and icon-button components (the menu trigger is drawn with the text-button
+// mixins plus a CSS chevron), so those partials belong in the same build.
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+@use "button" as btn;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "date-picker-container-color": var(--#{c.$sys-prefix}-sys-color-surface-container-high),
+  "date-picker-content-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "date-picker-shape": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+  "date-picker-width": #{fn.rem(360)},
+  "date-picker-modal-width": #{fn.rem(328)},
+  "date-picker-padding": var(--#{c.$prefix}-sys-space-3),
+  "date-picker-header-height": #{fn.rem(120)},
+  "date-picker-cell-size": #{fn.rem(48)},
+  "date-picker-day-size": #{fn.rem(40)},
+  "date-picker-day-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
+  "date-picker-day-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "date-picker-weekday-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "date-picker-outside-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "date-picker-today-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "date-picker-selected-container-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "date-picker-selected-color": var(--#{c.$sys-prefix}-sys-color-on-primary),
+  "date-picker-range-container-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
+  "date-picker-range-color": var(--#{c.$sys-prefix}-sys-color-on-secondary-container),
+  "date-picker-menu-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  // M3's year-selection grid: 72x36dp pills, three to a row, scrolling
+  // inside the surface the calendar was filling.
+  "date-picker-year-width": #{fn.rem(72)},
+  "date-picker-year-height": #{fn.rem(36)},
+  "date-picker-years-height": #{fn.rem(280)},
+  "date-picker-supporting-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "date-picker-headline-color": var(--#{c.$sys-prefix}-sys-color-on-surface),
+  "date-picker-divider-color": var(--#{c.$sys-prefix}-sys-color-outline-variant),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// --- surface ----------------------------------------------------------------
+
+// The picker surface. Default look = docked (own container, shape, level 3).
+// Inline padding lives on the rows (nav, grid, actions), not here, so the
+// modal header's divider can run edge to edge.
+@mixin surface {
+  @include m.own-box;
+  display: flex;
+  flex-direction: column;
+  inline-size: #{v("date-picker-width")};
+  max-inline-size: 100%;
+  background-color: #{v("date-picker-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("date-picker-container-color")};
+  color: #{v("date-picker-content-color")};
+  border-radius: #{v("date-picker-shape")};
+  @include m.elevation(3);
+}
+
+// Docked: the default look, restated so the modifier can follow --modal in
+// a consumer's own class list and win by source order.
+@mixin docked {
+  --#{c.$prefix}-date-picker-width: #{fn.rem(360)};
+  --#{c.$prefix}-date-picker-padding: var(--#{c.$prefix}-sys-space-3);
+  --#{c.$prefix}-date-picker-cell-size: #{fn.rem(48)};
+  background-color: #{v("date-picker-container-color")};
+  --#{c.$prefix}-sys-container-color: #{v("date-picker-container-color")};
+  border-radius: #{v("date-picker-shape")};
+  @include m.elevation(3);
+}
+
+// Modal: nests inside .m3-dialog, which owns container, shape and elevation;
+// the picker keeps only layout. Modal metrics: 328 wide, 24px inline
+// padding, 40px cells (the day circle fills its cell).
+@mixin modal {
+  --#{c.$prefix}-date-picker-width: #{v("date-picker-modal-width")};
+  --#{c.$prefix}-date-picker-padding: var(--#{c.$prefix}-sys-space-5);
+  --#{c.$prefix}-date-picker-cell-size: #{v("date-picker-day-size")};
+  background-color: transparent;
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-none);
+  box-shadow: none;
+}
+
+// --- header (modal) ---------------------------------------------------------
+
+// Supporting text on top, headline at the bottom, hairline divider below.
+@mixin header {
+  @include m.own-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-block-size: #{v("date-picker-header-height")};
+  padding-block: var(--#{c.$prefix}-sys-space-4) var(--#{c.$prefix}-sys-space-3);
+  padding-inline: var(--#{c.$prefix}-sys-space-5);
+  border-block-end: var(--#{c.$prefix}-sys-stroke-hairline) solid
+    #{v("date-picker-divider-color")};
+}
+
+@mixin supporting {
+  @include m.own-box;
+  display: block;
+  color: #{v("date-picker-supporting-color")};
+  @include m.typescale("label-medium");
+}
+
+// A flex row so a trailing icon button (switch to keyboard input) can sit at
+// the end of the headline.
+@mixin headline {
+  @include m.own-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--#{c.$prefix}-sys-space-2);
+  color: #{v("date-picker-headline-color")};
+  @include m.typescale("headline-large");
+}
+
+// --- month/year navigation ---------------------------------------------------
+
+@mixin nav {
+  @include m.own-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--#{c.$prefix}-sys-space-2);
+  padding-block: var(--#{c.$prefix}-sys-space-2) var(--#{c.$prefix}-sys-space-1);
+  padding-inline: #{v("date-picker-padding")};
+}
+
+// Month/year menu trigger: the text-button look (button mixins) in the
+// picker's own label color, with a CSS-drawn dropdown chevron after the
+// label; aria-expanded="true" flips the chevron.
+@mixin menu {
+  @include m.own-box;
+  @include btn.base;
+  @include btn.text-variant;
+  --_content: #{v("date-picker-menu-color")};
+  gap: var(--#{c.$prefix}-sys-space-2);
+
+  &::after {
+    @include m.own-pseudo;
+    content: "";
+    display: inline-block;
+    flex: none;
+    @include m.chevron-icon(
+      calc(var(--#{c.$prefix}-sys-chevron-size) / 2 + var(--#{c.$prefix}-sys-stroke-thick))
+    );
+    translate: 0 -25%;
+    @include m.spring-transition(rotate, "fast-spatial");
+  }
+
+  &[aria-expanded="true"]::after {
+    rotate: 225deg;
+    translate: 0 25%;
+  }
+}
+
+// Wrapper for the previous/next icon buttons.
+@mixin arrows {
+  @include m.own-box;
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+}
+
+// --- calendar grid -----------------------------------------------------------
+
+// Seven columns; rows are one cell tall; every item centers in its cell.
+@mixin grid {
+  @include m.own-box;
+  display: grid;
+  grid-template-columns: repeat(
+    7,
+    minmax(#{v("date-picker-day-size")}, 1fr)
+  );
+  grid-auto-rows: #{v("date-picker-cell-size")};
+  justify-items: center;
+  align-items: center;
+  padding-inline: #{v("date-picker-padding")};
+}
+
+@mixin weekday {
+  @include m.own-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 100%;
+  block-size: 100%;
+  color: #{v("date-picker-weekday-color")};
+  user-select: none;
+  @include m.typescale("body-large");
+}
+
+// One day: a 40px circle with the full state system and a >= 48px touch
+// target. The range band is a ::before behind the circle: it stretches from
+// the circle to the cell edges so adjacent bands join; the button is its own
+// stacking context (isolation) so the band's negative z-index only pulls it
+// under the button's background, never under the surface.
+@mixin day {
+  @include m.own-box;
+  --_container: transparent;
+  --_content: #{v("date-picker-day-color")};
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: #{v("date-picker-day-size")};
+  block-size: #{v("date-picker-day-size")};
+  padding: var(--#{c.$prefix}-sys-space-none);
+  border: none;
+  border-radius: #{v("date-picker-day-shape")};
+  isolation: isolate;
+  cursor: pointer;
+  user-select: none;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+  @include m.typescale("body-large");
+  @include m.state-layer;
+  @include m.focus-ring;
+  @include m.touch-target;
+  @include m.transition((background-color, color, box-shadow));
+  @include m.forced-colors-border;
+
+  &::before {
+    @include m.own-pseudo;
+    content: "";
+    display: none;
+    position: absolute;
+    z-index: -1;
+    inset-block: var(--#{c.$prefix}-sys-space-none);
+    inset-inline: calc(
+      (
+          #{v("date-picker-day-size")} -
+            #{v("date-picker-cell-size")}
+        ) / 2
+    );
+    background-color: #{v("date-picker-range-container-color")};
+  }
+}
+
+// Today: primary ring (inset shadow: no layout shift, and it vanishes under
+// a filled selection) and primary label.
+@mixin day-today {
+  --_content: #{v("date-picker-today-color")};
+  box-shadow: inset 0 0 0 var(--#{c.$prefix}-sys-stroke-hairline)
+    #{v("date-picker-today-color")};
+}
+
+// Adjacent-month day.
+@mixin day-outside {
+  --_content: #{v("date-picker-outside-color")};
+}
+
+// The selected day: filled circle.
+@mixin day-selected {
+  --_container: #{v("date-picker-selected-container-color")};
+  --_content: #{v("date-picker-selected-color")};
+}
+
+// Inside a range: transparent circle over the band.
+@mixin day-range {
+  --_container: transparent;
+  --_content: #{v("date-picker-range-color")};
+
+  &::before {
+    display: block;
+  }
+}
+
+// Range ends: filled circle, band from the circle's center outward only.
+@mixin day-range-start {
+  --_container: #{v("date-picker-selected-container-color")};
+  --_content: #{v("date-picker-selected-color")};
+
+  &::before {
+    display: block;
+    inset-inline-start: 50%;
+  }
+}
+
+@mixin day-range-end {
+  --_container: #{v("date-picker-selected-container-color")};
+  --_content: #{v("date-picker-selected-color")};
+
+  &::before {
+    display: block;
+    inset-inline-end: 50%;
+  }
+}
+
+// Emitted last in `classes` so it wins over selected/today at equal
+// specificity. Keeps the band (a disabled day can still sit in a range).
+@mixin day-disabled {
+  @include m.disabled-bare;
+}
+
+// --- rows below the grid -----------------------------------------------------
+
+// Manual-entry slot: consumer content (a .m3-field), spacing only.
+@mixin input-row {
+  @include m.own-region;
+  display: block;
+  padding-inline: #{v("date-picker-padding")};
+  padding-block: var(--#{c.$prefix}-sys-space-2);
+}
+
+@mixin actions {
+  @include m.own-box;
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--#{c.$prefix}-sys-space-2);
+  padding-inline: #{v("date-picker-padding")};
+  padding-block: var(--#{c.$prefix}-sys-space-2) #{v("date-picker-padding")};
+}
+
+// --- class emission ---------------------------------------------------------
+
+// --- year selection ---------------------------------------------------------
+//
+// M3's second view: the calendar is replaced by a scrolling grid of years,
+// three to a row. It is the same surface, so it takes the same inline
+// padding; which view is showing is the consumer's (hide one, show the
+// other), because CSS has no notion of which year the calendar is on.
+@mixin years {
+  @include m.own-box;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  justify-items: center;
+  gap: var(--#{c.$prefix}-sys-space-2);
+  padding-inline: #{v("date-picker-padding")};
+  padding-block: var(--#{c.$prefix}-sys-space-2);
+  max-block-size: #{v("date-picker-years-height")};
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}
+
+@mixin year {
+  @include m.own-box;
+  --_container: transparent;
+  --_content: #{v("date-picker-day-color")};
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: #{v("date-picker-year-width")};
+  block-size: #{v("date-picker-year-height")};
+  padding: var(--#{c.$prefix}-sys-space-none);
+  border: none;
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  cursor: pointer;
+  user-select: none;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+  @include m.typescale("body-large");
+  @include m.state-layer;
+  @include m.focus-ring;
+  @include m.transition((background-color, color));
+}
+
+// The year the picker is on, marked the way a selected day is.
+@mixin year-selected {
+  --_container: #{v("date-picker-selected-container-color")};
+  --_content: #{v("date-picker-selected-color")};
+}
+
+// The current year, ringed rather than filled -- the same treatment `today`
+// gets in the calendar.
+@mixin year-today {
+  --_content: #{v("date-picker-today-color")};
+  box-shadow: inset 0 0 0 var(--#{c.$prefix}-sys-stroke-hairline)
+    #{v("date-picker-today-color")};
+}
+
+@mixin classes {
+  $p: c.$prefix;
+  $day: ".#{$p}-date-picker__day";
+
+  .#{$p}-date-picker {
+    @include surface;
+  }
+
+  .#{$p}-date-picker__years {
+    @include years;
+  }
+
+  .#{$p}-date-picker__year {
+    @include year;
+  }
+
+  .#{$p}-date-picker__year[aria-selected="true"] {
+    @include year-selected;
+  }
+
+  .#{$p}-date-picker__year--today {
+    @include year-today;
+  }
+
+  .#{$p}-date-picker--docked {
+    @include docked;
+  }
+
+  .#{$p}-date-picker--modal {
+    @include modal;
+  }
+
+  .#{$p}-date-picker__header {
+    @include header;
+  }
+
+  .#{$p}-date-picker__supporting {
+    @include supporting;
+  }
+
+  .#{$p}-date-picker__headline {
+    @include headline;
+  }
+
+  .#{$p}-date-picker__nav {
+    @include nav;
+  }
+
+  .#{$p}-date-picker__menu {
+    @include menu;
+  }
+
+  .#{$p}-date-picker__arrows {
+    @include arrows;
+  }
+
+  .#{$p}-date-picker__grid {
+    @include grid;
+  }
+
+  .#{$p}-date-picker__weekday {
+    @include weekday;
+  }
+
+  #{$day} {
+    @include day;
+  }
+
+  #{$day}--outside {
+    @include day-outside;
+  }
+
+  #{$day}--today {
+    @include day-today;
+  }
+
+  // Single-day selection: the attribute (ARIA grid pattern) or the class.
+  // :where keeps both at (0,1,0) so the range classes below tie and win.
+  #{$day}:where([aria-selected="true"]) {
+    @include day-selected;
+  }
+
+  #{$day}--selected {
+    @include day-selected;
+  }
+
+  // Range mode at the root: aria-selected marks every day in the range and
+  // paints the band; the ends re-fill their circle below.
+  :where(.#{$p}-date-picker--range) #{$day}:where([aria-selected="true"]) {
+    @include day-range;
+  }
+
+  #{$day}--range {
+    @include day-range;
+  }
+
+  #{$day}--range-start {
+    @include day-range-start;
+  }
+
+  #{$day}--range-end {
+    @include day-range-end;
+  }
+
+  // Last so it wins over selected/today at equal specificity.
+  #{$day}:disabled {
+    @include day-disabled;
+  }
+
+  .#{$p}-date-picker__input {
+    @include input-row;
+  }
+
+  .#{$p}-date-picker__actions {
+    @include actions;
+  }
+}

@@ -1,0 +1,680 @@
+// ============================================================================
+// m3x slider -- M3 slider (the 2024 expressive spec) on a styled
+// input[type="range"]: 16px tracks, a 4x44 bar handle with the track gap,
+// a stop indicator, optional tick marks, and an active-track fill in BOTH
+// engines. Zero JS.
+//
+// PUBLIC VARIABLE API (tier-3 tokens)
+//   --m3-slider-track-height          16px (1rem)   track thickness
+//                                     (default changed from 4px)
+//   --m3-slider-track-color           secondary-container   inactive track
+//                                     (default changed from
+//                                     surface-container-highest)
+//   --m3-slider-active-color          primary   active track + handle
+//   --m3-slider-thumb-width           4px    handle width at rest
+//   --m3-slider-thumb-width-pressed   2px    handle width while pressed
+//   --m3-slider-thumb-height          44px   handle height; defaults to
+//                                     --m3-slider-thumb-size
+//   --m3-slider-thumb-size            44px   legacy name, still read: it is
+//                                     the handle height (default changed
+//                                     from the 20px round thumb)
+//   --m3-slider-gap                   6px    gap between handle and tracks
+//   --m3-slider-gap-color             --m3-sys-container-color   the gap is
+//                                     a hole, so it paints whatever surface the
+//                                     slider sits on; container components set
+//                                     that global to their own background
+//   --m3-slider-stop-size             4px    stop indicator / tick diameter
+//   --m3-slider-stop-color            primary   stop indicator / tick color
+//   --m3-slider-ticks                 10     tick INTERVALS drawn by
+//                                     .m3-slider--ticks (see below)
+//
+// Markup:
+//   <input type="range" class="m3-slider" min="0" max="100" value="40">
+//   <input type="range" class="m3-slider m3-slider--ticks"
+//          min="0" max="100" step="10" value="70">
+//
+// Tick marks are purely visual: .m3-slider--ticks tiles one dot per
+// interval across the track, so --m3-slider-ticks must equal
+// (max - min) / step for the dots to sit on the values the input snaps to.
+// Ticks show on the inactive track; the active fill paints over them.
+//
+// Active-track fill, zero JS:
+//   - Firefox colors the traveled portion via ::-moz-range-progress.
+//   - WebKit has no progress pseudo-element, and its handle lives INSIDE
+//     ::-webkit-slider-runnable-track, so a 16px track with overflow:
+//     hidden would clip the 44px handle along with anything else (the
+//     classic box-shadow-fill trick needs a handle no taller than the
+//     track). The geometry used here instead, with the default tokens and
+//     W = track width:
+//     1. The runnable track is as tall as the handle (44px) and
+//        transparent; the visible 16px band is a background layer centered
+//        in it. Its inline padding equals the gap (6px), so the handle
+//        travels through the content box: handle-left from 6 to W - 10,
+//        handle center from 8 to W - 8.
+//     2. The handle (4x44) carries two box-shadows: on top a 6px-spread
+//        ring in the gap color, beneath it the fill: the active color with
+//        a 100vw spread and an x offset of (6px - 100vw). The fill's right
+//        edge is therefore handle-right + 6px -- exactly the ring's edge,
+//        so the ring hides the seam -- and its left edge is 2 x 100vw away.
+//     3. The handle's clip-path is the union of its own box and a band
+//        16px tall (50% +/- 8px) reaching 100vw to either side. Neither
+//        shadow can paint above or below the track, and the ring only
+//        erases the band right next to the handle (6px each side).
+//     4. The track's mask -- a full-height rect inset 6px from both ends
+//        plus a 16px circle at each end -- clips the fill at the track's
+//        start with the rounded cap and rounds the band's far end. Between
+//        x = 6 and 8 the circle is 0.25px short of the band edge, which is
+//        not visible.
+//     At value = min the handle spans 6..10 and the ring 0..16: no active
+//     track shows. At max the handle spans W-10..W-6 and the ring W-16..W:
+//     the inactive band and the stop indicator (W-10..W-6) are hidden. Stop
+//     indicator and tick marks center on the handle centers,
+//     8 + k * (W - 16) / N. Firefox needs none of this: its track is the
+//     band itself and the handle travels edge to edge, so its stop
+//     indicator sits at the very end of the track.
+//   - The fill shadow reaches 100vw: a slider wider than the viewport
+//     (inside a horizontally scrolling region) would see it end early.
+//
+// Limitations:
+//   - Dual-thumb (start + end) range sliders need two overlapping inputs
+//     and are out of scope for the CSS layer.
+//   - The handle draws the fill, so the fill can carry no tick marks of its
+//     own; ticks are visible on the inactive track only.
+//   - Every vendor pseudo-element gets its OWN rule and, deliberately, no
+//     own-box: a selector list mixing -webkit- and -moz- pseudos is invalid
+//     in both engines and would drop the whole list (the collected
+//     ownership rule included). Declarations are shared through local
+//     mixins instead.
+// ============================================================================
+
+@use "sass:map";
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "slider-track-height": #{fn.rem(16)},
+  "slider-track-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
+  "slider-active-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "slider-thumb-width": #{fn.rem(4)},
+  "slider-thumb-width-pressed": #{fn.rem(2)},
+  "slider-thumb-size": #{fn.rem(44)},
+  "slider-gap": #{fn.rem(6)},
+  "slider-gap-color":
+    var(
+      --#{c.$prefix}-sys-container-color,
+      var(--#{c.$sys-prefix}-sys-color-surface)
+    ),
+  "slider-stop-size": #{fn.rem(4)},
+  "slider-stop-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "slider-ticks": 10,
+  // Value label (M3's value indicator).
+  "slider-label-container-color": var(--#{c.$sys-prefix}-sys-color-inverse-surface),
+  "slider-label-color": var(--#{c.$sys-prefix}-sys-color-inverse-on-surface),
+  // M3's ValueIndicatorActiveBottomSpace: 12dp from the track to the label.
+  "slider-label-gap": #{fn.rem(12)},
+  // M3 publishes no size token for the indicator container, so this is m3x's:
+  // label-large in a pill with 8dp of block and 16dp of inline padding.
+  "slider-label-padding-block": var(--#{c.$prefix}-sys-space-2),
+  "slider-label-padding-inline": var(--#{c.$prefix}-sys-space-4),
+  "slider-label-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
+  // Track length of the vertical variant, which has no inline axis to fill.
+  "slider-length": #{fn.rem(240)},
+);
+
+// Defaults that build on another token in this map: resolved through
+// token() so the sibling's own default travels with them.
+$tokens: map.set($tokens, "slider-thumb-height", #{m.token($tokens, "slider-thumb-size")});
+
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// --- private drawing helpers -----------------------------------------------
+
+// A stop-size dot at $at inside its gradient tile: the stop indicator (one
+// tile, centered) and the tick marks (one tile per interval, dot at the
+// tile's start). Half a hairline of falloff keeps the edge anti-aliased.
+@function -dot($at) {
+  @return radial-gradient(
+    circle calc(#{v("slider-stop-size")} / 2) at #{$at},
+    var(--_stop) calc(100% - var(--#{c.$prefix}-sys-stroke-hairline) / 2),
+    transparent
+  );
+}
+
+// The handle CENTRE, as a position inside the track's own background box, for
+// the value-driven band the centered and range variants paint. It reads the
+// same in both engines: WebKit's background box is the track's padding box,
+// whose width is exactly the handle's travel plus one handle width, and
+// Firefox's is the track itself, which is the same thing.
+@function -handle-x($var, $fallback) {
+  @return calc(
+    #{v("slider-thumb-width")} / 2 +
+      (100% - #{v("slider-thumb-width")}) * var(#{$var}, #{$fallback}) / 100
+  );
+}
+
+// One rounded track end for the WebKit track mask: an opaque circle the
+// size of the track height (any opaque color masks; alpha is what counts).
+@function -cap() {
+  @return radial-gradient(
+    circle closest-side,
+    currentColor calc(100% - var(--#{c.$prefix}-sys-stroke-hairline) / 2),
+    transparent
+  );
+}
+
+// --- private vendor fragments (shared by the per-vendor rules) --------------
+
+// Background layers common to both tracks: tick tiles (none unless
+// .m3-slider--ticks re-points --_ticks) and the stop indicator at the far
+// end. Both center on the handle centers, which sit --_inset from each
+// track edge; the including rule sets --_inset for its engine.
+@mixin -track-marks {
+  --_mark-x: calc(var(--_inset) - #{v("slider-stop-size")} / 2);
+  --_tick-size: calc((100% - 2 * var(--_inset)) / #{v("slider-ticks")});
+  // The stop indicator's place in the background-position list. It has to be
+  // resolved HERE, on the track, because --_mark-x and --_inset only exist
+  // here: a var() naming them from the input would be invalid at
+  // computed-value time and would take the whole declaration -- every layer's
+  // position, not just this one -- down with it. Variants re-aim the dot by
+  // setting --_stop-align on the input instead.
+  --_stop-pos: var(--_stop-align, var(--_end) var(--_mark-x) center);
+}
+
+@mixin -track-webkit {
+  @include -track-marks;
+  --_inset: calc(#{v("slider-gap")} + #{v("slider-thumb-width")} / 2);
+
+  display: block;
+  box-sizing: border-box;
+  block-size: #{v("slider-thumb-height")};
+  padding-inline: #{v("slider-gap")};
+  border: none;
+  background-color: transparent;
+  background-image:
+    var(--_band),
+    var(--_ticks),
+    #{-dot(center)},
+    linear-gradient(var(--_track), var(--_track));
+  background-size:
+    100% #{v("slider-track-height")},
+    var(--_tick-size) 100%,
+    #{v("slider-stop-size")} #{v("slider-stop-size")},
+    100% #{v("slider-track-height")};
+  background-position:
+    center,
+    var(--_mark-x) 50%,
+    var(--_stop-pos),
+    center;
+  background-repeat: no-repeat, repeat-x, no-repeat, no-repeat;
+  mask-image: linear-gradient(currentColor, currentColor), #{-cap()}, #{-cap()};
+  mask-size:
+    calc(100% - 2 * #{v("slider-gap")}) 100%,
+    #{v("slider-track-height")} #{v("slider-track-height")},
+    #{v("slider-track-height")} #{v("slider-track-height")};
+  mask-position: center, left center, right center;
+  mask-repeat: no-repeat;
+  @include m.forced-colors-border;
+
+  // Forced colors drop background images, shadows and the like: hand back
+  // a plain 16px outlined track the handle overhangs.
+  @media (forced-colors: active) {
+    block-size: #{v("slider-track-height")};
+    border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+    mask: none;
+  }
+}
+
+@mixin -track-moz {
+  @include -track-marks;
+  --_inset: calc(#{v("slider-thumb-width")} / 2);
+
+  display: block;
+  box-sizing: border-box;
+  block-size: #{v("slider-track-height")};
+  border: none;
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  background-color: var(--_track);
+  background-image: var(--_band), var(--_ticks), #{-dot(center)};
+  background-size:
+    100% 100%,
+    var(--_tick-size) 100%,
+    #{v("slider-stop-size")} #{v("slider-stop-size")};
+  background-position:
+    center,
+    var(--_mark-x) 50%,
+    var(--_stop-pos);
+  background-repeat: no-repeat, repeat-x, no-repeat;
+  @include m.forced-colors-border;
+}
+
+// The handle bar plus the gap ring around it. The clip-path keeps the ring
+// (and, in WebKit, the fill shadow) inside the handle's own box and the
+// track band -- see the geometry note in the header.
+@mixin -thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  box-sizing: border-box;
+  inline-size: var(--_thumb-width);
+  block-size: #{v("slider-thumb-height")};
+  margin: var(--#{c.$prefix}-sys-space-none);
+  border: none;
+  border-radius: var(--#{c.$sys-prefix}-sys-shape-corner-full);
+  background-color: var(--_active);
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% var(--_band-start),
+    var(--_reach) var(--_band-start),
+    var(--_reach) var(--_band-end),
+    100% var(--_band-end),
+    100% 100%,
+    0 100%,
+    0 var(--_band-end),
+    calc(-1 * var(--_reach)) var(--_band-end),
+    calc(-1 * var(--_reach)) var(--_band-start),
+    0 var(--_band-start)
+  );
+  @include m.transition((inline-size, background-color));
+  @include m.forced-colors-border;
+}
+
+// --- control ----------------------------------------------------------------
+
+// The whole slider, vendor rules included (reused by compat for .form-range).
+// The handle is fixed-size per the M3 spec and does NOT participate in
+// density; the input itself is at least the 48px touch target tall.
+@mixin control {
+  @include m.own-box;
+  @include m.always-round;
+  --_thumb-width: #{v("slider-thumb-width")};
+  --_track: #{v("slider-track-color")};
+  --_active: #{v("slider-active-color")};
+  --_stop: #{v("slider-stop-color")};
+  --_ticks: none;
+  // The value-driven band the centered and range variants paint on the track;
+  // by default the handle's own fill shadow does the job and this is inert.
+  --_band: none;
+  // Zero-width by default so a band switched on without a value (a range
+  // slider's overlay input) resolves to nothing rather than making the whole
+  // background-image list invalid.
+  --_band-from: 0%;
+  --_band-to: 0%;
+  --_fill-color: var(--_active);
+  --_progress-color: var(--_active);
+  // Band edges inside the handle box (the clip-path) and how far the fill
+  // and the clip reach along the track.
+  --_band-start: calc(50% - #{v("slider-track-height")} / 2);
+  --_band-end: calc(50% + #{v("slider-track-height")} / 2);
+  --_reach: 100vw;
+  // Fill direction and the stop indicator's end, flipped for RTL below.
+  --_fill-x: calc(#{v("slider-gap")} - var(--_reach));
+  --_end: right;
+
+  display: inline-block;
+  -webkit-appearance: none;
+  appearance: none;
+  inline-size: 100%;
+  block-size: max(var(--#{c.$prefix}-sys-target-size), #{v("slider-thumb-height")});
+  background-color: transparent;
+  cursor: pointer;
+  margin: var(--#{c.$prefix}-sys-space-none);
+  @include m.focus-ring;
+
+  &:dir(rtl) {
+    --_fill-x: calc(var(--_reach) - #{v("slider-gap")});
+    --_end: left;
+  }
+
+  // Track: one rule per vendor (never a combined selector list).
+  &::-webkit-slider-runnable-track {
+    @include -track-webkit;
+  }
+
+  &::-moz-range-track {
+    @include -track-moz;
+  }
+
+  // Handle: WebKit's carries the gap ring and, under it, the active fill;
+  // Firefox's carries the ring only (its fill is ::-moz-range-progress).
+  &::-webkit-slider-thumb {
+    @include -thumb;
+    box-shadow:
+      0 0 0 #{v("slider-gap")} #{v("slider-gap-color")},
+      var(--_fill-x) 0 0 var(--_reach) var(--_fill-color);
+
+    @media (forced-colors: active) {
+      margin-block-start: calc(
+        (
+            #{v("slider-track-height")} -
+              #{v("slider-thumb-height")}
+          ) / 2
+      );
+      clip-path: none;
+    }
+  }
+
+  &::-moz-range-thumb {
+    @include -thumb;
+    box-shadow: 0 0 0 #{v("slider-gap")}
+      #{v("slider-gap-color")};
+  }
+
+  // Firefox-only active (traveled) track fill.
+  &::-moz-range-progress {
+    display: block;
+    block-size: #{v("slider-track-height")};
+    border: none;
+    border-radius: var(--#{c.$prefix}-sys-shape-pill);
+    background-color: var(--_progress-color);
+  }
+
+  // Pressed: the handle narrows (the vendor thumb rules read the private).
+  &:active:not(:disabled) {
+    --_thumb-width: #{v("slider-thumb-width-pressed")};
+  }
+
+  // Disabled: inactive track at 12% on-surface; handle, fill and marks at
+  // 38%. Handle and fill are composited over the gap color so they stay
+  // opaque above the track they cover.
+  &:disabled {
+    --_track: color-mix(
+      in srgb,
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-disabled-container-opacity),
+      transparent
+    );
+    --_active: color-mix(
+      in srgb,
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-disabled-content-opacity),
+      #{v("slider-gap-color")}
+    );
+    --_stop: color-mix(
+      in srgb,
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-disabled-content-opacity),
+      transparent
+    );
+    cursor: not-allowed;
+  }
+}
+
+// Tick marks: one dot per interval on the inactive track (visual only; keep
+// --m3-slider-ticks equal to (max - min) / step).
+@mixin ticks {
+  --_ticks: #{-dot("calc(#{v("slider-stop-size")} / 2) 50%")};
+}
+
+// --- value-driven variants (centered, range) --------------------------------
+//
+// Both paint the active track as a BAND between two positions rather than as
+// the handle's leftward fill, so both need to know where the handle is --
+// which CSS cannot read off an input. The percentage is the consumer's, the
+// same contract --m3-progress-value already has.
+
+// The band itself, and the two suppressions that go with it: the handle's
+// leftward fill shadow and Firefox's ::-moz-range-progress would both paint
+// from the track's start, which is the thing these variants replace.
+@mixin -band {
+  --_band: linear-gradient(
+    to var(--_end),
+    transparent var(--_band-from),
+    var(--_active) 0,
+    var(--_active) var(--_band-to),
+    transparent 0
+  );
+  --_fill-color: transparent;
+  --_progress-color: transparent;
+}
+
+// M3's centered slider fills from the track's midpoint out to the handle, in
+// whichever direction the handle sits, for a value with a natural zero
+// (balance, brightness trim, EQ). Its stop indicator marks that origin
+// instead of the far end.
+@mixin centered {
+  @include -band;
+  // The same 0 default every other read site uses, and the right one here:
+  // a centered slider at its minimum shows the band from that minimum to the
+  // origin, which is exactly what value 0 draws.
+  --_band-from: min(50%, #{-handle-x("--#{c.$prefix}-slider-value", 0)});
+  --_band-to: max(50%, #{-handle-x("--#{c.$prefix}-slider-value", 0)});
+  --_stop-align: center;
+}
+
+// M3's range slider is two handles on one track. CSS has no two-thumb range
+// input, so it is two overlapping inputs: the first draws the track and the
+// band, the second only its handle. The inputs pass pointer events through to
+// their handles, so both are draggable -- at the cost of click-to-jump on the
+// track, which would otherwise always land on whichever input is on top.
+@mixin range-track {
+  @include -band;
+  --_band-from: #{-handle-x("--#{c.$prefix}-slider-start", 0)};
+  --_band-to: #{-handle-x("--#{c.$prefix}-slider-end", 100)};
+}
+
+// The second input contributes its handle and nothing else.
+@mixin range-overlay {
+  @include -band;
+  --_track: transparent;
+  --_stop: transparent;
+  --_ticks: none;
+}
+
+// --- vertical (M3 Expressive's VerticalSlider) -------------------------------
+//
+// The slider is ROTATED rather than re-derived. Every piece of the geometry
+// above -- the track's gap padding, the handle's clip-path, the mask's caps,
+// the fill shadow's reach -- is expressed along one axis, and a vertical
+// slider is that same axis stood on end. Re-deriving it for `writing-mode:
+// vertical-*` would mean a second copy of all of it per engine, and the
+// vendor pseudo-elements do not agree about which way their own boxes turn.
+// Rotating the laid-out box means the browser is still driving a horizontal
+// range input, so dragging, keyboard steps and the value all behave.
+//
+// The input is taken out of flow and rotated about its own top-left corner
+// after being pushed down by the track length, which lands it exactly on the
+// wrapper's box with the minimum at the bottom.
+@mixin vertical {
+  @include m.own-box;
+  position: relative;
+  display: block;
+  inline-size: max(var(--#{c.$prefix}-sys-target-size), #{v("slider-thumb-height")});
+  block-size: #{v("slider-length")};
+}
+
+@mixin vertical-input {
+  position: absolute;
+  inset-block-start: 0;
+  // Physical, and deliberately so: a vertical slider reads bottom-to-top in
+  // an RTL document too, so nothing here mirrors.
+  left: 0;
+  direction: ltr;
+  inline-size: #{v("slider-length")};
+  transform-origin: 0 0;
+  translate: 0 #{v("slider-length")};
+  rotate: -90deg;
+  // The engine lays a range input out along `direction`, so an RTL document
+  // would put the maximum at the rotation's bottom. :dir() follows the
+  // document rather than this property, so the fill direction is pinned back
+  // by hand as well.
+  --_fill-x: calc(#{v("slider-gap")} - var(--_reach));
+  --_end: right;
+}
+
+// --- value label (M3's value indicator) --------------------------------------
+//
+// The field wraps the input and lays it out under the label. CSS cannot read
+// an input's value, so the LABEL'S TEXT and the --m3-slider-value percentage
+// that positions it are both the consumer's, exactly as --m3-progress-value
+// already is:
+//
+//   <div class="m3-slider-field" style="--m3-slider-value: 40">
+//     <input type="range" class="m3-slider" min="0" max="100" value="40">
+//     <output class="m3-slider__label">40</output>
+//   </div>
+//
+// One `oninput` keeps both in step. The field reserves the label's row so a
+// slider never overlaps whatever sits above it.
+@mixin field {
+  @include m.own-box;
+  // How far the handle's CENTRE sits from each end of the input: WebKit's
+  // handle travels inside the track's gap padding, Firefox's edge to edge.
+  --_inset: calc(#{v("slider-gap")} + #{v("slider-thumb-width")} / 2);
+  @supports selector(::-moz-range-track) {
+    --_inset: calc(#{v("slider-thumb-width")} / 2);
+  }
+
+  display: grid;
+  grid-template-columns: 100%;
+  justify-items: start;
+  inline-size: 100%;
+}
+
+@mixin label {
+  @include m.own-box;
+  display: block;
+  justify-self: start;
+  // Above the input, without moving in the DOM: the label follows the input
+  // so the sibling selectors that reveal it stay plain sibling selectors.
+  order: -1;
+  // Pinned to the one explicit column: a second label (a range slider has
+  // one per handle) would otherwise grow an implicit column beside it, and
+  // its percentage margin would resolve against that instead of the track.
+  grid-column: 1;
+  // The handle centre, in the field's own inline axis.
+  margin-inline-start: calc(
+    var(--_inset) + (100% - 2 * var(--_inset)) * var(--#{c.$prefix}-slider-value, 0) / 100
+  );
+  translate: -50% 0;
+  // M3 measures its 12dp from the TRACK, but the input is taller than the
+  // track (the handle and the touch target both overhang it), so the row gap
+  // gives that height back.
+  margin-block-end: calc(
+    #{v("slider-label-gap")} -
+      (
+        max(var(--#{c.$prefix}-sys-target-size), #{v("slider-thumb-height")}) -
+          #{v("slider-track-height")}
+      ) / 2
+  );
+  padding-block: #{v("slider-label-padding-block")};
+  padding-inline: #{v("slider-label-padding-inline")};
+  border-radius: #{v("slider-label-shape")};
+  background-color: #{v("slider-label-container-color")};
+  color: #{v("slider-label-color")};
+  white-space: nowrap;
+  pointer-events: none;
+  // M3 raises the value indicator while the handle is being moved.
+  opacity: var(--#{c.$prefix}-sys-opacity-hidden);
+  @include m.typescale("label-large");
+  @include m.transition((opacity));
+}
+
+@mixin label-shown {
+  opacity: var(--#{c.$prefix}-sys-opacity-full);
+}
+
+@mixin label-persistent {
+  opacity: var(--#{c.$prefix}-sys-opacity-full);
+}
+
+@mixin label-rtl {
+  translate: 50% 0;
+}
+
+// --- class emission ---------------------------------------------------------
+
+@mixin classes {
+  input[type="range"].#{c.$prefix}-slider {
+    @include control;
+  }
+
+  // Same specificity as the base rule (which resets --_ticks), later wins.
+  input[type="range"].#{c.$prefix}-slider--ticks {
+    @include ticks;
+  }
+
+  .#{c.$prefix}-slider-field {
+    @include field;
+  }
+
+  .#{c.$prefix}-slider__label {
+    @include label;
+  }
+
+  .#{c.$prefix}-slider__label:dir(rtl) {
+    @include label-rtl;
+  }
+
+  // The label follows the handle, so it comes AFTER the input in the markup
+  // and these are sibling selectors -- no :has() needed.
+  .#{c.$prefix}-slider:active ~ .#{c.$prefix}-slider__label,
+  .#{c.$prefix}-slider:focus-visible ~ .#{c.$prefix}-slider__label {
+    @include label-shown;
+  }
+
+  .#{c.$prefix}-slider-field--label-persistent .#{c.$prefix}-slider__label {
+    @include label-persistent;
+  }
+
+  // --- centered ---------------------------------------------------------------
+  input[type="range"].#{c.$prefix}-slider--centered {
+    @include centered;
+  }
+
+  // --- range ------------------------------------------------------------------
+  .#{c.$prefix}-slider-field--range {
+    grid-template-rows: auto auto;
+  }
+
+  .#{c.$prefix}-slider-field--range .#{c.$prefix}-slider__label {
+    grid-row: 1;
+  }
+
+  // Both inputs share one cell, so they stack.
+  .#{c.$prefix}-slider-field--range .#{c.$prefix}-slider {
+    grid-row: 2;
+    grid-column: 1;
+    pointer-events: none;
+  }
+
+  .#{c.$prefix}-slider-field--range .#{c.$prefix}-slider:first-of-type {
+    @include range-track;
+  }
+
+  .#{c.$prefix}-slider-field--range .#{c.$prefix}-slider:not(:first-of-type) {
+    @include range-overlay;
+  }
+
+  // The handles stay hittable through their pointer-events: none inputs.
+  // One rule per vendor: a list mixing them is invalid in both engines.
+  .#{c.$prefix}-slider-field--range
+    .#{c.$prefix}-slider::-webkit-slider-thumb {
+    pointer-events: auto;
+  }
+
+  .#{c.$prefix}-slider-field--range .#{c.$prefix}-slider::-moz-range-thumb {
+    pointer-events: auto;
+  }
+
+  // --- vertical ---------------------------------------------------------------
+  .#{c.$prefix}-slider-field--vertical {
+    @include vertical;
+  }
+
+  // Out-specifies the base rule's own :dir(rtl) block, which the rotation
+  // must not inherit.
+  .#{c.$prefix}-slider-field--vertical
+    input[type="range"].#{c.$prefix}-slider {
+    @include vertical-input;
+  }
+}

@@ -1,0 +1,353 @@
+// ============================================================================
+// m3x icon button (standard | filled | tonal | outlined)
+//
+// PUBLIC VARIABLE API (tier-3 tokens, defined in the tokens layer)
+// ----------------------------------------------------------------------------
+//   --m3-icon-btn-size                        40px   square control size;
+//                                                    participates in density
+//   --m3-icon-btn-size-small                  40px   .m3-icon-btn--small (M3's
+//                                            small rung, also the default size)
+//   --m3-icon-btn-size-xs                     32px   .m3-icon-btn--xs (M3 Expressive)
+//   --m3-icon-btn-size-medium                 56px   .m3-icon-btn--medium
+//   --m3-icon-btn-size-large                  96px   .m3-icon-btn--large
+//   --m3-icon-btn-size-xl                     136px  .m3-icon-btn--xl
+//   --m3-icon-btn-shape                       corner-full
+//   --m3-icon-btn-shape-square                corner-medium  .m3-icon-btn--square
+//                                                            (default, --xs, --small)
+//   --m3-icon-btn-shape-square-medium         corner-large   --square + --medium
+//   --m3-icon-btn-shape-square-large          corner-extra-large  --square +
+//                                                            --large / --xl
+//   --m3-icon-btn-shape-pressed               corner-small   shape while :active
+//   --m3-icon-btn-shape-pressed-medium        corner-medium  --medium
+//   --m3-icon-btn-shape-pressed-large         corner-large   --large / --xl
+//   --m3-icon-btn-shape-selected              corner-medium  round toggle selected
+//   --m3-icon-btn-shape-selected-medium       corner-large   --medium
+//   --m3-icon-btn-shape-selected-large        corner-extra-large  --large / --xl
+//   (a selected --square icon button goes the other way: corner-full)
+//   --m3-icon-btn-icon-size                   icon-size (24px) child svg/img
+//   --m3-icon-btn-icon-size-xs                20px   .m3-icon-btn--xs
+//   --m3-icon-btn-icon-size-large             32px   .m3-icon-btn--large
+//   --m3-icon-btn-icon-size-xl                40px   .m3-icon-btn--xl
+//   --m3-icon-btn-icon-optical-size(-xs/-large/-xl)  24 / 20 / 32 / 40  opsz axis of a
+//                                                    child .m3-icon
+//   --m3-icon-btn-color                       on-surface-variant (standard)
+//   --m3-icon-btn-selected-color              primary (standard, selected)
+//   --m3-icon-btn-selected-container-color    transparent (standard, selected;
+//                                                    a dense toolbar re-points it)
+//   --m3-icon-btn-filled-container-color      primary
+//   --m3-icon-btn-filled-color                on-primary
+//   --m3-icon-btn-tonal-container-color       secondary-container
+//   --m3-icon-btn-tonal-color                 on-secondary-container
+//   --m3-icon-btn-outlined-color              on-surface-variant
+//   --m3-icon-btn-outline-width               1px (hairline token)
+//   --m3-icon-btn-outline-color               outline
+//   --m3-icon-btn-outlined-selected-container-color  inverse-surface
+//   --m3-icon-btn-outlined-selected-color     inverse-on-surface
+//
+// Markup (toggle icon buttons carry aria-pressed; always aria-label):
+//   <button class="m3-icon-btn" aria-label="Favorite" aria-pressed="false">
+//     <svg viewBox="0 0 24 24">...</svg>
+//   </button>
+//   <button class="m3-icon-btn m3-icon-btn--tonal m3-icon-btn--small"
+//           aria-label="Edit">
+//     <svg viewBox="0 0 24 24">...</svg>
+//   </button>
+// ============================================================================
+
+@use "../config" as c;
+@use "../functions" as fn;
+@use "../mixins" as m;
+
+// Token defaults. They are emitted as the fallback where each token is
+// read, never as a :root declaration, so an upstream tier re-pointed on an
+// ancestor reaches this component while an override of the token on an
+// ancestor still wins (see mixins.scss "component token defaults").
+$tokens: (
+  "icon-btn-size": #{fn.rem(40)},
+  "icon-btn-size-small": #{fn.rem(40)},
+  "icon-btn-size-xs": #{fn.rem(32)},
+  "icon-btn-size-medium": #{fn.rem(56)},
+  "icon-btn-size-large": #{fn.rem(96)},
+  "icon-btn-size-xl": #{fn.rem(136)},
+  "icon-btn-shape": var(--#{c.$sys-prefix}-sys-shape-corner-full),
+  "icon-btn-shape-square": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "icon-btn-shape-square-medium": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+  "icon-btn-shape-square-large": var(--#{c.$sys-prefix}-sys-shape-corner-extra-large),
+  "icon-btn-shape-pressed": var(--#{c.$sys-prefix}-sys-shape-corner-small),
+  "icon-btn-shape-pressed-medium": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "icon-btn-shape-pressed-large": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+  "icon-btn-shape-selected": var(--#{c.$sys-prefix}-sys-shape-corner-medium),
+  "icon-btn-shape-selected-medium": var(--#{c.$sys-prefix}-sys-shape-corner-large),
+  "icon-btn-shape-selected-large": var(--#{c.$sys-prefix}-sys-shape-corner-extra-large),
+  "icon-btn-icon-size": var(--#{c.$prefix}-sys-icon-size),
+  "icon-btn-icon-size-xs": #{fn.rem(20)},
+  "icon-btn-icon-size-large": #{fn.rem(32)},
+  "icon-btn-icon-size-xl": #{fn.rem(40)},
+  "icon-btn-icon-optical-size": 24,
+  "icon-btn-icon-optical-size-xs": 20,
+  "icon-btn-icon-optical-size-large": 32,
+  "icon-btn-icon-optical-size-xl": 40,
+  "icon-btn-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "icon-btn-selected-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "icon-btn-selected-container-color": transparent,
+  "icon-btn-filled-container-color": var(--#{c.$sys-prefix}-sys-color-primary),
+  "icon-btn-filled-color": var(--#{c.$sys-prefix}-sys-color-on-primary),
+  "icon-btn-tonal-container-color": var(--#{c.$sys-prefix}-sys-color-secondary-container),
+  "icon-btn-tonal-color": var(--#{c.$sys-prefix}-sys-color-on-secondary-container),
+  "icon-btn-outlined-color": var(--#{c.$sys-prefix}-sys-color-on-surface-variant),
+  "icon-btn-outline-width": var(--#{c.$prefix}-sys-stroke-hairline),
+  "icon-btn-outline-color": var(--#{c.$sys-prefix}-sys-color-outline),
+  "icon-btn-outlined-selected-container-color": var(--#{c.$sys-prefix}-sys-color-inverse-surface),
+  "icon-btn-outlined-selected-color": var(--#{c.$sys-prefix}-sys-color-inverse-on-surface),
+);
+
+@function v($name) {
+  @return m.token($tokens, $name);
+}
+
+
+// Square structure + state machinery shared by every variant (and by the
+// Bootstrap re-skin of .btn-close / .navbar-toggler). The default look with
+// no variant class is the standard icon button, so base also carries the
+// standard selected + disabled treatments; variants re-point the tier-4
+// private variables and override the disabled treatment where needed.
+@mixin base($check: ".#{c.$prefix}-btn-check") {
+  @include m.own-box;
+  text-align: center;
+  @include m.typescale("label-large");
+  --_container: transparent;
+  --_content: #{v("icon-btn-color")};
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  @include m.control-height(v("icon-btn-size"));
+  // Width mirrors the density-adjusted height so the control stays square.
+  inline-size: calc(
+    #{v("icon-btn-size")} + var(--#{c.$prefix}-sys-density) * var(--#{c.$prefix}-sys-density-step)
+  );
+  padding: var(--#{c.$prefix}-sys-space-none);
+  border: none;
+  @include m.pill-radius(v("icon-btn-size"));
+  border-radius: m.pill(#{v("icon-btn-shape")});
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  vertical-align: middle;
+  -webkit-tap-highlight-color: transparent;
+  @include m.state-layer;
+  @include m.focus-ring;
+  @include m.touch-target;
+  @include m.transition(
+    (background-color, color),
+    $spring-properties: (border-radius),
+    $spring: "fast-spatial"
+  );
+  @include m.forced-colors-border;
+
+  > svg,
+  > img,
+  > .#{c.$prefix}-icon {
+    inline-size: #{v("icon-btn-icon-size")};
+    font-size: #{v("icon-btn-icon-size")};
+    block-size: #{v("icon-btn-icon-size")};
+    --#{c.$prefix}-icon-optical-size: #{v("icon-btn-icon-optical-size")};
+  }
+
+  // M3 Expressive shape morphs (see button.scss); m.pill() keeps "full"
+  // finite so the spring interpolates.
+  &:active {
+    border-radius: m.pill(#{v("icon-btn-shape-pressed")});
+  }
+  &[aria-pressed="true"],
+  #{$check}:checked + & {
+    --#{c.$prefix}-icon-fill: 1;
+    border-radius: m.pill(#{v("icon-btn-shape-selected")});
+    // See the button: the shape morph is the signal until a family flattens
+    // it, and this is the only selected rule a checked .m3-btn-check gets
+    // (the per-variant container swaps below are [aria-pressed] only).
+    @include m.selected-emphasis;
+  }
+
+  &[aria-pressed="true"] {
+    --#{c.$prefix}-icon-fill: 1;
+    --_container: #{v("icon-btn-selected-container-color")};
+    --_content: #{v("icon-btn-selected-color")};
+  }
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled-bare;
+  }
+}
+
+// Standard (no container): also usable standalone by the compat layer.
+@mixin standard {
+  --_container: transparent;
+  --_content: #{v("icon-btn-color")};
+
+  &[aria-pressed="true"] {
+    --#{c.$prefix}-icon-fill: 1;
+    --_container: #{v("icon-btn-selected-container-color")};
+    --_content: #{v("icon-btn-selected-color")};
+  }
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled-bare;
+  }
+}
+
+@mixin filled {
+  --_container: #{v("icon-btn-filled-container-color")};
+  --_content: #{v("icon-btn-filled-color")};
+
+  // Re-assert container and content so base's standard selected treatment
+  // cannot win by specificity on toggle (aria-pressed) filled icon buttons.
+  &[aria-pressed="true"] {
+    --_container: #{v("icon-btn-filled-container-color")};
+    --_content: #{v("icon-btn-filled-color")};
+  }
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled;
+  }
+}
+
+@mixin tonal {
+  --_container: #{v("icon-btn-tonal-container-color")};
+  --_content: #{v("icon-btn-tonal-color")};
+
+  &[aria-pressed="true"] {
+    --_container: #{v("icon-btn-tonal-container-color")};
+    --_content: #{v("icon-btn-tonal-color")};
+  }
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled;
+  }
+}
+
+@mixin outlined {
+  --_container: transparent;
+  --_content: #{v("icon-btn-outlined-color")};
+  border: #{v("icon-btn-outline-width")} solid
+    #{v("icon-btn-outline-color")};
+
+  &[aria-pressed="true"] {
+    --_container: #{v("icon-btn-outlined-selected-container-color")};
+    --_content: #{v("icon-btn-outlined-selected-color")};
+    border-color: transparent;
+  }
+
+  &:disabled,
+  &.disabled {
+    @include m.disabled-bare;
+    border-color: color-mix(
+      in srgb,
+      var(--#{c.$sys-prefix}-sys-color-on-surface)
+        var(--#{c.$sys-prefix}-sys-state-disabled-container-opacity),
+      transparent
+    );
+  }
+}
+
+// M3 Expressive sizes. Base derives both height and width from the size
+// token, so these re-point that token (plus the icon size and the
+// square-shape token --square reads); a size and --square compose on one
+// element.
+//
+// --small is M3's 40px rung, the same metrics base already carries -- M3's
+// default icon button IS the small one -- but the ramp needs a name for that
+// rung or --xs and --small collapse onto one size.
+@mixin small {
+  --#{c.$prefix}-icon-btn-size: #{v("icon-btn-size-small")};
+}
+
+@mixin xs {
+  --#{c.$prefix}-icon-btn-size: #{v("icon-btn-size-xs")};
+  --#{c.$prefix}-icon-btn-icon-size: #{v("icon-btn-icon-size-xs")};
+  --#{c.$prefix}-icon-btn-icon-optical-size: #{v("icon-btn-icon-optical-size-xs")};
+}
+
+@mixin medium {
+  --#{c.$prefix}-icon-btn-size: #{v("icon-btn-size-medium")};
+  --#{c.$prefix}-icon-btn-shape-square: #{v("icon-btn-shape-square-medium")};
+  --#{c.$prefix}-icon-btn-shape-pressed: #{v("icon-btn-shape-pressed-medium")};
+  --#{c.$prefix}-icon-btn-shape-selected: #{v("icon-btn-shape-selected-medium")};
+}
+
+@mixin large {
+  --#{c.$prefix}-icon-btn-size: #{v("icon-btn-size-large")};
+  --#{c.$prefix}-icon-btn-icon-size: #{v("icon-btn-icon-size-large")};
+  --#{c.$prefix}-icon-btn-icon-optical-size: #{v("icon-btn-icon-optical-size-large")};
+  --#{c.$prefix}-icon-btn-shape-square: #{v("icon-btn-shape-square-large")};
+  --#{c.$prefix}-icon-btn-shape-pressed: #{v("icon-btn-shape-pressed-large")};
+  --#{c.$prefix}-icon-btn-shape-selected: #{v("icon-btn-shape-selected-large")};
+}
+
+@mixin xl {
+  --#{c.$prefix}-icon-btn-size: #{v("icon-btn-size-xl")};
+  --#{c.$prefix}-icon-btn-icon-size: #{v("icon-btn-icon-size-xl")};
+  --#{c.$prefix}-icon-btn-icon-optical-size: #{v("icon-btn-icon-optical-size-xl")};
+  --#{c.$prefix}-icon-btn-shape-square: #{v("icon-btn-shape-square-large")};
+  --#{c.$prefix}-icon-btn-shape-pressed: #{v("icon-btn-shape-pressed-large")};
+  --#{c.$prefix}-icon-btn-shape-selected: #{v("icon-btn-shape-selected-large")};
+}
+
+// Square shape: the radius follows the size via the --m3-icon-btn-shape-square
+// token the size modifiers re-point.
+@mixin square($check: ".#{c.$prefix}-btn-check") {
+  border-radius: m.pill(#{v("icon-btn-shape-square")});
+
+  // Square toggles morph the other way: round when selected.
+  &[aria-pressed="true"],
+  #{$check}:checked + & {
+    border-radius: m.pill(var(--#{c.$sys-prefix}-sys-shape-corner-full));
+  }
+}
+
+@mixin classes {
+  .#{c.$prefix}-icon-btn {
+    @include base;
+  }
+
+  .#{c.$prefix}-icon-btn--filled {
+    @include filled;
+  }
+
+  .#{c.$prefix}-icon-btn--tonal {
+    @include tonal;
+  }
+
+  .#{c.$prefix}-icon-btn--outlined {
+    @include outlined;
+  }
+
+  .#{c.$prefix}-icon-btn--small {
+    @include small;
+  }
+
+  .#{c.$prefix}-icon-btn--xs {
+    @include xs;
+  }
+
+  .#{c.$prefix}-icon-btn--medium {
+    @include medium;
+  }
+
+  .#{c.$prefix}-icon-btn--large {
+    @include large;
+  }
+
+  .#{c.$prefix}-icon-btn--xl {
+    @include xl;
+  }
+
+  .#{c.$prefix}-icon-btn--square {
+    @include square;
+  }
+}
